@@ -1,0 +1,1 @@
+export { default as ArtifactSharing } from './ArtifactSharing';
