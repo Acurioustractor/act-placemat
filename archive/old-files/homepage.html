@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACT Placemat - Home</title>
+    <link rel="stylesheet" href="shared-styles.css">
+    <script src="menu-bar.js"></script>
+</head>
+<body>
+    <div class="act-content">
+        <div class="act-card act-text-center">
+            <div style="font-size: 64px; margin-bottom: var(--spacing-xl);">🌱</div>
+            <h1>Welcome to ACT Placemat</h1>
+            <p style="font-size: var(--font-size-lg); color: var(--text-secondary); margin-bottom: var(--spacing-2xl);">
+                Central hub for managing projects, opportunities, and community ecosystem
+            </p>
+            
+            <div class="act-status act-status-success act-mb-xl">
+                <span class="act-status-dot"></span>
+                <span>System Online</span>
+            </div>
+        </div>
+
+        <div class="act-grid act-grid-2">
+            <div class="act-card">
+                <div class="act-card-header">
+                    <h2 class="act-card-title">🗺️ Projects Visualization</h2>
+                </div>
+                <p>Interactive map of all ACT projects with filters and insights</p>
+                <a href="/projects" class="act-btn">View Projects</a>
+            </div>
+
+            <div class="act-card">
+                <div class="act-card-header">
+                    <h2 class="act-card-title">📊 Daily Dashboard</h2>
+                </div>
+                <p>Real-time metrics, alerts, and pipeline overview</p>
+                <a href="/daily-dashboard.html" class="act-btn">Open Dashboard</a>
+            </div>
+
+            <div class="act-card">
+                <div class="act-card-header">
+                    <h2 class="act-card-title">🎯 Opportunities Pipeline</h2>
+                </div>
+                <p>Track and manage funding opportunities and partnerships</p>
+                <a href="/opportunities" class="act-btn">View Opportunities</a>
+            </div>
+
+            <div class="act-card">
+                <div class="act-card-header">
+                    <h2 class="act-card-title">📚 Documentation</h2>
+                </div>
+                <p>Setup guides, roadmaps, and implementation plans</p>
+                <a href="/QUICKSTART.md" class="act-btn act-btn-secondary">Quick Start</a>
+            </div>
+        </div>
+
+        <div class="act-card">
+            <div class="act-card-header">
+                <h2 class="act-card-title">🛠️ Quick Actions</h2>
+            </div>
+            <div class="act-grid act-grid-4">
+                <button class="act-btn act-btn-secondary" onclick="window.open('/api/health', '_blank')">
+                    💚 API Health
+                </button>
+                <button class="act-btn act-btn-secondary" onclick="alert('Run: node automations/opportunity-alerts.js')">
+                    🔔 Run Alerts
+                </button>
+                <button class="act-btn act-btn-secondary" onclick="alert('Run: node automations/weekly-action-email.js')">
+                    📧 Weekly Email
+                </button>
+                <button class="act-btn act-btn-secondary" onclick="window.location.reload()">
+                    🔄 Refresh
+                </button>
+            </div>
+        </div>
+
+        <div class="act-card">
+            <div class="act-card-header">
+                <h2 class="act-card-title">📊 System Status</h2>
+            </div>
+            <div id="status-container">
+                <div style="display: flex; gap: var(--spacing-lg); flex-wrap: wrap;">
+                    <div class="act-status act-status-success">
+                        <span class="act-status-dot"></span>
+                        <span>Server Running</span>
+                    </div>
+                    <div class="act-status" id="notion-status">
+                        <span class="act-status-dot"></span>
+                        <span>Notion Integration</span>
+                    </div>
+                    <div class="act-status" id="db-status">
+                        <span class="act-status-dot"></span>
+                        <span>Databases</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check system status
+        async function checkStatus() {
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                
+                const notionStatus = document.getElementById('notion-status');
+                const dbStatus = document.getElementById('db-status');
+                
+                if (data.status === 'ok') {
+                    if (data.notion_token === 'configured') {
+                        notionStatus.className = 'act-status act-status-success';
+                    } else {
+                        notionStatus.className = 'act-status act-status-warning';
+                    }
+                    
+                    if (data.notion_database === 'configured') {
+                        dbStatus.className = 'act-status act-status-success';
+                    } else {
+                        dbStatus.className = 'act-status act-status-warning';
+                    }
+                } else {
+                    notionStatus.className = 'act-status act-status-error';
+                    dbStatus.className = 'act-status act-status-error';
+                }
+            } catch (error) {
+                document.getElementById('notion-status').className = 'act-status act-status-error';
+                document.getElementById('db-status').className = 'act-status act-status-error';
+            }
+        }
+        
+        // Check status on load
+        checkStatus();
+        
+        // Refresh status every 30 seconds
+        setInterval(checkStatus, 30000);
+    </script>
+</body>
+</html>

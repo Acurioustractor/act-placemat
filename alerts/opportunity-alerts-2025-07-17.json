@@ -1,0 +1,70 @@
+{
+  "date": "2025-07-17T20:11:31.730Z",
+  "alerts": [
+    {
+      "type": "urgent_deadline",
+      "priority": "high",
+      "title": "⏰ Deadline Approaching: Corporate Partnership - Energy Co",
+      "message": "\n                    Deadline: 7/25/2025 (7 days)\n                    Amount: $80,000\n                    Stage: Negotiation\n                    Probability: 90%\n                    \n                    Action Required: Finalize terms and close deal\n                ",
+      "opportunity": {
+        "id": "mock-opp-2",
+        "name": "Corporate Partnership - Energy Co",
+        "stage": "Negotiation",
+        "amount": 80000,
+        "probability": 90,
+        "weightedRevenue": 72000,
+        "type": "Partnership",
+        "deadline": "2025-07-24T20:11:31.726Z"
+      },
+      "recipients": [
+        "ops@act.org.au",
+        "finance@act.org.au"
+      ]
+    },
+    {
+      "type": "incomplete",
+      "priority": "low",
+      "title": "📝 Incomplete Opportunity: Government Sustainability Grant 2024",
+      "message": "\n                    Missing Information: Primary Contact, Next Action\n                    Stage: Proposal\n                    \n                    Action Required: Update opportunity with missing information\n                ",
+      "opportunity": {
+        "id": "mock-opp-1",
+        "name": "Government Sustainability Grant 2024",
+        "stage": "Proposal",
+        "amount": 150000,
+        "probability": 75,
+        "weightedRevenue": 112500,
+        "type": "Grant",
+        "deadline": "2025-08-16T20:11:31.726Z"
+      },
+      "recipients": [
+        "ops@act.org.au"
+      ]
+    },
+    {
+      "type": "incomplete",
+      "priority": "low",
+      "title": "📝 Incomplete Opportunity: Corporate Partnership - Energy Co",
+      "message": "\n                    Missing Information: Primary Contact, Next Action\n                    Stage: Negotiation\n                    \n                    Action Required: Update opportunity with missing information\n                ",
+      "opportunity": {
+        "id": "mock-opp-2",
+        "name": "Corporate Partnership - Energy Co",
+        "stage": "Negotiation",
+        "amount": 80000,
+        "probability": 90,
+        "weightedRevenue": 72000,
+        "type": "Partnership",
+        "deadline": "2025-07-24T20:11:31.726Z"
+      },
+      "recipients": [
+        "ops@act.org.au"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "critical": 0,
+    "high": 1,
+    "medium": 0,
+    "low": 2
+  }
+}

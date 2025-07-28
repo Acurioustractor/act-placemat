@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACT Pipeline Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .nav {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav a {
+            text-decoration: none;
+            color: #667eea;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .nav a:hover, .nav a.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .data-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .data-card h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .data-card p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+        
+        .success {
+            background: #efe;
+            color: #363;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+        
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+        
+        .refresh-btn:hover {
+            background: #5a6fd8;
+        }
+        
+        .refresh-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 ACT Pipeline Dashboard</h1>
+        <p>Real-time view of your projects, opportunities, and relationships</p>
+    </div>
+    
+    <div class="nav">
+        <a href="/" class="active">Dashboard</a>
+        <a href="/opportunities">Opportunities</a>
+        <button class="refresh-btn" onclick="refreshAllData()">Refresh Data</button>
+    </div>
+    
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalProjects">-</div>
+                <div class="stat-label">Total Projects</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalOpportunities">-</div>
+                <div class="stat-label">Active Opportunities</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalPeople">-</div>
+                <div class="stat-label">People in Network</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalOrganizations">-</div>
+                <div class="stat-label">Partner Organizations</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalArtefacts">-</div>
+                <div class="stat-label">Supporting Materials</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📋 Recent Projects</h2>
+            <div id="projectsData" class="loading">
+                <div class="spinner"></div>
+                <p>Loading projects from Notion...</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🎯 Active Opportunities</h2>
+            <div id="opportunitiesData" class="loading">
+                <div class="spinner"></div>
+                <p>Loading opportunities from Notion...</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🏢 Key Organizations</h2>
+            <div id="organizationsData" class="loading">
+                <div class="spinner"></div>
+                <p>Loading organizations from Notion...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Database IDs from your Notion setup
+        const databases = {
+            projects: '177ebcf981cf80dd9514f1ec32f3314c',
+            opportunities: '234ebcf981cf804e873ff352f03c36da',
+            people: '47bdc1c4df994ddc81c4a0214c919d69',
+            organizations: '948f39467d1c42f2bd7e1317a755e67b',
+            artefacts: '234ebcf981cf8015878deadb337662e4'
+        };
+        
+        // Utility functions
+        function extractText(property) {
+            if (!property) return '';
+            if (property.title && property.title.length > 0) {
+                return property.title[0].plain_text;
+            }
+            if (property.rich_text && property.rich_text.length > 0) {
+                return property.rich_text[0].plain_text;
+            }
+            return '';
+        }
+        
+        function extractSelect(property) {
+            if (!property || !property.select) return '';
+            return property.select.name;
+        }
+        
+        function extractNumber(property) {
+            if (!property || property.number === null) return 0;
+            return property.number;
+        }
+        
+        // Fetch data from Notion
+        async function fetchNotionData(databaseId) {
+            try {
+                const response = await fetch('/api/notion/query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        databaseId: databaseId,
+                        page_size: 10
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                return data.results || [];
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                throw error;
+            }
+        }
+        
+        // Display projects
+        async function loadProjects() {
+            try {
+                const projects = await fetchNotionData(databases.projects);
+                document.getElementById('totalProjects').textContent = projects.length;
+                
+                const container = document.getElementById('projectsData');
+                if (projects.length === 0) {
+                    container.innerHTML = '<p>No projects found</p>';
+                    return;
+                }
+                
+                const html = projects.map(project => {
+                    const name = extractText(project.properties.Name);
+                    const status = extractSelect(project.properties.Status);
+                    const revenue = extractNumber(project.properties['Revenue Actual']) || 
+                                  extractNumber(project.properties['Actual Incoming']);
+                    
+                    return `
+                        <div class="data-card">
+                            <h3>${name || 'Untitled Project'}</h3>
+                            <p><strong>Status:</strong> ${status || 'Unknown'}</p>
+                            ${revenue > 0 ? `<p><strong>Revenue:</strong> $${revenue.toLocaleString()}</p>` : ''}
+                        </div>
+                    `;
+                }).join('');
+                
+                container.innerHTML = `<div class="data-grid">${html}</div>`;
+                
+            } catch (error) {
+                document.getElementById('projectsData').innerHTML = 
+                    `<div class="error">Failed to load projects: ${error.message}</div>`;
+            }
+        }
+        
+        // Display opportunities
+        async function loadOpportunities() {
+            try {
+                const opportunities = await fetchNotionData(databases.opportunities);
+                document.getElementById('totalOpportunities').textContent = opportunities.length;
+                
+                const container = document.getElementById('opportunitiesData');
+                if (opportunities.length === 0) {
+                    container.innerHTML = '<p>No opportunities found</p>';
+                    return;
+                }
+                
+                const html = opportunities.map(opp => {
+                    const name = extractText(opp.properties.Name);
+                    const stage = extractSelect(opp.properties.Stage);
+                    const amount = extractNumber(opp.properties.Amount);
+                    const probability = extractSelect(opp.properties.Probability);
+                    
+                    return `
+                        <div class="data-card">
+                            <h3>${name || 'Untitled Opportunity'}</h3>
+                            <p><strong>Stage:</strong> ${stage || 'Unknown'}</p>
+                            ${amount > 0 ? `<p><strong>Amount:</strong> $${amount.toLocaleString()}</p>` : ''}
+                            ${probability ? `<p><strong>Probability:</strong> ${probability}</p>` : ''}
+                        </div>
+                    `;
+                }).join('');
+                
+                container.innerHTML = `<div class="data-grid">${html}</div>`;
+                
+            } catch (error) {
+                document.getElementById('opportunitiesData').innerHTML = 
+                    `<div class="error">Failed to load opportunities: ${error.message}</div>`;
+            }
+        }
+        
+        // Display organizations
+        async function loadOrganizations() {
+            try {
+                const organizations = await fetchNotionData(databases.organizations);
+                document.getElementById('totalOrganizations').textContent = organizations.length;
+                
+                const container = document.getElementById('organizationsData');
+                if (organizations.length === 0) {
+                    container.innerHTML = '<p>No organizations found</p>';
+                    return;
+                }
+                
+                const html = organizations.map(org => {
+                    const name = extractText(org.properties.Name);
+                    const status = extractSelect(org.properties.Status);
+                    const website = org.properties.Website?.url;
+                    
+                    return `
+                        <div class="data-card">
+                            <h3>${name || 'Untitled Organization'}</h3>
+                            <p><strong>Status:</strong> ${status || 'Unknown'}</p>
+                            ${website ? `<p><strong>Website:</strong> <a href="${website}" target="_blank">${website}</a></p>` : ''}
+                        </div>
+                    `;
+                }).join('');
+                
+                container.innerHTML = `<div class="data-grid">${html}</div>`;
+                
+            } catch (error) {
+                document.getElementById('organizationsData').innerHTML = 
+                    `<div class="error">Failed to load organizations: ${error.message}</div>`;
+            }
+        }
+        
+        // Load people and artefacts counts
+        async function loadCounts() {
+            try {
+                const [people, artefacts] = await Promise.all([
+                    fetchNotionData(databases.people),
+                    fetchNotionData(databases.artefacts)
+                ]);
+                
+                document.getElementById('totalPeople').textContent = people.length;
+                document.getElementById('totalArtefacts').textContent = artefacts.length;
+                
+            } catch (error) {
+                console.error('Error loading counts:', error);
+                document.getElementById('totalPeople').textContent = '?';
+                document.getElementById('totalArtefacts').textContent = '?';
+            }
+        }
+        
+        // Refresh all data
+        async function refreshAllData() {
+            const btn = document.querySelector('.refresh-btn');
+            btn.disabled = true;
+            btn.textContent = 'Refreshing...';
+            
+            try {
+                await Promise.all([
+                    loadProjects(),
+                    loadOpportunities(),
+                    loadOrganizations(),
+                    loadCounts()
+                ]);
+                
+                btn.textContent = 'Refreshed!';
+                setTimeout(() => {
+                    btn.textContent = 'Refresh Data';
+                    btn.disabled = false;
+                }, 2000);
+                
+            } catch (error) {
+                btn.textContent = 'Refresh Failed';
+                setTimeout(() => {
+                    btn.textContent = 'Refresh Data';
+                    btn.disabled = false;
+                }, 2000);
+            }
+        }
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 ACT Pipeline Dashboard Loading...');
+            refreshAllData();
+        });
+    </script>
+</body>
+</html>

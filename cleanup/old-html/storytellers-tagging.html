@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storyteller-Project Tagging - ACT Placemat</title>
+    <link rel="stylesheet" href="modern-styles.css">
+    <style>
+        .tagging-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-6);
+            padding: var(--space-6);
+            padding-left: 280px; /* Account for sidebar */
+            min-height: 100vh;
+        }
+
+        .storytellers-panel, .projects-panel {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+            border: 1px solid var(--gray-200);
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+
+        .storyteller-card, .project-card {
+            background: var(--background);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin-bottom: var(--space-4);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            position: relative;
+        }
+
+        .storyteller-card:hover, .project-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .storyteller-card.selected, .project-card.selected {
+            border-color: var(--primary);
+            background: var(--primary-50);
+        }
+
+        .storyteller-header {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-3);
+            margin-bottom: var(--space-3);
+        }
+
+        .storyteller-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--gray-200);
+        }
+
+        .storyteller-avatar.placeholder {
+            background: var(--primary-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-600);
+            font-weight: var(--font-bold);
+            font-size: var(--text-lg);
+        }
+
+        .storyteller-info {
+            flex: 1;
+        }
+
+        .storyteller-name {
+            font-weight: var(--font-semibold);
+            color: var(--text-primary);
+            font-size: var(--text-base);
+            margin-bottom: var(--space-1);
+        }
+
+        .storyteller-meta {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            margin-bottom: var(--space-1);
+        }
+
+        .storyteller-bio {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            line-height: 1.4;
+            margin-top: var(--space-2);
+        }
+
+        .storyteller-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-1);
+            margin-top: var(--space-2);
+        }
+
+        .tag {
+            background: var(--primary-100);
+            color: var(--primary-700);
+            padding: var(--space-1) var(--space-2);
+            border-radius: var(--radius-full);
+            font-size: var(--text-xs);
+        }
+
+        .media-indicators {
+            position: absolute;
+            top: var(--space-2);
+            right: var(--space-2);
+            display: flex;
+            gap: var(--space-1);
+        }
+
+        .media-icon {
+            width: 20px;
+            height: 20px;
+            background: var(--success-500);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: var(--text-xs);
+        }
+
+        .search-filters {
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin-bottom: var(--space-4);
+        }
+
+        .search-box {
+            width: 100%;
+            padding: var(--space-3);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-3);
+            font-size: var(--text-sm);
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-2);
+        }
+
+        .filter-select {
+            padding: var(--space-2);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            font-size: var(--text-sm);
+        }
+
+        .tagging-controls {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+            border: 1px solid var(--gray-200);
+            grid-column: 1 / -1;
+            margin-top: var(--space-6);
+        }
+
+        .connection-type-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-2);
+            margin-bottom: var(--space-4);
+        }
+
+        .connection-type {
+            padding: var(--space-3);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-size: var(--text-sm);
+        }
+
+        .connection-type:hover {
+            border-color: var(--primary);
+        }
+
+        .connection-type.selected {
+            border-color: var(--primary);
+            background: var(--primary-50);
+            color: var(--primary-700);
+        }
+
+        .insights-panel {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+            border: 1px solid var(--gray-200);
+            grid-column: 1 / -1;
+            margin-top: var(--space-6);
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-4);
+            margin-bottom: var(--space-6);
+        }
+
+        .insight-card {
+            text-align: center;
+            background: var(--background);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+        }
+
+        .insight-number {
+            font-size: var(--text-3xl);
+            font-weight: var(--font-bold);
+            color: var(--primary);
+            display: block;
+        }
+
+        .insight-label {
+            color: var(--text-secondary);
+            font-size: var(--text-sm);
+        }
+
+        .quotes-section {
+            margin-top: var(--space-6);
+        }
+
+        .quote-card {
+            background: var(--background);
+            border-left: 4px solid var(--primary);
+            padding: var(--space-4);
+            margin-bottom: var(--space-3);
+            border-radius: var(--radius-md);
+            display: flex;
+            gap: var(--space-3);
+        }
+
+        .quote-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .quote-content {
+            flex: 1;
+        }
+
+        .quote-text {
+            font-style: italic;
+            color: var(--text-primary);
+            margin-bottom: var(--space-2);
+            line-height: 1.4;
+        }
+
+        .quote-attribution {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            padding: var(--space-3) var(--space-6);
+            font-size: var(--text-sm);
+            font-weight: var(--font-medium);
+            cursor: pointer;
+            transition: background-color var(--transition-fast);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-600);
+        }
+
+        .btn-primary:disabled {
+            background: var(--gray-300);
+            cursor: not-allowed;
+        }
+
+        .relevance-slider {
+            width: 100%;
+            margin: var(--space-2) 0;
+        }
+
+        .stats-bar {
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin-bottom: var(--space-4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+        }
+    </style>
+    <script src="modern-nav.js"></script>
+</head>
+<body>
+    <div class="tagging-container">
+        <!-- Storytellers Panel -->
+        <div class="storytellers-panel">
+            <h2>👥 Storytellers</h2>
+            <div class="stats-bar">
+                <span id="storytellers-count">Loading...</span>
+                <span id="storytellers-with-media">With media: 0</span>
+            </div>
+            
+            <div class="search-filters">
+                <input type="text" class="search-box" id="storyteller-search" placeholder="Search storytellers...">
+                <div class="filter-row">
+                    <select class="filter-select" id="location-filter">
+                        <option value="">All Locations</option>
+                    </select>
+                    <select class="filter-select" id="community-filter">
+                        <option value="">All Communities</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="storytellers-list">
+                <!-- Storytellers will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Projects Panel -->
+        <div class="projects-panel">
+            <h2>🗺️ Projects</h2>
+            <div class="stats-bar">
+                <span id="projects-count">Loading...</span>
+            </div>
+            
+            <input type="text" class="search-box" id="project-search" placeholder="Search projects...">
+            <div id="projects-list">
+                <!-- Projects will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Tagging Controls -->
+        <div id="tagging-controls" class="tagging-controls hidden">
+            <h3>🔗 Connect Storyteller & Project</h3>
+            
+            <div id="selected-summary" class="insight-card" style="margin-bottom: var(--space-4);">
+                <!-- Selected items summary -->
+            </div>
+            
+            <h4>Connection Type:</h4>
+            <div class="connection-type-selector">
+                <div class="connection-type" data-type="community_member">👥 Community Member</div>
+                <div class="connection-type" data-type="beneficiary">🎯 Beneficiary</div>
+                <div class="connection-type" data-type="partner">🤝 Partner</div>
+                <div class="connection-type" data-type="team_member">⚡ Team Member</div>
+                <div class="connection-type" data-type="stakeholder">📋 Stakeholder</div>
+            </div>
+            
+            <div style="margin-bottom: var(--space-4);">
+                <label>Relevance Score: <span id="relevance-value">5</span>/10</label>
+                <input type="range" class="relevance-slider" id="relevance-slider" min="1" max="10" value="5">
+            </div>
+            
+            <textarea id="tag-reason" placeholder="Why are they connected? What's their role or impact? (optional)" 
+                      style="width: 100%; height: 80px; margin-bottom: var(--space-4); padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md);"></textarea>
+            
+            <button class="btn-primary" id="create-link-btn">Create Connection</button>
+        </div>
+
+        <!-- Project Insights Panel -->
+        <div class="insights-panel hidden" id="insights-panel">
+            <h2>📊 Project Community Insights</h2>
+            <div id="insights-content">
+                <!-- Insights will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allStorytellers = [];
+        let allProjects = [];
+        let selectedStoryteller = null;
+        let selectedProject = null;
+        let selectedConnectionType = 'community_member';
+
+        async function initTaggingPage() {
+            try {
+                await Promise.all([
+                    loadStorytellers(),
+                    loadProjects()
+                ]);
+                setupEventListeners();
+                populateFilters();
+            } catch (error) {
+                console.error('Failed to initialize tagging page:', error);
+            }
+        }
+
+        async function loadStorytellers() {
+            try {
+                console.log('👥 Loading storytellers from Supabase...');
+                const response = await fetch('/api/storytellers');
+                const data = await response.json();
+                
+                allStorytellers = data.storytellers || [];
+                renderStorytellers(allStorytellers);
+                updateStorytellerStats();
+                console.log(`✅ Loaded ${allStorytellers.length} storytellers`);
+            } catch (error) {
+                console.error('Error loading storytellers:', error);
+                document.getElementById('storytellers-list').innerHTML = '<p>Error loading storytellers</p>';
+            }
+        }
+
+        async function loadProjects() {
+            try {
+                console.log('🗺️ Loading projects from Notion...');
+                const response = await fetch('/api/notion/real-projects');
+                const data = await response.json();
+                
+                allProjects = data.projects || [];
+                renderProjects(allProjects);
+                updateProjectStats();
+                console.log(`✅ Loaded ${allProjects.length} projects`);
+            } catch (error) {
+                console.error('Error loading projects:', error);
+                document.getElementById('projects-list').innerHTML = '<p>Error loading projects</p>';
+            }
+        }
+
+        function renderStorytellers(storytellers) {
+            const container = document.getElementById('storytellers-list');
+            container.innerHTML = storytellers.map(storyteller => {
+                const hasMedia = storyteller.profile_image_url || storyteller.signature_quotes?.length > 0;
+                const initials = (storyteller.full_name || storyteller.preferred_name || 'Unknown')
+                    .split(' ')
+                    .map(n => n[0])
+                    .join('')
+                    .toUpperCase();
+
+                return `
+                    <div class="storyteller-card" onclick="selectStoryteller('${storyteller.id}')">
+                        ${hasMedia ? '<div class="media-indicators"><div class="media-icon">📸</div></div>' : ''}
+                        
+                        <div class="storyteller-header">
+                            ${storyteller.profile_image_url ? 
+                                `<img src="${storyteller.profile_image_url}" alt="${storyteller.full_name}" class="storyteller-avatar">` :
+                                `<div class="storyteller-avatar placeholder">${initials}</div>`
+                            }
+                            <div class="storyteller-info">
+                                <div class="storyteller-name">${storyteller.full_name || storyteller.preferred_name || 'Unknown'}</div>
+                                <div class="storyteller-meta">
+                                    📍 ${storyteller.location || 'Unknown location'}
+                                    ${storyteller.community_affiliation ? ` • 🏢 ${storyteller.community_affiliation}` : ''}
+                                </div>
+                                ${storyteller.cultural_background ? `<div class="storyteller-meta">🌍 ${storyteller.cultural_background}</div>` : ''}
+                            </div>
+                        </div>
+                        
+                        <div class="storyteller-bio">${(storyteller.bio || 'No bio available').substring(0, 200)}${storyteller.bio?.length > 200 ? '...' : ''}</div>
+                        
+                        ${storyteller.expertise_areas?.length > 0 || storyteller.signature_quotes?.length > 0 ? `
+                            <div class="storyteller-tags">
+                                ${(storyteller.expertise_areas || []).slice(0, 3).map(area => `<span class="tag">${area}</span>`).join('')}
+                                ${storyteller.signature_quotes?.length > 0 ? `<span class="tag">💬 ${storyteller.signature_quotes.length} quotes</span>` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderProjects(projects) {
+            const container = document.getElementById('projects-list');
+            container.innerHTML = projects.map(project => `
+                <div class="project-card" onclick="selectProject('${project.id}')">
+                    <div class="project-header">
+                        <div class="project-title">${project.name}</div>
+                        <div class="project-meta">${project.status || 'Unknown'}</div>
+                    </div>
+                    <div class="project-meta">
+                        📍 ${project.location || project.area || 'Unknown location'}
+                        ${project.funding ? ` • 💰 ${project.funding}` : ''}
+                    </div>
+                    <div class="project-description">${(project.description || project.aiSummary || 'No description available').substring(0, 150)}${(project.description || project.aiSummary || '').length > 150 ? '...' : ''}</div>
+                </div>
+            `).join('');
+        }
+
+        function selectStoryteller(storytellerId) {
+            selectedStoryteller = allStorytellers.find(s => s.id === storytellerId);
+            
+            // Update UI
+            document.querySelectorAll('.storyteller-card').forEach(card => card.classList.remove('selected'));
+            event.target.closest('.storyteller-card').classList.add('selected');
+            
+            updateTaggingControls();
+            console.log('Selected storyteller:', selectedStoryteller?.full_name);
+        }
+
+        function selectProject(projectId) {
+            selectedProject = allProjects.find(p => p.id === projectId);
+            
+            // Update UI
+            document.querySelectorAll('.project-card').forEach(card => card.classList.remove('selected'));
+            event.target.closest('.project-card').classList.add('selected');
+            
+            updateTaggingControls();
+            loadProjectInsights(projectId);
+            console.log('Selected project:', selectedProject?.name);
+        }
+
+        function updateTaggingControls() {
+            const controls = document.getElementById('tagging-controls');
+            const summary = document.getElementById('selected-summary');
+            
+            if (selectedStoryteller && selectedProject) {
+                controls.classList.remove('hidden');
+                summary.innerHTML = `
+                    <strong>Connecting:</strong><br>
+                    👤 ${selectedStoryteller.full_name || 'Unknown'} (${selectedStoryteller.location || 'Unknown location'})<br>
+                    🗺️ ${selectedProject.name} (${selectedProject.location || 'Unknown location'})
+                `;
+            } else {
+                controls.classList.add('hidden');
+            }
+        }
+
+        async function createConnection() {
+            if (!selectedStoryteller || !selectedProject) {
+                alert('Please select both a storyteller and a project');
+                return;
+            }
+
+            try {
+                const relevanceScore = document.getElementById('relevance-slider').value;
+                const reason = document.getElementById('tag-reason').value;
+
+                const response = await fetch(`/api/storytellers/${selectedStoryteller.id}/link-project`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        projectId: selectedProject.id,
+                        relevanceScore: parseInt(relevanceScore),
+                        reason: reason,
+                        connectionType: selectedConnectionType
+                    })
+                });
+
+                if (response.ok) {
+                    alert(`✅ Connected ${selectedStoryteller.full_name} to ${selectedProject.name} as ${selectedConnectionType.replace('_', ' ')}`);
+                    
+                    // Clear selections
+                    selectedStoryteller = null;
+                    selectedProject = null;
+                    document.querySelectorAll('.storyteller-card, .project-card').forEach(card => card.classList.remove('selected'));
+                    updateTaggingControls();
+                    
+                    // Refresh insights
+                    if (selectedProject) {
+                        loadProjectInsights(selectedProject.id);
+                    }
+                } else {
+                    throw new Error('Failed to create connection');
+                }
+            } catch (error) {
+                console.error('Error creating connection:', error);
+                alert('❌ Failed to create connection');
+            }
+        }
+
+        async function loadProjectInsights(projectId) {
+            try {
+                const response = await fetch(`/api/projects/${projectId}/storytellers`);
+                const data = await response.json();
+                
+                const panel = document.getElementById('insights-panel');
+                const content = document.getElementById('insights-content');
+                
+                if (data.insights.totalStorytellers > 0) {
+                    content.innerHTML = `
+                        <div class="insights-grid">
+                            <div class="insight-card">
+                                <span class="insight-number">${data.insights.totalStorytellers}</span>
+                                <span class="insight-label">Storytellers</span>
+                            </div>
+                            <div class="insight-card">
+                                <span class="insight-number">${data.insights.totalStories}</span>
+                                <span class="insight-label">Stories</span>
+                            </div>
+                            <div class="insight-card">
+                                <span class="insight-number">${data.insights.locations.length}</span>
+                                <span class="insight-label">Locations</span>
+                            </div>
+                            <div class="insight-card">
+                                <span class="insight-number">${data.insights.communities.length}</span>
+                                <span class="insight-label">Communities</span>
+                            </div>
+                            <div class="insight-card">
+                                <span class="insight-number">${data.insights.mediaAssets.totalAssets}</span>
+                                <span class="insight-label">Media Assets</span>
+                            </div>
+                            <div class="insight-card">
+                                <span class="insight-number">${data.insights.quotes.length}</span>
+                                <span class="insight-label">Quotes</span>
+                            </div>
+                        </div>
+                        
+                        ${data.insights.quotes.length > 0 ? `
+                            <div class="quotes-section">
+                                <h3>💬 Community Voices</h3>
+                                ${data.insights.quotes.slice(0, 5).map(quote => `
+                                    <div class="quote-card">
+                                        ${quote.profile_image ? 
+                                            `<img src="${quote.profile_image}" alt="${quote.speaker}" class="quote-avatar">` :
+                                            `<div class="quote-avatar placeholder">${quote.speaker.split(' ').map(n => n[0]).join('').toUpperCase()}</div>`
+                                        }
+                                        <div class="quote-content">
+                                            <div class="quote-text">"${quote.text}"</div>
+                                            <div class="quote-attribution">
+                                                — ${quote.speaker}${quote.location ? `, ${quote.location}` : ''}
+                                                ${quote.community ? ` • ${quote.community}` : ''}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    `;
+                    panel.classList.remove('hidden');
+                } else {
+                    content.innerHTML = '<p>No storytellers connected to this project yet.</p>';
+                    panel.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error loading project insights:', error);
+            }
+        }
+
+        function updateStorytellerStats() {
+            const withMedia = allStorytellers.filter(s => 
+                s.profile_image_url || s.signature_quotes?.length > 0
+            ).length;
+            
+            document.getElementById('storytellers-count').textContent = `${allStorytellers.length} storytellers`;
+            document.getElementById('storytellers-with-media').textContent = `With media: ${withMedia}`;
+        }
+
+        function updateProjectStats() {
+            document.getElementById('projects-count').textContent = `${allProjects.length} projects`;
+        }
+
+        function populateFilters() {
+            const locations = [...new Set(allStorytellers.map(s => s.location).filter(Boolean))].sort();
+            const communities = [...new Set(allStorytellers.map(s => s.community_affiliation).filter(Boolean))].sort();
+            
+            const locationFilter = document.getElementById('location-filter');
+            const communityFilter = document.getElementById('community-filter');
+            
+            locations.forEach(location => {
+                locationFilter.innerHTML += `<option value="${location}">${location}</option>`;
+            });
+            
+            communities.forEach(community => {
+                communityFilter.innerHTML += `<option value="${community}">${community}</option>`;
+            });
+        }
+
+        function setupEventListeners() {
+            // Search functionality
+            document.getElementById('storyteller-search').addEventListener('input', filterStorytellers);
+            document.getElementById('location-filter').addEventListener('change', filterStorytellers);
+            document.getElementById('community-filter').addEventListener('change', filterStorytellers);
+            
+            document.getElementById('project-search').addEventListener('input', filterProjects);
+
+            // Connection type selection
+            document.querySelectorAll('.connection-type').forEach(type => {
+                type.addEventListener('click', () => {
+                    document.querySelectorAll('.connection-type').forEach(t => t.classList.remove('selected'));
+                    type.classList.add('selected');
+                    selectedConnectionType = type.dataset.type;
+                });
+            });
+
+            // Default selection
+            document.querySelector('.connection-type[data-type="community_member"]').classList.add('selected');
+
+            // Relevance slider
+            document.getElementById('relevance-slider').addEventListener('input', (e) => {
+                document.getElementById('relevance-value').textContent = e.target.value;
+            });
+
+            // Create connection button
+            document.getElementById('create-link-btn').addEventListener('click', createConnection);
+        }
+
+        function filterStorytellers() {
+            const searchQuery = document.getElementById('storyteller-search').value.toLowerCase();
+            const locationFilter = document.getElementById('location-filter').value;
+            const communityFilter = document.getElementById('community-filter').value;
+            
+            const filtered = allStorytellers.filter(storyteller => {
+                const matchesSearch = !searchQuery || 
+                    (storyteller.full_name || '').toLowerCase().includes(searchQuery) ||
+                    (storyteller.bio || '').toLowerCase().includes(searchQuery) ||
+                    (storyteller.community_affiliation || '').toLowerCase().includes(searchQuery);
+                
+                const matchesLocation = !locationFilter || storyteller.location === locationFilter;
+                const matchesCommunity = !communityFilter || storyteller.community_affiliation === communityFilter;
+                
+                return matchesSearch && matchesLocation && matchesCommunity;
+            });
+            
+            renderStorytellers(filtered);
+        }
+
+        function filterProjects() {
+            const query = document.getElementById('project-search').value.toLowerCase();
+            const filtered = allProjects.filter(project => 
+                (project.name || '').toLowerCase().includes(query) ||
+                (project.description || '').toLowerCase().includes(query) ||
+                (project.location || '').toLowerCase().includes(query)
+            );
+            renderProjects(filtered);
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initTaggingPage);
+    </script>
+</body>
+</html>

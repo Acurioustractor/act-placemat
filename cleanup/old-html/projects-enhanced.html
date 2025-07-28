@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACT Projects - Enhanced View</title>
+    <link rel="stylesheet" href="shared-styles.css">
+    <style>
+        .projects-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: var(--spacing-xl);
+            min-height: calc(100vh - var(--header-height));
+        }
+        
+        .projects-sidebar {
+            background: var(--white);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+            height: fit-content;
+            position: sticky;
+            top: calc(var(--header-height) + var(--spacing-lg));
+        }
+        
+        .project-filters {
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .filter-group {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .filter-label {
+            font-weight: var(--font-weight-semibold);
+            color: var(--primary-blue);
+            margin-bottom: var(--spacing-sm);
+            display: block;
+        }
+        
+        .filter-input {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius-md);
+            font-size: var(--font-size-md);
+        }
+        
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--secondary-blue);
+            box-shadow: 0 0 0 2px rgba(42, 82, 152, 0.2);
+        }
+        
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+        }
+        
+        .filter-tag {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background: var(--light-gray);
+            border-radius: var(--border-radius-sm);
+            font-size: var(--font-size-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-tag:hover,
+        .filter-tag.active {
+            background: var(--secondary-blue);
+            color: var(--white);
+        }
+        
+        .projects-main {
+            min-height: 100%;
+        }
+        
+        .projects-header {
+            background: var(--white);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .projects-grid {
+            display: grid;
+            gap: var(--spacing-xl);
+        }
+        
+        .project-card {
+            background: var(--white);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .project-header {
+            padding: var(--spacing-xl);
+            border-bottom: 1px solid var(--medium-gray);
+        }
+        
+        .project-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .project-title {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-semibold);
+            color: var(--primary-blue);
+            margin: 0;
+        }
+        
+        .project-status-badge {
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: var(--border-radius-sm);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+        }
+        
+        .status-active {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--accent-green);
+        }
+        
+        .status-planning {
+            background: rgba(255, 152, 0, 0.1);
+            color: var(--warning-orange);
+        }
+        
+        .status-completed {
+            background: rgba(30, 60, 114, 0.1);
+            color: var(--primary-blue);
+        }
+        
+        .project-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .project-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .meta-item {
+            text-align: center;
+        }
+        
+        .meta-value {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            color: var(--primary-blue);
+            display: block;
+        }
+        
+        .meta-label {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+        
+        .project-body {
+            padding: var(--spacing-xl);
+        }
+        
+        .ai-summary {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8f4f8 100%);
+            border-radius: var(--border-radius-md);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            border-left: 4px solid var(--secondary-blue);
+        }
+        
+        .ai-summary-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .ai-summary-title {
+            font-weight: var(--font-weight-semibold);
+            color: var(--primary-blue);
+            margin: 0;
+        }
+        
+        .ai-summary-content {
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        .relationships-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+        }
+        
+        .relationship-group {
+            background: var(--light-gray);
+            border-radius: var(--border-radius-md);
+            padding: var(--spacing-lg);
+        }
+        
+        .relationship-title {
+            font-weight: var(--font-weight-semibold);
+            color: var(--primary-blue);
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .relationship-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .relationship-item {
+            padding: var(--spacing-sm);
+            background: var(--white);
+            border-radius: var(--border-radius-sm);
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .relationship-item:hover {
+            background: var(--secondary-blue);
+            color: var(--white);
+        }
+        
+        .project-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--medium-gray);
+        }
+        
+        .expand-btn {
+            font-size: var(--font-size-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: var(--spacing-2xl);
+            color: var(--text-secondary);
+        }
+        
+        .error {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid var(--error-red);
+            border-radius: var(--border-radius-md);
+            padding: var(--spacing-lg);
+            color: var(--error-red);
+            text-align: center;
+        }
+        
+        /* Stories Integration Styles */
+        .stories-container {
+            background: var(--light-gray);
+            border-radius: var(--border-radius-md);
+            padding: var(--spacing-md);
+        }
+        
+        .loading-stories {
+            color: var(--text-secondary);
+            font-style: italic;
+            text-align: center;
+            padding: var(--spacing-sm);
+        }
+        
+        .stories-summary {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+        
+        .stories-metric {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: var(--white);
+            border-radius: var(--border-radius-sm);
+            padding: var(--spacing-sm);
+            min-width: 60px;
+        }
+        
+        .metric-number {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            color: var(--secondary-blue);
+            line-height: 1;
+        }
+        
+        .metric-label {
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
+            text-align: center;
+        }
+        
+        .stories-list {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .story-item {
+            background: var(--white);
+            border-radius: var(--border-radius-sm);
+            padding: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 3px solid var(--secondary-blue);
+        }
+        
+        .story-item:hover {
+            transform: translateX(2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .story-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .story-title {
+            font-weight: var(--font-weight-medium);
+            color: var(--primary-blue);
+            font-size: var(--font-size-sm);
+            line-height: 1.3;
+            flex: 1;
+        }
+        
+        .story-type {
+            font-size: var(--font-size-xs);
+            background: rgba(42, 82, 152, 0.1);
+            color: var(--secondary-blue);
+            padding: 2px var(--spacing-xs);
+            border-radius: var(--border-radius-sm);
+            white-space: nowrap;
+        }
+        
+        .story-summary {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            line-height: 1.4;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .story-storytellers {
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+            font-style: italic;
+        }
+        
+        .stories-more {
+            text-align: center;
+            padding-top: var(--spacing-sm);
+            border-top: 1px solid var(--medium-gray);
+        }
+        
+        .no-stories {
+            text-align: center;
+            padding: var(--spacing-lg);
+            color: var(--text-secondary);
+        }
+        
+        .no-stories span {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-style: italic;
+        }
+        
+        .stories-error {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid var(--error-red);
+            border-radius: var(--border-radius-sm);
+            padding: var(--spacing-sm);
+            text-align: center;
+            color: var(--error-red);
+        }
+        
+        .stories-error span {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+        }
+        
+        @media (max-width: 1024px) {
+            .projects-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .projects-sidebar {
+                position: static;
+                order: 2;
+            }
+            
+            .projects-main {
+                order: 1;
+            }
+            
+            .stories-summary {
+                justify-content: center;
+            }
+            
+            .story-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .story-type {
+                align-self: flex-end;
+            }
+        }
+    </style>
+    <script src="menu-bar.js"></script>
+</head>
+<body>
+    <div class="act-content">
+        <div class="projects-container">
+            <!-- Sidebar with filters -->
+            <aside class="projects-sidebar">
+                <div class="project-filters">
+                    <h3 style="margin-bottom: var(--spacing-lg); color: var(--primary-blue);">Filters</h3>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Search Projects</label>
+                        <input type="text" class="filter-input" id="search-input" placeholder="Search by name or description...">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Status</label>
+                        <div class="filter-tags" id="status-filters">
+                            <span class="filter-tag active" data-filter="all">All</span>
+                            <span class="filter-tag" data-filter="Active">Active</span>
+                            <span class="filter-tag" data-filter="Planning">Planning</span>
+                            <span class="filter-tag" data-filter="Completed">Completed</span>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Area</label>
+                        <div class="filter-tags" id="area-filters">
+                            <span class="filter-tag active" data-filter="all">All Areas</span>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Funding</label>
+                        <div class="filter-tags" id="funding-filters">
+                            <span class="filter-tag active" data-filter="all">All</span>
+                            <span class="filter-tag" data-filter="Funded">Funded</span>
+                            <span class="filter-tag" data-filter="Seeking">Seeking</span>
+                            <span class="filter-tag" data-filter="Applied">Applied</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="act-card" style="margin: 0; padding: var(--spacing-lg);">
+                    <h4 style="margin-bottom: var(--spacing-md); color: var(--primary-blue);">Quick Stats</h4>
+                    <div class="meta-item">
+                        <span class="meta-value" id="total-projects-count">-</span>
+                        <span class="meta-label">Total Projects</span>
+                    </div>
+                    <div class="meta-item" style="margin-top: var(--spacing-md);">
+                        <span class="meta-value" id="total-revenue">-</span>
+                        <span class="meta-label">Total Revenue</span>
+                    </div>
+                </div>
+            </aside>
+            
+            <!-- Main content area -->
+            <main class="projects-main">
+                <div class="projects-header">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md);">
+                        <h1 style="margin: 0;">🗺️ ACT Projects</h1>
+                        <button class="act-btn" onclick="refreshProjects()">🔄 Refresh</button>
+                    </div>
+                    <p style="color: var(--text-secondary); margin: 0;">
+                        Explore all ACT community projects with AI-powered insights and relationship mapping
+                    </p>
+                </div>
+                
+                <div id="projects-loading" class="loading hidden">
+                    <div class="act-loading"></div>
+                    <p>Loading projects with AI summaries...</p>
+                </div>
+                
+                <div id="projects-error" class="error" style="display: none;"></div>
+                
+                <div id="projects-container" class="projects-grid" style="display: none;"></div>
+            </main>
+        </div>
+    </div>
+
+    <script src="notion-mcp-enhanced.js"></script>
+    <script src="notion-real-data.js"></script>
+    <script src="airtable-stories-connector.js"></script>
+    <script>
+        let notion;
+        let allProjects = [];
+        let filteredProjects = [];
+        
+        // Initialize the enhanced projects page
+        async function initProjectsPage() {
+            notion = new NotionRealData();
+            window.storiesConnector = new AirtableStoriesConnector();
+            await loadProjectsData();
+            setupFilters();
+        }
+        
+        // Load projects data with enhanced information
+        async function loadProjectsData() {
+            try {
+                console.log('Loading enhanced projects data...');
+                const allData = await notion.fetchAllProjects();
+                
+                allProjects = allData.projects || [];
+                filteredProjects = [...allProjects];
+                
+                // Update quick stats
+                updateQuickStats(allData);
+                
+                // Populate filter options
+                populateFilterOptions();
+                
+                // Render projects
+                renderProjects();
+                
+                // Hide loading, show content
+                document.getElementById('projects-loading').style.display = 'none';
+                document.getElementById('projects-container').style.display = 'grid';
+                
+            } catch (error) {
+                console.error('Error loading projects:', error);
+                showError(error.message);
+            }
+        }
+        
+        // Update quick statistics
+        function updateQuickStats(data) {
+            document.getElementById('total-projects-count').textContent = data.summary?.totalProjects || data.projects.length;
+            document.getElementById('total-revenue').textContent = formatCurrency(
+                data.summary?.totalRevenue || data.projects.reduce((sum, p) => sum + (p.revenueActual || 0), 0)
+            );
+        }
+        
+        // Populate dynamic filter options
+        function populateFilterOptions() {
+            const areas = [...new Set(allProjects.map(p => p.area).filter(Boolean))];
+            const areaFilters = document.getElementById('area-filters');
+            
+            // Clear existing filters except "All"
+            const allAreaFilter = areaFilters.querySelector('[data-filter="all"]');
+            areaFilters.innerHTML = '';
+            areaFilters.appendChild(allAreaFilter);
+            
+            // Add area-specific filters
+            areas.forEach(area => {
+                const tag = document.createElement('span');
+                tag.className = 'filter-tag';
+                tag.setAttribute('data-filter', area);
+                tag.textContent = area;
+                areaFilters.appendChild(tag);
+            });
+        }
+        
+        // Render projects with enhanced cards
+        function renderProjects() {
+            const container = document.getElementById('projects-container');
+            
+            if (filteredProjects.length === 0) {
+                container.innerHTML = `
+                    <div class="act-card act-text-center" style="grid-column: 1 / -1;">
+                        <h3>No projects found</h3>
+                        <p>Try adjusting your filters or search terms.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = filteredProjects.map(project => `
+                <div class="project-card" onclick="expandProject('${project.id}')">
+                    <div class="project-header">
+                        <div class="project-title-row">
+                            <h2 class="project-title">${project.name || 'Untitled Project'}</h2>
+                            <span class="project-status-badge status-${(project.status || 'unknown').toLowerCase()}">
+                                ${project.status || 'Unknown'}
+                            </span>
+                        </div>
+                        
+                        <p class="project-description">
+                            ${project.description || 'No description available'}
+                        </p>
+                        
+                        <div class="project-meta">
+                            <div class="meta-item">
+                                <span class="meta-value">${project.area || 'General'}</span>
+                                <span class="meta-label">Area</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-value">${formatCurrency(project.revenueActual || 0)}</span>
+                                <span class="meta-label">Revenue</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-value">${project.funding || 'Unknown'}</span>
+                                <span class="meta-label">Funding</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-value">${(project.teamMembers || '').split(',').length || 0}</span>
+                                <span class="meta-label">Team Size</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="project-body">
+                        ${project.aiSummary ? `
+                            <div class="ai-summary">
+                                <div class="ai-summary-header">
+                                    <span>🤖</span>
+                                    <h4 class="ai-summary-title">AI Insights</h4>
+                                </div>
+                                <div class="ai-summary-content">
+                                    ${project.aiSummary}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="relationships-section">
+                            <div class="relationship-group">
+                                <h4 class="relationship-title">
+                                    <span>🎯</span>
+                                    <span>Opportunities</span>
+                                </h4>
+                                <ul class="relationship-list">
+                                    ${getRelatedItems(project.relatedOpportunities, 'opportunity')}
+                                </ul>
+                            </div>
+                            
+                            <div class="relationship-group">
+                                <h4 class="relationship-title">
+                                    <span>🏢</span>
+                                    <span>Partners</span>
+                                </h4>
+                                <ul class="relationship-list">
+                                    ${getRelatedItems(project.partnerOrganizations, 'organization')}
+                                </ul>
+                            </div>
+                            
+                            <div class="relationship-group">
+                                <h4 class="relationship-title">
+                                    <span>📖</span>
+                                    <span>Impact Stories</span>
+                                </h4>
+                                <div id="project-stories-${project.id}" class="stories-container">
+                                    <div class="loading-stories">Loading stories...</div>
+                                </div>
+                            </div>
+                            
+                            <div class="relationship-group">
+                                <h4 class="relationship-title">
+                                    <span>📋</span>
+                                    <span>Artifacts</span>
+                                </h4>
+                                <ul class="relationship-list">
+                                    ${getRelatedItems(project.projectArtifacts, 'artifact')}
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="project-actions">
+                            <button class="act-btn expand-btn" onclick="event.stopPropagation(); viewProjectDetails('${project.id}')">
+                                View Details
+                            </button>
+                            <button class="act-btn act-btn-secondary expand-btn" onclick="event.stopPropagation(); editProject('${project.id}')">
+                                Edit Project
+                            </button>
+                            ${project.websiteLinks ? `
+                                <a href="${project.websiteLinks}" target="_blank" class="act-btn act-btn-secondary expand-btn" onclick="event.stopPropagation()">
+                                    🔗 Website
+                                </a>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Load stories for each project
+            setTimeout(() => {
+                filteredProjects.forEach(project => {
+                    loadStoriesForProject(project);
+                });
+            }, 100);
+        }
+        
+        // Get related items (placeholder for when databases are connected)
+        function getRelatedItems(relationIds, type) {
+            if (!relationIds || relationIds.length === 0) {
+                return `<li class="relationship-item">No ${type}s linked yet</li>`;
+            }
+            
+            // For now, show count and IDs
+            return relationIds.map(id => 
+                `<li class="relationship-item" onclick="viewRelatedItem('${id}', '${type}')">${type.charAt(0).toUpperCase() + type.slice(1)} ${id.substring(0, 8)}...</li>`
+            ).join('');
+        }
+        
+        // Setup filter functionality
+        function setupFilters() {
+            // Search input
+            document.getElementById('search-input').addEventListener('input', applyFilters);
+            
+            // Filter tag clicks
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('filter-tag')) {
+                    const group = e.target.parentElement;
+                    const filterType = group.id.replace('-filters', '');
+                    
+                    // Toggle active state
+                    group.querySelectorAll('.filter-tag').forEach(tag => tag.classList.remove('active'));
+                    e.target.classList.add('active');
+                    
+                    applyFilters();
+                }
+            });
+        }
+        
+        // Apply all active filters
+        function applyFilters() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const statusFilter = document.querySelector('#status-filters .filter-tag.active').getAttribute('data-filter');
+            const areaFilter = document.querySelector('#area-filters .filter-tag.active').getAttribute('data-filter');
+            const fundingFilter = document.querySelector('#funding-filters .filter-tag.active').getAttribute('data-filter');
+            
+            filteredProjects = allProjects.filter(project => {
+                // Search filter
+                if (searchTerm && !project.name?.toLowerCase().includes(searchTerm) && 
+                    !project.description?.toLowerCase().includes(searchTerm)) {
+                    return false;
+                }
+                
+                // Status filter
+                if (statusFilter !== 'all' && project.status !== statusFilter) {
+                    return false;
+                }
+                
+                // Area filter
+                if (areaFilter !== 'all' && project.area !== areaFilter) {
+                    return false;
+                }
+                
+                // Funding filter
+                if (fundingFilter !== 'all' && project.funding !== fundingFilter) {
+                    return false;
+                }
+                
+                return true;
+            });
+            
+            renderProjects();
+        }
+        
+        // Utility functions
+        function formatCurrency(amount) {
+            if (!amount) return '$0';
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+        
+        function showError(message) {
+            document.getElementById('projects-loading').style.display = 'none';
+            document.getElementById('projects-error').style.display = 'block';
+            document.getElementById('projects-error').textContent = `Error loading projects: ${message}`;
+        }
+        
+        async function refreshProjects() {
+            document.getElementById('projects-loading').style.display = 'block';
+            document.getElementById('projects-container').style.display = 'none';
+            document.getElementById('projects-error').style.display = 'none';
+            
+            await loadProjectsData();
+        }
+        
+        // Project interaction functions (to be implemented)
+        function expandProject(projectId) {
+            console.log('Expanding project:', projectId);
+            // TODO: Open project detail modal or navigate to detail page
+        }
+        
+        function viewProjectDetails(projectId) {
+            console.log('Viewing project details:', projectId);
+            // TODO: Navigate to detailed project view
+        }
+        
+        function editProject(projectId) {
+            console.log('Editing project:', projectId);
+            // TODO: Open edit modal or navigate to edit page
+        }
+        
+        function viewRelatedItem(itemId, type) {
+            console.log('Viewing related item:', itemId, type);
+            // TODO: Navigate to related item (opportunity, organization, artifact)
+        }
+        
+        // Load stories for a specific project
+        async function loadStoriesForProject(project) {
+            const storiesContainer = document.getElementById(`project-stories-${project.id}`);
+            if (!storiesContainer) return;
+            
+            try {
+                console.log(`Loading stories for project: ${project.name}`);
+                const metrics = await window.storiesConnector.generateProjectStoryMetrics(project.name);
+                
+                if (metrics.totalStories > 0) {
+                    storiesContainer.innerHTML = `
+                        <div class="stories-summary">
+                            <div class="stories-metric">
+                                <span class="metric-number">${metrics.totalStories}</span>
+                                <span class="metric-label">Stories</span>
+                            </div>
+                            <div class="stories-metric">
+                                <span class="metric-number">${metrics.uniqueStorytellers}</span>
+                                <span class="metric-label">Storytellers</span>
+                            </div>
+                            <div class="stories-metric">
+                                <span class="metric-number">${metrics.contentBreakdown.withVideo}</span>
+                                <span class="metric-label">Videos</span>
+                            </div>
+                        </div>
+                        <div class="stories-list">
+                            ${metrics.stories.slice(0, 3).map(story => `
+                                <div class="story-item" onclick="viewStory('${story.id}')">
+                                    <div class="story-header">
+                                        <span class="story-title">${story.title}</span>
+                                        <span class="story-type">${story.storyType}</span>
+                                    </div>
+                                    <div class="story-summary">${story.summary.substring(0, 100)}${story.summary.length > 100 ? '...' : ''}</div>
+                                    ${story.storytellers && story.storytellers.length > 0 ? `
+                                        <div class="story-storytellers">
+                                            ${story.storytellers.map(st => st.name).join(', ')}
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                        ${metrics.totalStories > 3 ? `
+                            <div class="stories-more">
+                                <button class="act-btn act-btn-secondary" onclick="viewAllStories('${project.name}')">
+                                    View All ${metrics.totalStories} Stories
+                                </button>
+                            </div>
+                        ` : ''}
+                    `;
+                } else {
+                    storiesContainer.innerHTML = `
+                        <div class="no-stories">
+                            <span>No stories yet</span>
+                            <button class="act-btn act-btn-secondary" onclick="createStory('${project.name}')">
+                                + Add Story
+                            </button>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading stories for project:', error);
+                storiesContainer.innerHTML = `
+                    <div class="stories-error">
+                        <span>Unable to load stories</span>
+                        <button class="act-btn act-btn-secondary" onclick="loadStoriesForProject({id:'${project.id}', name:'${project.name}'})">
+                            Retry
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        // Story interaction functions
+        function viewStory(storyId) {
+            console.log('Viewing story:', storyId);
+            // TODO: Open story detail modal or navigate to story page
+        }
+        
+        function viewAllStories(projectName) {
+            console.log('Viewing all stories for:', projectName);
+            // TODO: Navigate to stories page filtered by project
+        }
+        
+        function createStory(projectName) {
+            console.log('Creating story for:', projectName);
+            // TODO: Open story creation form
+        }
+        
+        // Initialize page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initProjectsPage);
+    </script>
+</body>
+</html>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACT Placemat - Navigation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: #1e3c72;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 18px;
+        }
+
+        .navigation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .nav-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            border: 2px solid transparent;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            border-color: #2a5298;
+        }
+
+        .nav-icon {
+            font-size: 36px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .nav-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e3c72;
+            margin-bottom: 8px;
+        }
+
+        .nav-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .tools-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .tools-title {
+            font-size: 22px;
+            color: #1e3c72;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .tool-button {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .tool-button:hover {
+            background: #2a5298;
+            color: white;
+            border-color: #2a5298;
+        }
+
+        .status-section {
+            background: #e8f4f8;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .status-indicator.active {
+            background: #4caf50;
+        }
+
+        .status-indicator.pending {
+            background: #ff9800;
+        }
+
+        .status-indicator.error {
+            background: #f44336;
+        }
+
+        .quick-actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .action-button {
+            background: #2a5298;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.2s ease;
+        }
+
+        .action-button:hover {
+            background: #1e3c72;
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #2a5298;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🌱</div>
+            <h1>ACT Placemat Navigation</h1>
+            <p class="subtitle">Central hub for all ACT ecosystem tools</p>
+        </div>
+
+        <div class="status-section">
+            <h3 style="margin-bottom: 15px; color: #1e3c72;">System Status</h3>
+            <div class="status-item">
+                <span class="status-indicator active"></span>
+                <span>Server Running</span>
+            </div>
+            <div class="status-item">
+                <span class="status-indicator active" id="notion-status"></span>
+                <span>Notion Integration</span>
+            </div>
+            <div class="status-item">
+                <span class="status-indicator pending" id="db-status"></span>
+                <span id="db-status-text">Databases: Projects only (4 pending)</span>
+            </div>
+        </div>
+
+        <div class="navigation-grid">
+            <a href="/" class="nav-card">
+                <span class="nav-icon">🗺️</span>
+                <div class="nav-title">Projects Visualization</div>
+                <div class="nav-description">Interactive map of all ACT projects with filters and insights</div>
+            </a>
+
+            <a href="/daily-dashboard.html" class="nav-card">
+                <span class="nav-icon">📊</span>
+                <div class="nav-title">Daily Dashboard</div>
+                <div class="nav-description">Real-time metrics, alerts, and pipeline overview</div>
+            </a>
+
+            <a href="/opportunities" class="nav-card">
+                <span class="nav-icon">🎯</span>
+                <div class="nav-title">Opportunities Pipeline</div>
+                <div class="nav-description">Track and manage funding opportunities</div>
+            </a>
+
+            <a href="/index-simple.html" class="nav-card">
+                <span class="nav-icon">🎨</span>
+                <div class="nav-title">Simple Visualization</div>
+                <div class="nav-description">Lightweight version of the projects map</div>
+            </a>
+        </div>
+
+        <div class="tools-section">
+            <h3 class="tools-title">
+                <span>🛠️</span>
+                <span>Quick Tools</span>
+            </h3>
+            <div class="tools-grid">
+                <button class="tool-button" onclick="runOpportunityAlerts()">
+                    🔔 Run Opportunity Alerts
+                </button>
+                <button class="tool-button" onclick="generateWeeklyEmail()">
+                    📧 Generate Weekly Email
+                </button>
+                <button class="tool-button" onclick="runSystemTest()">
+                    🧪 Run System Test
+                </button>
+                <button class="tool-button" onclick="refreshData()">
+                    🔄 Refresh All Data
+                </button>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <button class="action-button" onclick="window.open('/api/health', '_blank')">
+                💚 Check API Health
+            </button>
+            <button class="action-button" onclick="viewDocs()">
+                📚 View Documentation
+            </button>
+        </div>
+
+        <div class="footer">
+            <p>ACT Placemat v1.0.0 | <a href="/QUICKSTART.md">Quick Start Guide</a> | <a href="/ACT_ECOSYSTEM_ROADMAP.md">Roadmap</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Check system status
+        async function checkStatus() {
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                
+                if (data.status === 'ok') {
+                    document.getElementById('notion-status').classList.add('active');
+                    
+                    if (data.notion_token === 'configured' && data.notion_database === 'configured') {
+                        document.getElementById('db-status').classList.remove('pending');
+                        document.getElementById('db-status').classList.add('active');
+                        document.getElementById('db-status-text').textContent = 'Databases: Connected';
+                    }
+                }
+            } catch (error) {
+                document.getElementById('notion-status').classList.add('error');
+                document.getElementById('db-status').classList.add('error');
+            }
+        }
+
+        // Tool functions
+        function runOpportunityAlerts() {
+            alert('Opportunity alerts will be implemented via command line:\nnode automations/opportunity-alerts.js');
+        }
+
+        function generateWeeklyEmail() {
+            alert('Weekly email generation will be implemented via command line:\nnode automations/weekly-action-email.js');
+        }
+
+        function runSystemTest() {
+            alert('System test will be implemented via command line:\nnode test-complete-system.js');
+        }
+
+        function refreshData() {
+            if (confirm('Refresh all data from Notion?')) {
+                window.location.reload();
+            }
+        }
+
+        function viewDocs() {
+            // Try to open local markdown files
+            window.open('/QUICKSTART.md', '_blank');
+        }
+
+        // Check status on load
+        checkStatus();
+        
+        // Refresh status every 30 seconds
+        setInterval(checkStatus, 30000);
+    </script>
+</body>
+</html>

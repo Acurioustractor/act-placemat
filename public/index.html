@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ACT Community Placemat - Explore projects across our five community areas">
+  <meta name="theme-color" content="#667eea">
+  <title>ACT Placemat</title>
+  
+  <!-- Preload critical assets -->
+  <link rel="preload" href="/css/app.css" as="style">
+  <link rel="preload" href="/js/app.js" as="script">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="stylesheet" href="/css/components/area-selector.css">
+  <link rel="stylesheet" href="/css/components/project-display.css">
+  <link rel="stylesheet" href="/css/components/project-modal.css">
+  <link rel="stylesheet" href="/css/components/filter-panel.css">
+  <link rel="stylesheet" href="/css/components/notification-system.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  
+  <!-- Mobile Web App -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ACT Placemat">
+</head>
+<body>
+  <div class="header">
+    <h1>🚀 ACT Community Placemat</h1>
+    <p>Explore projects across our five community areas</p>
+  </div>
+  
+  <div class="nav">
+    <a href="/" class="active">Projects</a>
+    <a href="/opportunities">Opportunities</a>
+    <a href="/organizations">Organizations</a>
+  </div>
+  
+  <div class="container">
+    <div id="refreshButtonContainer" class="refresh-button-container"></div>
+    
+    <div class="section">
+      <h2>Project Areas</h2>
+      <div id="areaSelectorContainer"></div>
+    </div>
+    
+    <div class="section">
+      <div id="filterPanelContainer"></div>
+      <h2>Projects</h2>
+      <div id="projectsContainer"></div>
+    </div>
+  </div>
+  
+  <!-- Notion MCP Integration -->
+  <script src="/notion-mcp.js"></script>
+  <script src="/notion-integration.js"></script>
+  
+  <!-- Utilities -->
+  <script src="/js/utils/performance.js"></script>
+  
+  <!-- Components -->
+  <script src="/js/components/AreaSelector.js"></script>
+  <script src="/js/components/ProjectDisplay.js"></script>
+  <script src="/js/components/ProjectModal.js"></script>
+  <script src="/js/components/FilterPanel.js"></script>
+  <script src="/js/components/NotificationSystem.js"></script>
+  
+  <!-- Main App -->
+  <script src="/js/app.js"></script>
+</body>
+</html>
