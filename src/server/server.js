@@ -66,8 +66,22 @@ app.use((req, res, next) => {
     next();
 });
 
-// Serve static files
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, '../../public')));
+
+// Add CSP headers for external resources
+app.use((req, res, next) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; " +
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com; " +
+    "style-src 'self' 'unsafe-inline' https://unpkg.com; " +
+    "img-src 'self' data: https: http:; " +
+    "font-src 'self' https:; " +
+    "connect-src 'self' https: http:;"
+  );
+  next();
+});
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -349,7 +363,7 @@ app.get('/api/debug/database-schemas', async (req, res) => {
 
 // Serve index.html for root route
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/index.html'));
+    res.sendFile(path.join(__dirname, '../../public/index.html'));
 });
 
 // Start server
