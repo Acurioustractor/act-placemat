@@ -2,6 +2,19 @@
 
 A real-time dashboard for visualizing and managing community projects with Notion database integration, built on the Empathy Ledger foundation for ethical storytelling and community impact tracking.
 
+## 🌟 Branch Strategy
+
+### 📋 Current Branches:
+- **`main`** - Original stable version 
+- **`production-ready`** - Enhanced production deployment (✅ All TypeScript errors fixed)
+- **`testing`** - Active development and feature testing branch
+
+### 🚀 Workflow:
+1. **New Features** → Develop in `testing` branch
+2. **Testing & Validation** → Test in `testing` environment  
+3. **Stable Features** → Merge to `production-ready`
+4. **Production Deploy** → Deploy from `production-ready`
+
 ## 📚 Documentation
 
 **📖 [Complete Documentation](./Docs/README.md)** - Comprehensive project documentation organized by category
