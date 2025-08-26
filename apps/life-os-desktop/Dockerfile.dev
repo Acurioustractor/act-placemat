@@ -1,0 +1,91 @@
+# Life OS Desktop Development Environment
+# Electron v28+ with Beautiful Obsolescence for Community Control
+
+FROM node:20 AS base
+WORKDIR /app
+
+# Australian timezone and locale
+ENV TZ=Australia/Sydney
+ENV LOCALE=en-AU
+ENV NODE_ENV=development
+ENV DISPLAY=:99
+
+# Install system dependencies for Electron and GUI
+RUN apt-get update && apt-get install -y \
+    libgtk-3-0 \
+    libgconf-2-4 \
+    libxtst6 \
+    libxrandr2 \
+    libasound2 \
+    libpangocairo-1.0-0 \
+    libatk1.0-0 \
+    libcairo-gobject2 \
+    libgtk-3-0 \
+    libdrm2 \
+    libxss1 \
+    libgconf-2-4 \
+    libxtst6 \
+    libatspi2.0-0 \
+    libdrm2 \
+    libgtk-3-0 \
+    libnss3 \
+    xvfb \
+    x11vnc \
+    fluxbox \
+    wget \
+    unzip \
+    tzdata \
+    curl \
+    && ln -fs /usr/share/zoneinfo/Australia/Sydney /etc/localtime \
+    && echo "Australia/Sydney" > /etc/timezone \
+    && dpkg-reconfigure -f noninteractive tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Security: Create non-root user
+RUN groupadd --gid 1001 electron \
+    && useradd --uid 1001 --gid electron --shell /bin/bash --create-home electron
+
+# Copy package files
+COPY --chown=electron:electron package*.json ./
+COPY --chown=electron:electron apps/life-os-desktop/package*.json ./apps/life-os-desktop/
+
+# Copy shared packages
+COPY --chown=electron:electron packages/types packages/types/
+COPY --chown=electron:electron packages/utils packages/utils/
+COPY --chown=electron:electron packages/shared packages/shared/
+
+# Install dependencies
+WORKDIR /app/apps/life-os-desktop
+RUN npm ci --legacy-peer-deps
+
+# Copy application source
+COPY --chown=electron:electron apps/life-os-desktop ./
+
+# Build shared packages
+WORKDIR /app
+RUN npm run build --workspace=packages/types || echo "Building types..."
+RUN npm run build --workspace=packages/utils || echo "Building utils..."
+
+# Switch to app directory
+WORKDIR /app/apps/life-os-desktop
+
+# Security: Set proper permissions
+RUN chown -R electron:electron /app \
+    && chmod -R 755 /app
+
+# Switch to non-root user
+USER electron
+
+# Set up X11 forwarding for GUI
+ENV DISPLAY=:99
+
+# Beautiful Obsolescence Metadata
+LABEL org.opencontainers.image.title="ACT Life OS Desktop Dev" \
+      org.opencontainers.image.description="Beautiful Obsolescence - Life Operating System Desktop Development" \
+      org.opencontainers.image.vendor="A Curious Tractor" \
+      data-residency="Australia" \
+      beautiful-obsolescence="true" \
+      community-control="enabled"
+
+# Start X11 and Electron app
+CMD ["bash", "-c", "Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 & sleep 2 && npm run dev"]

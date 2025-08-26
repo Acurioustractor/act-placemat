@@ -1,0 +1,80 @@
+# Life OS Mobile Development Environment
+# React Native with Expo SDK 50+ for Beautiful Obsolescence
+
+FROM node:20-alpine AS base
+WORKDIR /app
+
+# Australian timezone and locale
+ENV TZ=Australia/Sydney
+ENV LOCALE=en-AU
+ENV NODE_ENV=development
+
+# Install system dependencies for React Native
+RUN apk add --no-cache \
+    git \
+    bash \
+    curl \
+    python3 \
+    make \
+    g++ \
+    openjdk11-jre \
+    android-tools \
+    tzdata \
+    && cp /usr/share/zoneinfo/Australia/Sydney /etc/localtime \
+    && echo "Australia/Sydney" > /etc/timezone
+
+# Install global dependencies
+RUN npm install -g @expo/cli@latest eas-cli@latest
+
+# Security: Create non-root user
+RUN addgroup --system --gid 1001 reactnative \
+    && adduser --system --uid 1001 --ingroup reactnative reactnative
+
+# Copy package files
+COPY --chown=reactnative:reactnative package*.json ./
+COPY --chown=reactnative:reactnative apps/life-os-mobile/package*.json ./apps/life-os-mobile/
+
+# Copy shared packages
+COPY --chown=reactnative:reactnative packages/types packages/types/
+COPY --chown=reactnative:reactnative packages/utils packages/utils/
+COPY --chown=reactnative:reactnative packages/shared packages/shared/
+
+# Install dependencies
+WORKDIR /app/apps/life-os-mobile
+RUN npm ci --legacy-peer-deps
+
+# Copy application source
+COPY --chown=reactnative:reactnative apps/life-os-mobile ./
+
+# Build shared packages
+WORKDIR /app
+RUN npm run build --workspace=packages/types || echo "Building types..."
+RUN npm run build --workspace=packages/utils || echo "Building utils..."
+
+# Switch to app directory
+WORKDIR /app/apps/life-os-mobile
+
+# Security: Set proper permissions
+RUN chown -R reactnative:reactnative /app \
+    && chmod -R 755 /app
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8081/status || exit 1
+
+# Switch to non-root user
+USER reactnative
+
+# Expose Metro bundler port
+EXPOSE 8081
+
+# Beautiful Obsolescence Metadata
+LABEL org.opencontainers.image.title="ACT Life OS Mobile Dev" \
+      org.opencontainers.image.description="Beautiful Obsolescence - Life Operating System Mobile Development" \
+      org.opencontainers.image.vendor="A Curious Tractor" \
+      data-residency="Australia" \
+      beautiful-obsolescence="true" \
+      community-control="enabled"
+
+# Start Expo development server
+CMD ["npx", "expo", "start", "--dev-client", "--host", "0.0.0.0", "--port", "8081"]
