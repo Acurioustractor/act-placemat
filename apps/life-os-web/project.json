@@ -1,0 +1,56 @@
+{
+  "name": "life-os-web",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/life-os-web",
+  "projectType": "application",
+  "tags": ["app", "life-os", "web"],
+  "// targets": "to see all targets run: nx show project life-os-web --web",
+  "targets": {
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{projectRoot}/.next"],
+      "defaultConfiguration": "production",
+      "options": {
+        "root": "apps/life-os-web"
+      },
+      "configurations": {
+        "development": {
+          "outputPath": "dist/apps/life-os-web"
+        },
+        "production": {
+          "outputPath": "dist/apps/life-os-web"
+        }
+      },
+      "dependsOn": [
+        {
+          "projects": ["@act/types", "@act/utils", "@act/shared"],
+          "target": "build"
+        }
+      ]
+    },
+    "serve": {
+      "executor": "@nx/next:dev",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "life-os-web:build",
+        "dev": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "life-os-web:build:development",
+          "dev": true
+        },
+        "production": {
+          "buildTarget": "life-os-web:build:production",
+          "dev": false
+        }
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit"
+      }
+    }
+  }
+}
