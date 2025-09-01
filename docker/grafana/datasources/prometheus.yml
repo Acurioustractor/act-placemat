@@ -1,0 +1,106 @@
+# Grafana Datasources Configuration for ACT Placemat Intelligence Hub
+# Australian-compliant monitoring dashboards
+
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true
+    basicAuth: false
+    withCredentials: false
+    jsonData:
+      httpMethod: GET
+      timeInterval: "15s"
+      queryTimeout: "60s"
+      tlsSkipVerify: false
+      customQueryParameters: ""
+      # Australian compliance metadata
+      customHttpHeaders:
+        X-Data-Residency: Australia
+        X-Compliance-Framework: Australian-Privacy-Act
+        X-Monitoring-Source: ACT-Placemat-Intelligence-Hub
+        X-Timezone: Australia/Sydney
+    
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    editable: true
+    basicAuth: false
+    withCredentials: false
+    jsonData:
+      httpMethod: GET
+      maxLines: 1000
+      timeout: 60
+      # Australian compliance
+      customHttpHeaders:
+        X-Data-Residency: Australia
+        X-Log-Classification: Internal
+        X-Privacy-Protected: true
+
+  - name: Intelligence Hub Database
+    type: postgres
+    access: proxy
+    url: postgres:5432
+    database: act_placemat_intelligence
+    user: prometheus_reader
+    editable: true
+    basicAuth: false
+    withCredentials: false
+    secureJsonData:
+      password: ${POSTGRES_PROMETHEUS_PASSWORD}
+    jsonData:
+      sslmode: disable
+      postgresVersion: 1600
+      timescaledb: false
+      # Australian compliance
+      customHttpHeaders:
+        X-Data-Source: Australian-Database
+        X-Privacy-Compliant: true
+
+  - name: Redis Metrics
+    type: redis-datasource
+    access: proxy
+    url: redis:6379
+    editable: true
+    basicAuth: false
+    withCredentials: false
+    secureJsonData:
+      password: ${REDIS_PASSWORD}
+    jsonData:
+      client: standalone
+      poolSize: 5
+      timeout: 10
+      pingInterval: 0
+      pipelineWindow: 0
+      # Australian compliance
+      customHttpHeaders:
+        X-Cache-Location: Australia
+        X-Task-Queue-Compliance: Verified
+
+  - name: Australian Compliance Metrics
+    type: prometheus
+    access: proxy
+    url: http://intelligence-hub:3002/api/metrics/compliance
+    editable: true
+    basicAuth: false
+    withCredentials: false
+    jsonData:
+      httpMethod: GET
+      timeInterval: "60s"
+      queryTimeout: "30s"
+      # Compliance-specific configuration
+      customHttpHeaders:
+        X-Metrics-Type: Compliance-Monitoring
+        X-Privacy-Act-Compliant: true
+        X-Data-Sovereignty: Australia
+        X-Community-Governance: Enabled
+
+# Delete unused datasources
+deleteDatasources:
+  - name: TestData DB
+    orgId: 1

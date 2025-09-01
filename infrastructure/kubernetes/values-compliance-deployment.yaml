@@ -1,0 +1,474 @@
+# ACT Values Compliance Service - Kubernetes Deployment
+# Shared Kernel for Community Empowerment - Maximum Priority
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: values-compliance
+  namespace: act-community-platform
+  labels:
+    app: values-compliance
+    act.service: values-compliance
+    act.role: shared-kernel
+    act.community-control: enforcer
+    act.indigenous-sovereignty: protected
+    act.anti-extraction: enabled
+    act.beautiful-obsolescence: 2027
+    version: v1
+  annotations:
+    act.platform/description: "Real-time values compliance enforcement for community empowerment"
+    act.platform/mission: "Ensure every system interaction honors community values"
+    act.platform/priority: "maximum - community protection depends on this service"
+spec:
+  replicas: 3  # High availability for community protection
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: values-compliance
+      act.service: values-compliance
+  template:
+    metadata:
+      labels:
+        app: values-compliance
+        act.service: values-compliance
+        act.role: shared-kernel
+        act.community-control: enforcer
+        act.indigenous-sovereignty: protected
+        act.anti-extraction: enabled
+        version: v1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3001"
+        prometheus.io/path: "/metrics"
+        act.platform/values-enforcement: "strict"
+        act.platform/community-priority: "maximum"
+    spec:
+      serviceAccountName: act-community-service-account
+      priorityClassName: act-values-compliance-critical  # Highest priority
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+      
+      # Anti-Affinity to ensure distribution across nodes for community resilience
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - values-compliance
+              topologyKey: kubernetes.io/hostname
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: act.platform/data-residency
+                operator: In
+                values:
+                - australia
+              - key: act.platform/community-control
+                operator: In
+                values:
+                - enabled
+      
+      containers:
+      - name: values-compliance
+        image: act-platform/values-compliance:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3001
+          name: http
+          protocol: TCP
+        - containerPort: 8080
+          name: health
+          protocol: TCP
+        - containerPort: 9090
+          name: metrics
+          protocol: TCP
+        
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3001"
+        - name: HEALTH_CHECK_PORT
+          value: "8080"
+        - name: METRICS_PORT
+          value: "9090"
+        
+        # Australian Compliance Environment
+        - name: TZ
+          value: "Australia/Sydney"
+        - name: LOCALE
+          value: "en-AU"
+        - name: DATA_RESIDENCY
+          value: "Australia"
+        - name: CURRENCY
+          value: "AUD"
+        
+        # Database Configuration
+        - name: POSTGRES_HOST
+          value: "postgres-service"
+        - name: POSTGRES_PORT
+          value: "5432"
+        - name: POSTGRES_DB
+          value: "act_values_compliance"
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: password
+        
+        # Values Enforcement Configuration
+        - name: COMMUNITY_CONTROL_MINIMUM
+          value: "40"
+        - name: BEAUTIFUL_OBSOLESCENCE_TARGET
+          value: "2027"
+        - name: VALUES_ENFORCEMENT
+          value: "strict"
+        - name: SYSTEM_HALT_ON_CRITICAL_VIOLATIONS
+          value: "true"
+        - name: COMMUNITY_NOTIFICATION_REQUIRED
+          value: "true"
+        - name: INDIGENOUS_ADVISORY_APPROVAL_REQUIRED
+          value: "true"
+        
+        # External API Configuration
+        - name: INDIGENOUS_ADVISORY_API_URL
+          valueFrom:
+            secretKeyRef:
+              name: external-api-secrets
+              key: indigenous-advisory-url
+        - name: BLOCKCHAIN_API_URL
+          valueFrom:
+            secretKeyRef:
+              name: external-api-secrets
+              key: blockchain-url
+        - name: COMMUNITY_NOTIFICATION_API_URL
+          valueFrom:
+            secretKeyRef:
+              name: external-api-secrets
+              key: community-notification-url
+        
+        # Security Configuration
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: jwt-secret
+              key: secret
+        - name: ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: encryption-secret
+              key: key
+        
+        # Resource Limits for Community Protection
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        
+        # Health Checks - Critical for Community Protection
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: health
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: health
+            scheme: HTTP
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+        
+        startupProbe:
+          httpGet:
+            path: /startup
+            port: health
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 10
+        
+        # Security Context - Maximum Protection
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1001
+          runAsGroup: 1001
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+        
+        # Volume Mounts
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: var-run
+          mountPath: /var/run
+        - name: values-compliance-config
+          mountPath: /app/config
+          readOnly: true
+        - name: values-compliance-logs
+          mountPath: /app/logs
+        - name: indigenous-protocols
+          mountPath: /app/protocols
+          readOnly: true
+        
+        # Environment-specific configuration
+        envFrom:
+        - configMapRef:
+            name: values-compliance-config
+        - secretRef:
+            name: values-compliance-secrets
+      
+      # Init Container for Database Migration
+      initContainers:
+      - name: migrate-database
+        image: migrate/migrate:latest
+        command:
+        - migrate
+        - -path=/migrations
+        - -database=postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):5432/$(POSTGRES_DB)?sslmode=require
+        - up
+        env:
+        - name: POSTGRES_HOST
+          value: "postgres-service"
+        - name: POSTGRES_DB
+          value: "act_values_compliance"
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: password
+        volumeMounts:
+        - name: database-migrations
+          mountPath: /migrations
+          readOnly: true
+      
+      # Volumes
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: var-run
+        emptyDir: {}
+      - name: values-compliance-config
+        configMap:
+          name: values-compliance-config
+      - name: values-compliance-logs
+        persistentVolumeClaim:
+          claimName: values-compliance-logs-pvc
+      - name: indigenous-protocols
+        configMap:
+          name: indigenous-protocols-config
+      - name: database-migrations
+        configMap:
+          name: values-compliance-migrations
+      
+      # Node Selection for Australian Data Residency
+      nodeSelector:
+        act.platform/data-residency: australia
+        act.platform/community-control: enabled
+      
+      # Tolerations for Community-Critical Workloads
+      tolerations:
+      - key: "act.platform/community-critical"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+      
+      # DNS Configuration for Australian Services
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        options:
+        - name: ndots
+          value: "2"
+        searches:
+        - act-community-platform.svc.cluster.local
+        - svc.cluster.local
+        - cluster.local
+      
+      # Termination Grace Period for Graceful Community Notifications
+      terminationGracePeriodSeconds: 60
+      
+      # Restart Policy
+      restartPolicy: Always
+---
+# Values Compliance Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: values-compliance-service
+  namespace: act-community-platform
+  labels:
+    app: values-compliance
+    act.service: values-compliance
+    act.role: shared-kernel
+    act.community-control: enforcer
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "3001"
+    act.platform/critical-service: "true"
+spec:
+  type: ClusterIP  # Internal service - not directly exposed
+  ports:
+  - name: http
+    port: 3001
+    targetPort: http
+    protocol: TCP
+  - name: health
+    port: 8080
+    targetPort: health
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: metrics
+    protocol: TCP
+  selector:
+    app: values-compliance
+    act.service: values-compliance
+  sessionAffinity: None
+---
+# Values Compliance Horizontal Pod Autoscaler
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: values-compliance-hpa
+  namespace: act-community-platform
+  labels:
+    app: values-compliance
+    component: autoscaling
+    act.community-control: enabled
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: values-compliance
+  minReplicas: 3  # Always maintain minimum for community protection
+  maxReplicas: 10 # Scale up during high community activity
+  
+  metrics:
+  # CPU-based scaling
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  
+  # Memory-based scaling
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  
+  # Community control requests per second
+  - type: Pods
+    pods:
+      metric:
+        name: values_compliance_requests_per_second
+      target:
+        type: AverageValue
+        averageValue: "100"
+  
+  # Scale up quickly for community protection
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 60
+      - type: Pods
+        value: 2
+        periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300  # Wait longer before scaling down
+      policies:
+      - type: Percent
+        value: 25
+        periodSeconds: 60
+---
+# Values Compliance Pod Disruption Budget
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: values-compliance-pdb
+  namespace: act-community-platform
+  labels:
+    app: values-compliance
+    act.community-protection: critical
+spec:
+  minAvailable: 2  # Always maintain at least 2 pods for community protection
+  selector:
+    matchLabels:
+      app: values-compliance
+      act.service: values-compliance
+---
+# Values Compliance Service Monitor for Prometheus
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: values-compliance-monitor
+  namespace: act-community-platform
+  labels:
+    app: values-compliance
+    component: monitoring
+    act.community-transparency: enabled
+spec:
+  selector:
+    matchLabels:
+      app: values-compliance
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+    honorLabels: true
+  - port: http
+    interval: 60s
+    path: /api/values-compliance/status
+    honorLabels: true
+  namespaceSelector:
+    matchNames:
+    - act-community-platform

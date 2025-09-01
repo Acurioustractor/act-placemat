@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Test - ACT Platform</title>
+    <style>
+        /* Import our CSS directly */
+        @import url('./src/styles/main.css');
+        
+        body {
+            font-family: var(--theme-font-body, 'Inter', sans-serif);
+            background: var(--color-background, #fafafa);
+            color: var(--color-text-primary, #1a1a1a);
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        
+        .test-card {
+            background: var(--color-surface, white);
+            padding: var(--theme-component-padding, 1rem);
+            border-radius: var(--theme-component-radius, 0.5rem);
+            box-shadow: var(--theme-component-shadow, 0 2px 4px rgba(0,0,0,0.1));
+            border: var(--theme-component-border, 1px solid #e5e7eb);
+            margin-bottom: 2rem;
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            background: var(--color-primary, #059669);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body data-theme="public">
+    <button class="theme-toggle" onclick="toggleTheme()">
+        Switch Theme
+    </button>
+    
+    <div class="test-card">
+        <h1>CSS System Test</h1>
+        <p>This is testing if our CSS variables are working. If you see styled content, the CSS is loading.</p>
+        
+        <h2>Typography Test</h2>
+        <p>This paragraph should use theme-aware typography. In public theme it should be more elegant, in internal theme more functional.</p>
+        
+        <blockquote>
+            This blockquote should change styling between themes significantly.
+        </blockquote>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 2rem 0;">
+            <div class="test-card">
+                <h4>Primary Color</h4>
+                <div style="background: var(--color-primary); height: 50px; border-radius: 0.25rem; margin-top: 0.5rem;"></div>
+            </div>
+            <div class="test-card">
+                <h4>Secondary Color</h4>
+                <div style="background: var(--color-secondary); height: 50px; border-radius: 0.25rem; margin-top: 0.5rem;"></div>
+            </div>
+            <div class="test-card">
+                <h4>Accent Color</h4>
+                <div style="background: var(--color-accent); height: 50px; border-radius: 0.25rem; margin-top: 0.5rem;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const button = document.querySelector('.theme-toggle');
+            const isPublic = body.getAttribute('data-theme') === 'public';
+            
+            if (isPublic) {
+                body.setAttribute('data-theme', 'internal');
+                button.textContent = 'Switch to Public';
+            } else {
+                body.setAttribute('data-theme', 'public');
+                button.textContent = 'Switch to Internal';
+            }
+        }
+    </script>
+</body>
+</html>

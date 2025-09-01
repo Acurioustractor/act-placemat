@@ -1,0 +1,9 @@
+{
+  "name": "life-os-mobile",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/life-os-mobile/src",
+  "projectType": "application",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project life-os-mobile --web",
+  "targets": {}
+}

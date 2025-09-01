@@ -1,0 +1,57 @@
+# ACT Platform: Product Requirements Document
+## The World's First Community-Owned Impact Platform
+
+### Project Overview
+A Curious Tractor is building the world's first community-owned impact platform that makes extractive systems obsolete by giving communities superior technology, intelligence, and ownership of their own data and stories.
+
+### Core Mission
+Transform global community power through revolutionary technology that serves community ownership rather than institutional convenience. Build toward "Beautiful Obsolescence" where communities no longer need ACT because they have complete control of their own platforms and futures.
+
+### Key Features Required
+
+#### Phase 1: Production Data Foundation
+- Production-grade Supabase database with automated backups and row-level security
+- Stabilized API endpoints handling production load with proper error handling
+- Community authentication system with permission levels (Community, Partner, Admin)
+- Real-time data synchronization between Notion, Supabase, Xero, and other data sources
+- Automated retry logic and health monitoring for all external API integrations
+
+#### Phase 2: Community Interface
+- Real-time community dashboard showing project status, revenue tracking, and partnership health
+- Story management system with consent tracking, AI-powered categorization, and dynamic permissions
+- Beautiful project showcase pages with authentic media galleries and impact metrics
+- Impact visualization engine with revenue flow tracking and network effect mapping
+- Export tools for community-controlled impact reporting
+
+#### Phase 3: Intelligence Layer
+- Community Intelligence API analyzing project success patterns and identifying opportunities
+- Relationship Intelligence mapping community connections and collaboration potential
+- Financial Intelligence with revenue forecasting and grant opportunity matching using AI
+- Story Intelligence for community voice amplification and evidence generation for advocacy
+- All AI serves community power, not institutional convenience
+
+#### Phase 4: Community Ownership
+- Community data control tools enabling complete data export and platform forking
+- Beautiful Obsolescence features tracking community capacity for independence
+- Global network platform connecting communities worldwide without ACT control
+- Mobile React Native app for community member access with offline capabilities
+- Revenue sharing automation with blockchain-ready benefit distribution
+
+### Technical Requirements
+- Real data only - no fake demos or placeholder content
+- Always-live APIs with 99.9% uptime and proper monitoring
+- Production-ready code with automated testing and deployment
+- Community-first design respecting Indigenous data sovereignty
+- Open-source foundation enabling community forking and independence
+
+### Success Metrics
+- Communities achieving complete independence from ACT
+- 40% of all revenue flowing directly to communities automatically
+- 100% community ownership of their data, stories, and intellectual property
+- Platform stability with <2 second load times globally
+- Zero community complaints about data usage or consent violations
+
+### Business Impact
+This platform will demonstrate that communities don't need external saviors - they need superior tools, authentic partnerships, and systems designed for their ownership rather than institutional extraction.
+
+The ultimate success metric is Beautiful Obsolescence: communities saying "ACT? We don't need them anymore. We run this ourselves now."

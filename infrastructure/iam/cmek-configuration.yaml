@@ -1,0 +1,630 @@
+# Customer-Managed Encryption Keys (CMEK) Configuration for ACT Placemat Intelligence Hub
+# Australian-compliant encryption key management for data-at-rest
+
+---
+# CMEK Configuration ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cmek-configuration
+  namespace: act-placemat
+  labels:
+    component: encryption
+    data-residency: australia
+  annotations:
+    description: "CMEK configuration for Australian compliance"
+    compliance.framework: "australian-privacy-act"
+    encryption.standard: "AES-256-GCM"
+data:
+  # CMEK key hierarchy
+  key_hierarchy: |
+    # Root Key (Hardware Security Module)
+    root_key:
+      location: "australia-southeast1"
+      protection_level: "HSM"
+      algorithm: "GOOGLE_SYMMETRIC_ENCRYPTION"
+      purpose: "ENCRYPT_DECRYPT"
+      next_rotation_time: "90d"
+      
+    # Data Encryption Keys (DEK)
+    data_encryption_keys:
+      langgraph_state:
+        derived_from: "root_key"
+        purpose: "LangGraph state encryption"
+        rotation_period: "30d"
+        
+      langgraph_checkpoints:
+        derived_from: "root_key"
+        purpose: "LangGraph checkpoint encryption"
+        rotation_period: "30d"
+        
+      agent_communications:
+        derived_from: "root_key"
+        purpose: "Inter-agent communication encryption"
+        rotation_period: "30d"
+        
+      financial_data:
+        derived_from: "root_key"
+        purpose: "Financial intelligence data encryption"
+        rotation_period: "30d"
+        data_classification: "confidential"
+        
+      compliance_audit:
+        derived_from: "root_key"
+        purpose: "Compliance and audit data encryption"
+        rotation_period: "30d"
+        data_classification: "restricted"
+        
+      backup_archives:
+        derived_from: "root_key"
+        purpose: "Backup archive encryption"
+        rotation_period: "90d"
+        data_classification: "confidential"
+
+  # Encryption algorithms and standards
+  encryption_standards: |
+    # Primary encryption algorithm
+    primary_algorithm: "AES-256-GCM"
+    key_derivation: "HKDF-SHA256"
+    authentication: "HMAC-SHA256"
+    
+    # Approved algorithms for Australian compliance
+    approved_algorithms:
+      - "AES-256-GCM"
+      - "AES-256-CBC"
+      - "ChaCha20-Poly1305"
+      
+    # Key sizes
+    symmetric_key_size: 256
+    asymmetric_key_size: 4096
+    
+    # MAC length
+    mac_length: 128
+
+  # Key management policies
+  key_management_policies: |
+    # Key rotation policies
+    rotation:
+      automatic: true
+      root_key_period: "90d"
+      dek_period: "30d"
+      emergency_rotation: "24h"
+      pre_expiry_warning: "7d"
+      
+    # Key access policies
+    access:
+      principle: "least_privilege"
+      dual_control: true
+      separation_of_duties: true
+      audit_logging: "comprehensive"
+      
+    # Key storage
+    storage:
+      location: "australia"
+      backup_required: true
+      offline_backup: true
+      geographic_distribution: false
+      
+    # Key destruction
+    destruction:
+      secure_deletion: true
+      verification_required: true
+      witness_required: true
+      audit_trail: "comprehensive"
+
+  # Australian compliance requirements
+  australian_compliance: |
+    # Privacy Act 1988 requirements
+    privacy_act:
+      data_sovereignty: "australia"
+      encryption_at_rest: "required"
+      encryption_in_transit: "required"
+      key_escrow: "prohibited"
+      
+    # Information Security Manual (ISM)
+    ism_compliance:
+      classification_handling: "PROTECTED"
+      crypto_standards: "ASD_approved"
+      key_management: "centralized"
+      audit_requirements: "detailed"
+      
+    # Australian Signals Directorate (ASD)
+    asd_requirements:
+      crypto_validation: "ACSI"
+      random_number_generation: "certified"
+      side_channel_resistance: "required"
+
+---
+# CMEK Root Key Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cmek-root-key
+  namespace: act-placemat
+  labels:
+    component: encryption
+    key-type: root
+    data-residency: australia
+  annotations:
+    description: "Root encryption key for CMEK hierarchy"
+    compliance.framework: "australian-privacy-act"
+    encryption.algorithm: "AES-256-GCM"
+    key.purpose: "root-key-encryption"
+    data.classification: "restricted"
+    audit.required: "true"
+    key.rotation.next: "2024-11-15T00:00:00Z"
+type: Opaque
+data:
+  # Root key material (base64 encoded, HSM-backed)
+  root_key: ${CMEK_ROOT_KEY_B64}
+  key_derivation_salt: ${CMEK_KEY_DERIVATION_SALT_B64}
+  key_version: "MQ=="  # "1" in base64
+  created_at: "MjAyNC0wOC0xNVQwMDowMDowMFo="  # "2024-08-15T00:00:00Z" in base64
+  rotation_schedule: "OTBk"  # "90d" in base64
+
+---
+# CMEK Data Encryption Keys Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cmek-data-encryption-keys
+  namespace: act-placemat
+  labels:
+    component: encryption
+    key-type: data-encryption
+    data-residency: australia
+  annotations:
+    description: "Data encryption keys derived from root key"
+    compliance.framework: "australian-privacy-act"
+    encryption.algorithm: "AES-256-GCM"
+    key.purpose: "data-encryption"
+    data.classification: "restricted"
+    audit.required: "true"
+type: Opaque
+data:
+  # LangGraph encryption keys
+  langgraph_state_key: ${LANGGRAPH_STATE_KEY_B64}
+  langgraph_checkpoint_key: ${LANGGRAPH_CHECKPOINT_KEY_B64}
+  
+  # Agent communication keys
+  agent_communication_key: ${AGENT_COMMUNICATION_KEY_B64}
+  workflow_encryption_key: ${WORKFLOW_ENCRYPTION_KEY_B64}
+  
+  # Data-specific encryption keys
+  financial_data_key: ${FINANCIAL_DATA_KEY_B64}
+  compliance_audit_key: ${COMPLIANCE_AUDIT_KEY_B64}
+  backup_archive_key: ${BACKUP_ARCHIVE_KEY_B64}
+  
+  # Key metadata
+  key_version: "MQ=="  # "1" in base64
+  derived_at: "MjAyNC0wOC0xNVQwMDowMDowMFo="  # "2024-08-15T00:00:00Z" in base64
+
+---
+# CMEK Key Management Service Account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cmek-key-manager
+  namespace: act-placemat
+  labels:
+    component: encryption
+    role: key-manager
+    data-residency: australia
+  annotations:
+    description: "Service account for CMEK key management operations"
+    compliance.framework: "australian-privacy-act"
+    data.classification: "restricted"
+    audit.required: "true"
+automountServiceAccountToken: true
+
+---
+# CMEK Key Management Role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: cmek-key-manager
+  namespace: act-placemat
+  labels:
+    component: encryption
+    data-residency: australia
+  annotations:
+    description: "Role for CMEK key management operations"
+    compliance.framework: "australian-privacy-act"
+rules:
+# Key secrets management
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "watch", "create", "update", "patch"]
+  resourceNames: 
+    - "cmek-*"
+    - "encryption-*"
+    - "dek-*"
+    - "key-material-*"
+# Key configuration management
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch", "create", "update", "patch"]
+  resourceNames:
+    - "cmek-configuration"
+    - "key-rotation-schedule"
+    - "encryption-config"
+# Event logging for key operations
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+# Job management for key operations
+- apiGroups: ["batch"]
+  resources: ["jobs", "cronjobs"]
+  verbs: ["get", "list", "watch", "create", "update", "patch"]
+
+---
+# CMEK Key Management Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cmek-key-manager-binding
+  namespace: act-placemat
+  labels:
+    component: encryption
+    data-residency: australia
+  annotations:
+    description: "Binds cmek-key-manager to key management role"
+    compliance.framework: "australian-privacy-act"
+subjects:
+- kind: ServiceAccount
+  name: cmek-key-manager
+  namespace: act-placemat
+roleRef:
+  kind: Role
+  name: cmek-key-manager
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# CMEK Key Rotation CronJob
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cmek-key-rotation
+  namespace: act-placemat
+  labels:
+    component: encryption
+    operation: key-rotation
+    data-residency: australia
+  annotations:
+    description: "Automated CMEK key rotation for Australian compliance"
+    compliance.framework: "australian-privacy-act"
+spec:
+  schedule: "0 4 */30 * *"  # Every 30 days at 4 AM AEDT
+  timeZone: "Australia/Sydney"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            component: cmek-key-rotation
+            data-residency: australia
+        spec:
+          serviceAccountName: cmek-key-manager
+          restartPolicy: OnFailure
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            fsGroup: 1001
+          containers:
+          - name: key-rotator
+            image: registry.actplacemat.org.au:5000/act-placemat/cmek-key-rotator:latest
+            imagePullPolicy: Always
+            env:
+            - name: TZ
+              value: "Australia/Sydney"
+            - name: DATA_RESIDENCY
+              value: "australia"
+            - name: COMPLIANCE_FRAMEWORK
+              value: "australian-privacy-act"
+            - name: ROTATION_TYPE
+              value: "scheduled"
+            - name: NAMESPACE
+              value: "act-placemat"
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Starting CMEK key rotation at $(date)"
+              
+              # Check key ages and rotate if needed
+              CURRENT_DATE=$(date +%s)
+              DEK_ROTATION_THRESHOLD=2592000  # 30 days in seconds
+              ROOT_KEY_ROTATION_THRESHOLD=7776000  # 90 days in seconds
+              
+              # Function to derive new key from root key
+              derive_new_key() {
+                local purpose=$1
+                local root_key=$2
+                local salt=$3
+                
+                # Use HKDF to derive new key
+                echo -n "${root_key}${purpose}${salt}$(date +%s)" | sha256sum | cut -d' ' -f1
+              }
+              
+              # Get current root key
+              ROOT_KEY=$(kubectl get secret cmek-root-key -o jsonpath='{.data.root_key}' -n act-placemat | base64 -d)
+              SALT=$(kubectl get secret cmek-root-key -o jsonpath='{.data.key_derivation_salt}' -n act-placemat | base64 -d)
+              
+              # Check DEK rotation needs
+              echo "Checking data encryption key rotation requirements..."
+              
+              DEK_CREATED=$(kubectl get secret cmek-data-encryption-keys -o jsonpath='{.metadata.creationTimestamp}' -n act-placemat)
+              DEK_CREATED_TIMESTAMP=$(date -d "$DEK_CREATED" +%s)
+              DEK_AGE=$((CURRENT_DATE - DEK_CREATED_TIMESTAMP))
+              
+              if [ $DEK_AGE -gt $DEK_ROTATION_THRESHOLD ]; then
+                echo "Rotating data encryption keys (age: $DEK_AGE seconds)"
+                
+                # Generate new DEKs
+                NEW_LANGGRAPH_STATE_KEY=$(derive_new_key "langgraph_state" "$ROOT_KEY" "$SALT")
+                NEW_LANGGRAPH_CHECKPOINT_KEY=$(derive_new_key "langgraph_checkpoint" "$ROOT_KEY" "$SALT")
+                NEW_AGENT_COMM_KEY=$(derive_new_key "agent_communication" "$ROOT_KEY" "$SALT")
+                NEW_WORKFLOW_KEY=$(derive_new_key "workflow_encryption" "$ROOT_KEY" "$SALT")
+                NEW_FINANCIAL_KEY=$(derive_new_key "financial_data" "$ROOT_KEY" "$SALT")
+                NEW_COMPLIANCE_KEY=$(derive_new_key "compliance_audit" "$ROOT_KEY" "$SALT")
+                NEW_BACKUP_KEY=$(derive_new_key "backup_archive" "$ROOT_KEY" "$SALT")
+                
+                # Backup old keys
+                kubectl create secret generic cmek-data-encryption-keys-backup-$(date +%s) \
+                  --from-literal="backup_reason=scheduled_rotation" \
+                  --from-literal="backup_date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+                  --from-literal="previous_version=$(kubectl get secret cmek-data-encryption-keys -o jsonpath='{.data.key_version}' -n act-placemat | base64 -d)" \
+                  --from-file=old_keys=<(kubectl get secret cmek-data-encryption-keys -o yaml -n act-placemat) \
+                  -n act-placemat
+                
+                # Update DEK secret with new keys
+                kubectl patch secret cmek-data-encryption-keys -p "{
+                  \"data\": {
+                    \"langgraph_state_key\": \"$(echo -n $NEW_LANGGRAPH_STATE_KEY | base64 -w 0)\",
+                    \"langgraph_checkpoint_key\": \"$(echo -n $NEW_LANGGRAPH_CHECKPOINT_KEY | base64 -w 0)\",
+                    \"agent_communication_key\": \"$(echo -n $NEW_AGENT_COMM_KEY | base64 -w 0)\",
+                    \"workflow_encryption_key\": \"$(echo -n $NEW_WORKFLOW_KEY | base64 -w 0)\",
+                    \"financial_data_key\": \"$(echo -n $NEW_FINANCIAL_KEY | base64 -w 0)\",
+                    \"compliance_audit_key\": \"$(echo -n $NEW_COMPLIANCE_KEY | base64 -w 0)\",
+                    \"backup_archive_key\": \"$(echo -n $NEW_BACKUP_KEY | base64 -w 0)\",
+                    \"key_version\": \"$(echo -n '2' | base64 -w 0)\",
+                    \"derived_at\": \"$(echo -n $(date -u +%Y-%m-%dT%H:%M:%SZ) | base64 -w 0)\"
+                  }
+                }" -n act-placemat
+                
+                echo "Data encryption keys rotated successfully"
+                
+                # Log rotation event
+                kubectl create event cmek-dek-rotated-$(date +%s) \
+                  --message="CMEK data encryption keys rotated due to age ($DEK_AGE seconds)" \
+                  --reason="CMEKKeyRotation" \
+                  --type="Normal" \
+                  --source="cmek-key-rotation-cronjob" \
+                  --namespace=act-placemat
+              else
+                echo "Data encryption keys are $DEK_AGE seconds old, no rotation needed"
+              fi
+              
+              # Check root key rotation needs
+              ROOT_KEY_CREATED=$(kubectl get secret cmek-root-key -o jsonpath='{.metadata.creationTimestamp}' -n act-placemat)
+              ROOT_KEY_CREATED_TIMESTAMP=$(date -d "$ROOT_KEY_CREATED" +%s)
+              ROOT_KEY_AGE=$((CURRENT_DATE - ROOT_KEY_CREATED_TIMESTAMP))
+              
+              if [ $ROOT_KEY_AGE -gt $ROOT_KEY_ROTATION_THRESHOLD ]; then
+                echo "Root key rotation required but requires manual intervention for HSM-backed keys"
+                
+                # Create alert for manual root key rotation
+                kubectl create event cmek-root-key-rotation-required-$(date +%s) \
+                  --message="CMEK root key rotation required (age: $ROOT_KEY_AGE seconds). Manual HSM operation needed." \
+                  --reason="CMEKRootKeyRotationRequired" \
+                  --type="Warning" \
+                  --source="cmek-key-rotation-cronjob" \
+                  --namespace=act-placemat
+              else
+                echo "Root key is $ROOT_KEY_AGE seconds old, no rotation needed"
+              fi
+              
+              # Log completion
+              kubectl create configmap cmek-rotation-log-$(date +%Y%m%d) \
+                --from-literal="rotation_date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+                --from-literal="rotation_type=scheduled" \
+                --from-literal="dek_age_seconds=$DEK_AGE" \
+                --from-literal="root_key_age_seconds=$ROOT_KEY_AGE" \
+                --from-literal="compliance_framework=australian-privacy-act" \
+                --from-literal="data_residency=australia" \
+                -n act-placemat --dry-run=client -o yaml | kubectl apply -f -
+              
+              echo "CMEK key rotation completed at $(date)"
+            resources:
+              limits:
+                cpu: 200m
+                memory: 512Mi
+              requests:
+                cpu: 100m
+                memory: 256Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              runAsNonRoot: true
+              runAsUser: 1001
+              capabilities:
+                drop:
+                - ALL
+            volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: cmek-config
+              mountPath: /app/config
+              readOnly: true
+          volumes:
+          - name: tmp
+            emptyDir: {}
+          - name: cmek-config
+            configMap:
+              name: cmek-configuration
+          imagePullSecrets:
+          - name: registry-credentials
+          nodeSelector:
+            data-residency: australia
+
+---
+# CMEK Encryption Configuration for Applications
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cmek-application-config
+  namespace: act-placemat
+  labels:
+    component: encryption
+    data-residency: australia
+  annotations:
+    description: "CMEK configuration for application-level encryption"
+    compliance.framework: "australian-privacy-act"
+data:
+  encryption_config: |
+    # LangGraph Framework Encryption
+    langgraph:
+      state_encryption:
+        enabled: true
+        key_name: "langgraph_state_key"
+        algorithm: "AES-256-GCM"
+        key_rotation: "30d"
+        
+      checkpoint_encryption:
+        enabled: true
+        key_name: "langgraph_checkpoint_key"
+        algorithm: "AES-256-GCM"
+        key_rotation: "30d"
+    
+    # Agent Communication Encryption
+    agents:
+      inter_agent_communication:
+        enabled: true
+        key_name: "agent_communication_key"
+        algorithm: "AES-256-GCM"
+        perfect_forward_secrecy: true
+        
+      workflow_state:
+        enabled: true
+        key_name: "workflow_encryption_key"
+        algorithm: "AES-256-GCM"
+    
+    # Data-Specific Encryption
+    financial:
+      data_at_rest:
+        enabled: true
+        key_name: "financial_data_key"
+        algorithm: "AES-256-GCM"
+        data_classification: "confidential"
+        
+    compliance:
+      audit_logs:
+        enabled: true
+        key_name: "compliance_audit_key"
+        algorithm: "AES-256-GCM"
+        data_classification: "restricted"
+        
+    backup:
+      archive_encryption:
+        enabled: true
+        key_name: "backup_archive_key"
+        algorithm: "AES-256-GCM"
+        compression_before_encryption: true
+
+  # Key access patterns
+  key_access_patterns: |
+    # Applications access keys through Kubernetes secrets
+    # mounted as volumes, never through environment variables
+    
+    secret_mount_path: "/etc/encryption-keys"
+    key_file_permissions: "0400"
+    key_owner: "1001:1001"
+    
+    # Key caching policy
+    key_cache_ttl: "300s"  # 5 minutes
+    key_refresh_interval: "240s"  # 4 minutes
+    
+    # Error handling
+    key_unavailable_action: "fail_secure"
+    key_rotation_grace_period: "60s"
+
+---
+# CMEK Monitoring ServiceMonitor
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: cmek-metrics
+  namespace: act-placemat
+  labels:
+    component: encryption
+    data-residency: australia
+  annotations:
+    description: "Monitoring for CMEK operations"
+    compliance.framework: "australian-privacy-act"
+spec:
+  selector:
+    matchLabels:
+      component: encryption
+  endpoints:
+  - port: metrics
+    interval: 60s
+    path: /metrics
+    honorLabels: true
+    relabelings:
+    - sourceLabels: [__meta_kubernetes_pod_label_data_residency]
+      targetLabel: data_residency
+    - sourceLabels: [__meta_kubernetes_pod_annotation_compliance_framework]
+      targetLabel: compliance_framework
+
+---
+# CMEK Alert Rules
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: cmek-alerts
+  namespace: act-placemat
+  labels:
+    component: encryption
+    data-residency: australia
+  annotations:
+    description: "Alert rules for CMEK operations"
+    compliance.framework: "australian-privacy-act"
+spec:
+  groups:
+  - name: cmek-encryption
+    rules:
+    - alert: CMEKKeyRotationOverdue
+      expr: (time() - cmek_key_last_rotation_timestamp) / 86400 > 35
+      for: 1h
+      labels:
+        severity: warning
+        component: encryption
+        data_residency: australia
+      annotations:
+        summary: "CMEK key rotation is overdue"
+        description: "CMEK key {{ $labels.key_name }} has not been rotated for {{ $value }} days"
+        
+    - alert: CMEKKeyAccessFailure
+      expr: increase(cmek_key_access_failures_total[5m]) > 0
+      for: 0m
+      labels:
+        severity: critical
+        component: encryption
+        data_residency: australia
+      annotations:
+        summary: "CMEK key access failure detected"
+        description: "{{ $value }} CMEK key access failures in the last 5 minutes"
+        
+    - alert: CMEKRootKeyRotationRequired
+      expr: (time() - cmek_root_key_creation_timestamp) / 86400 > 85
+      for: 1h
+      labels:
+        severity: critical
+        component: encryption
+        data_residency: australia
+      annotations:
+        summary: "CMEK root key rotation required"
+        description: "CMEK root key is {{ $value }} days old and requires manual rotation"

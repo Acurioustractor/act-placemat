@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACT Goods Project - Strategic Implementation Plan</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f8f9fa;
+            line-height: 1.5;
+        }
+        
+        .document {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3a8a, #dc2626);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0 0 15px 0;
+            font-size: 2.8em;
+            font-weight: 300;
+        }
+        
+        .header p {
+            margin: 0;
+            font-size: 1.3em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 45px;
+        }
+        
+        .section h2 {
+            color: #1e3a8a;
+            font-size: 2em;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #dc2626;
+            padding-bottom: 10px;
+        }
+        
+        .section h3 {
+            color: #dc2626;
+            font-size: 1.4em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        .timeline {
+            display: grid;
+            gap: 25px;
+        }
+        
+        .timeline-item {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #1e3a8a;
+        }
+        
+        .timeline-period {
+            font-weight: bold;
+            color: #1e3a8a;
+            font-size: 1.1em;
+        }
+        
+        .timeline-content h4 {
+            color: #dc2626;
+            margin: 0 0 10px 0;
+        }
+        
+        .timeline-content ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .framework-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .framework-card {
+            background: #f0f9ff;
+            border-radius: 10px;
+            padding: 25px;
+            border-top: 4px solid #1e3a8a;
+        }
+        
+        .framework-card h4 {
+            color: #1e3a8a;
+            margin: 0 0 15px 0;
+            font-size: 1.3em;
+        }
+        
+        .risk-matrix {
+            display: grid;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .risk-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            background: #fef2f2;
+            border-radius: 8px;
+            border-left: 4px solid #dc2626;
+        }
+        
+        .risk-category {
+            font-weight: bold;
+            color: #dc2626;
+        }
+        
+        .partnership-flow {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .partner-card {
+            background: #ecfdf5;
+            border-radius: 10px;
+            padding: 20px;
+            border-top: 4px solid #10b981;
+            text-align: center;
+        }
+        
+        .partner-card h4 {
+            color: #065f46;
+            margin: 0 0 10px 0;
+        }
+        
+        .success-indicators {
+            background: #eff6ff;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 20px;
+            border: 2px solid #1e3a8a;
+        }
+        
+        .indicators-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .indicator-item {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .indicator-number {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #dc2626;
+        }
+        
+        .replication-steps {
+            counter-reset: step-counter;
+        }
+        
+        .replication-step {
+            counter-increment: step-counter;
+            background: #f0f9ff;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #1e3a8a;
+            position: relative;
+        }
+        
+        .replication-step::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: -15px;
+            top: 20px;
+            background: #1e3a8a;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .replication-step h4 {
+            color: #1e3a8a;
+            margin: 0 0 10px 20px;
+        }
+        
+        .replication-step p {
+            margin: 0 0 0 20px;
+            color: #374151;
+        }
+    </style>
+</head>
+<body>
+    <div class="document">
+        <div class="header">
+            <h1>Strategic Implementation Plan</h1>
+            <p>ACT Goods Project - Community Manufacturing for Essential Dignity</p>
+        </div>
+        
+        <div class="content">
+            <!-- Executive Summary -->
+            <div class="section">
+                <h2>🎯 Executive Summary</h2>
+                <p>The ACT Goods Project represents a paradigm shift from community dependency to manufacturing sovereignty. Traditional Custodians in Tennant Creek and Palm Island are leading the development of Australia's first community-owned essential goods manufacturing hub, building on proven success with over 300 beds already distributed across communities and 10 washing machines operational.</p>
+                
+                <p><strong>Current Status:</strong> The project is in its development phase, having invested $162,461 in materials, equipment, and community engagement over the past 12 months. We're now ready to scale to full production capacity.</p>
+                
+                <p><strong>Snow Foundation Partnership:</strong> Your $100,000 investment over 12 months will catalyze the transition from development to full-scale community manufacturing, producing 300 beds and 40 washing machines while establishing the replicable model for 1,000+ remote communities.</p>
+            </div>
+            
+            <!-- Current Project Status -->
+            <div class="section">
+                <h2>📍 Where We Are Now: Project Development Status</h2>
+                
+                <div class="framework-grid">
+                    <div class="framework-card">
+                        <h4>Proven Products Across Communities</h4>
+                        <ul>
+                            <li><strong>Over 300 beds</strong> distributed across Tennant Creek and Palm Island communities</li>
+                            <li><strong>10 washing machines</strong> operational with community feedback systems</li>
+                            <li><strong>100% user satisfaction</strong> documented through community voices</li>
+                            <li><strong>Zero product failures</strong> across both community locations</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="framework-card">
+                        <h4>Manufacturing Infrastructure Established</h4>
+                        <ul>
+                            <li><strong>$162,461 invested</strong> in materials, equipment, and setup</li>
+                            <li><strong>Production capability</strong> demonstrated through prototype manufacturing</li>
+                            <li><strong>Community workforce</strong> trained in manufacturing processes</li>
+                            <li><strong>Quality control systems</strong> operational and community-controlled</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="framework-card">
+                        <h4>Community Ownership & Leadership</h4>
+                        <ul>
+                            <li><strong>Traditional Custodians</strong> leading all design and production decisions</li>
+                            <li><strong>Cultural protocols</strong> integrated into manufacturing processes</li>
+                            <li><strong>Community enterprise</strong> structure established and operational</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                
+                <p><strong>Development Phase Analysis:</strong> Like any manufacturing startup, we're in the investment phase where development costs exceed current sales. This is normal and expected - we've been building capabilities, testing products, and establishing community ownership structures. The Snow Foundation partnership enables our transition to scaled production where revenue will align with our proven demand.</p>
+            </div>
+            
+            <!-- Community Leadership Structure -->
+            <div class="section">
+                <h2>👥 Traditional Custodian Leadership Structure</h2>
+                
+                <div class="framework-grid">
+                    <div class="framework-card">
+                        <h4>Manufacturing Leadership</h4>
+                        <ul>
+                            <li>Traditional Custodians control all production decisions</li>
+                            <li>Cultural protocols integrated into manufacturing processes</li>
+                            <li>Skills development prioritizes community members</li>
+                            <li>Equipment ownership remains with community</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="framework-card">
+                        <h4>Governance & Decision-Making</h4>
+                        <ul>
+                            <li>Community enterprise led by Traditional Custodians</li>
+                            <li>All major decisions made through community consultation</li>
+                            <li>Cultural advisors guide product design specifications</li>
+                            <li>Profit distribution determined locally</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="framework-card">
+                        <h4>Knowledge Systems</h4>
+                        <ul>
+                            <li>Traditional knowledge integrated with modern manufacturing</li>
+                            <li>Community-controlled documentation and improvement</li>
+                            <li>Cultural protocols protect intellectual property</li>
+                            <li>Open-source sharing on community terms</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <!-- Risk Management Framework -->
+            <div class="section">
+                <h2>⚠️ Risk Management & Adaptation Strategy</h2>
+                
+                <div class="risk-matrix">
+                    <div class="risk-item">
+                        <div>
+                            <div class="risk-category">Supply Chain Disruption</div>
+                            <p><strong>Risk:</strong> Material shortages affecting production</p>
+                        </div>
+                        <div>
+                            <p><strong>Mitigation:</strong> Multiple supplier relationships, local material sourcing priority, strategic inventory management</p>
+                        </div>
+                        <div>
+                            <p><strong>Community Response:</strong> Traditional Custodians control adaptation decisions, modify designs using available materials</p>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-item">
+                        <div>
+                            <div class="risk-category">Skills Development Challenges</div>
+                            <p><strong>Risk:</strong> Technical training taking longer than expected</p>
+                        </div>
+                        <div>
+                            <p><strong>Mitigation:</strong> Flexible training schedules, peer mentoring, external technical support partnerships</p>
+                        </div>
+                        <div>
+                            <p><strong>Community Response:</strong> Community determines pace, prioritizes cultural learning approaches over external timelines</p>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-item">
+                        <div>
+                            <div class="risk-category">Market/Demand Fluctuation</div>
+                            <p><strong>Risk:</strong> Changes in community needs or preferences</p>
+                        </div>
+                        <div>
+                            <p><strong>Mitigation:</strong> Flexible production systems, ongoing community consultation, product adaptation capability</p>
+                        </div>
+                        <div>
+                            <p><strong>Community Response:</strong> Traditional Custodians control production decisions, adapt to actual community needs</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Partnership Framework -->
+            <div class="section">
+                <h2>🤝 Partnership & Collaboration Framework</h2>
+                
+                <div class="partnership-flow">
+                    <div class="partner-card">
+                        <h4>Health Services</h4>
+                        <p>Tennant Creek health services provide outcome data with community consent while respecting Traditional Custodian data sovereignty</p>
+                    </div>
+                    
+                    <div class="partner-card">
+                        <h4>Suppliers</h4>
+                        <p>Multiple supplier relationships prioritizing local and Indigenous businesses while maintaining community control over specifications</p>
+                    </div>
+                    
+                    <div class="partner-card">
+                        <h4>Technical Support</h4>
+                        <p>Equipment maintenance and training partnerships that build community capacity rather than create dependency</p>
+                    </div>
+                    
+                    <div class="partner-card">
+                        <h4>Other Communities</h4>
+                        <p>Knowledge sharing network where Traditional Custodians control information exchange and replication decisions</p>
+                    </div>
+                </div>
+                
+                <h3>Partnership Principles</h3>
+                <ul>
+                    <li><strong>Community Control:</strong> Traditional Custodians maintain decision-making authority in all partnerships</li>
+                    <li><strong>Data Sovereignty:</strong> Communities own and control all data generated from partnerships</li>
+                    <li><strong>Cultural Respect:</strong> All partners operate within protocols established by Traditional Custodians</li>
+                    <li><strong>Capacity Building:</strong> Partnerships strengthen community capabilities rather than creating dependencies</li>
+                </ul>
+            </div>
+            
+            <!-- Replication Model -->
+            <div class="section">
+                <h2>🔄 National Replication Model</h2>
+                
+                <div class="replication-steps">
+                    <div class="replication-step">
+                        <h4>Community Interest & Assessment</h4>
+                        <p>Other communities express interest and conduct self-assessment of manufacturing readiness, cultural protocols, and community priorities</p>
+                    </div>
+                    
+                    <div class="replication-step">
+                        <h4>Traditional Custodian Knowledge Exchange</h4>
+                        <p>Tennant Creek Traditional Custodians share learnings directly with requesting communities, respecting cultural protocols for knowledge transfer</p>
+                    </div>
+                    
+                    <div class="replication-step">
+                        <h4>Community-Led Planning</h4>
+                        <p>Interested communities develop their own implementation plans, adapting the model to local needs, resources, and cultural requirements</p>
+                    </div>
+                    
+                    <div class="replication-step">
+                        <h4>Resource Mobilisation</h4>
+                        <p>Communities secure funding and resources through their own grant applications, using Tennant Creek's success as demonstrated model</p>
+                    </div>
+                    
+                    <div class="replication-step">
+                        <h4>Independent Implementation</h4>
+                        <p>Each community establishes their own manufacturing hub with ongoing peer support network but full local control and ownership</p>
+                    </div>
+                </div>
+                
+                <div class="success-indicators">
+                    <h4>🎯 Replication Success Indicators</h4>
+                    <div class="indicators-grid">
+                        <div class="indicator-item">
+                            <div class="indicator-number">5+</div>
+                            <div>Communities expressing replication interest within 12 months</div>
+                        </div>
+                        <div class="indicator-item">
+                            <div class="indicator-number">2+</div>
+                            <div>Communities beginning implementation within 24 months</div>
+                        </div>
+                        <div class="indicator-item">
+                            <div class="indicator-number">1000+</div>
+                            <div>Remote communities eligible for eventual replication across Australia</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sustainability & Growth Strategy -->
+            <div class="section">
+                <h2>📈 Sustainability & Long-term Growth</h2>
+                
+                <h3>Financial Sustainability</h3>
+                <ul>
+                    <li><strong>Revenue Generation:</strong> Product sales to communities and individuals create ongoing income stream</li>
+                    <li><strong>Repair Services:</strong> Community-controlled maintenance and repair services generate additional revenue</li>
+                    <li><strong>Grant Diversification:</strong> Success creates eligibility for larger infrastructure and business development grants</li>
+                    <li><strong>Cost Savings:</strong> Reduced replacement costs through superior durability improve community economics</li>
+                </ul>
+                
+                <h3>Community Ownership Evolution</h3>
+                <ul>
+                    <li><strong>Skills Development:</strong> Traditional Custodians gain manufacturing, business, and technical expertise</li>
+                    <li><strong>Equipment Ownership:</strong> Community fully owns all manufacturing infrastructure and tools</li>
+                    <li><strong>Intellectual Property:</strong> Community controls all design improvements and modifications</li>
+                    <li><strong>Decision-Making:</strong> All expansion and adaptation decisions remain with Traditional Custodians</li>
+                </ul>
+                
+                <h3>Systemic Impact Growth</h3>
+                <ul>
+                    <li><strong>Policy Influence:</strong> Success demonstrates viability of community-controlled manufacturing for policy makers</li>
+                    <li><strong>Procurement Changes:</strong> Government agencies begin purchasing from community enterprises</li>
+                    <li><strong>Investment Models:</strong> New funding approaches emerge that support community ownership rather than service delivery</li>
+                    <li><strong>Knowledge Sovereignty:</strong> Traditional knowledge becomes recognised as essential for effective product design</li>
+                </ul>
+            </div>
+            
+            <!-- Success Measurement -->
+            <div class="section">
+                <h2>📊 Success Measurement & Community Indicators</h2>
+                
+                <div class="framework-grid">
+                    <div class="framework-card">
+                        <h4>Community-Determined Indicators</h4>
+                        <ul>
+                            <li>Traditional Custodian satisfaction with ownership and control</li>
+                            <li>Community pride in locally manufactured products</li>
+                            <li>Cultural protocol integration in manufacturing processes</li>
+                            <li>Local employment and skills development outcomes</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="framework-card">
+                        <h4>Health & Wellbeing Outcomes</h4>
+                        <ul>
+                            <li>Sleep quality improvements documented by community</li>
+                            <li>Reduced rheumatic heart disease risk factors</li>
+                            <li>Improved hygiene outcomes from reliable washing facilities</li>
+                            <li>Enhanced dignity and comfort in living conditions</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="framework-card">
+                        <h4>Economic Sovereignty Measures</h4>
+                        <ul>
+                            <li>Percentage of essential goods produced locally vs. purchased externally</li>
+                            <li>Local employment creation and wage levels</li>
+                            <li>Profit retention and community reinvestment patterns</li>
+                            <li>Reduced dependency on external suppliers and services</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p><strong>Measurement Principle:</strong> Traditional Custodians control all data collection, analysis, and sharing decisions. External metrics support community-determined indicators rather than replacing them.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

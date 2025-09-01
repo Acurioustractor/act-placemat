@@ -1,0 +1,830 @@
+openapi: 3.1.0
+info:
+  title: ACT Platform API
+  version: 1.0.0
+  description: |-
+    **ACT Platform API** - Community collaboration and social impact platform
+
+    The ACT Platform connects people, projects, and opportunities across Australia, 
+    focusing on collaborative social impact initiatives.
+
+    This API provides access to:
+    - **Dashboard & Analytics**: Real-time insights and community metrics
+    - **Financial Management**: Bookkeeping, receipts, billing, and financial tracking  
+    - **External Integrations**: Notion, Gmail, LinkedIn, Xero, and other services
+    - **AI & Intelligence**: Content generation, relationship analysis, and insights
+    - **Data Management**: Knowledge graphs, ecosystem data, and validation
+    - **Security & Compliance**: Privacy controls, audit logs, and governance
+
+    ## Authentication
+
+    The API supports multiple authentication methods:
+    - **JWT Bearer Tokens** for user authentication
+    - **API Keys** for service-to-service communication
+    - **Optional Auth** for public/private data access
+
+    ## Rate Limiting
+
+    Standard rate limits apply:
+    - **Authenticated requests**: 1000 requests/hour
+    - **Public endpoints**: 100 requests/hour
+    - **AI/ML endpoints**: 50 requests/hour (higher processing cost)
+  contact:
+    name: ACT Platform Team
+    url: https://act.place
+    email: platform@act.place
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: https://api.act.place/v1
+    description: Production server
+  - url: https://staging-api.act.place/v1
+    description: Staging server
+  - url: http://localhost:4000/api
+    description: Local development server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from authentication endpoint
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for service-to-service authentication
+    optionalAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Optional JWT authentication - provides additional data when authenticated
+  schemas:
+    ApiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the request was successful
+        data:
+          type: object
+          description: The response data (when success is true)
+        error:
+          type: string
+          description: Error message (when success is false)
+        timestamp:
+          type: string
+          format: date-time
+        requestId:
+          type: string
+          description: Unique request identifier for tracking
+      required:
+        - success
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          description: Human-readable error message
+        code:
+          type: string
+          description: Machine-readable error code
+        timestamp:
+          type: string
+          format: date-time
+        requestId:
+          type: string
+        details:
+          type: object
+          description: Additional error details
+      required:
+        - success
+        - error
+    IntegrationStats:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of registered integrations
+        healthy:
+          type: integer
+          description: Number of healthy integrations
+        unhealthy:
+          type: integer
+          description: Number of unhealthy integrations
+        byType:
+          type: object
+          additionalProperties:
+            type: integer
+          description: Count of integrations by type
+        byOwner:
+          type: object
+          additionalProperties:
+            type: integer
+          description: Count of integrations by owner
+    IntegrationSummary:
+      type: object
+      properties:
+        key:
+          type: string
+          description: Unique integration identifier
+        name:
+          type: string
+          description: Human-readable integration name
+        type:
+          type: string
+          enum:
+            - database
+            - graph-database
+            - cache
+            - rest-api
+            - internal-service
+        status:
+          type: string
+          enum:
+            - active
+            - inactive
+            - error
+        owner:
+          type: string
+          description: Team or person responsible for the integration
+        dataFlow:
+          type: string
+          enum:
+            - source
+            - sink
+            - bidirectional
+        lastHealthCheck:
+          type: string
+          format: date-time
+          nullable: true
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique invoice identifier
+        number:
+          type: string
+          description: Invoice number
+        date:
+          type: string
+          format: date
+        dueDate:
+          type: string
+          format: date
+        amount:
+          type: number
+          format: decimal
+          description: Total invoice amount
+        currency:
+          type: string
+          enum:
+            - AUD
+            - USD
+          default: AUD
+        status:
+          type: string
+          enum:
+            - draft
+            - sent
+            - paid
+            - overdue
+            - cancelled
+        client:
+          $ref: '#/components/schemas/ClientSummary'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceItem'
+      required:
+        - id
+        - number
+        - date
+        - amount
+        - currency
+        - status
+    BookkeepingTransaction:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique transaction identifier
+        tenant_id:
+          type: string
+          description: Xero tenant identifier
+        xero_id:
+          type: string
+          description: Xero bank transaction ID
+        txn_date:
+          type: string
+          format: date
+          description: Transaction date
+        amount:
+          type: number
+          format: decimal
+          description: Transaction amount
+        currency:
+          type: string
+          default: AUD
+          description: Transaction currency
+        direction:
+          type: string
+          enum:
+            - spent
+            - received
+          description: Transaction direction
+        description:
+          type: string
+          description: Transaction description
+        contact_name:
+          type: string
+          nullable: true
+          description: Contact or vendor name
+        account_code:
+          type: string
+          nullable: true
+          description: Account code from Xero
+        account_name:
+          type: string
+          nullable: true
+          description: Account name from Xero
+        category:
+          type: string
+          nullable: true
+          description: Categorized transaction type
+        category_confidence:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: Confidence score for categorization
+        raw:
+          type: object
+          description: Raw transaction data from Xero
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - tenant_id
+        - xero_id
+        - txn_date
+        - amount
+        - currency
+        - direction
+    BookkeepingRule:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique rule identifier
+        tenant_id:
+          type: string
+          description: Xero tenant identifier
+        pattern:
+          type: string
+          description: Text pattern to match against transactions
+        category:
+          type: string
+          description: Category to assign when pattern matches
+        account_code:
+          type: string
+          nullable: true
+          description: Optional account code to assign
+        priority:
+          type: integer
+          description: Rule priority (lower numbers processed first)
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - tenant_id
+        - pattern
+        - category
+        - priority
+    InvoiceItem:
+      type: object
+      properties:
+        id:
+          type: string
+        description:
+          type: string
+        quantity:
+          type: number
+          format: decimal
+        unitPrice:
+          type: number
+          format: decimal
+        total:
+          type: number
+          format: decimal
+      required:
+        - id
+        - description
+        - quantity
+        - unitPrice
+        - total
+    ClientSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+      required:
+        - id
+        - name
+    DashboardStats:
+      type: object
+      properties:
+        users:
+          type: object
+          properties:
+            total:
+              type: integer
+            active:
+              type: integer
+            newThisMonth:
+              type: integer
+        projects:
+          type: object
+          properties:
+            total:
+              type: integer
+            active:
+              type: integer
+            completed:
+              type: integer
+        financials:
+          type: object
+          properties:
+            totalRevenue:
+              type: number
+              format: decimal
+            monthlyRevenue:
+              type: number
+              format: decimal
+            outstandingInvoices:
+              type: number
+              format: decimal
+        systemHealth:
+          type: object
+          properties:
+            api:
+              type: string
+              enum:
+                - healthy
+                - degraded
+                - unhealthy
+            database:
+              type: string
+              enum:
+                - connected
+                - disconnected
+            integrations:
+              type: integer
+              description: Number of healthy integrations
+  responses:
+    BadRequest:
+      description: Bad request - invalid input parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Unauthorized - invalid or missing authentication
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Forbidden - insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    RateLimit:
+      description: Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+          description: Request limit per hour
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+          description: Remaining requests in current window
+        X-RateLimit-Reset:
+          schema:
+            type: integer
+          description: Time when rate limit resets (Unix timestamp)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  headers:
+    X-Data-Classification:
+      description: Data classification level
+      schema:
+        type: string
+        enum:
+          - public
+          - internal
+          - confidential
+          - restricted
+    X-Encryption-Status:
+      description: Whether response data is encrypted
+      schema:
+        type: string
+        enum:
+          - encrypted
+          - plain
+    X-Data-Sovereignty:
+      description: Data sovereignty compliance status
+      schema:
+        type: string
+        enum:
+          - compliant
+          - non-compliant
+    X-Request-ID:
+      description: Unique request identifier for tracking
+      schema:
+        type: string
+security:
+  - bearerAuth: []
+  - apiKeyAuth: []
+tags:
+  - name: System
+    description: System health and status endpoints
+  - name: Authentication
+    description: User authentication and authorization
+  - name: Dashboard
+    description: Dashboard data and analytics
+  - name: Financial
+    description: Financial management and bookkeeping
+  - name: Integration Registry
+    description: Integration registry management
+  - name: AI Intelligence
+    description: AI-powered insights and analysis
+  - name: Data Management
+    description: Data processing and validation
+  - name: Security
+    description: Security monitoring and compliance
+  - name: External Integrations
+    description: Third-party service integrations
+paths:
+  /api/bookkeeping/status:
+    get:
+      summary: Get bookkeeping sync status
+      description: Returns the current sync state for bookkeeping operations including last sync timestamp
+      tags:
+        - Bookkeeping
+      security:
+        - apiKeyAuth: []
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Sync status retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+                  state:
+                    type: object
+                    nullable: true
+                    properties:
+                      tenant_id:
+                        type: string
+                      last_synced_at:
+                        type: string
+                        format: date-time
+                      last_page:
+                        type: integer
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/bookkeeping/apply-schema:
+    post:
+      summary: Apply bookkeeping database schema
+      description: Applies the bookkeeping database schema via Supabase RPC exec_sql function
+      tags:
+        - Bookkeeping
+      security:
+        - apiKeyAuth: []
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Schema applied successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+                  applied:
+                    type: boolean
+                    example: true
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/bookkeeping/sync:
+    post:
+      summary: Sync transactions from Xero
+      description: Synchronizes bank transactions from Xero accounting system with optional full sync and lookback period
+      tags:
+        - Bookkeeping
+      security:
+        - apiKeyAuth: []
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                full:
+                  type: boolean
+                  description: Whether to perform full sync (ignores last sync timestamp)
+                  default: false
+                days:
+                  type: integer
+                  description: Number of days to look back for transactions
+                  default: 90
+                  minimum: 1
+                  maximum: 365
+      responses:
+        '200':
+          description: Sync completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+                  upserted:
+                    type: integer
+                    description: Number of transactions synchronized
+                  since:
+                    type: string
+                    format: date-time
+                    nullable: true
+                  pages:
+                    type: integer
+                    description: Number of pages processed
+                  full:
+                    type: boolean
+                  lookbackDays:
+                    type: integer
+        '400':
+          description: Xero not connected
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Xero not connected
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/bookkeeping/transactions:
+    get:
+      summary: Get filtered transactions
+      description: Retrieve bookkeeping transactions with advanced filtering and search capabilities
+      tags:
+        - Bookkeeping
+      security:
+        - apiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: category
+          in: query
+          description: Filter by transaction category
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Maximum number of transactions to return
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 1000
+        - name: uncategorized
+          in: query
+          description: Filter for uncategorized transactions only
+          schema:
+            type: string
+            enum:
+              - 'true'
+        - name: sinceDays
+          in: query
+          description: Number of days to look back
+          schema:
+            type: integer
+            minimum: 1
+        - name: from
+          in: query
+          description: Start date filter (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          description: End date filter (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: q
+          in: query
+          description: Search text in description or contact name
+          schema:
+            type: string
+        - name: direction
+          in: query
+          description: Transaction direction filter
+          schema:
+            type: string
+            enum:
+              - spent
+              - received
+      responses:
+        '200':
+          description: Transactions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Number of transactions returned
+                  transactions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BookkeepingTransaction'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  openapi:
+    '0': '3'
+    '1': .
+    '2': '1'
+    '3': .
+    '4': '0'
+  info:
+    title: ACT Platform API
+    version: 1.0.0
+    description: |
+      **ACT Platform API** - Community collaboration and social impact platform
+
+      The ACT Platform connects people, projects, and opportunities across Australia, 
+      focusing on collaborative social impact initiatives. This API provides access to:
+
+      - **Dashboard & Analytics**: Real-time insights and community metrics
+      - **Financial Management**: Bookkeeping, receipts, billing, and financial tracking  
+      - **External Integrations**: Notion, Gmail, LinkedIn, Xero, and other services
+      - **AI & Intelligence**: Content generation, relationship analysis, and insights
+      - **Data Management**: Knowledge graphs, ecosystem data, and validation
+      - **Security & Compliance**: Privacy controls, audit logs, and governance
+
+      ## Authentication
+
+      The API supports multiple authentication methods:
+      - **JWT Bearer Tokens** for user authentication
+      - **API Keys** for service-to-service communication
+      - **Optional Auth** for public/private data access
+
+      ## Rate Limiting
+
+      Standard rate limits apply:
+      - **Authenticated requests**: 1000 requests/hour
+      - **Public endpoints**: 100 requests/hour
+      - **AI/ML endpoints**: 50 requests/hour (higher processing cost)
+
+      ## Data Classification
+
+      API responses include data classification headers:
+      - `X-Data-Classification: public|internal|confidential|restricted`
+      - `X-Encryption-Status: encrypted|plain`
+      - `X-Data-Sovereignty: compliant`
+    contact:
+      name: ACT Platform Team
+      url: https://act.place
+      email: platform@act.place
+    license:
+      name: MIT
+      url: https://opensource.org/licenses/MIT
+  servers:
+    '0':
+      url: https://api.act.place/v1
+      description: Production server
+    '1':
+      url: https://staging-api.act.place/v1
+      description: Staging server
+    '2':
+      url: http://localhost:4000/api
+      description: Local development server
+  security:
+    '0':
+      bearerAuth: []
+    '1':
+      apiKeyAuth: []
+    '2':
+      optionalAuth: []
+  /health:
+    get:
+      summary: API Health Check
+      description: Returns the health status of the API and its dependencies
+      tags:
+        - System
+      security: []
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - healthy
+                      - degraded
+                      - unhealthy
+                  timestamp:
+                    type: string
+                    format: date-time
+                  version:
+                    type: string
+  /integration-registry:
+    get:
+      summary: Get integration registry overview
+      description: Returns overview of all registered integrations and their health status
+      tags:
+        - Integration Registry
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      responses:
+        '200':
+          description: Integration registry data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+x-webhooks:
+  notion-webhook:
+    post:
+      summary: Notion integration webhook
+      description: Receives updates from Notion when content changes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event:
+                  type: string
+                  enum:
+                    - page.updated
+                    - database.updated
+                object:
+                  type: object
+      responses:
+        '200':
+          description: Webhook processed successfully

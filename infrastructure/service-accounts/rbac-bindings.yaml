@@ -1,0 +1,434 @@
+# RBAC Role Bindings for ACT Placemat Intelligence Hub
+# Australian-compliant role bindings with least privilege assignments
+
+---
+# Intelligence Hub Orchestrator Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: intelligence-hub-orchestrator-binding
+  namespace: act-placemat
+  labels:
+    component: orchestrator
+    data-residency: australia
+  annotations:
+    description: "Binds intelligence-hub service account to orchestrator role"
+    compliance.framework: "australian-privacy-act"
+    audit.required: "true"
+subjects:
+- kind: ServiceAccount
+  name: intelligence-hub
+  namespace: act-placemat
+roleRef:
+  kind: Role
+  name: intelligence-hub-orchestrator
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Financial Intelligence Agent Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: financial-intelligence-agent-binding
+  namespace: act-placemat
+  labels:
+    component: agent
+    agent-type: financial-intelligence
+    data-residency: australia
+  annotations:
+    description: "Binds financial-intelligence-agent to its specific role"
+    compliance.framework: "australian-privacy-act"
+    data.classification: "confidential"
+    audit.required: "true"
+subjects:
+- kind: ServiceAccount
+  name: financial-intelligence-agent
+  namespace: act-placemat
+roleRef:
+  kind: Role
+  name: financial-intelligence-agent
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Financial Intelligence Agent Base Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: financial-intelligence-agent-base-binding
+  namespace: act-placemat
+  labels:
+    component: agent
+    agent-type: financial-intelligence
+    data-residency: australia
+  annotations:
+    description: "Binds financial-intelligence-agent to base agent role"
+    compliance.framework: "australian-privacy-act"
+subjects:
+- kind: ServiceAccount
+  name: financial-intelligence-agent
+  namespace: act-placemat
+roleRef:
+  kind: Role
+  name: agent-base
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Research Analyst Agent Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: research-analyst-agent-binding
+  namespace: act-placemat
+  labels:
+    component: agent
+    agent-type: research-analyst
+    data-residency: australia
+  annotations:
+    description: "Binds research-analyst-agent to its specific role"
+    compliance.framework: "australian-privacy-act"
+    audit.required: "true"
+subjects:
+- kind: ServiceAccount
+  name: research-analyst-agent
+  namespace: act-placemat
+roleRef:
+  kind: Role
+  name: research-analyst-agent
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Research Analyst Agent Base Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: research-analyst-agent-base-binding
+  namespace: act-placemat
+  labels:
+    component: agent
+    agent-type: research-analyst
+    data-residency: australia
+  annotations:
+    description: "Binds research-analyst-agent to base agent role"
+    compliance.framework: "australian-privacy-act"
+subjects:
+- kind: ServiceAccount
+  name: research-analyst-agent
+  namespace: act-placemat
+roleRef:
+  kind: Role
+  name: agent-base
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Compliance Officer Agent Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: compliance-officer-agent-binding
+  namespace: act-placemat
+  labels:
+    component: agent
+    agent-type: compliance-officer
+    data-residency: australia
+  annotations:
+    description: "Binds compliance-officer-agent to its specific role"
+    compliance.framework: "australian-privacy-act"
+    data.classification: "confidential"
+    audit.required: "true"
+subjects:
+- kind: ServiceAccount
+  name: compliance-officer-agent
+  namespace: act-placemat
+roleRef:
+  kind: Role
+  name: compliance-officer-agent
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Compliance Officer Agent Base Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: compliance-officer-agent-base-binding
+  namespace: act-placemat
+  labels:
+    component: agent
+    agent-type: compliance-officer
+    data-residency: australia
+  annotations:
+    description: "Binds compliance-officer-agent to base agent role"
+    compliance.framework: "australian-privacy-act"
+subjects:
+- kind: ServiceAccount
+  name: compliance-officer-agent
+  namespace: act-placemat
+roleRef:
+  kind: Role
+  name: agent-base
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Community Coordinator Agent Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: community-coordinator-agent-binding
+  namespace: act-placemat
+  labels:
+    component: agent
+    agent-type: community-coordinator
+    data-residency: australia
+  annotations:
+    description: "Binds community-coordinator-agent to its specific role"
+    compliance.framework: "australian-privacy-act"
+    audit.required: "true"
+subjects:
+- kind: ServiceAccount
+  name: community-coordinator-agent
+  namespace: act-placemat
+roleRef:
+  kind: Role
+  name: community-coordinator-agent
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Community Coordinator Agent Base Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: community-coordinator-agent-base-binding
+  namespace: act-placemat
+  labels:
+    component: agent
+    agent-type: community-coordinator
+    data-residency: australia
+  annotations:
+    description: "Binds community-coordinator-agent to base agent role"
+    compliance.framework: "australian-privacy-act"
+subjects:
+- kind: ServiceAccount
+  name: community-coordinator-agent
+  namespace: act-placemat
+roleRef:
+  kind: Role
+  name: agent-base
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Registry Access Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: registry-access-binding
+  namespace: act-placemat
+  labels:
+    component: registry
+    data-residency: australia
+  annotations:
+    description: "Binds registry-access service account to registry role"
+    compliance.framework: "australian-privacy-act"
+    audit.required: "true"
+subjects:
+- kind: ServiceAccount
+  name: registry-access
+  namespace: act-placemat
+roleRef:
+  kind: Role
+  name: registry-access
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Monitoring Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: monitoring-binding
+  namespace: act-placemat
+  labels:
+    component: monitoring
+    data-residency: australia
+  annotations:
+    description: "Binds monitoring service account to monitoring role"
+    compliance.framework: "australian-privacy-act"
+    audit.required: "true"
+subjects:
+- kind: ServiceAccount
+  name: monitoring
+  namespace: act-placemat
+roleRef:
+  kind: Role
+  name: monitoring
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Monitoring Cluster Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: act-placemat-monitoring-cluster-binding
+  labels:
+    component: monitoring
+    data-residency: australia
+  annotations:
+    description: "Binds monitoring service account to cluster monitoring role"
+    compliance.framework: "australian-privacy-act"
+subjects:
+- kind: ServiceAccount
+  name: monitoring
+  namespace: act-placemat
+roleRef:
+  kind: ClusterRole
+  name: act-placemat-node-reader
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Backup and Recovery Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: backup-recovery-binding
+  namespace: act-placemat
+  labels:
+    component: backup
+    data-residency: australia
+  annotations:
+    description: "Binds backup-recovery service account to backup role"
+    compliance.framework: "australian-privacy-act"
+    data.classification: "confidential"
+    audit.required: "true"
+subjects:
+- kind: ServiceAccount
+  name: backup-recovery
+  namespace: act-placemat
+roleRef:
+  kind: Role
+  name: backup-recovery
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Australian Compliance Auditor Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: compliance-auditor-binding
+  namespace: act-placemat
+  labels:
+    component: compliance
+    data-residency: australia
+  annotations:
+    description: "Binds compliance-auditor service account to auditor role"
+    compliance.framework: "australian-privacy-act"
+    data.classification: "confidential"
+    compliance.role: "auditor"
+    audit.required: "true"
+subjects:
+- kind: ServiceAccount
+  name: compliance-auditor
+  namespace: act-placemat
+roleRef:
+  kind: Role
+  name: compliance-auditor
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Australian Data Residency Enforcer Cluster Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: australian-data-residency-enforcer-binding
+  labels:
+    component: compliance
+    data-residency: australia
+  annotations:
+    description: "Binds compliance-auditor to cluster data residency enforcer role"
+    compliance.framework: "australian-privacy-act"
+subjects:
+- kind: ServiceAccount
+  name: compliance-auditor
+  namespace: act-placemat
+roleRef:
+  kind: ClusterRole
+  name: australian-data-residency-enforcer
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# All Agents Registry Access Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: all-agents-registry-binding
+  namespace: act-placemat
+  labels:
+    component: registry
+    data-residency: australia
+  annotations:
+    description: "Grants all agents read access to registry"
+    compliance.framework: "australian-privacy-act"
+    audit.required: "true"
+subjects:
+- kind: ServiceAccount
+  name: financial-intelligence-agent
+  namespace: act-placemat
+- kind: ServiceAccount
+  name: research-analyst-agent
+  namespace: act-placemat
+- kind: ServiceAccount
+  name: compliance-officer-agent
+  namespace: act-placemat
+- kind: ServiceAccount
+  name: community-coordinator-agent
+  namespace: act-placemat
+- kind: ServiceAccount
+  name: intelligence-hub
+  namespace: act-placemat
+roleRef:
+  kind: Role
+  name: registry-access
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Pod Security Policy Binding for Australian Compliance
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: australian-pod-security-policy-binding
+  namespace: act-placemat
+  labels:
+    component: security
+    data-residency: australia
+  annotations:
+    description: "Binds all service accounts to Australian pod security policy"
+    compliance.framework: "australian-privacy-act"
+    security.policy: "australian-compliance"
+subjects:
+- kind: ServiceAccount
+  name: intelligence-hub
+  namespace: act-placemat
+- kind: ServiceAccount
+  name: financial-intelligence-agent
+  namespace: act-placemat
+- kind: ServiceAccount
+  name: research-analyst-agent
+  namespace: act-placemat
+- kind: ServiceAccount
+  name: compliance-officer-agent
+  namespace: act-placemat
+- kind: ServiceAccount
+  name: community-coordinator-agent
+  namespace: act-placemat
+- kind: ServiceAccount
+  name: registry-access
+  namespace: act-placemat
+- kind: ServiceAccount
+  name: monitoring
+  namespace: act-placemat
+- kind: ServiceAccount
+  name: backup-recovery
+  namespace: act-placemat
+- kind: ServiceAccount
+  name: compliance-auditor
+  namespace: act-placemat
+roleRef:
+  kind: ClusterRole
+  name: australian-data-residency-enforcer
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,37 @@
+{
+  "name": "@act-placemat/financial-intelligence",
+  "version": "1.0.0",
+  "description": "Financial Intelligence Agent for ACT Placemat with ethical governance and Australian compliance",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "clean": "rm -rf dist",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts"
+  },
+  "keywords": [
+    "financial-intelligence",
+    "agent",
+    "governance",
+    "consent",
+    "australia",
+    "xero",
+    "compliance"
+  ],
+  "author": "ACT - A Curious Tractor",
+  "license": "MIT",
+  "dependencies": {
+    "@act/types": "file:../types",
+    "@act/utils": "file:../utils",
+    "@act/data-integration": "file:../data-integration",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.0",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.12"
+  }
+}

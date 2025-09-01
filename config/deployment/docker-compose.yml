@@ -1,0 +1,606 @@
+# ACT Universal AI Platform - Microservices Architecture
+# Docker Compose Configuration with Community Empowerment Focus
+# Based on Domain Model: /Docs/Architecture/ACT_MICROSERVICES_DOMAIN_MODEL.md
+
+services:
+  # API Gateway - Unified Entry Point with Values Compliance Integration
+  api-gateway:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile.gateway
+    container_name: act-api-gateway
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - TZ=Australia/Sydney
+      - LOCALE=en-AU
+      - CURRENCY=AUD
+      - DATA_RESIDENCY=Australia
+      - VALUES_COMPLIANCE_URL=http://values-compliance:3001
+      - INTELLIGENCE_HUB_URL=http://intelligence-hub:3002
+      - AI_WORKHOUSE_URL=http://ai-workhouse:3003
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      # - KAFKA_HOST=kafka  # TODO: Add Kafka for event streaming
+      - JWT_SECRET=${JWT_SECRET}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - COMMUNITY_CONTROL_ENABLED=true
+      - BEAUTIFUL_OBSOLESCENCE_TIMELINE=true
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - redis
+      - values-compliance
+    networks:
+      - web-network
+      - intelligence-network
+    volumes:
+      - ./apps/backend:/app
+      - /app/node_modules
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    labels:
+      - "act.service=api-gateway"
+      - "act.community-control=enabled"
+      - "act.beautiful-obsolescence=2027"
+
+  # 1. Values Compliance Service - Shared Kernel for Community Empowerment
+  values-compliance:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile.values-compliance
+    container_name: act-values-compliance
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - TZ=Australia/Sydney
+      - LOCALE=en-AU
+      - DATA_RESIDENCY=Australia
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=act_values_compliance
+      - POSTGRES_USER=act_user
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - INDIGENOUS_ADVISORY_API_URL=${INDIGENOUS_ADVISORY_API_URL}
+      - BLOCKCHAIN_API_URL=${BLOCKCHAIN_API_URL}
+      - COMMUNITY_NOTIFICATION_API_URL=${COMMUNITY_NOTIFICATION_API_URL}
+      - COMMUNITY_CONTROL_MINIMUM=40
+      - BEAUTIFUL_OBSOLESCENCE_TARGET=2027
+      - VALUES_ENFORCEMENT=strict
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres
+    networks:
+      - intelligence-network
+      - database-network
+    volumes:
+      - ./apps/backend/src/services/valuesComplianceService.js:/app/src/services/valuesComplianceService.js:ro
+      - ./apps/backend/src/api/valuesCompliance.js:/app/src/api/valuesCompliance.js:ro
+      - ./apps/backend/database/values-compliance-schema.sql:/app/database/schema.sql:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/run
+    labels:
+      - "act.service=values-compliance"
+      - "act.role=shared-kernel"
+      - "act.community-control=enforcer"
+      - "act.indigenous-sovereignty=protected"
+      - "act.anti-extraction=enabled"
+
+  # Intelligence Hub - LangGraph Multi-Agent Orchestration (EXISTING SYSTEM)
+  intelligence-hub:
+    build:
+      context: ./apps/intelligence-hub
+      dockerfile: Dockerfile
+    container_name: act-intelligence-hub
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+      - PORT=3002
+      - TZ=Australia/Sydney
+      - LOCALE=en-AU
+      - DATA_RESIDENCY=Australia
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      - VALUES_COMPLIANCE_URL=http://values-compliance:3001
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - PERPLEXITY_API_KEY=${PERPLEXITY_API_KEY}
+      - MAX_CONCURRENT_TASKS=10
+      - AGENT_CAPABILITIES_FINANCIAL=financial-analysis,market-research,risk-assessment,abn-lookup,asic-queries
+      - AGENT_CAPABILITIES_RESEARCH=web-scraping,data-analysis,report-generation,fact-checking,source-verification
+      - AGENT_CAPABILITIES_COMPLIANCE=privacy-audit,regulatory-check,data-classification,australian-law-check
+      - AGENT_CAPABILITIES_COMMUNITY=stakeholder-engagement,democratic-processes,consensus-building,transparency-reporting
+      - DEMOCRATIC_VOTING_ENABLED=true
+      - COMMUNITY_PRIORITY_WEIGHT=0.7
+      - AI_GOVERNANCE=democratic
+      - BEAUTIFUL_OBSOLESCENCE_TARGET=2027
+    ports:
+      - "3002:3002"
+    depends_on:
+      - postgres
+      - redis
+      - values-compliance
+    networks:
+      - intelligence-network
+      - database-network
+    volumes:
+      - ./apps/intelligence-hub:/app
+      - /app/node_modules
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    labels:
+      - "act.service=intelligence-hub"
+      - "act.role=multi-agent-orchestration"
+      - "act.langgraph=enabled"
+      - "act.community-control=enabled"
+
+  # AI Workhouse - Financial Intelligence Platform (EXISTING SYSTEM)
+  ai-workhouse:
+    build:
+      context: ./apps/ai-workhouse
+      dockerfile: Dockerfile
+    container_name: act-ai-workhouse
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+      - PORT=3003
+      - TZ=Australia/Sydney
+      - LOCALE=en-AU
+      - DATA_RESIDENCY=Australia
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      - VALUES_COMPLIANCE_URL=http://values-compliance:3001
+      - INTELLIGENCE_HUB_URL=http://intelligence-hub:3002
+      - XERO_API_URL=${XERO_API_URL}
+      - XERO_CLIENT_ID=${XERO_CLIENT_ID}
+      - XERO_CLIENT_SECRET=${XERO_CLIENT_SECRET}
+      - XERO_TENANT_ID=${XERO_TENANT_ID}
+      - GMAIL_CLIENT_ID=${GMAIL_CLIENT_ID}
+      - GMAIL_CLIENT_SECRET=${GMAIL_CLIENT_SECRET}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - RECEIPT_DISCOVERY_ENABLED=true
+      - RECEIPT_CONFIDENCE_THRESHOLD=0.7
+      - GAMIFICATION_ENABLED=true
+      - ACT_BACKEND_URL=http://api-gateway:3000
+      - BEAUTIFUL_OBSOLESCENCE_TARGET=2027
+    ports:
+      - "3003:3003"
+    depends_on:
+      - postgres
+      - redis
+      - values-compliance
+      - intelligence-hub
+    networks:
+      - intelligence-network
+      - database-network
+    volumes:
+      - ./apps/ai-workhouse:/app
+      - /app/node_modules
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    labels:
+      - "act.service=ai-workhouse"
+      - "act.role=financial-intelligence"
+      - "act.receipt-discovery=enabled"
+      - "act.xero-integration=enabled"
+      - "act.community-control=enabled"
+
+  # Redis - State Management and Task Queue
+  redis:
+    image: redis:7-alpine
+    container_name: act-redis
+    restart: unless-stopped
+    environment:
+      - TZ=Australia/Sydney
+    command: >
+      redis-server
+      --appendonly yes
+      --appendfsync everysec
+      --maxmemory 1gb
+      --maxmemory-policy allkeys-lru
+      --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    networks:
+      - intelligence-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETUID
+      - SETGID
+    read_only: true
+    tmpfs:
+      - /tmp
+
+  # PostgreSQL - Persistent Storage
+  postgres:
+    image: postgres:16-alpine
+    container_name: act-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=act_placemat_intelligence
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - TZ=Australia/Sydney
+      - PGTZ=Australia/Sydney
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    networks:
+      - database-network
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETUID
+      - SETGID
+      - DAC_OVERRIDE
+
+  # NGINX - Reverse Proxy and Load Balancer
+  nginx:
+    image: nginx:alpine
+    container_name: act-nginx
+    restart: unless-stopped
+    environment:
+      - TZ=Australia/Sydney
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./docker/nginx/ssl:/etc/nginx/ssl:ro
+      - nginx-cache:/var/cache/nginx
+      - nginx-logs:/var/log/nginx
+    depends_on:
+      - intelligence-hub
+      - ai-workhouse
+    networks:
+      - web-network
+      - intelligence-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+      - CHOWN
+      - SETUID
+      - SETGID
+
+  # Monitoring Stack - Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: act-prometheus
+    restart: unless-stopped
+    environment:
+      - TZ=Australia/Sydney
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    networks:
+      - monitoring-network
+      - intelligence-network
+    ports:
+      - "9090:9090"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+  # Monitoring Stack - Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: act-grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+      - GF_ANALYTICS_CHECK_FOR_UPDATES=false
+      - GF_SERVER_DOMAIN=${DOMAIN:-localhost}
+      - GF_SERVER_ROOT_URL=https://${DOMAIN:-localhost}/grafana
+      - TZ=Australia/Sydney
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - monitoring-network
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+  # Log Aggregation - Fluentd
+  fluentd:
+    build:
+      context: ./docker/fluentd
+      dockerfile: Dockerfile
+    container_name: act-fluentd
+    restart: unless-stopped
+    environment:
+      - TZ=Australia/Sydney
+      - FLUENTD_CONF=fluent.conf
+    volumes:
+      - ./docker/fluentd/conf:/fluentd/etc:ro
+      - fluentd-logs:/fluentd/log
+      - intelligence-logs:/app/logs:ro
+    networks:
+      - monitoring-network
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:24220/api/plugins.json"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+  # Network Security - Fail2ban
+  fail2ban:
+    build:
+      context: ./docker/fail2ban
+      dockerfile: Dockerfile
+    container_name: act-fail2ban
+    restart: unless-stopped
+    environment:
+      - TZ=Australia/Sydney
+    volumes:
+      - /var/log:/var/log:ro
+      - nginx-logs:/var/log/nginx:ro
+      - ./docker/fail2ban/jail.local:/etc/fail2ban/jail.local:ro
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    privileged: false
+    security_opt:
+      - no-new-privileges:true
+
+# Network Configuration with Segmentation
+networks:
+  # Web-facing network (public access)
+  web-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: act-web-br
+    ipam:
+      config:
+        - subnet: 172.20.1.0/24
+          gateway: 172.20.1.1
+    labels:
+      - "purpose=public-web"
+      - "security-zone=dmz"
+      - "data-residency=australia"
+
+  # Intelligence Hub internal network
+  intelligence-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: act-intel-br
+    ipam:
+      config:
+        - subnet: 172.20.2.0/24
+          gateway: 172.20.2.1
+    internal: false
+    labels:
+      - "purpose=agent-communication"
+      - "security-zone=internal"
+      - "data-residency=australia"
+
+  # Database network (restricted access)
+  database-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: act-db-br
+    ipam:
+      config:
+        - subnet: 172.20.3.0/24
+          gateway: 172.20.3.1
+    internal: true
+    labels:
+      - "purpose=database-access"
+      - "security-zone=data"
+      - "data-residency=australia"
+
+  # Monitoring network
+  monitoring-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: act-mon-br
+    ipam:
+      config:
+        - subnet: 172.20.4.0/24
+          gateway: 172.20.4.1
+    internal: false
+    labels:
+      - "purpose=monitoring"
+      - "security-zone=admin"
+      - "data-residency=australia"
+
+# Persistent Volumes with Australian Data Residency
+volumes:
+  # Intelligence Hub data
+  intelligence-logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/act-placemat/logs
+    labels:
+      - "data-residency=australia"
+      - "backup-required=true"
+      - "retention-period=30d"
+
+  intelligence-config:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/act-placemat/config
+    labels:
+      - "data-residency=australia"
+      - "backup-required=true"
+
+  # Database data
+  postgres-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/act-placemat/data/postgres
+    labels:
+      - "data-residency=australia"
+      - "backup-required=true"
+      - "encryption-required=true"
+
+  redis-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/act-placemat/data/redis
+    labels:
+      - "data-residency=australia"
+      - "backup-required=true"
+
+  # Monitoring data
+  prometheus-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/act-placemat/monitoring/prometheus
+    labels:
+      - "data-residency=australia"
+      - "retention-period=30d"
+
+  grafana-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/act-placemat/monitoring/grafana
+    labels:
+      - "data-residency=australia"
+
+  # Log data
+  fluentd-logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/act-placemat/logs/fluentd
+    labels:
+      - "data-residency=australia"
+      - "retention-period=90d"
+
+  nginx-logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/act-placemat/logs/nginx
+    labels:
+      - "data-residency=australia"
+      - "retention-period=90d"
+
+  nginx-cache:
+    driver: local
+    labels:
+      - "data-residency=australia"
+      - "temporary=true"

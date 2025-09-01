@@ -1,0 +1,99 @@
+/* ACT Placemat - Minimal CSS Entry Point */
+/* Simplified approach - focus on getting basic functionality working */
+
+/* ALL @import statements must come first */
+@import url('../public/simple.css');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* Tailwind CSS directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Basic CSS custom properties for ACT colors */
+:root {
+  --color-ochre: #e17a2a;
+  --color-ochre-dark: #d2641f;
+  --color-eucalyptus: #3d8b63;
+  --color-eucalyptus-dark: #2e6f4f;
+  --color-sunset: #ef4444;
+  --color-sunset-dark: #dc2626;
+}
+
+/* Custom ACT components using standard CSS */
+.btn-primary {
+  background-color: var(--color-ochre);
+  color: white;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-ochre-dark);
+}
+
+.btn-secondary {
+  background-color: var(--color-eucalyptus);
+  color: white;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-eucalyptus-dark);
+}
+
+.card-act {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  transition: box-shadow 0.2s;
+}
+
+.card-act:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.text-ochre {
+  color: var(--color-ochre-dark);
+}
+
+.text-eucalyptus {
+  color: var(--color-eucalyptus-dark);
+}
+
+/* Gradient utilities */
+.bg-gradient-ochre {
+  background: linear-gradient(135deg, #efb881, #d2641f);
+}
+
+.bg-gradient-eucalyptus {
+  background: linear-gradient(135deg, #8dc4a7, #2e6f4f);
+}
+
+.bg-gradient-sunset {
+  background: linear-gradient(135deg, #f87171, #dc2626);
+}
+
+/* Ensure basic typography works */
+body {
+  font-family: Inter, system-ui, sans-serif;
+  color: #1f2937;
+  background-color: #f9fafb;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  color: #1f2937;
+}

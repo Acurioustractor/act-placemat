@@ -1,0 +1,2 @@
+lifeos-postgres:5432:lifeos_database:lifeos_user:lifeos_secure_password_2024
+lifeos-postgres:5432:*:postgres:lifeos_secure_password_2024

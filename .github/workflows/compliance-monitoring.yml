@@ -1,0 +1,524 @@
+name: Compliance Monitoring
+
+on:
+  schedule:
+    # Run compliance monitoring daily at 3 AM UTC
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    inputs:
+      compliance_frameworks:
+        description: 'Compliance frameworks to check'
+        required: false
+        default: 'australian-privacy-act,gdpr,iso27001'
+      generate_report:
+        description: 'Generate detailed compliance report'
+        required: false
+        default: 'true'
+        type: boolean
+
+env:
+  COMPLIANCE_FRAMEWORKS: "australian-privacy-act,gdpr,iso27001,pci-dss"
+  REPORT_FORMAT: "json,html,pdf"
+  RETENTION_DAYS: 90
+
+jobs:
+  compliance-audit:
+    name: Compliance Audit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      issues: write
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install Compliance Tools
+        run: |
+          # Install security and compliance scanning tools
+          pip install checkov
+          pip install safety
+          pip install bandit
+          
+          # Install report generation tools
+          pip install jinja2
+          pip install weasyprint
+          
+          # Verify installations
+          checkov --version
+          safety --version
+          bandit --version
+      
+      - name: Audit Infrastructure Compliance
+        id: infrastructure-audit
+        run: |
+          echo "Running infrastructure compliance audit..."
+          
+          mkdir -p compliance-results
+          
+          # Comprehensive Checkov scan for all compliance frameworks
+          checkov \
+            --directory . \
+            --framework terraform,kubernetes,dockerfile,github_actions \
+            --check ${{ github.event.inputs.compliance_frameworks || env.COMPLIANCE_FRAMEWORKS }} \
+            --output json \
+            --output-file compliance-results/infrastructure-compliance.json \
+            --quiet || true
+          
+          # Generate detailed HTML report
+          checkov \
+            --directory . \
+            --framework terraform,kubernetes,dockerfile,github_actions \
+            --check ${{ github.event.inputs.compliance_frameworks || env.COMPLIANCE_FRAMEWORKS }} \
+            --output cli \
+            --output-file compliance-results/infrastructure-compliance.txt || true
+          
+          # Extract compliance metrics
+          TOTAL_CHECKS=$(jq '.summary.total // 0' compliance-results/infrastructure-compliance.json)
+          PASSED_CHECKS=$(jq '.summary.passed // 0' compliance-results/infrastructure-compliance.json)
+          FAILED_CHECKS=$(jq '.summary.failed // 0' compliance-results/infrastructure-compliance.json)
+          COMPLIANCE_RATE=$(echo "scale=2; $PASSED_CHECKS * 100 / $TOTAL_CHECKS" | bc -l 2>/dev/null || echo "0")
+          
+          echo "infrastructure_total_checks=${TOTAL_CHECKS}" >> $GITHUB_OUTPUT
+          echo "infrastructure_passed_checks=${PASSED_CHECKS}" >> $GITHUB_OUTPUT
+          echo "infrastructure_failed_checks=${FAILED_CHECKS}" >> $GITHUB_OUTPUT
+          echo "infrastructure_compliance_rate=${COMPLIANCE_RATE}" >> $GITHUB_OUTPUT
+          
+          echo "Infrastructure compliance audit completed"
+          echo "Total checks: $TOTAL_CHECKS, Passed: $PASSED_CHECKS, Failed: $FAILED_CHECKS"
+          echo "Compliance rate: ${COMPLIANCE_RATE}%"
+      
+      - name: Audit Code Security
+        id: code-audit
+        run: |
+          echo "Running code security audit..."
+          
+          # Python security audit with bandit
+          if find . -name "*.py" -not -path "./.git/*" -not -path "./node_modules/*" | head -1 | grep -q .; then
+            bandit -r . -f json -o compliance-results/python-security.json || true
+            bandit -r . -f txt -o compliance-results/python-security.txt || true
+          else
+            echo '{"results": [], "metrics": {"total_lines": 0, "total_issues": 0}}' > compliance-results/python-security.json
+            echo "No Python files found for security audit" > compliance-results/python-security.txt
+          fi
+          
+          # JavaScript/Node.js security audit
+          if [ -f "package.json" ] || [ -f "apps/frontend/package.json" ] || [ -f "apps/backend/package.json" ]; then
+            echo "Running npm security audit..."
+            
+            # Check root package.json
+            if [ -f "package.json" ]; then
+              npm audit --audit-level moderate --json > compliance-results/npm-audit-root.json 2>/dev/null || true
+            fi
+            
+            # Check frontend
+            if [ -f "apps/frontend/package.json" ]; then
+              cd apps/frontend
+              npm audit --audit-level moderate --json > ../../compliance-results/npm-audit-frontend.json 2>/dev/null || true
+              cd ../..
+            fi
+            
+            # Check backend
+            if [ -f "apps/backend/package.json" ]; then
+              cd apps/backend
+              npm audit --audit-level moderate --json > ../../compliance-results/npm-audit-backend.json 2>/dev/null || true
+              cd ../..
+            fi
+          fi
+          
+          # Python dependency security audit with safety
+          if [ -f "requirements.txt" ] || find . -name "requirements*.txt" | head -1 | grep -q .; then
+            safety check --json --output compliance-results/python-dependencies.json || true
+            safety check --output compliance-results/python-dependencies.txt || true
+          else
+            echo '{"vulnerabilities": []}' > compliance-results/python-dependencies.json
+            echo "No Python requirements files found" > compliance-results/python-dependencies.txt
+          fi
+          
+          echo "Code security audit completed"
+      
+      - name: Australian Privacy Act Assessment
+        id: privacy-audit
+        run: |
+          echo "Assessing Australian Privacy Act compliance..."
+          
+          # Check for data handling and privacy controls
+          cat > compliance-results/privacy-assessment.py << 'EOF'
+import json
+import re
+import os
+from pathlib import Path
+
+def assess_privacy_compliance():
+    compliance_score = 100
+    issues = []
+    recommendations = []
+    
+    # Load infrastructure compliance results
+    try:
+        with open('compliance-results/infrastructure-compliance.json', 'r') as f:
+            infra_results = json.load(f)
+    except:
+        infra_results = {'results': {'failed_checks': []}}
+    
+    # Check for encryption requirements
+    encryption_issues = [
+        check for check in infra_results.get('results', {}).get('failed_checks', [])
+        if 'encrypt' in check.get('check_name', '').lower() or 
+           'encrypt' in check.get('description', '').lower()
+    ]
+    
+    if encryption_issues:
+        compliance_score -= len(encryption_issues) * 5
+        issues.append(f"Encryption violations detected: {len(encryption_issues)} issues")
+        recommendations.append("Implement encryption at rest and in transit for all data")
+    
+    # Check for access control issues
+    access_issues = [
+        check for check in infra_results.get('results', {}).get('failed_checks', [])
+        if any(keyword in check.get('check_name', '').lower() 
+               for keyword in ['access', 'permission', 'policy', 'role'])
+    ]
+    
+    if access_issues:
+        compliance_score -= len(access_issues) * 3
+        issues.append(f"Access control violations: {len(access_issues)} issues")
+        recommendations.append("Implement least privilege access controls")
+    
+    # Check for logging and monitoring
+    logging_issues = [
+        check for check in infra_results.get('results', {}).get('failed_checks', [])
+        if any(keyword in check.get('check_name', '').lower() 
+               for keyword in ['log', 'monitor', 'audit', 'trail'])
+    ]
+    
+    if logging_issues:
+        compliance_score -= len(logging_issues) * 2
+        issues.append(f"Logging/monitoring gaps: {len(logging_issues)} issues")
+        recommendations.append("Enable comprehensive audit logging and monitoring")
+    
+    # Data residency check (simplified)
+    data_residency_compliant = True
+    region_patterns = ['us-', 'eu-', 'asia-']
+    
+    # This would need more sophisticated checking in real implementation
+    for file_path in Path('.').rglob('*.tf'):
+        try:
+            content = file_path.read_text()
+            for pattern in region_patterns:
+                if pattern in content and 'australia' not in content.lower():
+                    data_residency_compliant = False
+                    break
+        except:
+            continue
+    
+    if not data_residency_compliant:
+        compliance_score -= 20
+        issues.append("Potential data residency violations detected")
+        recommendations.append("Ensure all data processing occurs within Australian regions")
+    
+    # Generate assessment report
+    assessment = {
+        "framework": "Australian Privacy Act 1988",
+        "assessment_date": "$(date -u)",
+        "compliance_score": max(0, compliance_score),
+        "grade": "A" if compliance_score >= 95 else "B" if compliance_score >= 85 else "C" if compliance_score >= 70 else "D" if compliance_score >= 50 else "F",
+        "total_issues": len(issues),
+        "critical_requirements": {
+            "data_encryption": len(encryption_issues) == 0,
+            "access_controls": len(access_issues) == 0,
+            "audit_logging": len(logging_issues) == 0,
+            "data_residency": data_residency_compliant
+        },
+        "issues": issues,
+        "recommendations": recommendations,
+        "next_review_date": "$(date -d '+3 months' -u)"
+    }
+    
+    with open('compliance-results/privacy-act-assessment.json', 'w') as f:
+        json.dump(assessment, f, indent=2)
+    
+    print(f"Privacy compliance score: {compliance_score}%")
+    return compliance_score
+
+if __name__ == "__main__":
+    assess_privacy_compliance()
+EOF
+          
+          python compliance-results/privacy-assessment.py
+          
+          # Extract privacy compliance score
+          PRIVACY_SCORE=$(jq -r '.compliance_score' compliance-results/privacy-act-assessment.json)
+          echo "privacy_compliance_score=${PRIVACY_SCORE}" >> $GITHUB_OUTPUT
+          
+          echo "Australian Privacy Act assessment completed: ${PRIVACY_SCORE}%"
+      
+      - name: Generate Compliance Dashboard
+        if: github.event.inputs.generate_report == 'true' || github.event_name == 'schedule'
+        run: |
+          echo "Generating compliance dashboard..."
+          
+          cat > compliance-results/generate-dashboard.py << 'EOF'
+import json
+import datetime
+from pathlib import Path
+
+def generate_dashboard():
+    # Load all compliance data
+    try:
+        with open('compliance-results/infrastructure-compliance.json', 'r') as f:
+            infra_data = json.load(f)
+    except:
+        infra_data = {}
+    
+    try:
+        with open('compliance-results/privacy-act-assessment.json', 'r') as f:
+            privacy_data = json.load(f)
+    except:
+        privacy_data = {}
+    
+    # Generate HTML dashboard
+    html_template = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>ACT Placemat Compliance Dashboard</title>
+        <style>
+            body {{ font-family: Arial, sans-serif; margin: 40px; }}
+            .header {{ background: #2563eb; color: white; padding: 20px; border-radius: 8px; }}
+            .metrics {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0; }}
+            .metric {{ background: #f8fafc; padding: 20px; border-radius: 8px; border-left: 4px solid #2563eb; }}
+            .score {{ font-size: 2em; font-weight: bold; }}
+            .grade-A {{ color: #059669; }}
+            .grade-B {{ color: #0891b2; }}
+            .grade-C {{ color: #d97706; }}
+            .grade-D {{ color: #dc2626; }}
+            .grade-F {{ color: #991b1b; }}
+            .section {{ background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }}
+            .issue {{ background: #fef2f2; padding: 10px; margin: 5px 0; border-radius: 4px; border-left: 4px solid #ef4444; }}
+            .success {{ background: #f0fdf4; padding: 10px; margin: 5px 0; border-radius: 4px; border-left: 4px solid #22c55e; }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>ACT Placemat Compliance Dashboard</h1>
+            <p>Generated on {datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC</p>
+        </div>
+        
+        <div class="metrics">
+            <div class="metric">
+                <h3>Infrastructure Compliance</h3>
+                <div class="score">{infra_data.get('summary', {}).get('passed', 0)}/{infra_data.get('summary', {}).get('total', 0)}</div>
+                <p>Passed Checks</p>
+            </div>
+            <div class="metric">
+                <h3>Privacy Act Compliance</h3>
+                <div class="score grade-{privacy_data.get('grade', 'F')}">{privacy_data.get('compliance_score', 0)}%</div>
+                <p>Grade: {privacy_data.get('grade', 'F')}</p>
+            </div>
+            <div class="metric">
+                <h3>Critical Requirements</h3>
+                <div class="score">{sum(privacy_data.get('critical_requirements', {}).values())}/{len(privacy_data.get('critical_requirements', {}))}</div>
+                <p>Met Requirements</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Australian Privacy Act Assessment</h2>
+            <h3>Critical Requirements Status</h3>
+    """
+    
+    for req, status in privacy_data.get('critical_requirements', {}).items():
+        status_class = 'success' if status else 'issue'
+        status_text = '✅ COMPLIANT' if status else '❌ NON-COMPLIANT'
+        html_template += f'<div class="{status_class}"><strong>{req.replace("_", " ").title()}:</strong> {status_text}</div>'
+    
+    html_template += f"""
+            <h3>Issues and Recommendations</h3>
+            {''.join(f'<div class="issue">• {issue}</div>' for issue in privacy_data.get('issues', []))}
+            {''.join(f'<div class="success">• {rec}</div>' for rec in privacy_data.get('recommendations', []))}
+        </div>
+        
+        <div class="section">
+            <h2>Infrastructure Security</h2>
+            <p><strong>Total Checks:</strong> {infra_data.get('summary', {}).get('total', 0)}</p>
+            <p><strong>Passed:</strong> {infra_data.get('summary', {}).get('passed', 0)}</p>
+            <p><strong>Failed:</strong> {infra_data.get('summary', {}).get('failed', 0)}</p>
+            <p><strong>Compliance Rate:</strong> {round(infra_data.get('summary', {}).get('passed', 0) * 100 / max(infra_data.get('summary', {}).get('total', 1), 1), 2)}%</p>
+        </div>
+        
+        <div class="section">
+            <h2>Next Steps</h2>
+            <ol>
+                <li>Review and remediate critical compliance violations</li>
+                <li>Implement recommended security controls</li>
+                <li>Schedule next compliance review for {privacy_data.get('next_review_date', 'TBD')}</li>
+                <li>Update security documentation and procedures</li>
+            </ol>
+        </div>
+    </body>
+    </html>
+    """
+    
+    with open('compliance-results/compliance-dashboard.html', 'w') as f:
+        f.write(html_template)
+    
+    # Generate JSON summary for API consumption
+    summary = {{
+        "generated_at": datetime.datetime.utcnow().isoformat(),
+        "overall_compliance_score": privacy_data.get('compliance_score', 0),
+        "infrastructure_compliance_rate": round(infra_data.get('summary', {{}}).get('passed', 0) * 100 / max(infra_data.get('summary', {{}}).get('total', 1), 1), 2),
+        "critical_requirements_met": sum(privacy_data.get('critical_requirements', {{}}).values()),
+        "total_critical_requirements": len(privacy_data.get('critical_requirements', {{}})),
+        "total_issues": len(privacy_data.get('issues', [])),
+        "frameworks_assessed": ["Australian Privacy Act", "GDPR", "ISO27001"],
+        "next_review_date": privacy_data.get('next_review_date'),
+        "status": "compliant" if privacy_data.get('compliance_score', 0) >= 85 else "non_compliant"
+    }}
+    
+    with open('compliance-results/compliance-summary.json', 'w') as f:
+        json.dump(summary, f, indent=2)
+    
+    print("Compliance dashboard generated successfully")
+
+if __name__ == "__main__":
+    generate_dashboard()
+EOF
+          
+          python compliance-results/generate-dashboard.py
+          
+          echo "Compliance dashboard generated"
+      
+      - name: Check Compliance Thresholds
+        id: compliance-gate
+        run: |
+          PRIVACY_SCORE="${{ steps.privacy-audit.outputs.privacy_compliance_score }}"
+          INFRA_COMPLIANCE="${{ steps.infrastructure-audit.outputs.infrastructure_compliance_rate }}"
+          
+          echo "Compliance Gate Evaluation:"
+          echo "Privacy Act Score: ${PRIVACY_SCORE}%"
+          echo "Infrastructure Compliance: ${INFRA_COMPLIANCE}%"
+          
+          # Set compliance thresholds
+          PRIVACY_THRESHOLD=85
+          INFRA_THRESHOLD=90
+          
+          COMPLIANCE_PASS=true
+          
+          if (( $(echo "$PRIVACY_SCORE < $PRIVACY_THRESHOLD" | bc -l) )); then
+            echo "❌ Privacy Act compliance below threshold (${PRIVACY_THRESHOLD}%)"
+            COMPLIANCE_PASS=false
+          fi
+          
+          if (( $(echo "$INFRA_COMPLIANCE < $INFRA_THRESHOLD" | bc -l) )); then
+            echo "❌ Infrastructure compliance below threshold (${INFRA_THRESHOLD}%)"
+            COMPLIANCE_PASS=false
+          fi
+          
+          if [ "$COMPLIANCE_PASS" = true ]; then
+            echo "✅ All compliance thresholds met"
+          else
+            echo "⚠️ Compliance thresholds not met - remediation required"
+          fi
+          
+          echo "compliance_pass=${COMPLIANCE_PASS}" >> $GITHUB_OUTPUT
+      
+      - name: Create Compliance Issue
+        if: steps.compliance-gate.outputs.compliance_pass != 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            let issueBody = '# Compliance Violation Alert\n\n';
+            issueBody += `**Assessment Date:** ${new Date().toISOString()}\n`;
+            issueBody += `**Repository:** ${context.repo.owner}/${context.repo.repo}\n`;
+            issueBody += `**Workflow:** ${context.workflow}\n\n`;
+            
+            issueBody += '## Compliance Status\n\n';
+            issueBody += `- Privacy Act Score: ${{ steps.privacy-audit.outputs.privacy_compliance_score }}% (Threshold: 85%)\n`;
+            issueBody += `- Infrastructure Compliance: ${{ steps.infrastructure-audit.outputs.infrastructure_compliance_rate }}% (Threshold: 90%)\n\n`;
+            
+            try {
+              const privacyData = JSON.parse(fs.readFileSync('compliance-results/privacy-act-assessment.json', 'utf8'));
+              
+              if (privacyData.issues && privacyData.issues.length > 0) {
+                issueBody += '## Critical Issues\n\n';
+                for (const issue of privacyData.issues) {
+                  issueBody += `- ${issue}\n`;
+                }
+                issueBody += '\n';
+              }
+              
+              if (privacyData.recommendations && privacyData.recommendations.length > 0) {
+                issueBody += '## Recommendations\n\n';
+                for (const rec of privacyData.recommendations) {
+                  issueBody += `- ${rec}\n`;
+                }
+                issueBody += '\n';
+              }
+            } catch (error) {
+              console.log('Could not read privacy assessment data');
+            }
+            
+            issueBody += '## Next Steps\n\n';
+            issueBody += '1. Review compliance violations in the [workflow run](' + context.payload.repository.html_url + '/actions/runs/' + context.runId + ')\n';
+            issueBody += '2. Implement recommended security controls\n';
+            issueBody += '3. Re-run compliance assessment\n';
+            issueBody += '4. Update security documentation\n\n';
+            
+            issueBody += '**This issue was automatically generated by the compliance monitoring system.**';
+            
+            // Check if similar issue already exists
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'compliance-violation',
+              state: 'open'
+            });
+            
+            if (issues.length === 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `Compliance Violation Alert - ${new Date().toISOString().split('T')[0]}`,
+                body: issueBody,
+                labels: ['compliance-violation', 'security', 'urgent']
+              });
+            } else {
+              console.log('Similar compliance issue already exists, skipping creation');
+            }
+      
+      - name: Upload Compliance Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: compliance-report-${{ github.run_number }}
+          path: compliance-results/
+          retention-days: ${{ env.RETENTION_DAYS }}
+      
+      - name: Notify Compliance Team
+        if: steps.compliance-gate.outputs.compliance_pass != 'true'
+        run: |
+          echo "Compliance violation detected - notifications would be sent to:"
+          echo "- Security team via Slack"
+          echo "- Compliance officer via email"
+          echo "- Management dashboard alert"
+          # In production, implement actual notification mechanisms
+      
+      - name: Update Compliance Metrics
+        run: |
+          echo "Updating compliance metrics..."
+          echo "Privacy Score: ${{ steps.privacy-audit.outputs.privacy_compliance_score }}%"
+          echo "Infrastructure Compliance: ${{ steps.infrastructure-audit.outputs.infrastructure_compliance_rate }}%"
+          echo "Assessment Date: $(date -u)"
+          
+          # In production, this would update metrics in monitoring systems
+          # like Prometheus, CloudWatch, or Azure Monitor

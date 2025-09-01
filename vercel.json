@@ -1,34 +1,39 @@
 {
   "version": 2,
+  "name": "factory-records-basquiat-placemat",
   "builds": [
     {
-      "src": "src/server/server.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "client/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "client/dist"
-      }
+      "src": "factory-records-placemat-vercel.html",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/src/server/server.js"
+      "src": "/",
+      "dest": "/factory-records-placemat-vercel.html"
     },
     {
-      "src": "/(.*)",
-      "dest": "/client/dist/$1"
+      "src": "/media/(.*)",
+      "dest": "/media/$1"
     }
   ],
-  "env": {
-    "NODE_ENV": "production"
-  },
-  "functions": {
-    "src/server/server.js": {
-      "maxDuration": 30
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
     }
-  }
+  ]
 }

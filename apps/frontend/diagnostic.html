@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CSS Diagnostic Tool</title>
+  <style>
+    body { font-family: monospace; padding: 20px; }
+    .section { margin: 20px 0; padding: 15px; border: 2px solid #333; }
+    .error { color: red; font-weight: bold; }
+    .success { color: green; font-weight: bold; }
+    .warning { color: orange; }
+    button { padding: 10px 20px; font-size: 16px; margin: 5px; }
+    pre { background: #f0f0f0; padding: 10px; overflow-x: auto; }
+    iframe { width: 100%; height: 400px; border: 3px solid red; }
+  </style>
+</head>
+<body>
+  <h1>🔍 CSS Diagnostic Tool</h1>
+  
+  <div class="section">
+    <h2>Step 1: Open DevTools Console (F12)</h2>
+    <p>Copy and paste this code into your browser console while on http://localhost:5175:</p>
+    <pre id="diagnostic-code">
+// CSS Diagnostic Script
+(() => {
+  const report = {
+    url: window.location.href,
+    timestamp: new Date().toISOString(),
+    stylesheets: [],
+    styleTags: [],
+    computedStyles: {},
+    errors: [],
+    cssRules: []
+  };
+
+  // Check all stylesheets
+  try {
+    Array.from(document.styleSheets).forEach((sheet, i) => {
+      report.stylesheets.push({
+        index: i,
+        href: sheet.href || 'inline',
+        disabled: sheet.disabled,
+        ruleCount: sheet.cssRules ? sheet.cssRules.length : 'N/A'
+      });
+      
+      // Try to get first 5 rules
+      if (sheet.cssRules) {
+        for (let j = 0; j < Math.min(5, sheet.cssRules.length); j++) {
+          report.cssRules.push(sheet.cssRules[j].cssText);
+        }
+      }
+    });
+  } catch (e) {
+    report.errors.push('Cannot access stylesheets: ' + e.message);
+  }
+
+  // Check style tags
+  document.querySelectorAll('style').forEach((style, i) => {
+    report.styleTags.push({
+      index: i,
+      length: style.textContent.length,
+      preview: style.textContent.substring(0, 100)
+    });
+  });
+
+  // Check body computed styles
+  const bodyStyles = window.getComputedStyle(document.body);
+  report.computedStyles = {
+    backgroundColor: bodyStyles.backgroundColor,
+    color: bodyStyles.color,
+    fontFamily: bodyStyles.fontFamily,
+    fontSize: bodyStyles.fontSize,
+    display: bodyStyles.display
+  };
+
+  // Check for specific classes
+  const testClasses = ['landing-card', 'bg-white', 'public-layout', 'internal-layout'];
+  report.classCheck = {};
+  testClasses.forEach(cls => {
+    const elem = document.querySelector('.' + cls);
+    report.classCheck[cls] = elem ? 'FOUND' : 'NOT FOUND';
+  });
+
+  // Check if JavaScript is working
+  report.jsWorking = typeof window !== 'undefined';
+  report.viteHMR = !!window.__vite_plugin_react_refresh_runtime;
+
+  // Copy to clipboard
+  const reportText = JSON.stringify(report, null, 2);
+  navigator.clipboard.writeText(reportText).then(() => {
+    console.log('%c✅ Report copied to clipboard!', 'color: green; font-size: 20px');
+    console.log('Paste it back in the diagnostic tool');
+  });
+
+  console.log(report);
+  return report;
+})();
+    </pre>
+    <button onclick="copyCode()">Copy Diagnostic Code</button>
+  </div>
+
+  <div class="section">
+    <h2>Step 2: Paste the Report Here</h2>
+    <textarea id="report-input" rows="10" style="width: 100%; font-family: monospace;" placeholder="Paste the JSON report here..."></textarea>
+    <button onclick="analyzeReport()">Analyze Report</button>
+  </div>
+
+  <div class="section" id="analysis" style="display: none;">
+    <h2>Analysis Results</h2>
+    <div id="analysis-content"></div>
+  </div>
+
+  <div class="section">
+    <h2>Step 3: Take Screenshot</h2>
+    <p>Press <strong>Cmd+Shift+4</strong> (Mac) or <strong>Win+Shift+S</strong> (Windows) and capture what you see</p>
+    <p>Save it as screenshot.png in the frontend folder</p>
+  </div>
+
+  <div class="section">
+    <h2>Live Test Frame</h2>
+    <iframe src="http://localhost:5175" id="test-frame"></iframe>
+    <button onclick="checkFrame()">Check iFrame CSS</button>
+    <div id="frame-results"></div>
+  </div>
+
+  <script>
+    function copyCode() {
+      const code = document.getElementById('diagnostic-code').textContent;
+      navigator.clipboard.writeText(code);
+      alert('Code copied! Now paste it in your browser console at http://localhost:5175');
+    }
+
+    function analyzeReport() {
+      const input = document.getElementById('report-input').value;
+      if (!input) {
+        alert('Please paste the report first');
+        return;
+      }
+
+      try {
+        const report = JSON.parse(input);
+        const analysis = document.getElementById('analysis');
+        const content = document.getElementById('analysis-content');
+        
+        let html = '';
+        
+        // Check stylesheets
+        html += '<h3>Stylesheets Status:</h3>';
+        if (report.stylesheets.length === 0) {
+          html += '<p class="error">❌ NO STYLESHEETS FOUND - This is the problem!</p>';
+        } else {
+          report.stylesheets.forEach(sheet => {
+            html += `<p>• ${sheet.href || 'inline'} - ${sheet.ruleCount} rules ${sheet.disabled ? '(DISABLED)' : ''}</p>`;
+          });
+        }
+
+        // Check style tags
+        html += '<h3>Style Tags:</h3>';
+        if (report.styleTags.length === 0) {
+          html += '<p class="warning">⚠️ No &lt;style&gt; tags found</p>';
+        } else {
+          html += `<p class="success">✅ Found ${report.styleTags.length} style tags</p>`;
+        }
+
+        // Check computed styles
+        html += '<h3>Body Computed Styles:</h3>';
+        html += '<pre>' + JSON.stringify(report.computedStyles, null, 2) + '</pre>';
+        
+        if (report.computedStyles.backgroundColor === 'rgba(0, 0, 0, 0)' || 
+            report.computedStyles.backgroundColor === 'transparent') {
+          html += '<p class="error">❌ No background color - CSS not applied!</p>';
+        }
+
+        // Check classes
+        html += '<h3>CSS Classes Check:</h3>';
+        Object.entries(report.classCheck).forEach(([cls, status]) => {
+          if (status === 'FOUND') {
+            html += `<p class="success">✅ .${cls} - ${status}</p>`;
+          } else {
+            html += `<p class="error">❌ .${cls} - ${status}</p>`;
+          }
+        });
+
+        // Check Vite
+        html += '<h3>Vite Status:</h3>';
+        if (report.viteHMR) {
+          html += '<p class="success">✅ Vite HMR is active</p>';
+        } else {
+          html += '<p class="error">❌ Vite HMR not detected</p>';
+        }
+
+        // Show errors
+        if (report.errors.length > 0) {
+          html += '<h3 class="error">Errors:</h3>';
+          report.errors.forEach(err => {
+            html += `<p class="error">${err}</p>`;
+          });
+        }
+
+        // CSS Rules preview
+        if (report.cssRules && report.cssRules.length > 0) {
+          html += '<h3>Sample CSS Rules:</h3>';
+          html += '<pre>' + report.cssRules.slice(0, 3).join('\n') + '</pre>';
+        }
+
+        content.innerHTML = html;
+        analysis.style.display = 'block';
+        
+        // Save to file
+        const blob = new Blob([JSON.stringify(report, null, 2)], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'css-diagnostic-report.json';
+        a.click();
+        
+      } catch (e) {
+        alert('Invalid JSON: ' + e.message);
+      }
+    }
+
+    function checkFrame() {
+      try {
+        const frame = document.getElementById('test-frame');
+        const frameDoc = frame.contentDocument;
+        const results = document.getElementById('frame-results');
+        
+        const stylesheets = frameDoc.styleSheets.length;
+        const styles = frameDoc.querySelectorAll('style').length;
+        const bodyBg = frameDoc.body ? window.getComputedStyle(frameDoc.body).backgroundColor : 'N/A';
+        
+        results.innerHTML = `
+          <p>iFrame CSS Status:</p>
+          <p>• Stylesheets: ${stylesheets}</p>
+          <p>• Style tags: ${styles}</p>
+          <p>• Body background: ${bodyBg}</p>
+        `;
+      } catch (e) {
+        document.getElementById('frame-results').innerHTML = 
+          '<p class="error">Cannot access iframe (CORS): ' + e.message + '</p>';
+      }
+    }
+
+    // Auto-check on load
+    setTimeout(checkFrame, 2000);
+  </script>
+</body>
+</html>

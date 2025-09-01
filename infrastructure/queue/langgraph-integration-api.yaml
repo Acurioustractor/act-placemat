@@ -1,0 +1,946 @@
+# LangGraph Integration API for Task Queue
+# Agent workflow coordination and task orchestration
+
+---
+# LangGraph Integration API ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: langgraph-integration-config
+  namespace: act-placemat
+  labels:
+    component: task-queue
+    service-type: langgraph-integration
+    data-residency: australia
+  annotations:
+    description: "LangGraph integration configuration for agent coordination"
+    compliance.framework: "australian-privacy-act"
+data:
+  integration_config.yaml: |
+    # LangGraph Integration Configuration
+    langgraph_integration:
+      # Agent types and capabilities
+      agent_types:
+        financial_intelligence:
+          capabilities:
+            - "financial_analysis"
+            - "compliance_checking"
+            - "risk_assessment"
+            - "regulatory_reporting"
+          max_concurrent_tasks: 5
+          default_timeout: 1800  # 30 minutes
+          priority_weight: 8
+          required_resources:
+            cpu: "1000m"
+            memory: "2Gi"
+            
+        research_analyst:
+          capabilities:
+            - "policy_research"
+            - "market_analysis"
+            - "data_collection"
+            - "trend_analysis"
+          max_concurrent_tasks: 3
+          default_timeout: 3600  # 60 minutes
+          priority_weight: 6
+          required_resources:
+            cpu: "1500m"
+            memory: "3Gi"
+            
+        compliance_officer:
+          capabilities:
+            - "regulatory_compliance"
+            - "audit_trail_validation"
+            - "privacy_assessment"
+            - "data_governance"
+          max_concurrent_tasks: 2
+          default_timeout: 2400  # 40 minutes
+          priority_weight: 9
+          required_resources:
+            cpu: "800m"
+            memory: "1.5Gi"
+            
+        community_coordinator:
+          capabilities:
+            - "stakeholder_engagement"
+            - "workflow_orchestration"
+            - "communication_facilitation"
+            - "consensus_building"
+          max_concurrent_tasks: 4
+          default_timeout: 2700  # 45 minutes
+          priority_weight: 7
+          required_resources:
+            cpu: "1200m"
+            memory: "2.5Gi"
+      
+      # Workflow coordination patterns
+      workflow_patterns:
+        sequential:
+          description: "Execute tasks one after another"
+          coordination_type: "linear"
+          error_handling: "stop_on_failure"
+          
+        parallel:
+          description: "Execute tasks simultaneously"
+          coordination_type: "concurrent"
+          error_handling: "continue_on_partial_failure"
+          
+        map_reduce:
+          description: "Distribute work across agents, then aggregate results"
+          coordination_type: "distributed"
+          error_handling: "retry_failed_partitions"
+          
+        consensus:
+          description: "Multiple agents process same input for consensus"
+          coordination_type: "consensus"
+          error_handling: "majority_vote"
+          
+        hierarchical:
+          description: "Coordinator agent manages sub-agents"
+          coordination_type: "hierarchical"
+          error_handling: "escalate_to_coordinator"
+      
+      # Task routing and distribution
+      task_routing:
+        routing_strategy: "capability_based"
+        load_balancing: "least_loaded"
+        affinity_rules:
+          - type: "agent_specialization"
+            weight: 0.4
+          - type: "current_load"
+            weight: 0.3
+          - type: "resource_availability"
+            weight: 0.2
+          - type: "task_history"
+            weight: 0.1
+            
+        fallback_strategy: "round_robin"
+        max_queue_time: 1800  # 30 minutes
+        
+      # Inter-agent communication
+      communication:
+        message_protocol: "langgraph_standard"
+        serialization: "json"
+        compression: "gzip"
+        encryption: "tls13"
+        
+        channels:
+          coordination:
+            type: "broadcast"
+            reliability: "at_least_once"
+            retention: 3600  # 1 hour
+            
+          direct_messaging:
+            type: "point_to_point"
+            reliability: "exactly_once"
+            retention: 86400  # 24 hours
+            
+          status_updates:
+            type: "pub_sub"
+            reliability: "at_most_once"
+            retention: 300  # 5 minutes
+            
+      # State management
+      state_management:
+        checkpoint_strategy: "after_each_step"
+        state_persistence: "database"
+        state_compression: true
+        state_encryption: true
+        
+        checkpoint_retention:
+          success: 86400     # 24 hours
+          failure: 604800    # 7 days
+          in_progress: 3600  # 1 hour
+          
+      # Australian compliance for workflows
+      compliance:
+        audit_all_workflows: true
+        data_residency_enforcement: true
+        privacy_protection: true
+        consent_management: true
+        
+        workflow_metadata:
+          data_classification: "restricted"
+          retention_period: "7 years"
+          compliance_framework: "australian_privacy_act"
+          geographic_restriction: "australia_only"
+
+  # API endpoint definitions
+  api_endpoints.yaml: |
+    # LangGraph Integration API Endpoints
+    api_endpoints:
+      # Workflow management
+      workflow_management:
+        create_workflow:
+          path: "/api/v1/workflows"
+          method: "POST"
+          description: "Create new agent workflow"
+          auth_required: true
+          rate_limit: 100  # per hour
+          
+        get_workflow:
+          path: "/api/v1/workflows/{workflow_id}"
+          method: "GET"
+          description: "Get workflow status and details"
+          auth_required: true
+          rate_limit: 1000  # per hour
+          
+        update_workflow:
+          path: "/api/v1/workflows/{workflow_id}"
+          method: "PUT"
+          description: "Update workflow configuration"
+          auth_required: true
+          rate_limit: 50   # per hour
+          
+        delete_workflow:
+          path: "/api/v1/workflows/{workflow_id}"
+          method: "DELETE"
+          description: "Cancel and delete workflow"
+          auth_required: true
+          rate_limit: 20   # per hour
+          
+      # Task coordination
+      task_coordination:
+        submit_task:
+          path: "/api/v1/tasks/submit"
+          method: "POST"
+          description: "Submit task to appropriate agent queue"
+          auth_required: true
+          rate_limit: 1000  # per hour
+          
+        get_task_status:
+          path: "/api/v1/tasks/{task_id}/status"
+          method: "GET"
+          description: "Get current task status"
+          auth_required: true
+          rate_limit: 2000  # per hour
+          
+        cancel_task:
+          path: "/api/v1/tasks/{task_id}/cancel"
+          method: "POST"
+          description: "Cancel running or queued task"
+          auth_required: true
+          rate_limit: 100   # per hour
+          
+        get_task_result:
+          path: "/api/v1/tasks/{task_id}/result"
+          method: "GET"
+          description: "Get completed task result"
+          auth_required: true
+          rate_limit: 500   # per hour
+          
+      # Agent management
+      agent_management:
+        register_agent:
+          path: "/api/v1/agents/register"
+          method: "POST"
+          description: "Register new agent instance"
+          auth_required: true
+          rate_limit: 10    # per hour
+          
+        get_agent_status:
+          path: "/api/v1/agents/{agent_id}/status"
+          method: "GET"
+          description: "Get agent health and capacity"
+          auth_required: true
+          rate_limit: 500   # per hour
+          
+        update_agent_capacity:
+          path: "/api/v1/agents/{agent_id}/capacity"
+          method: "PUT"
+          description: "Update agent capacity limits"
+          auth_required: true
+          rate_limit: 20    # per hour
+          
+      # Coordination and communication
+      coordination:
+        send_message:
+          path: "/api/v1/coordination/message"
+          method: "POST"
+          description: "Send message between agents"
+          auth_required: true
+          rate_limit: 10000 # per hour
+          
+        broadcast_message:
+          path: "/api/v1/coordination/broadcast"
+          method: "POST"
+          description: "Broadcast message to all agents"
+          auth_required: true
+          rate_limit: 100   # per hour
+          
+        get_messages:
+          path: "/api/v1/coordination/messages/{agent_id}"
+          method: "GET"
+          description: "Get pending messages for agent"
+          auth_required: true
+          rate_limit: 5000  # per hour
+          
+      # State and checkpoints
+      state_management:
+        save_checkpoint:
+          path: "/api/v1/state/checkpoint"
+          method: "POST"
+          description: "Save workflow state checkpoint"
+          auth_required: true
+          rate_limit: 1000  # per hour
+          
+        load_checkpoint:
+          path: "/api/v1/state/checkpoint/{checkpoint_id}"
+          method: "GET"
+          description: "Load workflow state from checkpoint"
+          auth_required: true
+          rate_limit: 1000  # per hour
+          
+        list_checkpoints:
+          path: "/api/v1/state/checkpoints/{workflow_id}"
+          method: "GET"
+          description: "List available checkpoints for workflow"
+          auth_required: true
+          rate_limit: 200   # per hour
+
+  # Message schemas
+  message_schemas.yaml: |
+    # LangGraph Message Schemas
+    message_schemas:
+      # Workflow creation request
+      create_workflow_request:
+        type: "object"
+        required: ["workflow_type", "agents", "coordination_pattern"]
+        properties:
+          workflow_type:
+            type: "string"
+            enum: ["sequential", "parallel", "map_reduce", "consensus", "hierarchical"]
+          agents:
+            type: "array"
+            items:
+              type: "object"
+              required: ["agent_type", "task_specification"]
+              properties:
+                agent_type:
+                  type: "string"
+                  enum: ["financial_intelligence", "research_analyst", "compliance_officer", "community_coordinator"]
+                task_specification:
+                  type: "object"
+                  required: ["task_type", "input_data"]
+                  properties:
+                    task_type:
+                      type: "string"
+                    input_data:
+                      type: "object"
+                    parameters:
+                      type: "object"
+                    expected_output:
+                      type: "object"
+          coordination_pattern:
+            type: "object"
+            required: ["pattern_type"]
+            properties:
+              pattern_type:
+                type: "string"
+                enum: ["sequential", "parallel", "map_reduce", "consensus", "hierarchical"]
+              error_handling:
+                type: "string"
+                enum: ["stop_on_failure", "continue_on_partial_failure", "retry_failed_partitions", "majority_vote", "escalate_to_coordinator"]
+              timeout:
+                type: "integer"
+                minimum: 60
+                maximum: 14400  # 4 hours
+          metadata:
+            type: "object"
+            required: ["created_by", "priority"]
+            properties:
+              created_by:
+                type: "string"
+              priority:
+                type: "integer"
+                minimum: 1
+                maximum: 10
+              tags:
+                type: "array"
+                items:
+                  type: "string"
+              compliance:
+                type: "object"
+                required: ["data_classification", "data_residency"]
+                properties:
+                  data_classification:
+                    type: "string"
+                    enum: ["public", "internal", "restricted", "confidential"]
+                  data_residency:
+                    type: "string"
+                    default: "australia"
+                  retention_period:
+                    type: "string"
+                    default: "7 years"
+      
+      # Task submission request
+      task_submission_request:
+        type: "object"
+        required: ["task_id", "agent_type", "task_type", "payload"]
+        properties:
+          task_id:
+            type: "string"
+            format: "uuid"
+          agent_type:
+            type: "string"
+            enum: ["financial_intelligence", "research_analyst", "compliance_officer", "community_coordinator"]
+          task_type:
+            type: "string"
+          priority:
+            type: "integer"
+            minimum: 1
+            maximum: 10
+            default: 5
+          payload:
+            type: "object"
+            required: ["input_data"]
+            properties:
+              input_data:
+                type: "object"
+              context:
+                type: "object"
+              parameters:
+                type: "object"
+          workflow_context:
+            type: "object"
+            properties:
+              workflow_id:
+                type: "string"
+                format: "uuid"
+              step_id:
+                type: "string"
+              dependency_tasks:
+                type: "array"
+                items:
+                  type: "string"
+                  format: "uuid"
+          compliance:
+            type: "object"
+            required: ["data_residency"]
+            properties:
+              data_classification:
+                type: "string"
+                enum: ["public", "internal", "restricted", "confidential"]
+                default: "restricted"
+              data_residency:
+                type: "string"
+                default: "australia"
+              audit_required:
+                type: "boolean"
+                default: true
+      
+      # Agent message schema
+      agent_message:
+        type: "object"
+        required: ["message_id", "sender_id", "recipient_id", "message_type", "content"]
+        properties:
+          message_id:
+            type: "string"
+            format: "uuid"
+          sender_id:
+            type: "string"
+          recipient_id:
+            type: "string"
+          message_type:
+            type: "string"
+            enum: ["task_request", "task_response", "coordination", "status_update", "error_notification"]
+          content:
+            type: "object"
+          timestamp:
+            type: "string"
+            format: "date-time"
+          correlation_id:
+            type: "string"
+            format: "uuid"
+          priority:
+            type: "integer"
+            minimum: 1
+            maximum: 10
+            default: 5
+          retry_count:
+            type: "integer"
+            minimum: 0
+            default: 0
+          expires_at:
+            type: "string"
+            format: "date-time"
+          compliance:
+            type: "object"
+            properties:
+              data_residency:
+                type: "string"
+                default: "australia"
+              encryption_required:
+                type: "boolean"
+                default: true
+
+---
+# LangGraph Integration API Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: langgraph-integration-api
+  namespace: act-placemat
+  labels:
+    component: task-queue
+    service-type: langgraph-integration
+    data-residency: australia
+  annotations:
+    description: "LangGraph integration API for agent coordination"
+    compliance.framework: "australian-privacy-act"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      component: langgraph-integration-api
+      data-residency: australia
+  template:
+    metadata:
+      labels:
+        component: langgraph-integration-api
+        data-residency: australia
+      annotations:
+        compliance.framework: "australian-privacy-act"
+        data.classification: "restricted"
+        audit.required: "true"
+    spec:
+      serviceAccountName: langgraph-integration-service
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: "kubernetes.io/zone"
+                operator: In
+                values:
+                - "australia-southeast1-a"
+                - "australia-southeast1-b"
+                - "australia-southeast1-c"
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  component: langgraph-integration-api
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - name: integration-api
+        image: registry.actplacemat.org.au:5000/act-placemat/langgraph-integration-api:latest
+        imagePullPolicy: Always
+        env:
+        - name: TZ
+          value: "Australia/Sydney"
+        - name: DATA_RESIDENCY
+          value: "australia"
+        - name: COMPLIANCE_FRAMEWORK
+          value: "australian-privacy-act"
+        - name: REDIS_CLUSTER_HOST
+          value: "redis-cluster-service.act-placemat.svc.cluster.local"
+        - name: REDIS_CLUSTER_PORT
+          value: "6379"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-cluster-auth
+              key: password
+        - name: DATABASE_HOST
+          value: "cloudsql-proxy-service.act-placemat.svc.cluster.local"
+        - name: DATABASE_PORT
+          value: "5432"
+        - name: DATABASE_NAME
+          value: "agent_state_db"
+        - name: DATABASE_USER
+          valueFrom:
+            secretKeyRef:
+              name: database-connection-config
+              key: postgres-username
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: database-connection-config
+              key: postgres-password
+        - name: API_PORT
+          value: "8080"
+        - name: METRICS_PORT
+          value: "9090"
+        - name: HEALTH_PORT
+          value: "8081"
+        - name: LOG_LEVEL
+          value: "INFO"
+        - name: MAX_CONCURRENT_WORKFLOWS
+          value: "100"
+        - name: DEFAULT_TASK_TIMEOUT
+          value: "1800"
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        - name: health
+          containerPort: 8081
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: health
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: health
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 4Gi
+          requests:
+            cpu: 1000m
+            memory: 2Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1001
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: config
+          mountPath: /etc/integration-config
+          readOnly: true
+        - name: schemas
+          mountPath: /etc/schemas
+          readOnly: true
+        - name: templates
+          mountPath: /etc/templates
+          readOnly: true
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: config
+        configMap:
+          name: langgraph-integration-config
+      - name: schemas
+        configMap:
+          name: langgraph-message-schemas
+      - name: templates
+        configMap:
+          name: langgraph-workflow-templates
+      imagePullSecrets:
+      - name: registry-credentials
+      nodeSelector:
+        data-residency: australia
+
+---
+# LangGraph Message Schemas ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: langgraph-message-schemas
+  namespace: act-placemat
+  labels:
+    component: task-queue
+    config-type: schemas
+    data-residency: australia
+  annotations:
+    description: "Message schemas for LangGraph integration"
+    compliance.framework: "australian-privacy-act"
+data:
+  workflow_schemas.json: |
+    {
+      "workflow_execution_result": {
+        "type": "object",
+        "required": ["workflow_id", "status", "results", "metadata"],
+        "properties": {
+          "workflow_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["completed", "failed", "partial_success", "cancelled"]
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["agent_type", "task_id", "result", "status"],
+              "properties": {
+                "agent_type": {
+                  "type": "string"
+                },
+                "task_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "result": {
+                  "type": "object"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["success", "failure", "timeout", "cancelled"]
+                },
+                "execution_time": {
+                  "type": "number"
+                },
+                "error_message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "required": ["start_time", "end_time", "total_duration"],
+            "properties": {
+              "start_time": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "end_time": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "total_duration": {
+                "type": "number"
+              },
+              "agent_utilization": {
+                "type": "object"
+              },
+              "compliance": {
+                "type": "object",
+                "properties": {
+                  "data_residency": {
+                    "type": "string",
+                    "default": "australia"
+                  },
+                  "audit_trail": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+---
+# LangGraph Workflow Templates
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: langgraph-workflow-templates
+  namespace: act-placemat
+  labels:
+    component: task-queue
+    config-type: templates
+    data-residency: australia
+  annotations:
+    description: "Workflow templates for common LangGraph patterns"
+    compliance.framework: "australian-privacy-act"
+data:
+  financial_analysis_workflow.yaml: |
+    # Financial Analysis Workflow Template
+    workflow_template:
+      name: "financial_analysis_workflow"
+      description: "Multi-agent financial analysis with compliance checking"
+      pattern: "sequential"
+      agents:
+        - agent_type: "research_analyst"
+          task_type: "data_collection"
+          input_mapping: "workflow.input.financial_data"
+          output_mapping: "research.collected_data"
+          timeout: 1800
+          
+        - agent_type: "financial_intelligence"
+          task_type: "analysis"
+          input_mapping: "research.collected_data"
+          dependencies: ["research_analyst"]
+          output_mapping: "analysis.results"
+          timeout: 2400
+          
+        - agent_type: "compliance_officer"
+          task_type: "compliance_check"
+          input_mapping: "analysis.results"
+          dependencies: ["financial_intelligence"]
+          output_mapping: "compliance.validation"
+          timeout: 1200
+          
+      error_handling:
+        strategy: "stop_on_failure"
+        retry_attempts: 2
+        escalation: "compliance_officer"
+        
+      compliance:
+        data_classification: "restricted"
+        audit_required: true
+        retention_period: "7 years"
+        data_residency: "australia"
+
+  community_coordination_workflow.yaml: |
+    # Community Coordination Workflow Template
+    workflow_template:
+      name: "community_coordination_workflow"
+      description: "Multi-stakeholder coordination with consensus building"
+      pattern: "hierarchical"
+      coordinator:
+        agent_type: "community_coordinator"
+        coordination_strategy: "consensus_building"
+        
+      sub_workflows:
+        - name: "stakeholder_analysis"
+          agents:
+            - agent_type: "research_analyst"
+              task_type: "stakeholder_mapping"
+              
+        - name: "impact_assessment"
+          agents:
+            - agent_type: "financial_intelligence"
+              task_type: "financial_impact"
+            - agent_type: "compliance_officer"
+              task_type: "regulatory_impact"
+              
+        - name: "solution_synthesis"
+          agents:
+            - agent_type: "community_coordinator"
+              task_type: "solution_coordination"
+              dependencies: ["stakeholder_analysis", "impact_assessment"]
+              
+      consensus_mechanism:
+        type: "weighted_voting"
+        weights:
+          financial_intelligence: 0.3
+          compliance_officer: 0.4
+          community_coordinator: 0.3
+        threshold: 0.7
+        
+      compliance:
+        data_classification: "internal"
+        audit_required: true
+        retention_period: "3 years"
+        data_residency: "australia"
+
+---
+# LangGraph Integration Service Account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: langgraph-integration-service
+  namespace: act-placemat
+  labels:
+    component: task-queue
+    role: langgraph-integration
+    data-residency: australia
+  annotations:
+    description: "Service account for LangGraph integration API"
+    compliance.framework: "australian-privacy-act"
+automountServiceAccountToken: true
+
+---
+# LangGraph Integration Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: langgraph-integration-service
+  namespace: act-placemat
+  labels:
+    component: task-queue
+    service-type: langgraph-integration
+    data-residency: australia
+  annotations:
+    description: "Service for LangGraph integration API"
+    compliance.framework: "australian-privacy-act"
+spec:
+  selector:
+    component: langgraph-integration-api
+    data-residency: australia
+  ports:
+  - name: http
+    port: 8080
+    targetPort: http
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: metrics
+    protocol: TCP
+  - name: health
+    port: 8081
+    targetPort: health
+    protocol: TCP
+  type: ClusterIP
+
+---
+# LangGraph Integration RBAC Role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: langgraph-integration-service
+  namespace: act-placemat
+  labels:
+    component: task-queue
+    data-residency: australia
+  annotations:
+    description: "Role for LangGraph integration operations"
+    compliance.framework: "australian-privacy-act"
+rules:
+# ConfigMap access for configuration and templates
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch"]
+# Secret access for database and Redis authentication
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "watch"]
+# Pod management for agent coordination
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch", "create", "update", "patch"]
+# Service discovery for agent communication
+- apiGroups: [""]
+  resources: ["services", "endpoints"]
+  verbs: ["get", "list", "watch"]
+# Event creation for workflow tracking
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+
+---
+# LangGraph Integration Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: langgraph-integration-service-binding
+  namespace: act-placemat
+  labels:
+    component: task-queue
+    data-residency: australia
+  annotations:
+    description: "Binds langgraph-integration-service to integration role"
+    compliance.framework: "australian-privacy-act"
+subjects:
+- kind: ServiceAccount
+  name: langgraph-integration-service
+  namespace: act-placemat
+roleRef:
+  kind: Role
+  name: langgraph-integration-service
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,335 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Community Governance Metrics", 
+    "tags": ["community", "governance", "engagement", "australia", "democracy"],
+    "timezone": "Australia/Sydney",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Active Community Members",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "business_metrics{category=\"engagement\",metric_name=\"daily_active_users\"}",
+            "legendFormat": "Daily Active Users",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "users",
+            "color": {
+              "mode": "palette-classic"
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Project Participation Rate",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "business_metrics{category=\"project_participation\"}",
+            "legendFormat": "Participation %",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 30
+                },
+                {
+                  "color": "green",
+                  "value": 60
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 6,
+          "y": 0
+        }
+      },
+      {
+        "id": 3,
+        "title": "Community Feedback Score",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "avg(business_metrics{category=\"community_satisfaction\"})",
+            "legendFormat": "Satisfaction Score",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "min": 1,
+            "max": 10,
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 1
+                },
+                {
+                  "color": "yellow",
+                  "value": 6
+                },
+                {
+                  "color": "green",
+                  "value": 8
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 12,
+          "y": 0
+        }
+      },
+      {
+        "id": 4,
+        "title": "Democratic Decision Response Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "business_metrics{category=\"democratic_participation\"}",
+            "legendFormat": "Response Rate %",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 40
+                },
+                {
+                  "color": "green",
+                  "value": 70
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 18,
+          "y": 0
+        }
+      },
+      {
+        "id": 5,
+        "title": "Project Creation Trends",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(business_metrics{category=\"project_creation\"}[1h])",
+            "legendFormat": "New Projects/Hour",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "projects/hr",
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear",
+              "fillOpacity": 10
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        }
+      },
+      {
+        "id": 6,
+        "title": "Cross-Sector Collaboration",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "sum by (sector) (business_metrics{category=\"cross_sector_projects\"})",
+            "legendFormat": "{{sector}}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": 7,
+        "title": "Geographic Distribution of Engagement",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "business_metrics{category=\"geographic_engagement\"}",
+            "legendFormat": "{{region}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "users",
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear",
+              "stackSeries": "normal"
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        }
+      },
+      {
+        "id": 8,
+        "title": "Resource Sharing Efficiency",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "business_metrics{category=\"resource_sharing\"}",
+            "legendFormat": "{{resource_type}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear"
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 16
+        }
+      },
+      {
+        "id": 9,
+        "title": "Impact Measurement Tracking",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "business_metrics{category=\"impact_measurement\"}",
+            "legendFormat": "{{impact_type}}",
+            "refId": "A",
+            "format": "table"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "displayMode": "basic",
+              "filterable": true
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 24
+        }
+      },
+      {
+        "id": 10,
+        "title": "Transparency Index",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "avg(business_metrics{category=\"transparency\"})",
+            "legendFormat": "Transparency Score",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 60
+                },
+                {
+                  "color": "green",
+                  "value": 85
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 24
+        }
+      }
+    ],
+    "time": {
+      "from": "now-7d",
+      "to": "now"
+    },
+    "refresh": "1m",
+    "schemaVersion": 36,
+    "version": 1,
+    "uid": "act-community-governance",
+    "description": "Community engagement and democratic governance metrics for ACT Placemat platform"
+  }
+}

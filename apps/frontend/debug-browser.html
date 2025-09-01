@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Debug CSS Loading</title>
+</head>
+<body>
+  <h1>Debug CSS Loading</h1>
+  <button onclick="checkCSS()">Check CSS Status</button>
+  <pre id="output"></pre>
+
+  <script>
+    function checkCSS() {
+      const output = document.getElementById('output');
+      
+      // Check all stylesheets
+      const stylesheets = Array.from(document.styleSheets);
+      output.textContent = `Found ${stylesheets.length} stylesheets:\n\n`;
+      
+      stylesheets.forEach((sheet, i) => {
+        output.textContent += `Sheet ${i + 1}: ${sheet.href || 'inline'}\n`;
+        try {
+          const rules = Array.from(sheet.cssRules || sheet.rules || []);
+          output.textContent += `  Rules: ${rules.length}\n`;
+        } catch(e) {
+          output.textContent += `  Rules: Cannot access (CORS)\n`;
+        }
+      });
+      
+      // Check for style tags
+      const styleTags = document.querySelectorAll('style');
+      output.textContent += `\n\nFound ${styleTags.length} <style> tags\n`;
+      
+      // Check computed styles on body
+      const bodyStyles = window.getComputedStyle(document.body);
+      output.textContent += `\nBody background: ${bodyStyles.backgroundColor}\n`;
+      output.textContent += `Body font-family: ${bodyStyles.fontFamily}\n`;
+    }
+    
+    // Open the actual app in an iframe
+    const iframe = document.createElement('iframe');
+    iframe.src = 'http://localhost:5175';
+    iframe.style.width = '100%';
+    iframe.style.height = '500px';
+    iframe.style.border = '2px solid red';
+    document.body.appendChild(iframe);
+    
+    // Try to check iframe CSS after load
+    iframe.onload = () => {
+      setTimeout(() => {
+        try {
+          const iframeDoc = iframe.contentDocument;
+          const iframeStylesheets = Array.from(iframeDoc.styleSheets);
+          output.textContent += `\n\n=== IFRAME CSS ===\n`;
+          output.textContent += `Found ${iframeStylesheets.length} stylesheets in iframe\n`;
+          
+          const iframeStyles = iframeDoc.querySelectorAll('style');
+          output.textContent += `Found ${iframeStyles.length} <style> tags in iframe\n`;
+          
+          // Check if Tailwind classes exist
+          const iframeBody = iframeDoc.body;
+          output.textContent += `\nIframe body className: ${iframeBody.className}\n`;
+        } catch(e) {
+          output.textContent += `\n\nCannot access iframe (CORS): ${e.message}\n`;
+        }
+      }, 2000);
+    };
+  </script>
+</body>
+</html>

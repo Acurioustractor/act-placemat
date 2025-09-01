@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World-Class Security Test</title>
+    <style>
+        body { 
+            font-family: system-ui, -apple-system, sans-serif; 
+            max-width: 800px; 
+            margin: 2rem auto; 
+            padding: 0 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        h1 { color: #fff; text-align: center; }
+        .status { 
+            padding: 1rem; 
+            margin: 1rem 0; 
+            border-radius: 10px; 
+            font-weight: bold;
+        }
+        .success { background: rgba(46, 204, 113, 0.3); border-left: 4px solid #2ecc71; }
+        .error { background: rgba(231, 76, 60, 0.3); border-left: 4px solid #e74c3c; }
+        .info { background: rgba(52, 152, 219, 0.3); border-left: 4px solid #3498db; }
+        button {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0.5rem;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        button:hover { transform: translateY(-2px); }
+        .metrics { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 1rem; 
+            margin: 1rem 0; 
+        }
+        .metric {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .metric-value { font-size: 2rem; font-weight: bold; color: #2ecc71; }
+        pre { 
+            background: rgba(0,0,0,0.3); 
+            padding: 1rem; 
+            border-radius: 8px; 
+            overflow-x: auto;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛡️ World-Class Security Test</h1>
+        
+        <div id="connection-status" class="status info">
+            🔗 Testing connection to secure backend...
+        </div>
+
+        <div class="metrics">
+            <div class="metric">
+                <div class="metric-value" id="projects-count">-</div>
+                <div>Total Projects</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value" id="active-projects">-</div>
+                <div>Active Projects</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value" id="contacts-count">-</div>
+                <div>Total Contacts</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value" id="storytellers-count">-</div>
+                <div>Storytellers</div>
+            </div>
+        </div>
+
+        <div>
+            <button onclick="testCORS()">🧪 Test CORS</button>
+            <button onclick="testIntelligence()">🧠 Test Intelligence</button>
+            <button onclick="testSecurity()">🔒 Test Security Health</button>
+            <button onclick="testMaliciousOrigin()">🚫 Test Malicious Block</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'http://localhost:4001';
+        
+        // Test basic CORS functionality
+        async function testCORS() {
+            updateStatus('🧪 Testing CORS...', 'info');
+            try {
+                const response = await fetch(`${BACKEND_URL}/test/cors`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateStatus('✅ CORS Test Passed!', 'success');
+                    showResult('CORS Test', data);
+                } else {
+                    updateStatus('❌ CORS Test Failed', 'error');
+                }
+            } catch (error) {
+                updateStatus(`❌ CORS Error: ${error.message}`, 'error');
+                showResult('CORS Error', { error: error.message });
+            }
+        }
+
+        // Test intelligence endpoint with live data
+        async function testIntelligence() {
+            updateStatus('🧠 Testing Intelligence API...', 'info');
+            try {
+                const response = await fetch(`${BACKEND_URL}/test/intelligence`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateStatus('✅ Intelligence API Working!', 'success');
+                    
+                    // Update metrics
+                    document.getElementById('projects-count').textContent = 
+                        data.intelligence.operations.totalProjects || '-';
+                    document.getElementById('active-projects').textContent = 
+                        data.intelligence.operations.activeProjects || '-';
+                    document.getElementById('contacts-count').textContent = 
+                        data.intelligence.network.totalContacts || '-';
+                    document.getElementById('storytellers-count').textContent = 
+                        data.intelligence.community.totalStorytellers || '-';
+                    
+                    showResult('Intelligence Data', data);
+                } else {
+                    updateStatus('❌ Intelligence API Failed', 'error');
+                }
+            } catch (error) {
+                updateStatus(`❌ Intelligence Error: ${error.message}`, 'error');
+                showResult('Intelligence Error', { error: error.message });
+            }
+        }
+
+        // Test security health monitoring
+        async function testSecurity() {
+            updateStatus('🔒 Testing Security Health...', 'info');
+            try {
+                const response = await fetch(`${BACKEND_URL}/security-health`);
+                const data = await response.json();
+                
+                if (data.status === 'healthy') {
+                    updateStatus('✅ Security Systems Healthy!', 'success');
+                    showResult('Security Health', data);
+                } else {
+                    updateStatus('⚠️ Security Issues Detected', 'error');
+                    showResult('Security Issues', data);
+                }
+            } catch (error) {
+                updateStatus(`❌ Security Health Error: ${error.message}`, 'error');
+                showResult('Security Error', { error: error.message });
+            }
+        }
+
+        // Test that malicious origins are blocked
+        async function testMaliciousOrigin() {
+            updateStatus('🚫 Testing Malicious Origin Block...', 'info');
+            
+            try {
+                // This should fail due to CORS policy
+                const response = await fetch(`${BACKEND_URL}/test/cors`, {
+                    mode: 'cors',
+                    headers: {
+                        'Origin': 'http://malicious-site.com'
+                    }
+                });
+                
+                // If we get here, something is wrong
+                updateStatus('❌ Security Vulnerability: Malicious origin was allowed!', 'error');
+                
+            } catch (error) {
+                // This is expected - CORS should block the request
+                if (error.message.includes('CORS') || error.message.includes('fetch')) {
+                    updateStatus('✅ Security Working: Malicious origin blocked!', 'success');
+                    showResult('Security Test', { 
+                        message: 'Malicious origin successfully blocked by CORS policy',
+                        error: error.message 
+                    });
+                } else {
+                    updateStatus(`❌ Unexpected error: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        function updateStatus(message, type) {
+            const statusEl = document.getElementById('connection-status');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+
+        function showResult(title, data) {
+            const resultsEl = document.getElementById('results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'container';
+            resultDiv.innerHTML = `
+                <h3>${title}</h3>
+                <pre>${JSON.stringify(data, null, 2)}</pre>
+            `;
+            resultsEl.appendChild(resultDiv);
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Test connection on page load
+        window.addEventListener('load', () => {
+            setTimeout(testIntelligence, 1000);
+        });
+    </script>
+</body>
+</html>

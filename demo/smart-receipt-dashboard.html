@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Receipt Discovery | ACT</title>
+    <style>
+        /* GitHub-style modern clean design */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+            color: #1f2328;
+            background-color: #ffffff;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0969da 0%, #218bff 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .dashboard {
+            margin: 2rem 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #d1d9e0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: #0969da;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #0969da;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #656d76;
+            font-size: 0.95rem;
+        }
+
+        .controls {
+            background: #f6f8fa;
+            border: 1px solid #d1d9e0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: #0969da;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: #0860ca;
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            background: #8c959f;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #24292f;
+            border: 1px solid #d1d9e0;
+        }
+
+        .btn-secondary:hover {
+            background: #f6f8fa;
+            border-color: #0969da;
+        }
+
+        .receipt-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .receipt-card {
+            background: white;
+            border: 1px solid #d1d9e0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .receipt-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: #0969da;
+        }
+
+        .receipt-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .receipt-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2328;
+            margin-bottom: 0.5rem;
+        }
+
+        .receipt-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: #656d76;
+            font-size: 0.875rem;
+        }
+
+        .amount-badge {
+            background: #dafbe1;
+            color: #1a7f37;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .classification-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+
+        .business {
+            background: #fff8dc;
+            color: #9a6700;
+            border: 1px solid #f2cc60;
+        }
+
+        .personal {
+            background: #f1f8ff;
+            color: #0969da;
+            border: 1px solid #b6e3ff;
+        }
+
+        .story {
+            background: #f6f8fa;
+            border-left: 4px solid #0969da;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .calendar-context {
+            background: #f8f9fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .calendar-title {
+            font-weight: 600;
+            color: #1f2328;
+            margin-bottom: 0.5rem;
+        }
+
+        .attendees {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .attendee {
+            background: #e1f5fe;
+            color: #01579b;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: white;
+            border: 1px solid #d1d9e0;
+            color: #656d76;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .action-btn:hover {
+            background: #f6f8fa;
+            border-color: #0969da;
+            color: #0969da;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem;
+            color: #656d76;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #0969da;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fff5f5;
+            color: #d73a49;
+            border: 1px solid #fdb8c0;
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .receipt-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>🧾 Smart Receipt Discovery</h1>
+            <p>AI-powered receipt analysis with Gmail + Calendar intelligence</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="dashboard">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalReceipts">-</div>
+                    <div class="stat-label">Receipts Found</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalAmount">$0</div>
+                    <div class="stat-label">Total Value</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="businessExpenses">-</div>
+                    <div class="stat-label">Business Expenses</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="calendarMatches">-</div>
+                    <div class="stat-label">Calendar Matches</div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn" onclick="loadReceipts(7)">
+                    📅 Last 7 Days
+                </button>
+                <button class="btn btn-secondary" onclick="loadReceipts(14)">
+                    📅 Last 14 Days
+                </button>
+                <button class="btn btn-secondary" onclick="loadReceipts(30)">
+                    📅 Last 30 Days
+                </button>
+                <div style="margin-left: auto;">
+                    <button class="btn" onclick="loadReceipts()">
+                        🔄 Refresh
+                    </button>
+                </div>
+            </div>
+
+            <div id="receiptsContainer">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading smart receipts...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentReceipts = [];
+        
+        // Load receipts on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadReceipts(7);
+        });
+
+        async function loadReceipts(days = 7) {
+            const container = document.getElementById('receiptsContainer');
+            container.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Discovering receipts from last ${days} days...
+                </div>
+            `;
+
+            try {
+                const response = await fetch(`http://localhost:4000/api/smart-receipts?days=${days}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    currentReceipts = data.data;
+                    displayReceipts(currentReceipts);
+                    updateStats(currentReceipts);
+                } else {
+                    throw new Error(data.error || 'Failed to load receipts');
+                }
+
+            } catch (error) {
+                console.error('Error loading receipts:', error);
+                container.innerHTML = `
+                    <div class="error">
+                        <strong>Error loading receipts:</strong> ${error.message}
+                        <br><br>
+                        Make sure the backend server is running on port 4000 and Gmail/Calendar APIs are configured.
+                    </div>
+                `;
+            }
+        }
+
+        function displayReceipts(receipts) {
+            const container = document.getElementById('receiptsContainer');
+            
+            if (receipts.length === 0) {
+                container.innerHTML = `
+                    <div class="loading">
+                        📭 No receipts found in the selected time period.
+                        <br><br>
+                        Try expanding the search to more days or check your Gmail for receipt emails.
+                    </div>
+                `;
+                return;
+            }
+
+            const receiptCards = receipts.map(receipt => createReceiptCard(receipt)).join('');
+            container.innerHTML = `<div class="receipt-grid">${receiptCards}</div>`;
+        }
+
+        function createReceiptCard(receipt) {
+            const date = new Date(receipt.date).toLocaleDateString();
+            const time = new Date(receipt.date).toLocaleTimeString();
+            
+            const calendarEvent = receipt.analysis.calendarContext;
+            const attendees = calendarEvent ? calendarEvent.attendeesList : [];
+            
+            return `
+                <div class="receipt-card">
+                    <div class="receipt-header">
+                        <div style="flex: 1;">
+                            <div class="receipt-title">${receipt.subject}</div>
+                            <div class="receipt-meta">
+                                <div class="meta-item">
+                                    📧 ${receipt.from.replace(/<.*>/g, '').trim()}
+                                </div>
+                                <div class="meta-item">
+                                    📅 ${date} ${time}
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="amount-badge">$${receipt.maxAmount.toFixed(2)}</div>
+                            <div class="classification-badge ${receipt.analysis.classification.toLowerCase()}" 
+                                 style="margin-top: 0.5rem;">
+                                ${receipt.analysis.classification} (${receipt.analysis.confidencePercentage})
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story">
+                        ${receipt.analysis.story}
+                    </div>
+
+                    ${calendarEvent ? `
+                        <div class="calendar-context">
+                            <div class="calendar-title">📅 ${calendarEvent.title}</div>
+                            <div class="meta-item">
+                                🕐 ${new Date(calendarEvent.start).toLocaleString()}
+                            </div>
+                            ${calendarEvent.location ? `
+                                <div class="meta-item">📍 ${calendarEvent.location}</div>
+                            ` : ''}
+                            ${attendees.length > 0 ? `
+                                <div class="attendees">
+                                    ${attendees.slice(0, 4).map(attendee => 
+                                        `<span class="attendee">👤 ${attendee.name}</span>`
+                                    ).join('')}
+                                    ${attendees.length > 4 ? `<span class="attendee">+${attendees.length - 4} more</span>` : ''}
+                                </div>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+
+                    <div class="actions">
+                        ${receipt.analysis.suggestedActions.map(action => `
+                            <button class="action-btn" onclick="handleAction('${action.type}', '${receipt.id}')">
+                                ${action.icon} ${action.text}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateStats(receipts) {
+            const totalAmount = receipts.reduce((sum, r) => sum + r.maxAmount, 0);
+            const businessCount = receipts.filter(r => r.analysis.classification === 'Business').length;
+            const calendarMatches = receipts.filter(r => r.analysis.calendarContext).length;
+
+            document.getElementById('totalReceipts').textContent = receipts.length;
+            document.getElementById('totalAmount').textContent = `$${totalAmount.toFixed(2)}`;
+            document.getElementById('businessExpenses').textContent = businessCount;
+            document.getElementById('calendarMatches').textContent = calendarMatches;
+        }
+
+        function handleAction(type, receiptId) {
+            const receipt = currentReceipts.find(r => r.id === receiptId);
+            if (!receipt) return;
+
+            switch (type) {
+                case 'contact':
+                    const contact = receipt.analysis.suggestedActions.find(a => a.type === 'contact')?.contact;
+                    if (contact) {
+                        window.open(`mailto:${contact.email}?subject=Expense inquiry about ${receipt.subject}&body=Hi ${contact.name.split('@')[0]}, I have a question about this shared expense...`);
+                    }
+                    break;
+                    
+                case 'categorize':
+                    alert('🏷️ Categorization feature coming soon! This would integrate with your accounting system.');
+                    break;
+                    
+                case 'upload':
+                    alert('📄 Receipt upload feature coming soon! This would allow you to attach the actual receipt.');
+                    break;
+                    
+                case 'report':
+                    alert('📊 Expense reporting feature coming soon! This would add to your monthly expense report.');
+                    break;
+                    
+                default:
+                    console.log('Action:', type, 'for receipt:', receiptId);
+            }
+        }
+    </script>
+</body>
+</html>

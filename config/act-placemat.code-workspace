@@ -1,0 +1,35 @@
+{
+  "folders": [
+    {
+      "path": ".",
+      "name": "ACT Placemat"
+    }
+  ],
+  "settings": {
+    "window.title": "ACT Placemat - ${activeEditorShort}",
+    "files.exclude": {
+      "**/.git": false,
+      "**/.DS_Store": true,
+      "**/node_modules": true,
+      "**/.next": true,
+      "**/dist": true,
+      "**/build": true
+    },
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+    "typescript.preferences.importModuleSpecifier": "relative",
+    "typescript.tsdk": "node_modules/typescript/lib"
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "bradlc.vscode-tailwindcss",
+      "prisma.prisma",
+      "graphql.vscode-graphql",
+      "ms-vscode.vscode-typescript-next"
+    ]
+  }
+}

@@ -1,0 +1,991 @@
+# Database Schemas for LangGraph Agent State and Task Queues
+# Comprehensive schema setup with Australian compliance and audit capabilities
+
+---
+# Database Schema Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: database-schemas-config
+  namespace: act-placemat
+  labels:
+    component: database
+    configuration-type: schemas
+    data-residency: australia
+  annotations:
+    description: "Database schemas for agent state and task queues"
+    compliance.framework: "australian-privacy-act"
+data:
+  # Agent State Database Schema
+  agent_state_schema.sql: |
+    -- ACT Placemat Intelligence Hub - Agent State Database Schema
+    -- LangGraph agent execution state and checkpoints with Australian compliance
+    
+    -- Enable required extensions
+    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+    CREATE EXTENSION IF NOT EXISTS "pg_stat_statements";
+    CREATE EXTENSION IF NOT EXISTS "pg_trgm";
+    CREATE EXTENSION IF NOT EXISTS "btree_gin";
+    
+    -- Set timezone to Australian Eastern
+    SET timezone = 'Australia/Sydney';
+    
+    -- Agent execution checkpoints table
+    CREATE TABLE IF NOT EXISTS agent_checkpoints (
+        checkpoint_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        agent_id VARCHAR(255) NOT NULL,
+        agent_type VARCHAR(100) NOT NULL CHECK (agent_type IN (
+            'financial-intelligence',
+            'research-analyst', 
+            'compliance-officer',
+            'community-coordinator'
+        )),
+        execution_id UUID NOT NULL,
+        checkpoint_namespace VARCHAR(255) NOT NULL,
+        checkpoint_data JSONB NOT NULL,
+        checkpoint_metadata JSONB,
+        checkpoint_version INTEGER NOT NULL DEFAULT 1,
+        parent_checkpoint_id UUID REFERENCES agent_checkpoints(checkpoint_id),
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        expires_at TIMESTAMP WITH TIME ZONE,
+        
+        -- Australian compliance fields
+        data_residency VARCHAR(50) NOT NULL DEFAULT 'australia',
+        compliance_framework VARCHAR(100) NOT NULL DEFAULT 'australian-privacy-act',
+        data_classification VARCHAR(50) NOT NULL DEFAULT 'restricted',
+        audit_required BOOLEAN NOT NULL DEFAULT true,
+        
+        -- Performance indexes
+        CONSTRAINT agent_checkpoints_agent_execution_unique UNIQUE (agent_id, execution_id, checkpoint_namespace)
+    );
+    
+    -- Indexes for performance
+    CREATE INDEX IF NOT EXISTS idx_agent_checkpoints_agent_id ON agent_checkpoints(agent_id);
+    CREATE INDEX IF NOT EXISTS idx_agent_checkpoints_agent_type ON agent_checkpoints(agent_type);
+    CREATE INDEX IF NOT EXISTS idx_agent_checkpoints_execution_id ON agent_checkpoints(execution_id);
+    CREATE INDEX IF NOT EXISTS idx_agent_checkpoints_created_at ON agent_checkpoints(created_at);
+    CREATE INDEX IF NOT EXISTS idx_agent_checkpoints_expires_at ON agent_checkpoints(expires_at) WHERE expires_at IS NOT NULL;
+    CREATE INDEX IF NOT EXISTS idx_agent_checkpoints_data_gin ON agent_checkpoints USING gin(checkpoint_data);
+    CREATE INDEX IF NOT EXISTS idx_agent_checkpoints_metadata_gin ON agent_checkpoints USING gin(checkpoint_metadata);
+    
+    -- Agent execution state table
+    CREATE TABLE IF NOT EXISTS agent_execution_state (
+        execution_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        agent_id VARCHAR(255) NOT NULL,
+        agent_type VARCHAR(100) NOT NULL CHECK (agent_type IN (
+            'financial-intelligence',
+            'research-analyst',
+            'compliance-officer', 
+            'community-coordinator'
+        )),
+        execution_status VARCHAR(50) NOT NULL CHECK (execution_status IN (
+            'pending', 'running', 'suspended', 'completed', 'failed', 'cancelled'
+        )) DEFAULT 'pending',
+        current_step VARCHAR(255),
+        current_state JSONB,
+        execution_config JSONB,
+        error_details JSONB,
+        performance_metrics JSONB,
+        started_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        completed_at TIMESTAMP WITH TIME ZONE,
+        last_checkpoint_at TIMESTAMP WITH TIME ZONE,
+        
+        -- Australian compliance fields
+        data_residency VARCHAR(50) NOT NULL DEFAULT 'australia',
+        compliance_framework VARCHAR(100) NOT NULL DEFAULT 'australian-privacy-act',
+        data_classification VARCHAR(50) NOT NULL DEFAULT 'restricted',
+        audit_required BOOLEAN NOT NULL DEFAULT true,
+        
+        -- Audit trail
+        created_by VARCHAR(255) NOT NULL DEFAULT 'system',
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    );
+    
+    -- Indexes for agent execution state
+    CREATE INDEX IF NOT EXISTS idx_agent_execution_state_agent_id ON agent_execution_state(agent_id);
+    CREATE INDEX IF NOT EXISTS idx_agent_execution_state_agent_type ON agent_execution_state(agent_type);
+    CREATE INDEX IF NOT EXISTS idx_agent_execution_state_status ON agent_execution_state(execution_status);
+    CREATE INDEX IF NOT EXISTS idx_agent_execution_state_started_at ON agent_execution_state(started_at);
+    CREATE INDEX IF NOT EXISTS idx_agent_execution_state_config_gin ON agent_execution_state USING gin(execution_config);
+    
+    -- Agent communication log table
+    CREATE TABLE IF NOT EXISTS agent_communication_log (
+        communication_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        source_agent_id VARCHAR(255) NOT NULL,
+        target_agent_id VARCHAR(255),
+        communication_type VARCHAR(100) NOT NULL CHECK (communication_type IN (
+            'task_assignment', 'data_sharing', 'coordination', 'status_update', 'error_report'
+        )),
+        message_content JSONB NOT NULL,
+        message_metadata JSONB,
+        response_content JSONB,
+        communication_status VARCHAR(50) NOT NULL CHECK (communication_status IN (
+            'sent', 'delivered', 'acknowledged', 'processed', 'failed'
+        )) DEFAULT 'sent',
+        priority_level VARCHAR(20) NOT NULL CHECK (priority_level IN ('low', 'medium', 'high', 'urgent')) DEFAULT 'medium',
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        processed_at TIMESTAMP WITH TIME ZONE,
+        
+        -- Australian compliance fields
+        data_residency VARCHAR(50) NOT NULL DEFAULT 'australia',
+        compliance_framework VARCHAR(100) NOT NULL DEFAULT 'australian-privacy-act',
+        data_classification VARCHAR(50) NOT NULL DEFAULT 'restricted',
+        audit_required BOOLEAN NOT NULL DEFAULT true
+    );
+    
+    -- Indexes for communication log
+    CREATE INDEX IF NOT EXISTS idx_agent_communication_source ON agent_communication_log(source_agent_id);
+    CREATE INDEX IF NOT EXISTS idx_agent_communication_target ON agent_communication_log(target_agent_id);
+    CREATE INDEX IF NOT EXISTS idx_agent_communication_type ON agent_communication_log(communication_type);
+    CREATE INDEX IF NOT EXISTS idx_agent_communication_status ON agent_communication_log(communication_status);
+    CREATE INDEX IF NOT EXISTS idx_agent_communication_created_at ON agent_communication_log(created_at);
+    CREATE INDEX IF NOT EXISTS idx_agent_communication_priority ON agent_communication_log(priority_level);
+    
+    -- Agent performance metrics table
+    CREATE TABLE IF NOT EXISTS agent_performance_metrics (
+        metric_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        agent_id VARCHAR(255) NOT NULL,
+        agent_type VARCHAR(100) NOT NULL,
+        execution_id UUID REFERENCES agent_execution_state(execution_id),
+        metric_name VARCHAR(255) NOT NULL,
+        metric_value NUMERIC,
+        metric_unit VARCHAR(50),
+        metric_metadata JSONB,
+        measurement_timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        
+        -- Australian compliance fields
+        data_residency VARCHAR(50) NOT NULL DEFAULT 'australia',
+        compliance_framework VARCHAR(100) NOT NULL DEFAULT 'australian-privacy-act',
+        
+        -- Performance index
+        CONSTRAINT agent_metrics_unique UNIQUE (agent_id, execution_id, metric_name, measurement_timestamp)
+    );
+    
+    -- Indexes for performance metrics
+    CREATE INDEX IF NOT EXISTS idx_agent_performance_agent_id ON agent_performance_metrics(agent_id);
+    CREATE INDEX IF NOT EXISTS idx_agent_performance_metric_name ON agent_performance_metrics(metric_name);
+    CREATE INDEX IF NOT EXISTS idx_agent_performance_timestamp ON agent_performance_metrics(measurement_timestamp);
+    
+    -- Australian compliance audit log
+    CREATE TABLE IF NOT EXISTS agent_audit_log (
+        audit_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        table_name VARCHAR(255) NOT NULL,
+        record_id UUID NOT NULL,
+        operation_type VARCHAR(50) NOT NULL CHECK (operation_type IN ('INSERT', 'UPDATE', 'DELETE')),
+        old_values JSONB,
+        new_values JSONB,
+        changed_by VARCHAR(255) NOT NULL,
+        change_timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        change_reason TEXT,
+        
+        -- Australian compliance fields
+        data_residency VARCHAR(50) NOT NULL DEFAULT 'australia',
+        compliance_framework VARCHAR(100) NOT NULL DEFAULT 'australian-privacy-act',
+        retention_period INTERVAL NOT NULL DEFAULT '7 years'
+    );
+    
+    -- Indexes for audit log
+    CREATE INDEX IF NOT EXISTS idx_agent_audit_table_name ON agent_audit_log(table_name);
+    CREATE INDEX IF NOT EXISTS idx_agent_audit_record_id ON agent_audit_log(record_id);
+    CREATE INDEX IF NOT EXISTS idx_agent_audit_timestamp ON agent_audit_log(change_timestamp);
+    CREATE INDEX IF NOT EXISTS idx_agent_audit_changed_by ON agent_audit_log(changed_by);
+    
+    -- Update timestamp trigger function
+    CREATE OR REPLACE FUNCTION update_updated_at_column()
+    RETURNS TRIGGER AS $$
+    BEGIN
+        NEW.updated_at = NOW();
+        RETURN NEW;
+    END;
+    $$ language 'plpgsql';
+    
+    -- Apply update triggers
+    CREATE TRIGGER update_agent_checkpoints_updated_at 
+        BEFORE UPDATE ON agent_checkpoints 
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+        
+    CREATE TRIGGER update_agent_execution_state_updated_at 
+        BEFORE UPDATE ON agent_execution_state 
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    
+    -- Audit trigger function for Australian compliance
+    CREATE OR REPLACE FUNCTION audit_trigger_function()
+    RETURNS TRIGGER AS $$
+    BEGIN
+        IF TG_OP = 'DELETE' THEN
+            INSERT INTO agent_audit_log (table_name, record_id, operation_type, old_values, changed_by)
+            VALUES (TG_TABLE_NAME, OLD.checkpoint_id, TG_OP, row_to_json(OLD), current_user);
+            RETURN OLD;
+        ELSIF TG_OP = 'UPDATE' THEN
+            INSERT INTO agent_audit_log (table_name, record_id, operation_type, old_values, new_values, changed_by)
+            VALUES (TG_TABLE_NAME, NEW.checkpoint_id, TG_OP, row_to_json(OLD), row_to_json(NEW), current_user);
+            RETURN NEW;
+        ELSIF TG_OP = 'INSERT' THEN
+            INSERT INTO agent_audit_log (table_name, record_id, operation_type, new_values, changed_by)
+            VALUES (TG_TABLE_NAME, NEW.checkpoint_id, TG_OP, row_to_json(NEW), current_user);
+            RETURN NEW;
+        END IF;
+        RETURN NULL;
+    END;
+    $$ LANGUAGE plpgsql;
+    
+    -- Apply audit triggers for compliance
+    CREATE TRIGGER agent_checkpoints_audit_trigger
+        AFTER INSERT OR UPDATE OR DELETE ON agent_checkpoints
+        FOR EACH ROW EXECUTE FUNCTION audit_trigger_function();
+        
+    CREATE TRIGGER agent_execution_state_audit_trigger
+        AFTER INSERT OR UPDATE OR DELETE ON agent_execution_state
+        FOR EACH ROW EXECUTE FUNCTION audit_trigger_function();
+
+  # Task Queue Database Schema  
+  task_queue_schema.sql: |
+    -- ACT Placemat Intelligence Hub - Task Queue Database Schema
+    -- Agent task queues and coordination with Australian compliance
+    
+    -- Enable required extensions
+    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+    CREATE EXTENSION IF NOT EXISTS "pg_stat_statements";
+    CREATE EXTENSION IF NOT EXISTS "pg_trgm";
+    CREATE EXTENSION IF NOT EXISTS "btree_gin";
+    
+    -- Set timezone to Australian Eastern
+    SET timezone = 'Australia/Sydney';
+    
+    -- Task definitions table
+    CREATE TABLE IF NOT EXISTS task_definitions (
+        task_definition_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        task_name VARCHAR(255) NOT NULL UNIQUE,
+        task_description TEXT,
+        task_type VARCHAR(100) NOT NULL CHECK (task_type IN (
+            'financial_analysis', 'research_query', 'compliance_check', 
+            'community_engagement', 'data_processing', 'coordination'
+        )),
+        required_agent_types VARCHAR(255)[] NOT NULL, -- Array of required agent types
+        task_configuration JSONB NOT NULL,
+        default_priority VARCHAR(20) NOT NULL CHECK (default_priority IN ('low', 'medium', 'high', 'urgent')) DEFAULT 'medium',
+        estimated_duration INTERVAL,
+        max_retries INTEGER NOT NULL DEFAULT 3,
+        timeout_duration INTERVAL NOT NULL DEFAULT '30 minutes',
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        is_active BOOLEAN NOT NULL DEFAULT true,
+        
+        -- Australian compliance fields
+        data_residency VARCHAR(50) NOT NULL DEFAULT 'australia',
+        compliance_framework VARCHAR(100) NOT NULL DEFAULT 'australian-privacy-act',
+        data_classification VARCHAR(50) NOT NULL DEFAULT 'restricted',
+        audit_required BOOLEAN NOT NULL DEFAULT true
+    );
+    
+    -- Indexes for task definitions
+    CREATE INDEX IF NOT EXISTS idx_task_definitions_name ON task_definitions(task_name);
+    CREATE INDEX IF NOT EXISTS idx_task_definitions_type ON task_definitions(task_type);
+    CREATE INDEX IF NOT EXISTS idx_task_definitions_active ON task_definitions(is_active);
+    CREATE INDEX IF NOT EXISTS idx_task_definitions_config_gin ON task_definitions USING gin(task_configuration);
+    
+    -- Task queue table
+    CREATE TABLE IF NOT EXISTS task_queue (
+        task_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        task_definition_id UUID NOT NULL REFERENCES task_definitions(task_definition_id),
+        task_name VARCHAR(255) NOT NULL,
+        task_input JSONB NOT NULL,
+        task_metadata JSONB,
+        assigned_agent_id VARCHAR(255),
+        assigned_agent_type VARCHAR(100),
+        task_status VARCHAR(50) NOT NULL CHECK (task_status IN (
+            'pending', 'assigned', 'running', 'suspended', 'completed', 'failed', 'cancelled', 'timeout'
+        )) DEFAULT 'pending',
+        priority_level VARCHAR(20) NOT NULL CHECK (priority_level IN ('low', 'medium', 'high', 'urgent')) DEFAULT 'medium',
+        retry_count INTEGER NOT NULL DEFAULT 0,
+        max_retries INTEGER NOT NULL DEFAULT 3,
+        
+        -- Timing
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        assigned_at TIMESTAMP WITH TIME ZONE,
+        started_at TIMESTAMP WITH TIME ZONE,
+        completed_at TIMESTAMP WITH TIME ZONE,
+        deadline TIMESTAMP WITH TIME ZONE,
+        timeout_at TIMESTAMP WITH TIME ZONE,
+        
+        -- Results and errors
+        task_result JSONB,
+        error_details JSONB,
+        execution_log JSONB,
+        
+        -- Dependencies
+        depends_on_tasks UUID[] DEFAULT '{}', -- Array of task IDs this task depends on
+        blocking_tasks UUID[] DEFAULT '{}',  -- Array of task IDs that depend on this task
+        
+        -- Australian compliance fields
+        data_residency VARCHAR(50) NOT NULL DEFAULT 'australia',
+        compliance_framework VARCHAR(100) NOT NULL DEFAULT 'australian-privacy-act',
+        data_classification VARCHAR(50) NOT NULL DEFAULT 'restricted',
+        audit_required BOOLEAN NOT NULL DEFAULT true,
+        
+        -- Audit trail
+        created_by VARCHAR(255) NOT NULL DEFAULT 'system',
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    );
+    
+    -- Indexes for task queue
+    CREATE INDEX IF NOT EXISTS idx_task_queue_status ON task_queue(task_status);
+    CREATE INDEX IF NOT EXISTS idx_task_queue_priority ON task_queue(priority_level);
+    CREATE INDEX IF NOT EXISTS idx_task_queue_assigned_agent ON task_queue(assigned_agent_id);
+    CREATE INDEX IF NOT EXISTS idx_task_queue_agent_type ON task_queue(assigned_agent_type);
+    CREATE INDEX IF NOT EXISTS idx_task_queue_created_at ON task_queue(created_at);
+    CREATE INDEX IF NOT EXISTS idx_task_queue_deadline ON task_queue(deadline) WHERE deadline IS NOT NULL;
+    CREATE INDEX IF NOT EXISTS idx_task_queue_timeout_at ON task_queue(timeout_at) WHERE timeout_at IS NOT NULL;
+    CREATE INDEX IF NOT EXISTS idx_task_queue_depends_on ON task_queue USING gin(depends_on_tasks);
+    CREATE INDEX IF NOT EXISTS idx_task_queue_input_gin ON task_queue USING gin(task_input);
+    
+    -- Agent availability table
+    CREATE TABLE IF NOT EXISTS agent_availability (
+        availability_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        agent_id VARCHAR(255) NOT NULL,
+        agent_type VARCHAR(100) NOT NULL CHECK (agent_type IN (
+            'financial-intelligence',
+            'research-analyst',
+            'compliance-officer', 
+            'community-coordinator'
+        )),
+        availability_status VARCHAR(50) NOT NULL CHECK (availability_status IN (
+            'available', 'busy', 'offline', 'maintenance', 'error'
+        )) DEFAULT 'available',
+        current_task_id UUID REFERENCES task_queue(task_id),
+        max_concurrent_tasks INTEGER NOT NULL DEFAULT 1,
+        current_task_count INTEGER NOT NULL DEFAULT 0,
+        last_heartbeat TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        capabilities JSONB, -- Agent-specific capabilities and constraints
+        performance_metrics JSONB,
+        
+        -- Health status
+        health_status VARCHAR(50) NOT NULL CHECK (health_status IN (
+            'healthy', 'degraded', 'unhealthy', 'unknown'
+        )) DEFAULT 'healthy',
+        health_details JSONB,
+        
+        -- Australian compliance fields
+        data_residency VARCHAR(50) NOT NULL DEFAULT 'australia',
+        compliance_framework VARCHAR(100) NOT NULL DEFAULT 'australian-privacy-act',
+        
+        -- Audit
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        
+        CONSTRAINT agent_availability_unique UNIQUE (agent_id)
+    );
+    
+    -- Indexes for agent availability
+    CREATE INDEX IF NOT EXISTS idx_agent_availability_agent_id ON agent_availability(agent_id);
+    CREATE INDEX IF NOT EXISTS idx_agent_availability_agent_type ON agent_availability(agent_type);
+    CREATE INDEX IF NOT EXISTS idx_agent_availability_status ON agent_availability(availability_status);
+    CREATE INDEX IF NOT EXISTS idx_agent_availability_heartbeat ON agent_availability(last_heartbeat);
+    CREATE INDEX IF NOT EXISTS idx_agent_availability_health ON agent_availability(health_status);
+    
+    -- Task execution history table
+    CREATE TABLE IF NOT EXISTS task_execution_history (
+        execution_history_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        task_id UUID NOT NULL REFERENCES task_queue(task_id),
+        agent_id VARCHAR(255) NOT NULL,
+        agent_type VARCHAR(100) NOT NULL,
+        execution_attempt INTEGER NOT NULL,
+        execution_status VARCHAR(50) NOT NULL,
+        started_at TIMESTAMP WITH TIME ZONE NOT NULL,
+        completed_at TIMESTAMP WITH TIME ZONE,
+        execution_duration INTERVAL,
+        error_details JSONB,
+        performance_metrics JSONB,
+        resource_usage JSONB,
+        
+        -- Australian compliance fields
+        data_residency VARCHAR(50) NOT NULL DEFAULT 'australia',
+        compliance_framework VARCHAR(100) NOT NULL DEFAULT 'australian-privacy-act',
+        audit_required BOOLEAN NOT NULL DEFAULT true,
+        
+        CONSTRAINT task_execution_history_unique UNIQUE (task_id, execution_attempt)
+    );
+    
+    -- Indexes for execution history
+    CREATE INDEX IF NOT EXISTS idx_task_execution_history_task_id ON task_execution_history(task_id);
+    CREATE INDEX IF NOT EXISTS idx_task_execution_history_agent_id ON task_execution_history(agent_id);
+    CREATE INDEX IF NOT EXISTS idx_task_execution_history_started_at ON task_execution_history(started_at);
+    CREATE INDEX IF NOT EXISTS idx_task_execution_history_status ON task_execution_history(execution_status);
+    
+    -- Task coordination events table
+    CREATE TABLE IF NOT EXISTS task_coordination_events (
+        event_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        event_type VARCHAR(100) NOT NULL CHECK (event_type IN (
+            'task_created', 'task_assigned', 'task_started', 'task_completed', 
+            'task_failed', 'task_cancelled', 'agent_coordination', 'dependency_resolved'
+        )),
+        task_id UUID REFERENCES task_queue(task_id),
+        agent_id VARCHAR(255),
+        event_data JSONB NOT NULL,
+        event_metadata JSONB,
+        event_timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        
+        -- Australian compliance fields
+        data_residency VARCHAR(50) NOT NULL DEFAULT 'australia',
+        compliance_framework VARCHAR(100) NOT NULL DEFAULT 'australian-privacy-act',
+        audit_required BOOLEAN NOT NULL DEFAULT true
+    );
+    
+    -- Indexes for coordination events
+    CREATE INDEX IF NOT EXISTS idx_task_coordination_events_type ON task_coordination_events(event_type);
+    CREATE INDEX IF NOT EXISTS idx_task_coordination_events_task_id ON task_coordination_events(task_id);
+    CREATE INDEX IF NOT EXISTS idx_task_coordination_events_agent_id ON task_coordination_events(agent_id);
+    CREATE INDEX IF NOT EXISTS idx_task_coordination_events_timestamp ON task_coordination_events(event_timestamp);
+    
+    -- Task queue audit log for Australian compliance
+    CREATE TABLE IF NOT EXISTS task_queue_audit_log (
+        audit_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        table_name VARCHAR(255) NOT NULL,
+        record_id UUID NOT NULL,
+        operation_type VARCHAR(50) NOT NULL CHECK (operation_type IN ('INSERT', 'UPDATE', 'DELETE')),
+        old_values JSONB,
+        new_values JSONB,
+        changed_by VARCHAR(255) NOT NULL,
+        change_timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        change_reason TEXT,
+        
+        -- Australian compliance fields
+        data_residency VARCHAR(50) NOT NULL DEFAULT 'australia',
+        compliance_framework VARCHAR(100) NOT NULL DEFAULT 'australian-privacy-act',
+        retention_period INTERVAL NOT NULL DEFAULT '7 years'
+    );
+    
+    -- Indexes for audit log
+    CREATE INDEX IF NOT EXISTS idx_task_queue_audit_table_name ON task_queue_audit_log(table_name);
+    CREATE INDEX IF NOT EXISTS idx_task_queue_audit_record_id ON task_queue_audit_log(record_id);
+    CREATE INDEX IF NOT EXISTS idx_task_queue_audit_timestamp ON task_queue_audit_log(change_timestamp);
+    
+    -- Update timestamp trigger function
+    CREATE OR REPLACE FUNCTION update_updated_at_column()
+    RETURNS TRIGGER AS $$
+    BEGIN
+        NEW.updated_at = NOW();
+        RETURN NEW;
+    END;
+    $$ language 'plpgsql';
+    
+    -- Apply update triggers
+    CREATE TRIGGER update_task_definitions_updated_at 
+        BEFORE UPDATE ON task_definitions 
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+        
+    CREATE TRIGGER update_task_queue_updated_at 
+        BEFORE UPDATE ON task_queue 
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+        
+    CREATE TRIGGER update_agent_availability_updated_at 
+        BEFORE UPDATE ON agent_availability 
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    
+    -- Task queue audit trigger function
+    CREATE OR REPLACE FUNCTION task_queue_audit_trigger_function()
+    RETURNS TRIGGER AS $$
+    BEGIN
+        IF TG_OP = 'DELETE' THEN
+            INSERT INTO task_queue_audit_log (table_name, record_id, operation_type, old_values, changed_by)
+            VALUES (TG_TABLE_NAME, OLD.task_id, TG_OP, row_to_json(OLD), current_user);
+            RETURN OLD;
+        ELSIF TG_OP = 'UPDATE' THEN
+            INSERT INTO task_queue_audit_log (table_name, record_id, operation_type, old_values, new_values, changed_by)
+            VALUES (TG_TABLE_NAME, NEW.task_id, TG_OP, row_to_json(OLD), row_to_json(NEW), current_user);
+            RETURN NEW;
+        ELSIF TG_OP = 'INSERT' THEN
+            INSERT INTO task_queue_audit_log (table_name, record_id, operation_type, new_values, changed_by)
+            VALUES (TG_TABLE_NAME, NEW.task_id, TG_OP, row_to_json(NEW), current_user);
+            RETURN NEW;
+        END IF;
+        RETURN NULL;
+    END;
+    $$ LANGUAGE plpgsql;
+    
+    -- Apply audit triggers for compliance
+    CREATE TRIGGER task_queue_audit_trigger
+        AFTER INSERT OR UPDATE OR DELETE ON task_queue
+        FOR EACH ROW EXECUTE FUNCTION task_queue_audit_trigger_function();
+        
+    CREATE TRIGGER task_definitions_audit_trigger
+        AFTER INSERT OR UPDATE OR DELETE ON task_definitions
+        FOR EACH ROW EXECUTE FUNCTION task_queue_audit_trigger_function();
+    
+    -- Function to get next available task for an agent
+    CREATE OR REPLACE FUNCTION get_next_task_for_agent(
+        p_agent_id VARCHAR(255),
+        p_agent_type VARCHAR(100)
+    ) RETURNS UUID AS $$
+    DECLARE
+        v_task_id UUID;
+    BEGIN
+        -- Find highest priority available task that this agent can handle
+        SELECT task_id INTO v_task_id
+        FROM task_queue tq
+        JOIN task_definitions td ON tq.task_definition_id = td.task_definition_id
+        WHERE tq.task_status = 'pending'
+          AND p_agent_type = ANY(td.required_agent_types)
+          AND (tq.deadline IS NULL OR tq.deadline > NOW())
+          AND (
+              array_length(tq.depends_on_tasks, 1) IS NULL 
+              OR NOT EXISTS (
+                  SELECT 1 FROM task_queue dep_tq 
+                  WHERE dep_tq.task_id = ANY(tq.depends_on_tasks) 
+                    AND dep_tq.task_status NOT IN ('completed', 'cancelled')
+              )
+          )
+        ORDER BY 
+          CASE tq.priority_level 
+            WHEN 'urgent' THEN 1
+            WHEN 'high' THEN 2
+            WHEN 'medium' THEN 3
+            WHEN 'low' THEN 4
+          END,
+          tq.created_at ASC
+        LIMIT 1
+        FOR UPDATE SKIP LOCKED;
+        
+        -- Assign the task to the agent
+        IF v_task_id IS NOT NULL THEN
+            UPDATE task_queue 
+            SET task_status = 'assigned',
+                assigned_agent_id = p_agent_id,
+                assigned_agent_type = p_agent_type,
+                assigned_at = NOW()
+            WHERE task_id = v_task_id;
+        END IF;
+        
+        RETURN v_task_id;
+    END;
+    $$ LANGUAGE plpgsql;
+
+  # Database initialization configuration
+  initialization_config: |
+    # Database initialization sequence
+    initialization_steps:
+      1. "Create databases"
+      2. "Install extensions"
+      3. "Create agent_state_db schema"
+      4. "Create task_queue_db schema"
+      5. "Create database users"
+      6. "Apply security policies"
+      7. "Insert initial data"
+      8. "Validate schemas"
+      
+    # Initial data to insert
+    initial_data:
+      task_definitions:
+        - name: "financial_analysis_company_research"
+          type: "financial_analysis"
+          required_agent_types: ["financial-intelligence"]
+          description: "Analyze company financial data and market position"
+          
+        - name: "research_query_academic_sources"
+          type: "research_query"
+          required_agent_types: ["research-analyst"]
+          description: "Search and analyze academic and professional sources"
+          
+        - name: "compliance_check_privacy_act"
+          type: "compliance_check"
+          required_agent_types: ["compliance-officer"]
+          description: "Verify Australian Privacy Act compliance"
+          
+        - name: "community_engagement_outreach"
+          type: "community_engagement"
+          required_agent_types: ["community-coordinator"]
+          description: "Coordinate community outreach and engagement activities"
+
+---
+# Database Schema Installation Job
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: database-schema-installation
+  namespace: act-placemat
+  labels:
+    component: database
+    operation: schema-installation
+    data-residency: australia
+  annotations:
+    description: "Install database schemas for agent state and task queues"
+    compliance.framework: "australian-privacy-act"
+spec:
+  template:
+    metadata:
+      labels:
+        component: database-schema-installation
+        data-residency: australia
+    spec:
+      serviceAccountName: database-schema-installer
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+      containers:
+      - name: schema-installer
+        image: postgres:16-alpine
+        env:
+        - name: TZ
+          value: "Australia/Sydney"
+        - name: DATA_RESIDENCY
+          value: "australia"
+        - name: COMPLIANCE_FRAMEWORK
+          value: "australian-privacy-act"
+        - name: PGHOST
+          value: "cloudsql-proxy-service.act-placemat.svc.cluster.local"
+        - name: PGPORT
+          value: "5432"
+        - name: PGUSER
+          valueFrom:
+            secretKeyRef:
+              name: database-connection-config
+              key: postgres-username
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: database-connection-config
+              key: postgres-password
+        - name: PGSSLMODE
+          value: "require"
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Starting database schema installation at $(date)"
+          
+          # Function to create databases
+          create_databases() {
+            echo "=== Creating Databases ==="
+            
+            # Create agent_state_db
+            echo "Creating agent_state_db..."
+            psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d postgres -c "
+              CREATE DATABASE agent_state_db 
+              WITH ENCODING='UTF8' 
+                   LC_COLLATE='en_AU.UTF-8' 
+                   LC_CTYPE='en_AU.UTF-8' 
+                   TEMPLATE=template0
+                   CONNECTION LIMIT=50;
+            " 2>/dev/null || echo "agent_state_db may already exist"
+            
+            # Create task_queue_db
+            echo "Creating task_queue_db..."
+            psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d postgres -c "
+              CREATE DATABASE task_queue_db 
+              WITH ENCODING='UTF8' 
+                   LC_COLLATE='en_AU.UTF-8' 
+                   LC_CTYPE='en_AU.UTF-8' 
+                   TEMPLATE=template0
+                   CONNECTION LIMIT=50;
+            " 2>/dev/null || echo "task_queue_db may already exist"
+            
+            echo "✅ Databases created"
+          }
+          
+          # Function to install agent state schema
+          install_agent_state_schema() {
+            echo "=== Installing Agent State Schema ==="
+            
+            # Read schema from configmap
+            if ! psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d agent_state_db -f /etc/schemas/agent_state_schema.sql; then
+              echo "❌ Failed to install agent state schema"
+              return 1
+            fi
+            
+            echo "✅ Agent state schema installed"
+          }
+          
+          # Function to install task queue schema
+          install_task_queue_schema() {
+            echo "=== Installing Task Queue Schema ==="
+            
+            # Read schema from configmap
+            if ! psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d task_queue_db -f /etc/schemas/task_queue_schema.sql; then
+              echo "❌ Failed to install task queue schema"
+              return 1
+            fi
+            
+            echo "✅ Task queue schema installed"
+          }
+          
+          # Function to insert initial data
+          insert_initial_data() {
+            echo "=== Inserting Initial Data ==="
+            
+            # Insert initial task definitions
+            psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d task_queue_db -c "
+              INSERT INTO task_definitions (task_name, task_type, required_agent_types, task_description, task_configuration) 
+              VALUES 
+              ('financial_analysis_company_research', 'financial_analysis', ARRAY['financial-intelligence'], 
+               'Analyze company financial data and market position', '{}'),
+              ('research_query_academic_sources', 'research_query', ARRAY['research-analyst'], 
+               'Search and analyze academic and professional sources', '{}'),
+              ('compliance_check_privacy_act', 'compliance_check', ARRAY['compliance-officer'], 
+               'Verify Australian Privacy Act compliance', '{}'),
+              ('community_engagement_outreach', 'community_engagement', ARRAY['community-coordinator'], 
+               'Coordinate community outreach and engagement activities', '{}'),
+              ('multi_agent_coordination', 'coordination', ARRAY['financial-intelligence', 'research-analyst'], 
+               'Coordinate between multiple agents for complex tasks', '{}')
+              ON CONFLICT (task_name) DO NOTHING;
+            "
+            
+            echo "✅ Initial data inserted"
+          }
+          
+          # Function to validate schemas
+          validate_schemas() {
+            echo "=== Validating Schemas ==="
+            
+            # Check agent_state_db tables
+            AGENT_TABLES=$(psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d agent_state_db -t -c "
+              SELECT count(*) FROM information_schema.tables 
+              WHERE table_schema = 'public' AND table_type = 'BASE TABLE';
+            " | tr -d ' ')
+            
+            echo "Agent state tables: $AGENT_TABLES"
+            
+            # Check task_queue_db tables
+            QUEUE_TABLES=$(psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d task_queue_db -t -c "
+              SELECT count(*) FROM information_schema.tables 
+              WHERE table_schema = 'public' AND table_type = 'BASE TABLE';
+            " | tr -d ' ')
+            
+            echo "Task queue tables: $QUEUE_TABLES"
+            
+            # Check for required tables
+            REQUIRED_AGENT_TABLES="agent_checkpoints agent_execution_state agent_communication_log agent_performance_metrics agent_audit_log"
+            for table in $REQUIRED_AGENT_TABLES; do
+              EXISTS=$(psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d agent_state_db -t -c "
+                SELECT EXISTS (
+                  SELECT FROM information_schema.tables 
+                  WHERE table_schema = 'public' AND table_name = '$table'
+                );
+              " | tr -d ' ')
+              
+              if [ "$EXISTS" = "t" ]; then
+                echo "✅ Table $table exists in agent_state_db"
+              else
+                echo "❌ Table $table missing in agent_state_db"
+                return 1
+              fi
+            done
+            
+            REQUIRED_QUEUE_TABLES="task_definitions task_queue agent_availability task_execution_history task_coordination_events task_queue_audit_log"
+            for table in $REQUIRED_QUEUE_TABLES; do
+              EXISTS=$(psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d task_queue_db -t -c "
+                SELECT EXISTS (
+                  SELECT FROM information_schema.tables 
+                  WHERE table_schema = 'public' AND table_name = '$table'
+                );
+              " | tr -d ' ')
+              
+              if [ "$EXISTS" = "t" ]; then
+                echo "✅ Table $table exists in task_queue_db"
+              else
+                echo "❌ Table $table missing in task_queue_db"
+                return 1
+              fi
+            done
+            
+            echo "✅ Schema validation completed"
+          }
+          
+          # Function to test basic operations
+          test_basic_operations() {
+            echo "=== Testing Basic Operations ==="
+            
+            # Test agent state operations
+            TEST_EXECUTION_ID=$(psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d agent_state_db -t -c "
+              INSERT INTO agent_execution_state (agent_id, agent_type, execution_status) 
+              VALUES ('test-agent-1', 'financial-intelligence', 'pending') 
+              RETURNING execution_id;
+            " | tr -d ' ')
+            
+            echo "Created test execution: $TEST_EXECUTION_ID"
+            
+            # Test task queue operations
+            TEST_TASK_ID=$(psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d task_queue_db -t -c "
+              INSERT INTO task_queue (task_definition_id, task_name, task_input) 
+              VALUES (
+                (SELECT task_definition_id FROM task_definitions LIMIT 1),
+                'test-task',
+                '{\"test\": \"data\"}'::jsonb
+              ) 
+              RETURNING task_id;
+            " | tr -d ' ')
+            
+            echo "Created test task: $TEST_TASK_ID"
+            
+            # Test function
+            NEXT_TASK=$(psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d task_queue_db -t -c "
+              SELECT get_next_task_for_agent('test-agent-1', 'financial-intelligence');
+            " | tr -d ' ')
+            
+            echo "Next task for agent: $NEXT_TASK"
+            
+            # Clean up test data
+            psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d agent_state_db -c "
+              DELETE FROM agent_execution_state WHERE execution_id = '$TEST_EXECUTION_ID';
+            " > /dev/null
+            
+            psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d task_queue_db -c "
+              DELETE FROM task_queue WHERE task_id = '$TEST_TASK_ID';
+            " > /dev/null
+            
+            echo "✅ Basic operations test completed"
+          }
+          
+          # Run installation steps
+          INSTALLATION_FAILURES=0
+          
+          if ! create_databases; then
+            INSTALLATION_FAILURES=$((INSTALLATION_FAILURES + 1))
+          fi
+          
+          if ! install_agent_state_schema; then
+            INSTALLATION_FAILURES=$((INSTALLATION_FAILURES + 1))
+          fi
+          
+          if ! install_task_queue_schema; then
+            INSTALLATION_FAILURES=$((INSTALLATION_FAILURES + 1))
+          fi
+          
+          if ! insert_initial_data; then
+            INSTALLATION_FAILURES=$((INSTALLATION_FAILURES + 1))
+          fi
+          
+          if ! validate_schemas; then
+            INSTALLATION_FAILURES=$((INSTALLATION_FAILURES + 1))
+          fi
+          
+          if ! test_basic_operations; then
+            INSTALLATION_FAILURES=$((INSTALLATION_FAILURES + 1))
+          fi
+          
+          # Generate installation report
+          INSTALLATION_STATUS="SUCCESS"
+          if [ $INSTALLATION_FAILURES -gt 0 ]; then
+            INSTALLATION_STATUS="FAILED"
+          fi
+          
+          cat > /tmp/schema-installation-report.json << EOF
+          {
+            "installation_date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "installation_status": "$INSTALLATION_STATUS",
+            "compliance_framework": "Australian Privacy Act 1988",
+            "data_residency": "australia",
+            "databases_created": ["agent_state_db", "task_queue_db"],
+            "installation_failures": $INSTALLATION_FAILURES,
+            "schemas_installed": {
+              "agent_state_schema": "installed",
+              "task_queue_schema": "installed"
+            },
+            "initial_data_loaded": true
+          }
+          EOF
+          
+          # Store installation report
+          kubectl create configmap database-schema-installation-report-$(date +%Y%m%d) \
+            --from-file=report.json=/tmp/schema-installation-report.json \
+            --from-literal="installation_status=$INSTALLATION_STATUS" \
+            --from-literal="installation_failures=$INSTALLATION_FAILURES" \
+            --from-literal="compliance_framework=australian-privacy-act" \
+            --from-literal="data_residency=australia" \
+            -n act-placemat --dry-run=client -o yaml | kubectl apply -f -
+          
+          echo "Database schema installation completed at $(date)"
+          echo "Installation status: $INSTALLATION_STATUS"
+          
+          # Exit with appropriate code
+          exit $INSTALLATION_FAILURES
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1Gi
+          requests:
+            cpu: 200m
+            memory: 512Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1001
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: schemas
+          mountPath: /etc/schemas
+          readOnly: true
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: schemas
+        configMap:
+          name: database-schemas-config
+      imagePullSecrets:
+      - name: registry-credentials
+      nodeSelector:
+        data-residency: australia
+
+---
+# Database Schema Installer Service Account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: database-schema-installer
+  namespace: act-placemat
+  labels:
+    component: database
+    role: schema-installer
+    data-residency: australia
+  annotations:
+    description: "Service account for database schema installation"
+    compliance.framework: "australian-privacy-act"
+automountServiceAccountToken: true
+
+---
+# Database Schema Installer RBAC Role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: database-schema-installer
+  namespace: act-placemat
+  labels:
+    component: database
+    data-residency: australia
+  annotations:
+    description: "Role for database schema installation operations"
+    compliance.framework: "australian-privacy-act"
+rules:
+# ConfigMap creation for installation reports
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["create", "update", "patch"]
+  resourceNames: ["database-schema-installation-report-*"]
+
+---
+# Database Schema Installer Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: database-schema-installer-binding
+  namespace: act-placemat
+  labels:
+    component: database
+    data-residency: australia
+  annotations:
+    description: "Binds database-schema-installer to installation role"
+    compliance.framework: "australian-privacy-act"
+subjects:
+- kind: ServiceAccount
+  name: database-schema-installer
+  namespace: act-placemat
+roleRef:
+  kind: Role
+  name: database-schema-installer
+  apiGroup: rbac.authorization.k8s.io

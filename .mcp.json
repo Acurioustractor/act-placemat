@@ -1,0 +1,20 @@
+{
+	"mcpServers": {
+		"task-master-ai": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"--package=task-master-ai",
+				"task-master-ai"
+			],
+			"env": {
+				"ANTHROPIC_API_KEY": "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",
+				"PERPLEXITY_API_KEY": "pplx-c4f3d2e1a0b9876543210fedcba09876",
+				"OPENAI_API_KEY": "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",
+				"GOOGLE_API_KEY": "AIzaSyBkT-U-LEvcgMulxX5LS0FPfkOoz54HxXg",
+				"OPENROUTER_API_KEY": "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"
+			}
+		}
+	}
+}

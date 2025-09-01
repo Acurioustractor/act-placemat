@@ -1,0 +1,149 @@
+# Docker Registry Configuration for ACT Placemat Intelligence Hub
+# Australian-compliant registry with security and audit features
+
+version: 0.1
+
+# Logging configuration with Australian compliance
+log:
+  level: info
+  formatter: json
+  fields:
+    service: act-placemat-registry
+    data_residency: australia
+    compliance_framework: australian-privacy-act
+    timezone: Australia/Sydney
+
+# Storage configuration with Australian data residency
+storage:
+  filesystem:
+    rootdirectory: /var/lib/registry
+    maxthreads: 100
+  maintenance:
+    uploadpurging:
+      enabled: true
+      age: 168h # 7 days
+      interval: 24h
+      dryrun: false
+  cache:
+    blobdescriptor: inmemory
+  delete:
+    enabled: true
+  redirect:
+    disable: true
+
+# HTTP server configuration
+http:
+  addr: 0.0.0.0:5000
+  prefix: /
+  host: https://registry.actplacemat.org.au:5000
+  secret: ${REGISTRY_HTTP_SECRET}
+  relativeurls: false
+  draintimeout: 60s
+  tls:
+    certificate: /certs/registry.crt
+    key: /certs/registry.key
+    minimumtls: tls1.2
+    ciphersuites:
+      - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+      - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+      - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+  headers:
+    X-Content-Type-Options: [nosniff]
+    X-Frame-Options: [DENY]
+    X-XSS-Protection: ["1; mode=block"]
+    Strict-Transport-Security: ["max-age=31536000; includeSubDomains"]
+    X-Data-Residency: [Australia]
+    X-Compliance-Framework: [Australian-Privacy-Act]
+
+# Authentication configuration
+auth:
+  htpasswd:
+    realm: ACT-Placemat-Registry
+    path: /auth/htpasswd
+
+# Middleware configuration
+middleware:
+  registry:
+    - name: cloudwatch
+      disabled: true
+  repository:
+    - name: cloudwatch
+      disabled: true
+  storage:
+    - name: cloudwatch
+      disabled: true
+
+# Webhook notifications for Australian compliance monitoring
+notifications:
+  events:
+    includereferences: true
+  endpoints:
+    - name: australian-compliance-webhook
+      url: http://intelligence-hub:3002/api/registry/webhook
+      headers:
+        Authorization: [Bearer ${REGISTRY_WEBHOOK_TOKEN}]
+        X-Registry-Source: [act-placemat-registry]
+        X-Data-Residency: [Australia]
+      events:
+        - push
+        - pull
+        - delete
+        - manifest
+      ignoredmediatypes:
+        - application/octet-stream
+      ignore:
+        mediatypes:
+          - application/octet-stream
+        actions:
+          - pull
+      threshold: 5
+      backoff: 1s
+      timeout: 1s
+
+# Health check configuration
+health:
+  storagedriver:
+    enabled: true
+    interval: 10s
+    threshold: 3
+
+# Validation configuration for Australian compliance
+validation:
+  manifests:
+    urls:
+      allow:
+        - ^https://registry\.actplacemat\.org\.au/
+        - ^https://harbor\.actplacemat\.org\.au/
+      deny:
+        - ^https?://[^/]+\.onion/
+        - ^https?://localhost/
+    disabled: false
+
+# Proxy configuration for upstream registries
+proxy:
+  remoteurl: https://registry-1.docker.io
+  username: ${DOCKERHUB_USERNAME}
+  password: ${DOCKERHUB_PASSWORD}
+  ttl: 168h # 7 days
+
+# Compatibility settings
+compatibility:
+  schema1:
+    enabled: false
+    signingkeyfile: /certs/signing-key.json
+    trustedkeys:
+      "*": []
+
+# Australian compliance metadata
+metadata:
+  data_residency: Australia
+  compliance_framework: Australian Privacy Act 1988
+  data_classification: Internal
+  retention_policy: 7-years
+  encryption_at_rest: AES-256
+  encryption_in_transit: TLS-1.2+
+  audit_logging: enabled
+  vulnerability_scanning: enabled
+  access_control: rbac
+  backup_strategy: daily
+  geo_restriction: australia-only

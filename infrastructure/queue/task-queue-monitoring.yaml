@@ -1,0 +1,807 @@
+# Task Queue Monitoring and Metrics Collection
+# Comprehensive monitoring with Australian compliance and performance tracking
+
+---
+# Task Queue Monitoring ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: task-queue-monitoring-config
+  namespace: act-placemat
+  labels:
+    component: task-queue
+    service-type: monitoring
+    data-residency: australia
+  annotations:
+    description: "Task queue monitoring configuration"
+    compliance.framework: "australian-privacy-act"
+data:
+  monitoring_config.yaml: |
+    # Task Queue Monitoring Configuration
+    monitoring:
+      # Metrics collection settings
+      metrics:
+        collection_interval: 30  # seconds
+        retention_period: 2557   # days (7 years for Australian compliance)
+        batch_size: 1000
+        compression_enabled: true
+        
+      # Queue metrics to collect
+      queue_metrics:
+        depth_metrics:
+          - name: "task_queue_depth_total"
+            description: "Total number of tasks in queue"
+            labels: ["queue_name", "priority", "data_residency"]
+            collection_method: "gauge"
+            
+          - name: "task_queue_processing_total"
+            description: "Number of tasks currently being processed"
+            labels: ["agent_type", "data_residency"]
+            collection_method: "gauge"
+            
+          - name: "task_queue_completed_total"
+            description: "Total completed tasks"
+            labels: ["queue_name", "agent_type", "priority", "data_residency"]
+            collection_method: "counter"
+            
+          - name: "task_queue_failed_total"
+            description: "Total failed tasks"
+            labels: ["queue_name", "agent_type", "failure_reason", "data_residency"]
+            collection_method: "counter"
+            
+        performance_metrics:
+          - name: "task_processing_duration_seconds"
+            description: "Task processing duration histogram"
+            labels: ["task_type", "agent_type", "priority"]
+            collection_method: "histogram"
+            buckets: [0.1, 0.5, 1.0, 5.0, 10.0, 30.0, 60.0, 300.0, 600.0, 1800.0]
+            
+          - name: "task_queue_wait_time_seconds"
+            description: "Time tasks wait in queue before processing"
+            labels: ["queue_name", "priority"]
+            collection_method: "histogram"
+            buckets: [1.0, 5.0, 10.0, 30.0, 60.0, 300.0, 600.0, 1800.0, 3600.0]
+            
+          - name: "task_queue_throughput_rate"
+            description: "Queue throughput rate (tasks per second)"
+            labels: ["queue_name", "agent_type", "data_residency"]
+            collection_method: "gauge"
+            
+          - name: "task_retry_count_total"
+            description: "Total task retry attempts"
+            labels: ["task_type", "retry_reason", "data_residency"]
+            collection_method: "counter"
+            
+        system_metrics:
+          - name: "redis_cluster_connections_active"
+            description: "Active Redis cluster connections"
+            labels: ["node", "data_residency"]
+            collection_method: "gauge"
+            
+          - name: "redis_cluster_memory_usage_bytes"
+            description: "Redis cluster memory usage"
+            labels: ["node", "data_residency"]
+            collection_method: "gauge"
+            
+          - name: "redis_cluster_cpu_usage_percent"
+            description: "Redis cluster CPU usage percentage"
+            labels: ["node", "data_residency"]
+            collection_method: "gauge"
+            
+      # Australian compliance metrics
+      compliance_metrics:
+        audit_metrics:
+          - name: "compliance_audit_events_total"
+            description: "Total compliance audit events"
+            labels: ["event_type", "compliance_framework", "data_residency"]
+            collection_method: "counter"
+            
+          - name: "data_residency_violations_total"
+            description: "Data residency compliance violations"
+            labels: ["violation_type", "data_residency"]
+            collection_method: "counter"
+            
+          - name: "privacy_protection_events_total"
+            description: "Privacy protection events"
+            labels: ["event_type", "data_classification", "data_residency"]
+            collection_method: "counter"
+            
+          - name: "retention_policy_enforcement_total"
+            description: "Data retention policy enforcement events"
+            labels: ["policy_type", "action", "data_residency"]
+            collection_method: "counter"
+            
+      # Alerting thresholds
+      alerting:
+        queue_depth_alerts:
+          high_priority_threshold: 1000
+          standard_priority_threshold: 5000
+          low_priority_threshold: 10000
+          
+        performance_alerts:
+          processing_duration_threshold: 300.0  # 5 minutes
+          wait_time_threshold: 600.0           # 10 minutes
+          error_rate_threshold: 0.05           # 5%
+          
+        system_alerts:
+          memory_usage_threshold: 0.85         # 85%
+          cpu_usage_threshold: 0.80            # 80%
+          connection_threshold: 1000
+          
+        compliance_alerts:
+          violation_threshold: 1               # Any compliance violation
+          audit_failure_threshold: 1          # Any audit failure
+          
+      # Dashboard configuration
+      dashboards:
+        queue_overview:
+          enabled: true
+          refresh_interval: 30
+          panels:
+            - "queue_depths"
+            - "processing_rates"
+            - "error_rates"
+            - "performance_metrics"
+            
+        compliance_dashboard:
+          enabled: true
+          refresh_interval: 60
+          panels:
+            - "audit_events"
+            - "data_residency_status"
+            - "privacy_protection"
+            - "retention_compliance"
+            
+        system_health:
+          enabled: true
+          refresh_interval: 15
+          panels:
+            - "redis_cluster_health"
+            - "api_performance"
+            - "resource_utilization"
+
+  # Prometheus recording rules
+  recording_rules.yaml: |
+    groups:
+    - name: task_queue_performance
+      interval: 30s
+      rules:
+      - record: task_queue:throughput_rate_5m
+        expr: rate(task_queue_completed_total[5m])
+        labels:
+          data_residency: australia
+          
+      - record: task_queue:error_rate_5m
+        expr: rate(task_queue_failed_total[5m]) / rate(task_queue_completed_total[5m])
+        labels:
+          data_residency: australia
+          
+      - record: task_queue:avg_processing_duration_5m
+        expr: rate(task_processing_duration_seconds_sum[5m]) / rate(task_processing_duration_seconds_count[5m])
+        labels:
+          data_residency: australia
+          
+      - record: task_queue:avg_wait_time_5m
+        expr: rate(task_queue_wait_time_seconds_sum[5m]) / rate(task_queue_wait_time_seconds_count[5m])
+        labels:
+          data_residency: australia
+          
+    - name: task_queue_compliance
+      interval: 60s
+      rules:
+      - record: compliance:audit_event_rate_1h
+        expr: rate(compliance_audit_events_total[1h])
+        labels:
+          data_residency: australia
+          
+      - record: compliance:violation_rate_24h
+        expr: increase(data_residency_violations_total[24h])
+        labels:
+          data_residency: australia
+
+---
+# Task Queue Monitoring Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-queue-monitor
+  namespace: act-placemat
+  labels:
+    component: task-queue
+    service-type: monitoring
+    data-residency: australia
+  annotations:
+    description: "Task queue monitoring service"
+    compliance.framework: "australian-privacy-act"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      component: task-queue-monitor
+      data-residency: australia
+  template:
+    metadata:
+      labels:
+        component: task-queue-monitor
+        data-residency: australia
+      annotations:
+        compliance.framework: "australian-privacy-act"
+        data.classification: "restricted"
+        audit.required: "true"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: task-queue-monitor-service
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: "kubernetes.io/zone"
+                operator: In
+                values:
+                - "australia-southeast1-a"
+                - "australia-southeast1-b"
+                - "australia-southeast1-c"
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  component: task-queue-monitor
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - name: queue-monitor
+        image: registry.actplacemat.org.au:5000/act-placemat/task-queue-monitor:latest
+        imagePullPolicy: Always
+        env:
+        - name: TZ
+          value: "Australia/Sydney"
+        - name: DATA_RESIDENCY
+          value: "australia"
+        - name: COMPLIANCE_FRAMEWORK
+          value: "australian-privacy-act"
+        - name: REDIS_CLUSTER_HOST
+          value: "redis-cluster-service.act-placemat.svc.cluster.local"
+        - name: REDIS_CLUSTER_PORT
+          value: "6379"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-cluster-auth
+              key: password
+        - name: METRICS_PORT
+          value: "9090"
+        - name: HEALTH_PORT
+          value: "8081"
+        - name: COLLECTION_INTERVAL
+          value: "30"
+        - name: LOG_LEVEL
+          value: "INFO"
+        ports:
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        - name: health
+          containerPort: 8081
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: health
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: health
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1Gi
+          requests:
+            cpu: 200m
+            memory: 512Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1001
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: config
+          mountPath: /etc/monitor-config
+          readOnly: true
+        - name: scripts
+          mountPath: /etc/monitor-scripts
+          readOnly: true
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: config
+        configMap:
+          name: task-queue-monitoring-config
+      - name: scripts
+        configMap:
+          name: task-queue-monitoring-scripts
+      imagePullSecrets:
+      - name: registry-credentials
+      nodeSelector:
+        data-residency: australia
+
+---
+# Task Queue Monitoring Scripts
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: task-queue-monitoring-scripts
+  namespace: act-placemat
+  labels:
+    component: task-queue
+    config-type: monitoring-scripts
+    data-residency: australia
+  annotations:
+    description: "Monitoring scripts for task queue metrics collection"
+    compliance.framework: "australian-privacy-act"
+data:
+  collect_queue_metrics.lua: |
+    -- Lua script for collecting comprehensive queue metrics
+    local function collect_queue_metrics()
+        local metrics = {}
+        local current_time = redis.call('TIME')[1]
+        
+        -- Queue depth metrics
+        local queues = {
+            {name = "high", key = "act:queue:high"},
+            {name = "standard", key = "act:queue:standard"}, 
+            {name = "low", key = "act:queue:low"},
+            {name = "processing", key = "act:queue:processing"},
+            {name = "completed", key = "act:queue:completed"},
+            {name = "dlq", key = "act:queue:dlq"}
+        }
+        
+        for _, queue in ipairs(queues) do
+            local depth = 0
+            if queue.name == "processing" then
+                depth = redis.call('HLEN', queue.key)
+            else
+                depth = redis.call('ZCARD', queue.key)
+            end
+            
+            table.insert(metrics, {
+                name = "task_queue_depth_total",
+                value = depth,
+                labels = {
+                    queue_name = queue.name,
+                    data_residency = "australia"
+                },
+                timestamp = current_time
+            })
+        end
+        
+        -- Processing metrics by agent type
+        local processing_tasks = redis.call('HGETALL', 'act:queue:processing')
+        local agent_counts = {}
+        
+        for i = 1, #processing_tasks, 2 do
+            local processing_info = processing_tasks[i + 1]
+            local task_data = string.match(processing_info, '"task_data":(%b{})')
+            if task_data then
+                local agent_type = string.match(task_data, '"agent_type":"([^"]+)"')
+                if agent_type then
+                    agent_counts[agent_type] = (agent_counts[agent_type] or 0) + 1
+                end
+            end
+        end
+        
+        for agent_type, count in pairs(agent_counts) do
+            table.insert(metrics, {
+                name = "task_queue_processing_total",
+                value = count,
+                labels = {
+                    agent_type = agent_type,
+                    data_residency = "australia"
+                },
+                timestamp = current_time
+            })
+        end
+        
+        -- Compliance metrics
+        local audit_key = "audit:operations:" .. os.date("%Y%m%d")
+        local audit_count = redis.call('ZCARD', audit_key)
+        
+        table.insert(metrics, {
+            name = "compliance_audit_events_total",
+            value = audit_count,
+            labels = {
+                event_type = "queue_operation",
+                compliance_framework = "australian-privacy-act",
+                data_residency = "australia"
+            },
+            timestamp = current_time
+        })
+        
+        return metrics
+    end
+    
+    -- Execute collection
+    return collect_queue_metrics()
+
+  collect_performance_metrics.lua: |
+    -- Lua script for collecting performance metrics
+    local function collect_performance_metrics()
+        local metrics = {}
+        local current_time = redis.call('TIME')[1]
+        
+        -- Calculate throughput rates
+        local completed_key = "act:queue:completed"
+        local five_minutes_ago = current_time - 300
+        
+        -- Get completed tasks in last 5 minutes
+        local recent_completions = redis.call('ZCOUNT', completed_key, five_minutes_ago, current_time)
+        local throughput_rate = recent_completions / 300  -- tasks per second
+        
+        table.insert(metrics, {
+            name = "task_queue_throughput_rate",
+            value = throughput_rate,
+            labels = {
+                queue_name = "completed",
+                data_residency = "australia"
+            },
+            timestamp = current_time
+        })
+        
+        -- Calculate error rates from DLQ
+        local dlq_key = "act:queue:dlq"
+        local recent_failures = redis.call('ZCOUNT', dlq_key, five_minutes_ago, current_time)
+        local error_rate = 0
+        
+        if recent_completions > 0 then
+            error_rate = recent_failures / (recent_completions + recent_failures)
+        end
+        
+        table.insert(metrics, {
+            name = "task_queue_error_rate",
+            value = error_rate,
+            labels = {
+                data_residency = "australia"
+            },
+            timestamp = current_time
+        })
+        
+        -- Memory usage metrics for Redis cluster
+        local memory_info = redis.call('INFO', 'memory')
+        local used_memory = string.match(memory_info, 'used_memory:(%d+)')
+        local max_memory = string.match(memory_info, 'maxmemory:(%d+)')
+        
+        if used_memory and max_memory and tonumber(max_memory) > 0 then
+            local memory_usage_percent = tonumber(used_memory) / tonumber(max_memory)
+            
+            table.insert(metrics, {
+                name = "redis_cluster_memory_usage_percent",
+                value = memory_usage_percent,
+                labels = {
+                    node = "cluster",
+                    data_residency = "australia"
+                },
+                timestamp = current_time
+            })
+        end
+        
+        return metrics
+    end
+    
+    return collect_performance_metrics()
+
+  validate_compliance.lua: |
+    -- Lua script for compliance validation and monitoring
+    local function validate_compliance()
+        local violations = {}
+        local current_time = redis.call('TIME')[1]
+        
+        -- Check data residency compliance
+        local metadata_region = redis.call('GET', 'metadata:cluster:region')
+        if metadata_region ~= 'australia' then
+            table.insert(violations, {
+                type = "data_residency",
+                message = "Cluster region is not set to Australia",
+                severity = "critical",
+                timestamp = current_time
+            })
+        end
+        
+        -- Check audit logging compliance
+        local audit_key = "audit:operations:" .. os.date("%Y%m%d")
+        local audit_exists = redis.call('EXISTS', audit_key)
+        if audit_exists == 0 then
+            table.insert(violations, {
+                type = "audit_logging",
+                message = "No audit log found for today",
+                severity = "high",
+                timestamp = current_time
+            })
+        end
+        
+        -- Check retention policy compliance
+        local completed_key = "act:queue:completed"
+        local seven_years_ago = current_time - (7 * 365 * 24 * 3600)  -- 7 years in seconds
+        local old_tasks = redis.call('ZCOUNT', completed_key, 0, seven_years_ago)
+        
+        if old_tasks > 0 then
+            table.insert(violations, {
+                type = "retention_policy",
+                message = string.format("Found %d tasks older than 7 years", old_tasks),
+                severity = "medium",
+                timestamp = current_time
+            })
+        end
+        
+        -- Log violations if any
+        if #violations > 0 then
+            for _, violation in ipairs(violations) do
+                local violation_key = "compliance:violations:" .. os.date("%Y%m%d")
+                local violation_record = string.format(
+                    '{"timestamp":%d,"type":"%s","message":"%s","severity":"%s","data_residency":"australia"}',
+                    violation.timestamp, violation.type, violation.message, violation.severity
+                )
+                redis.call('ZADD', violation_key, violation.timestamp, violation_record)
+                redis.call('EXPIRE', violation_key, 86400 * 2557)  -- 7 years retention
+            end
+        end
+        
+        return {
+            violations_count = #violations,
+            violations = violations,
+            compliance_status = #violations == 0 and "compliant" or "non_compliant"
+        }
+    end
+    
+    return validate_compliance()
+
+---
+# Task Queue Monitor Service Account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: task-queue-monitor-service
+  namespace: act-placemat
+  labels:
+    component: task-queue
+    role: monitoring
+    data-residency: australia
+  annotations:
+    description: "Service account for task queue monitoring"
+    compliance.framework: "australian-privacy-act"
+automountServiceAccountToken: true
+
+---
+# Task Queue Monitor Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: task-queue-monitor-service
+  namespace: act-placemat
+  labels:
+    component: task-queue
+    service-type: monitoring
+    data-residency: australia
+  annotations:
+    description: "Service for task queue monitoring metrics"
+    compliance.framework: "australian-privacy-act"
+spec:
+  selector:
+    component: task-queue-monitor
+    data-residency: australia
+  ports:
+  - name: metrics
+    port: 9090
+    targetPort: metrics
+    protocol: TCP
+  - name: health
+    port: 8081
+    targetPort: health
+    protocol: TCP
+  type: ClusterIP
+
+---
+# Task Queue Monitoring ServiceMonitor
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: task-queue-monitoring
+  namespace: act-placemat
+  labels:
+    component: task-queue
+    service-type: monitoring
+    data-residency: australia
+  annotations:
+    description: "ServiceMonitor for task queue metrics collection"
+    compliance.framework: "australian-privacy-act"
+spec:
+  selector:
+    matchLabels:
+      component: task-queue
+      service-type: monitoring
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+    honorLabels: true
+    relabelings:
+    - sourceLabels: [__meta_kubernetes_pod_label_data_residency]
+      targetLabel: data_residency
+    - sourceLabels: [__meta_kubernetes_pod_annotation_compliance_framework]
+      targetLabel: compliance_framework
+
+---
+# Task Queue Alert Rules
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: task-queue-alerts
+  namespace: act-placemat
+  labels:
+    component: task-queue
+    alert-type: monitoring
+    data-residency: australia
+  annotations:
+    description: "Alert rules for task queue monitoring"
+    compliance.framework: "australian-privacy-act"
+spec:
+  groups:
+  - name: task_queue_performance
+    rules:
+    - alert: TaskQueueHighDepth
+      expr: task_queue_depth_total{queue_name!="completed"} > 1000
+      for: 5m
+      labels:
+        severity: warning
+        component: task-queue
+        data_residency: australia
+      annotations:
+        summary: "High task queue depth detected"
+        description: "Queue {{ $labels.queue_name }} has {{ $value }} tasks pending"
+        
+    - alert: TaskQueueProcessingStalled
+      expr: rate(task_queue_completed_total[5m]) == 0 and task_queue_depth_total > 0
+      for: 10m
+      labels:
+        severity: critical
+        component: task-queue
+        data_residency: australia
+      annotations:
+        summary: "Task queue processing has stalled"
+        description: "No tasks completed in 5 minutes despite pending queue"
+        
+    - alert: TaskQueueHighErrorRate
+      expr: rate(task_queue_failed_total[5m]) / rate(task_queue_completed_total[5m]) > 0.1
+      for: 5m
+      labels:
+        severity: warning
+        component: task-queue
+        data_residency: australia
+      annotations:
+        summary: "High task queue error rate"
+        description: "Error rate is {{ $value | humanizePercentage }}"
+        
+  - name: task_queue_compliance
+    rules:
+    - alert: ComplianceViolationDetected
+      expr: increase(data_residency_violations_total[1h]) > 0
+      for: 0m
+      labels:
+        severity: critical
+        component: task-queue
+        data_residency: australia
+        compliance_violation: "true"
+      annotations:
+        summary: "Data residency compliance violation detected"
+        description: "{{ $value }} violations detected in the last hour"
+        
+    - alert: AuditLoggingFailure
+      expr: increase(compliance_audit_events_total[10m]) == 0
+      for: 10m
+      labels:
+        severity: high
+        component: task-queue
+        data_residency: australia
+      annotations:
+        summary: "Audit logging appears to have stopped"
+        description: "No audit events recorded in the last 10 minutes"
+        
+  - name: redis_cluster_health
+    rules:
+    - alert: RedisClusterHighMemoryUsage
+      expr: redis_cluster_memory_usage_percent > 0.85
+      for: 5m
+      labels:
+        severity: warning
+        component: task-queue
+        data_residency: australia
+      annotations:
+        summary: "Redis cluster high memory usage"
+        description: "Memory usage is {{ $value | humanizePercentage }}"
+        
+    - alert: RedisClusterDown
+      expr: up{job="redis-cluster-service"} == 0
+      for: 1m
+      labels:
+        severity: critical
+        component: task-queue
+        data_residency: australia
+      annotations:
+        summary: "Redis cluster is down"
+        description: "Redis cluster has been down for more than 1 minute"
+
+---
+# Task Queue Monitoring RBAC Role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: task-queue-monitor-service
+  namespace: act-placemat
+  labels:
+    component: task-queue
+    data-residency: australia
+  annotations:
+    description: "Role for task queue monitoring operations"
+    compliance.framework: "australian-privacy-act"
+rules:
+# ConfigMap access for configuration
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch"]
+# Secret access for Redis authentication
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "watch"]
+# Pod information for cluster monitoring
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+# Service discovery
+- apiGroups: [""]
+  resources: ["services", "endpoints"]
+  verbs: ["get", "list", "watch"]
+# Event creation for monitoring alerts
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+
+---
+# Task Queue Monitoring Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: task-queue-monitor-service-binding
+  namespace: act-placemat
+  labels:
+    component: task-queue
+    data-residency: australia
+  annotations:
+    description: "Binds task-queue-monitor-service to monitoring role"
+    compliance.framework: "australian-privacy-act"
+subjects:
+- kind: ServiceAccount
+  name: task-queue-monitor-service
+  namespace: act-placemat
+roleRef:
+  kind: Role
+  name: task-queue-monitor-service
+  apiGroup: rbac.authorization.k8s.io

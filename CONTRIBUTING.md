@@ -105,10 +105,50 @@ npm run test:frontend      # Frontend tests only
 npm run test:backend       # Backend tests only
 ```
 
+### Environment Management
+
+ACT Placemat uses a multi-layered environment management system:
+
+#### Quick Setup
+```bash
+# 1. Set up secrets management
+./scripts/setup-secrets.sh
+
+# 2. Copy environment template
+cp .env.template .env.local
+
+# 3. Fill in your actual values
+editor .env.local
+
+# 4. Enable direnv (optional)
+direnv allow
+```
+
+#### Environment Files
+- `.env` - Base configuration (committed)
+- `.env.local` - Your local secrets (NEVER commit)
+- `.env.template` - Template for new developers (committed)
+
+#### Secrets Encryption
+```bash
+# Encrypt sensitive files
+node scripts/secrets-manager.js encrypt .env.local
+
+# Decrypt when needed  
+node scripts/secrets-manager.js decrypt .env.local.enc
+```
+
+#### Security Rules
+- ✅ Commit: `.env`, `.env.template`, `.envrc`, `*.enc` files
+- ❌ Never commit: `.env.local`, `.env.*.local`, private keys
+
+See [Environment Management Guide](Docs/Guides/Setup/ENVIRONMENT_MANAGEMENT.md) for details.
+
 ### Getting Help
 
 - Check the documentation in `/Docs/`
 - Review the project structure in `PROJECT_STRUCTURE.md`
+- Environment setup: [Environment Management Guide](Docs/Guides/Setup/ENVIRONMENT_MANAGEMENT.md)
 - Ask questions in issues or discussions
 
 ## Project Structure

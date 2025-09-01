@@ -1,0 +1,118 @@
+# ACT Platform - Production Docker Configuration
+# Multi-stage build for optimal security and performance
+
+# Stage 1: Build stage
+FROM node:20-alpine AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Install build dependencies
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    git \
+    && npm install -g npm@latest
+
+# Copy package files
+COPY package*.json ./
+COPY apps/backend/package*.json ./apps/backend/
+COPY apps/frontend/package*.json ./apps/frontend/
+COPY packages/*/package*.json ./packages/*/
+
+# Install dependencies
+RUN npm ci --production=false
+
+# Copy source code
+COPY . .
+
+# Build applications
+RUN npm run build --workspace=apps/frontend
+RUN npm run build --workspace=apps/backend
+
+# Remove development dependencies
+RUN npm prune --production
+
+# Stage 2: Production stage
+FROM node:20-alpine AS production
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S appgroup && \
+    adduser -S appuser -u 1001 -G appgroup
+
+# Set working directory
+WORKDIR /app
+
+# Install production system dependencies
+RUN apk add --no-cache \
+    dumb-init \
+    curl \
+    ca-certificates \
+    tzdata \
+    && rm -rf /var/cache/apk/*
+
+# Set timezone to Australian Eastern
+ENV TZ=Australia/Sydney
+
+# Copy built application from builder stage
+COPY --from=builder --chown=appuser:appgroup /app/node_modules ./node_modules
+COPY --from=builder --chown=appuser:appgroup /app/apps/backend/dist ./apps/backend/dist
+COPY --from=builder --chown=appuser:appgroup /app/apps/frontend/dist ./apps/frontend/dist
+COPY --from=builder --chown=appuser:appgroup /app/packages ./packages
+COPY --from=builder --chown=appuser:appgroup /app/package*.json ./
+
+# Copy necessary runtime files
+COPY --chown=appuser:appgroup apps/backend/src/database/migrations ./apps/backend/src/database/migrations
+COPY --chown=appuser:appgroup apps/backend/scripts ./apps/backend/scripts
+COPY --chown=appuser:appgroup docker/production/entrypoint.sh ./entrypoint.sh
+COPY --chown=appuser:appgroup docker/production/healthcheck.js ./healthcheck.js
+
+# Make scripts executable
+RUN chmod +x ./entrypoint.sh ./healthcheck.js ./apps/backend/scripts/*.js
+
+# Create necessary directories
+RUN mkdir -p \
+    ./data/logs \
+    ./data/uploads \
+    ./data/audit-history \
+    ./data/backups \
+    && chown -R appuser:appgroup ./data
+
+# Security hardening
+RUN chmod 755 /app && \
+    find /app -type f -name "*.js" -exec chmod 644 {} \; && \
+    find /app -type f -name "*.json" -exec chmod 644 {} \; && \
+    find /app -type d -exec chmod 755 {} \;
+
+# Environment configuration
+ENV NODE_ENV=production
+ENV LOG_LEVEL=info
+ENV PORT=3000
+ENV METRICS_PORT=9090
+
+# Health check configuration
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD node healthcheck.js
+
+# Switch to non-root user
+USER appuser
+
+# Expose ports
+EXPOSE 3000 9090
+
+# Use dumb-init for proper signal handling
+ENTRYPOINT ["dumb-init", "--"]
+
+# Start the application
+CMD ["./entrypoint.sh"]
+
+# Metadata
+LABEL maintainer="ACT Platform Team <dev@actplacemat.org>"
+LABEL version="1.0.0"
+LABEL description="ACT Platform - Community collaboration and social impact platform"
+LABEL org.opencontainers.image.title="ACT Platform"
+LABEL org.opencontainers.image.description="Community platform connecting people, projects, and opportunities"
+LABEL org.opencontainers.image.version="1.0.0"
+LABEL org.opencontainers.image.vendor="ACT Platform"
+LABEL org.opencontainers.image.licenses="MIT"

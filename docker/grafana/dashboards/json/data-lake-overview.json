@@ -1,0 +1,205 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "ACT Placemat Data Lake Overview",
+    "tags": ["data-lake", "australia", "observability"],
+    "timezone": "Australia/Sydney",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Data Source Health Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "data_source_connection_status",
+            "legendFormat": "{{source}} ({{type}})",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {
+                "options": {
+                  "0": {
+                    "text": "Unhealthy",
+                    "color": "red"
+                  },
+                  "1": {
+                    "text": "Healthy", 
+                    "color": "green"
+                  }
+                },
+                "type": "value"
+              }
+            ],
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "green", 
+                  "value": 1
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Data Sync Operations",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(data_sync_records_processed[5m])",
+            "legendFormat": "{{source}} Records/min",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear",
+              "fillOpacity": 10
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        }
+      },
+      {
+        "id": 3,
+        "title": "API Response Times",
+        "type": "timeseries", 
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(data_source_response_time_seconds_bucket[5m]))",
+            "legendFormat": "{{source}} 95th percentile",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(data_source_response_time_seconds_bucket[5m]))",
+            "legendFormat": "{{source}} median",
+            "refId": "B"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s",
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear"
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 8
+        }
+      },
+      {
+        "id": 4,
+        "title": "Data Freshness (Time Since Last Sync)",
+        "type": "bargauge",
+        "targets": [
+          {
+            "expr": "data_freshness_seconds / 3600",
+            "legendFormat": "{{source}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "h",
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 2
+                },
+                {
+                  "color": "red", 
+                  "value": 6
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        }
+      },
+      {
+        "id": 5,
+        "title": "Sync Success Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "avg(data_sync_status) * 100",
+            "legendFormat": "Overall Success Rate",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 90
+                },
+                {
+                  "color": "green",
+                  "value": 95
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 16
+        }
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "30s",
+    "schemaVersion": 36,
+    "version": 1,
+    "uid": "act-data-lake-overview",
+    "description": "Overview dashboard for ACT Placemat data lake health and performance monitoring"
+  }
+}

@@ -1,0 +1,291 @@
+{
+  "summary": {
+    "totalLinkedIn": 1000,
+    "gmailMatches": 0,
+    "notionMatches": 1,
+    "bothMatches": 0,
+    "highConfidenceMatches": 0,
+    "totalCrossReferences": 1
+  },
+  "topMatches": [
+    {
+      "linkedin": {
+        "id": 712,
+        "first_name": "Brodie",
+        "last_name": "Germaine",
+        "full_name": "Brodie Germaine",
+        "email_address": "brodiegermainefitness@gmail.com",
+        "current_company": "Brodie Germaine Fitness",
+        "current_position": "Gym Owner",
+        "linkedin_url": "https://www.linkedin.com/in/brodie-germaine-a26a51319",
+        "relationship_score": 0,
+        "strategic_value": "low"
+      },
+      "gmail": null,
+      "notion": {
+        "id": "252ebcf9-81cf-811e-bd7c-f417ab131cb0",
+        "name": "Brodie Germaine",
+        "email": null,
+        "linkedin": null,
+        "organization": null,
+        "phone": null,
+        "created_time": "2025-08-17T08:19:00.000Z",
+        "last_edited_time": "2025-08-17T08:19:00.000Z",
+        "raw_properties": {
+          "ACT Project Pipeline": {
+            "id": "%3Bmso",
+            "type": "relation",
+            "relation": [],
+            "has_more": false
+          },
+          "Email": {
+            "id": "%3CKhn",
+            "type": "email",
+            "email": null
+          },
+          "Source": {
+            "id": "%3FVJt",
+            "type": "rich_text",
+            "rich_text": []
+          },
+          "Mobile": {
+            "id": "%3FoIY",
+            "type": "phone_number",
+            "phone_number": null
+          },
+          "Company": {
+            "id": "Aj%3Ez",
+            "type": "select",
+            "select": null
+          },
+          "Rollup date": {
+            "id": "CMG%5C",
+            "type": "rollup",
+            "rollup": {
+              "type": "array",
+              "array": [],
+              "function": "show_original"
+            }
+          },
+          "Opportunities Managing": {
+            "id": "EheR",
+            "type": "rollup",
+            "rollup": {
+              "type": "number",
+              "number": 0,
+              "function": "sum"
+            }
+          },
+          "Actions": {
+            "id": "Hv%3FB",
+            "type": "relation",
+            "relation": [],
+            "has_more": false
+          },
+          "Website": {
+            "id": "I%40Lw",
+            "type": "url",
+            "url": null
+          },
+          "Meeting Date & Time": {
+            "id": "IFTo",
+            "type": "date",
+            "date": null
+          },
+          "Connection": {
+            "id": "IfQ%3B",
+            "type": "select",
+            "select": null
+          },
+          "Organisation 2": {
+            "id": "JroV",
+            "type": "rich_text",
+            "rich_text": []
+          },
+          "Location": {
+            "id": "KF%3DI",
+            "type": "select",
+            "select": {
+              "id": "39da7ddf-dbab-448d-ba82-b29f75a91e0c",
+              "name": "Queensland",
+              "color": "default"
+            }
+          },
+          "Rekindle": {
+            "id": "LewZ",
+            "type": "checkbox",
+            "checkbox": false
+          },
+          "Opportunities": {
+            "id": "Q%3BYl",
+            "type": "relation",
+            "relation": [],
+            "has_more": false
+          },
+          "Address": {
+            "id": "R%7D%5By",
+            "type": "rich_text",
+            "rich_text": []
+          },
+          "Notes": {
+            "id": "SjCa",
+            "type": "rich_text",
+            "rich_text": []
+          },
+          "Organisation 1": {
+            "id": "Tto%5D",
+            "type": "rich_text",
+            "rich_text": []
+          },
+          "Meeting Location": {
+            "id": "U%3FbA",
+            "type": "rich_text",
+            "rich_text": []
+          },
+          "First Contact": {
+            "id": "UGjG",
+            "type": "date",
+            "date": null
+          },
+          "Twitter": {
+            "id": "VyS%3F",
+            "type": "url",
+            "url": null
+          },
+          "Projects": {
+            "id": "ZCa%60",
+            "type": "relation",
+            "relation": [],
+            "has_more": false
+          },
+          "LinkedIn": {
+            "id": "%5EUSb",
+            "type": "url",
+            "url": null
+          },
+          "Created time": {
+            "id": "_UcL",
+            "type": "created_time",
+            "created_time": "2025-08-17T08:19:00.000Z"
+          },
+          "Birthday": {
+            "id": "hJD%3F",
+            "type": "date",
+            "date": null
+          },
+          "Interview potential": {
+            "id": "kZdq",
+            "type": "rich_text",
+            "rich_text": []
+          },
+          "Status": {
+            "id": "lJ%5Dq",
+            "type": "select",
+            "select": null
+          },
+          "Organisation": {
+            "id": "mO_v",
+            "type": "relation",
+            "relation": [],
+            "has_more": false
+          },
+          "Organisation 3": {
+            "id": "mlkC",
+            "type": "rich_text",
+            "rich_text": [
+              {
+                "type": "text",
+                "text": {
+                  "content": "Brodie Germaine Fitness (Kickstarter Program)",
+                  "link": null
+                },
+                "annotations": {
+                  "bold": false,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "Brodie Germaine Fitness (Kickstarter Program)",
+                "href": null
+              }
+            ]
+          },
+          "Last Contact": {
+            "id": "pkS~",
+            "type": "date",
+            "date": null
+          },
+          "Role": {
+            "id": "qwbG",
+            "type": "select",
+            "select": {
+              "id": "017c4df7-d5fe-41cb-b018-e240b6e77fd0",
+              "name": "Founder; Youth mentor",
+              "color": "default"
+            }
+          },
+          "Tag": {
+            "id": "uGMG",
+            "type": "multi_select",
+            "multi_select": []
+          },
+          "Followup": {
+            "id": "wVO%7C",
+            "type": "checkbox",
+            "checkbox": false
+          },
+          "Indigenous affiliation": {
+            "id": "z%3Dy~",
+            "type": "rich_text",
+            "rich_text": []
+          },
+          "Theme": {
+            "id": "zRTU",
+            "type": "select",
+            "select": null
+          },
+          "Select": {
+            "id": "~fs%3C",
+            "type": "select",
+            "select": null
+          },
+          "Name": {
+            "id": "title",
+            "type": "title",
+            "title": [
+              {
+                "type": "text",
+                "text": {
+                  "content": "Brodie Germaine",
+                  "link": null
+                },
+                "annotations": {
+                  "bold": false,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "Brodie Germaine",
+                "href": null
+              }
+            ]
+          },
+          "Owner": {
+            "id": "f1bcd1ee-4065-44f9-9199-aab05e6c8b4b",
+            "type": "people",
+            "people": []
+          }
+        }
+      },
+      "confidence": 0.6,
+      "matchReasons": [
+        "Notion: strong name match"
+      ]
+    }
+  ],
+  "strategicOverlaps": []
+}

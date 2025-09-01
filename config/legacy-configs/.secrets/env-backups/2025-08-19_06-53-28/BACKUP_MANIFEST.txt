@@ -1,0 +1,27 @@
+# ACT Placemat Environment Backup
+# Created: Tue Aug 19 06:53:28 AEST 2025
+# Backup ID: 2025-08-19_06-53-28
+# System: Darwin Bens-MacBook-Pro.local 24.6.0 Darwin Kernel Version 24.6.0: Mon Jul 14 11:30:40 PDT 2025; root:xnu-11417.140.69~1/RELEASE_ARM64_T6041 arm64
+
+✓ .envrc → .envrc
+✓ .env.backup → .env.backup
+✓ .env.template → .env.template
+✓ .env → .env
+✓ .env.example → .env.example
+✓ infrastructure/agents/python/.env.example → infrastructure_agents_python_.env.example
+✓ apps/worker-events/.env.example → apps_worker-events_.env.example
+✓ apps/frontend/.env.production → apps_frontend_.env.production
+✓ apps/frontend/.env → apps_frontend_.env
+✓ apps/frontend/.env.example → apps_frontend_.env.example
+✓ apps/frontend/.env.development → apps_frontend_.env.development
+✓ apps/intelligence/.env → apps_intelligence_.env
+✓ apps/intelligence/.env.example → apps_intelligence_.env.example
+✓ apps/intelligence-hub/.env.template → apps_intelligence-hub_.env.template
+✓ apps/intelligence-hub/.env.development → apps_intelligence-hub_.env.development
+✓ apps/worker-queue/.env.example → apps_worker-queue_.env.example
+✓ apps/backend/.env.test → apps_backend_.env.test
+✓ apps/backend/.env → apps_backend_.env
+✓ apps/backend/.env.example → apps_backend_.env.example
+Backup Summary:
+Files backed up: 19
+Archive created: env-backup-2025-08-19_06-53-28.tar.gz

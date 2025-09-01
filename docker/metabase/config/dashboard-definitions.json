@@ -1,0 +1,210 @@
+{
+  "dashboards": [
+    {
+      "name": "Community Overview",
+      "description": "High-level metrics about community engagement and growth",
+      "cards": [
+        {
+          "name": "Total Active Users",
+          "type": "scalar",
+          "query": {
+            "source-table": "community_events",
+            "aggregation": [["distinct", ["field", "user_id", null]]],
+            "filter": [">", ["field", "created_at", null], ["relative-datetime", -30, "day"]]
+          }
+        },
+        {
+          "name": "Events This Month",
+          "type": "scalar",
+          "query": {
+            "source-table": "community_events",
+            "aggregation": [["count"]],
+            "filter": [">", ["field", "created_at", null], ["relative-datetime", -30, "day"]]
+          }
+        },
+        {
+          "name": "Daily Active Users",
+          "type": "line",
+          "query": {
+            "source-table": "community_events",
+            "aggregation": [["distinct", ["field", "user_id", null]]],
+            "breakout": [["field", "created_at", {"temporal-unit": "day"}]],
+            "filter": [">", ["field", "created_at", null], ["relative-datetime", -30, "day"]]
+          }
+        },
+        {
+          "name": "Event Categories",
+          "type": "pie",
+          "query": {
+            "source-table": "community_events",
+            "aggregation": [["count"]],
+            "breakout": [["field", "event_category", null]],
+            "filter": [">", ["field", "created_at", null], ["relative-datetime", -7, "day"]]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Project Impact",
+      "description": "Track project outcomes and community impact metrics",
+      "cards": [
+        {
+          "name": "Total Projects",
+          "type": "scalar",
+          "query": {
+            "source-table": "projects",
+            "aggregation": [["count"]]
+          }
+        },
+        {
+          "name": "Active Projects",
+          "type": "scalar",
+          "query": {
+            "source-table": "projects",
+            "aggregation": [["count"]],
+            "filter": ["!=", ["field", "status", null], "completed"]
+          }
+        },
+        {
+          "name": "Project Outcomes by Type",
+          "type": "bar",
+          "query": {
+            "source-table": "project_outcomes",
+            "aggregation": [["count"]],
+            "breakout": [["field", "outcome_type", null]]
+          }
+        },
+        {
+          "name": "Verified vs Unverified Outcomes",
+          "type": "pie",
+          "query": {
+            "source-table": "project_outcomes",
+            "aggregation": [["count"]],
+            "breakout": [["field", "verification_status", null]]
+          }
+        },
+        {
+          "name": "Total Beneficiaries",
+          "type": "scalar",
+          "query": {
+            "source-table": "project_outcomes",
+            "aggregation": [["sum", ["field", "direct_beneficiaries", null]]]
+          }
+        }
+      ]
+    },
+    {
+      "name": "User Engagement",
+      "description": "Deep dive into user behavior and engagement patterns",
+      "cards": [
+        {
+          "name": "Average Engagement Score",
+          "type": "scalar",
+          "query": {
+            "source-table": "community_events",
+            "aggregation": [["avg", ["field", "engagement_score", null]]],
+            "filter": [">", ["field", "created_at", null], ["relative-datetime", -7, "day"]]
+          }
+        },
+        {
+          "name": "Engagement by Day of Week",
+          "type": "bar",
+          "query": {
+            "source-table": "community_events",
+            "aggregation": [["avg", ["field", "engagement_score", null]]],
+            "breakout": [["field", "created_at", {"temporal-unit": "day-of-week"}]],
+            "filter": [">", ["field", "created_at", null], ["relative-datetime", -30, "day"]]
+          }
+        },
+        {
+          "name": "Top Events by Volume",
+          "type": "table",
+          "query": {
+            "source-table": "community_events",
+            "aggregation": [["count"]],
+            "breakout": [["field", "event_name", null]],
+            "order-by": [["asc", ["aggregation", 0]]],
+            "limit": 10,
+            "filter": [">", ["field", "created_at", null], ["relative-datetime", -7, "day"]]
+          }
+        },
+        {
+          "name": "User Journey Funnel",
+          "type": "funnel",
+          "query": {
+            "source-table": "community_events",
+            "aggregation": [["distinct", ["field", "user_id", null]]],
+            "breakout": [["field", "event_name", null]],
+            "filter": ["and", 
+              [">", ["field", "created_at", null], ["relative-datetime", -30, "day"]],
+              ["=", ["field", "event_category", null], "engagement"]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Community Health",
+      "description": "Monitor community health metrics and data quality",
+      "cards": [
+        {
+          "name": "Data Quality Score",
+          "type": "gauge",
+          "query": {
+            "source-table": "data_quality_metrics",
+            "aggregation": [["avg", ["field", "quality_score", null]]],
+            "filter": [">", ["field", "analysis_date", null], ["relative-datetime", -7, "day"]]
+          }
+        },
+        {
+          "name": "Active Insights",
+          "type": "scalar",
+          "query": {
+            "source-table": "automated_insights",
+            "aggregation": [["count"]],
+            "filter": ["=", ["field", "status", null], "active"]
+          }
+        },
+        {
+          "name": "Critical Alerts",
+          "type": "scalar",
+          "query": {
+            "source-table": "automated_insights",
+            "aggregation": [["count"]],
+            "filter": ["and",
+              ["=", ["field", "status", null], "active"],
+              ["=", ["field", "priority_level", null], "critical"]
+            ]
+          }
+        },
+        {
+          "name": "Community Growth Trend",
+          "type": "line",
+          "query": {
+            "source-table": "user_profiles",
+            "aggregation": [["count"]],
+            "breakout": [["field", "created_at", {"temporal-unit": "week"}]],
+            "filter": [">", ["field", "created_at", null], ["relative-datetime", -12, "week"]]
+          }
+        }
+      ]
+    }
+  ],
+  "collections": [
+    {
+      "name": "ACT Community Analytics",
+      "description": "Core analytics for the ACT community platform",
+      "color": "#509EE3"
+    },
+    {
+      "name": "Project Impact Tracking",
+      "description": "Dashboards focused on project outcomes and impact measurement",
+      "color": "#88BF4D"
+    },
+    {
+      "name": "Data Quality & Health",
+      "description": "Monitoring dashboards for data quality and system health",
+      "color": "#F9CF48"
+    }
+  ]
+}

@@ -1,0 +1,1240 @@
+# ACT Placemat Performance Profiling and Bottleneck Identification System
+# Comprehensive performance monitoring with cultural sensitivity awareness
+
+---
+# ========================================
+# PERFORMANCE PROFILING SERVICE
+# ========================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: performance-profiling-service
+  namespace: act-production
+  labels:
+    app: performance-profiling-service
+    component: monitoring
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: performance-profiling-service
+  template:
+    metadata:
+      labels:
+        app: performance-profiling-service
+        component: monitoring
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: profiling-service
+        image: node:18-alpine
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 9090
+          name: metrics
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: database-secrets
+              key: postgres-url
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: redis-secrets
+              key: redis-url
+        - name: JAEGER_ENDPOINT
+          value: "http://jaeger-collector:14268/api/traces"
+        - name: PROMETHEUS_GATEWAY
+          value: "http://prometheus-pushgateway:9091"
+        volumeMounts:
+        - name: profiling-config
+          mountPath: /app/config
+        - name: profiling-source
+          mountPath: /app
+        command: ["node", "server.js"]
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "300m"
+          limits:
+            memory: "1Gi"
+            cpu: "800m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: profiling-config
+        configMap:
+          name: profiling-config
+      - name: profiling-source
+        configMap:
+          name: profiling-source-code
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: performance-profiling-service
+  namespace: act-production
+  labels:
+    app: performance-profiling-service
+spec:
+  selector:
+    app: performance-profiling-service
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  - name: metrics
+    port: 9090
+    targetPort: 9090
+  type: ClusterIP
+
+---
+# ========================================
+# JAEGER TRACING SYSTEM
+# ========================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger-all-in-one
+  namespace: act-production
+  labels:
+    app: jaeger
+    component: all-in-one
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jaeger
+  template:
+    metadata:
+      labels:
+        app: jaeger
+        component: all-in-one
+    spec:
+      containers:
+      - name: jaeger
+        image: jaegertracing/all-in-one:1.46
+        ports:
+        - containerPort: 16686
+          name: ui
+        - containerPort: 14268
+          name: collector
+        - containerPort: 14250
+          name: grpc
+        - containerPort: 6831
+          name: agent-thrift
+        - containerPort: 6832
+          name: agent-binary
+        env:
+        - name: COLLECTOR_ZIPKIN_HOST_PORT
+          value: ":9411"
+        - name: QUERY_BASE_PATH
+          value: "/jaeger"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger-query
+  namespace: act-production
+  labels:
+    app: jaeger
+    component: query
+spec:
+  selector:
+    app: jaeger
+  ports:
+  - name: ui
+    port: 16686
+    targetPort: 16686
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger-collector
+  namespace: act-production
+  labels:
+    app: jaeger
+    component: collector
+spec:
+  selector:
+    app: jaeger
+  ports:
+  - name: collector
+    port: 14268
+    targetPort: 14268
+  - name: grpc
+    port: 14250
+    targetPort: 14250
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger-agent
+  namespace: act-production
+  labels:
+    app: jaeger
+    component: agent
+spec:
+  selector:
+    app: jaeger
+  ports:
+  - name: agent-thrift
+    port: 6831
+    targetPort: 6831
+    protocol: UDP
+  - name: agent-binary
+    port: 6832
+    targetPort: 6832
+    protocol: UDP
+  type: ClusterIP
+
+---
+# ========================================
+# PROFILING CONFIGURATION
+# ========================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: profiling-config
+  namespace: act-production
+data:
+  config.yaml: |
+    # Performance Profiling Configuration
+    
+    server:
+      port: 8080
+      metrics_port: 9090
+      environment: production
+      
+    database:
+      pool_size: 20
+      connection_timeout: 5000
+      idle_timeout: 300000
+      
+    redis:
+      pool_size: 10
+      connection_timeout: 1000
+      key_prefix: "act_profiling:"
+      ttl: 3600  # 1 hour
+    
+    # Profiling Settings
+    profiling:
+      enabled: true
+      sampling_rate: 0.1  # 10% of requests
+      cpu_profiling: true
+      memory_profiling: true
+      heap_profiling: true
+      flame_graph_generation: true
+      
+    # Distributed Tracing
+    tracing:
+      jaeger:
+        enabled: true
+        service_name: "act-placemat-platform"
+        sampler_type: "probabilistic"
+        sampler_param: 0.1
+        reporter_log_spans: true
+        
+      custom_tags:
+        platform: "act-placemat"
+        environment: "production"
+        cultural_sensitivity: true
+        
+    # Performance Metrics
+    metrics:
+      collection_interval: 10  # seconds
+      retention_days: 90
+      custom_metrics:
+        - name: "cultural_content_processing_time"
+          type: "histogram"
+          description: "Time to process cultural content"
+        - name: "elder_consultation_latency"
+          type: "histogram"
+          description: "Latency for Elder consultation processes"
+        - name: "community_load_balance"
+          type: "gauge"
+          description: "Load distribution across communities"
+        - name: "indigenous_data_access_time"
+          type: "histogram"
+          description: "Access time for Indigenous data"
+          
+    # Bottleneck Detection
+    bottleneck_detection:
+      enabled: true
+      analysis_interval: 300  # 5 minutes
+      thresholds:
+        response_time_p95: 2000  # 2 seconds
+        response_time_p99: 5000  # 5 seconds
+        cpu_usage: 80  # 80%
+        memory_usage: 85  # 85%
+        database_connection_pool: 90  # 90%
+        cultural_review_queue_depth: 50
+        
+      alert_channels:
+        - slack
+        - email
+        - pagerduty
+        
+    # Cultural Performance Monitoring
+    cultural_monitoring:
+      elder_consultation_sla: 24  # hours
+      cultural_review_sla: 48  # hours
+      indigenous_data_access_monitoring: true
+      community_health_metrics: true
+      sacred_knowledge_protection_monitoring: true
+      
+    # Load Testing
+    load_testing:
+      enabled: true
+      scenarios:
+        - name: "normal_community_activity"
+          virtual_users: 100
+          duration: 600  # 10 minutes
+          ramp_up: 60  # 1 minute
+        - name: "peak_cultural_review"
+          virtual_users: 50
+          duration: 300  # 5 minutes
+          cultural_context: true
+        - name: "elder_consultation_load"
+          virtual_users: 10
+          duration: 1800  # 30 minutes
+          sacred_content: true
+          
+    # Resource Monitoring
+    resource_monitoring:
+      kubernetes_metrics: true
+      container_metrics: true
+      node_metrics: true
+      storage_metrics: true
+      network_metrics: true
+      
+      thresholds:
+        pod_cpu_usage: 80
+        pod_memory_usage: 85
+        node_disk_usage: 90
+        network_latency: 100  # ms
+        
+    # Performance Optimization
+    optimization:
+      auto_scaling: true
+      cache_optimization: true
+      query_optimization: true
+      cdn_optimization: true
+      
+      recommendations:
+        enabled: true
+        ml_based_insights: true
+        cultural_context_aware: true
+        cost_optimization: true
+
+---
+# ========================================
+# PROFILING SOURCE CODE
+# ========================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: profiling-source-code
+  namespace: act-production
+data:
+  server.js: |
+    const express = require('express');
+    const { Pool } = require('pg');
+    const Redis = require('ioredis');
+    const yaml = require('js-yaml');
+    const fs = require('fs');
+    const prometheus = require('prom-client');
+    const jaeger = require('jaeger-client');
+    const opentracing = require('opentracing');
+    const pidusage = require('pidusage');
+    const v8 = require('v8');
+
+    // Load configuration
+    const config = yaml.load(fs.readFileSync('/app/config/config.yaml', 'utf8'));
+
+    // Initialize Express app
+    const app = express();
+    app.use(express.json());
+
+    // Initialize database and Redis connections
+    const db = new Pool({ connectionString: process.env.DATABASE_URL });
+    const redis = new Redis(process.env.REDIS_URL);
+
+    // Initialize Jaeger tracer
+    const jaegerConfig = {
+      serviceName: config.tracing.jaeger.service_name,
+      sampler: {
+        type: config.tracing.jaeger.sampler_type,
+        param: config.tracing.jaeger.sampler_param
+      },
+      reporter: {
+        logSpans: config.tracing.jaeger.reporter_log_spans,
+        collectorEndpoint: process.env.JAEGER_ENDPOINT
+      }
+    };
+
+    const tracer = jaeger.initTracer(jaegerConfig);
+    opentracing.initGlobalTracer(tracer);
+
+    // Prometheus metrics
+    const httpRequestDuration = new prometheus.Histogram({
+      name: 'http_request_duration_seconds',
+      help: 'Duration of HTTP requests in seconds',
+      labelNames: ['method', 'route', 'status_code', 'cultural_context']
+    });
+
+    const culturalContentProcessingTime = new prometheus.Histogram({
+      name: 'cultural_content_processing_time_seconds',
+      help: 'Time to process cultural content',
+      labelNames: ['content_type', 'review_level']
+    });
+
+    const elderConsultationLatency = new prometheus.Histogram({
+      name: 'elder_consultation_latency_seconds',
+      help: 'Latency for Elder consultation processes',
+      labelNames: ['consultation_type', 'urgency']
+    });
+
+    const communityLoadBalance = new prometheus.Gauge({
+      name: 'community_load_balance',
+      help: 'Load distribution across communities',
+      labelNames: ['community_type', 'region']
+    });
+
+    const indigenousDataAccessTime = new prometheus.Histogram({
+      name: 'indigenous_data_access_time_seconds',
+      help: 'Access time for Indigenous data',
+      labelNames: ['data_type', 'sovereignty_level']
+    });
+
+    const systemResourceUsage = new prometheus.Gauge({
+      name: 'system_resource_usage',
+      help: 'System resource utilization',
+      labelNames: ['resource_type', 'component']
+    });
+
+    const bottleneckDetections = new prometheus.Counter({
+      name: 'bottleneck_detections_total',
+      help: 'Total number of bottlenecks detected',
+      labelNames: ['bottleneck_type', 'severity', 'component']
+    });
+
+    // Performance Profiling Service
+    class PerformanceProfilingService {
+      constructor() {
+        this.profiles = new Map();
+        this.bottlenecks = new Map();
+        this.performanceHistory = [];
+        this.startResourceMonitoring();
+        this.startBottleneckDetection();
+      }
+
+      async initializeDatabase() {
+        await db.query(`
+          CREATE TABLE IF NOT EXISTS performance_profiles (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            service_name VARCHAR(255) NOT NULL,
+            profile_type VARCHAR(100) NOT NULL,
+            profile_data JSONB NOT NULL,
+            cultural_context JSONB,
+            resource_usage JSONB,
+            bottlenecks JSONB,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          );
+        `);
+
+        await db.query(`
+          CREATE TABLE IF NOT EXISTS bottleneck_events (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            bottleneck_type VARCHAR(100) NOT NULL,
+            severity VARCHAR(50) NOT NULL,
+            component VARCHAR(255) NOT NULL,
+            description TEXT,
+            metrics JSONB NOT NULL,
+            cultural_impact JSONB,
+            resolution_steps JSONB,
+            resolved BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            resolved_at TIMESTAMP
+          );
+        `);
+
+        await db.query(`
+          CREATE TABLE IF NOT EXISTS performance_recommendations (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            recommendation_type VARCHAR(100) NOT NULL,
+            component VARCHAR(255) NOT NULL,
+            description TEXT NOT NULL,
+            implementation_effort VARCHAR(50),
+            expected_impact JSONB,
+            cultural_considerations TEXT,
+            priority INTEGER DEFAULT 3,
+            status VARCHAR(50) DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          );
+        `);
+
+        // Create indexes
+        await db.query(`
+          CREATE INDEX IF NOT EXISTS idx_performance_profiles_service 
+          ON performance_profiles(service_name, created_at DESC);
+        `);
+
+        await db.query(`
+          CREATE INDEX IF NOT EXISTS idx_bottleneck_events_unresolved 
+          ON bottleneck_events(resolved, created_at DESC) 
+          WHERE resolved = FALSE;
+        `);
+      }
+
+      async startCPUProfiling(duration = 60000) {
+        if (!config.profiling.cpu_profiling) return null;
+
+        const span = tracer.startSpan('cpu_profiling');
+        
+        try {
+          // Start CPU profiler
+          const startTime = process.hrtime.bigint();
+          
+          setTimeout(async () => {
+            const endTime = process.hrtime.bigint();
+            const profileDuration = Number(endTime - startTime) / 1000000; // Convert to ms
+            
+            const cpuUsage = await this.getCurrentCPUUsage();
+            
+            const profile = {
+              type: 'cpu',
+              duration: profileDuration,
+              usage: cpuUsage,
+              timestamp: new Date().toISOString()
+            };
+
+            await this.storeProfile('cpu', profile);
+            span.finish();
+            
+            console.log('CPU profiling completed:', profile);
+          }, duration);
+
+        } catch (error) {
+          span.setTag('error', true);
+          span.log({ error: error.message });
+          span.finish();
+          throw error;
+        }
+      }
+
+      async startMemoryProfiling() {
+        if (!config.profiling.memory_profiling) return null;
+
+        const span = tracer.startSpan('memory_profiling');
+        
+        try {
+          const memoryUsage = process.memoryUsage();
+          const heapStats = v8.getHeapStatistics();
+          const heapSpaceStats = v8.getHeapSpaceStatistics();
+
+          const profile = {
+            type: 'memory',
+            memoryUsage,
+            heapStats,
+            heapSpaceStats,
+            timestamp: new Date().toISOString()
+          };
+
+          await this.storeProfile('memory', profile);
+          span.finish();
+
+          return profile;
+
+        } catch (error) {
+          span.setTag('error', true);
+          span.log({ error: error.message });
+          span.finish();
+          throw error;
+        }
+      }
+
+      async startHeapProfiling() {
+        if (!config.profiling.heap_profiling) return null;
+
+        try {
+          // Take heap snapshot
+          const heapSnapshot = v8.writeHeapSnapshot();
+          
+          const profile = {
+            type: 'heap',
+            snapshotPath: heapSnapshot,
+            timestamp: new Date().toISOString()
+          };
+
+          await this.storeProfile('heap', profile);
+          
+          return profile;
+
+        } catch (error) {
+          console.error('Heap profiling failed:', error);
+          throw error;
+        }
+      }
+
+      async getCurrentCPUUsage() {
+        try {
+          const stats = await pidusage(process.pid);
+          return {
+            cpu: stats.cpu,
+            memory: stats.memory,
+            elapsed: stats.elapsed
+          };
+        } catch (error) {
+          console.error('Failed to get CPU usage:', error);
+          return null;
+        }
+      }
+
+      startResourceMonitoring() {
+        setInterval(async () => {
+          try {
+            const resourceStats = await this.collectResourceMetrics();
+            await this.updateResourceMetrics(resourceStats);
+            
+            // Check for resource-based bottlenecks
+            await this.analyzeResourceBottlenecks(resourceStats);
+            
+          } catch (error) {
+            console.error('Resource monitoring error:', error);
+          }
+        }, config.metrics.collection_interval * 1000);
+      }
+
+      async collectResourceMetrics() {
+        const cpuStats = await this.getCurrentCPUUsage();
+        const memoryStats = process.memoryUsage();
+        
+        // Database connection pool metrics
+        const dbStats = {
+          totalConnections: db.totalCount,
+          idleConnections: db.idleCount,
+          waitingClients: db.waitingCount
+        };
+
+        // Redis metrics
+        const redisStats = {
+          connectedClients: await redis.info('clients'),
+          usedMemory: await redis.info('memory')
+        };
+
+        return {
+          cpu: cpuStats,
+          memory: memoryStats,
+          database: dbStats,
+          redis: redisStats,
+          timestamp: new Date().toISOString()
+        };
+      }
+
+      updateResourceMetrics(stats) {
+        if (stats.cpu) {
+          systemResourceUsage.labels('cpu', 'application').set(stats.cpu.cpu);
+          systemResourceUsage.labels('memory', 'application').set(stats.cpu.memory);
+        }
+
+        if (stats.memory) {
+          systemResourceUsage.labels('heap_used', 'nodejs').set(stats.memory.heapUsed);
+          systemResourceUsage.labels('heap_total', 'nodejs').set(stats.memory.heapTotal);
+          systemResourceUsage.labels('rss', 'nodejs').set(stats.memory.rss);
+        }
+
+        if (stats.database) {
+          systemResourceUsage.labels('db_connections', 'postgresql').set(stats.database.totalConnections);
+          systemResourceUsage.labels('db_idle', 'postgresql').set(stats.database.idleConnections);
+          systemResourceUsage.labels('db_waiting', 'postgresql').set(stats.database.waitingClients);
+        }
+      }
+
+      startBottleneckDetection() {
+        setInterval(async () => {
+          try {
+            await this.detectBottlenecks();
+          } catch (error) {
+            console.error('Bottleneck detection error:', error);
+          }
+        }, config.bottleneck_detection.analysis_interval * 1000);
+      }
+
+      async detectBottlenecks() {
+        const span = tracer.startSpan('bottleneck_detection');
+        
+        try {
+          // Analyze response times
+          await this.analyzeResponseTimeBottlenecks();
+          
+          // Analyze resource utilization
+          const resourceStats = await this.collectResourceMetrics();
+          await this.analyzeResourceBottlenecks(resourceStats);
+          
+          // Analyze cultural-specific bottlenecks
+          await this.analyzeCulturalBottlenecks();
+          
+          // Generate recommendations
+          await this.generatePerformanceRecommendations();
+          
+          span.finish();
+          
+        } catch (error) {
+          span.setTag('error', true);
+          span.log({ error: error.message });
+          span.finish();
+          throw error;
+        }
+      }
+
+      async analyzeResponseTimeBottlenecks() {
+        // Query recent response times from Prometheus
+        try {
+          const p95Threshold = config.bottleneck_detection.thresholds.response_time_p95;
+          const p99Threshold = config.bottleneck_detection.thresholds.response_time_p99;
+          
+          // This would normally query Prometheus API
+          // For now, we'll simulate with stored metrics
+          const recentMetrics = await this.getRecentResponseTimes();
+          
+          for (const metric of recentMetrics) {
+            if (metric.p95 > p95Threshold) {
+              await this.recordBottleneck({
+                type: 'response_time_p95',
+                severity: 'medium',
+                component: metric.component,
+                description: `P95 response time (${metric.p95}ms) exceeds threshold (${p95Threshold}ms)`,
+                metrics: { p95: metric.p95, threshold: p95Threshold },
+                culturalImpact: await this.assessCulturalImpact(metric)
+              });
+            }
+            
+            if (metric.p99 > p99Threshold) {
+              await this.recordBottleneck({
+                type: 'response_time_p99',
+                severity: 'high',
+                component: metric.component,
+                description: `P99 response time (${metric.p99}ms) exceeds threshold (${p99Threshold}ms)`,
+                metrics: { p99: metric.p99, threshold: p99Threshold },
+                culturalImpact: await this.assessCulturalImpact(metric)
+              });
+            }
+          }
+          
+        } catch (error) {
+          console.error('Response time analysis failed:', error);
+        }
+      }
+
+      async analyzeResourceBottlenecks(stats) {
+        const thresholds = config.bottleneck_detection.thresholds;
+        
+        // CPU bottleneck
+        if (stats.cpu && stats.cpu.cpu > thresholds.cpu_usage) {
+          await this.recordBottleneck({
+            type: 'cpu_usage',
+            severity: 'high',
+            component: 'system',
+            description: `CPU usage (${stats.cpu.cpu.toFixed(1)}%) exceeds threshold (${thresholds.cpu_usage}%)`,
+            metrics: { usage: stats.cpu.cpu, threshold: thresholds.cpu_usage }
+          });
+        }
+
+        // Memory bottleneck
+        if (stats.memory) {
+          const heapUsagePercent = (stats.memory.heapUsed / stats.memory.heapTotal) * 100;
+          if (heapUsagePercent > thresholds.memory_usage) {
+            await this.recordBottleneck({
+              type: 'memory_usage',
+              severity: 'high',
+              component: 'nodejs',
+              description: `Heap usage (${heapUsagePercent.toFixed(1)}%) exceeds threshold (${thresholds.memory_usage}%)`,
+              metrics: { usage: heapUsagePercent, threshold: thresholds.memory_usage }
+            });
+          }
+        }
+
+        // Database connection pool bottleneck
+        if (stats.database) {
+          const poolUsage = (stats.database.totalConnections / db.options.max) * 100;
+          if (poolUsage > thresholds.database_connection_pool) {
+            await this.recordBottleneck({
+              type: 'database_connection_pool',
+              severity: 'medium',
+              component: 'postgresql',
+              description: `Database connection pool usage (${poolUsage.toFixed(1)}%) exceeds threshold (${thresholds.database_connection_pool}%)`,
+              metrics: { usage: poolUsage, threshold: thresholds.database_connection_pool }
+            });
+          }
+        }
+      }
+
+      async analyzeCulturalBottlenecks() {
+        try {
+          // Check cultural review queue depth
+          const culturalReviewQueueDepth = await this.getCulturalReviewQueueDepth();
+          const threshold = config.bottleneck_detection.thresholds.cultural_review_queue_depth;
+          
+          if (culturalReviewQueueDepth > threshold) {
+            await this.recordBottleneck({
+              type: 'cultural_review_queue',
+              severity: 'high',
+              component: 'cultural_services',
+              description: `Cultural review queue depth (${culturalReviewQueueDepth}) exceeds threshold (${threshold})`,
+              metrics: { queueDepth: culturalReviewQueueDepth, threshold },
+              culturalImpact: {
+                impactLevel: 'high',
+                affectedCommunities: await this.getAffectedCommunities(),
+                elderConsultationDelays: true
+              }
+            });
+          }
+
+          // Check Elder consultation response times
+          const elderConsultationSLA = config.cultural_monitoring.elder_consultation_sla * 60 * 60 * 1000; // Convert to ms
+          const overdueConsultations = await this.getOverdueElderConsultations(elderConsultationSLA);
+          
+          if (overdueConsultations.length > 0) {
+            await this.recordBottleneck({
+              type: 'elder_consultation_sla',
+              severity: 'critical',
+              component: 'cultural_services',
+              description: `${overdueConsultations.length} Elder consultations are overdue`,
+              metrics: { overdueCount: overdueConsultations.length, sla: elderConsultationSLA },
+              culturalImpact: {
+                impactLevel: 'critical',
+                sacredKnowledgeAffected: true,
+                communityTrustImpact: true
+              }
+            });
+          }
+          
+        } catch (error) {
+          console.error('Cultural bottleneck analysis failed:', error);
+        }
+      }
+
+      async assessCulturalImpact(metric) {
+        // Assess how performance issues impact cultural processes
+        return {
+          impactLevel: metric.component.includes('cultural') ? 'high' : 'medium',
+          affectedCommunities: metric.culturalContext ? await this.getAffectedCommunities() : [],
+          elderConsultationImpacted: metric.component === 'elder_consultation',
+          sacredKnowledgeAccess: metric.component.includes('indigenous_data')
+        };
+      }
+
+      async generatePerformanceRecommendations() {
+        const recentBottlenecks = await this.getRecentBottlenecks();
+        
+        for (const bottleneck of recentBottlenecks) {
+          const recommendations = await this.generateRecommendationsForBottleneck(bottleneck);
+          
+          for (const recommendation of recommendations) {
+            await this.storeRecommendation(recommendation);
+          }
+        }
+      }
+
+      async generateRecommendationsForBottleneck(bottleneck) {
+        const recommendations = [];
+        
+        switch (bottleneck.bottleneck_type) {
+          case 'response_time_p95':
+          case 'response_time_p99':
+            recommendations.push({
+              type: 'caching',
+              component: bottleneck.component,
+              description: 'Implement response caching to reduce latency',
+              implementationEffort: 'medium',
+              expectedImpact: { responseTimeImprovement: '30-50%' },
+              culturalConsiderations: 'Ensure cached content respects cultural protocols',
+              priority: 2
+            });
+            break;
+            
+          case 'cpu_usage':
+            recommendations.push({
+              type: 'horizontal_scaling',
+              component: bottleneck.component,
+              description: 'Scale horizontally to distribute CPU load',
+              implementationEffort: 'low',
+              expectedImpact: { cpuReduction: '40-60%' },
+              priority: 1
+            });
+            break;
+            
+          case 'memory_usage':
+            recommendations.push({
+              type: 'memory_optimization',
+              component: bottleneck.component,
+              description: 'Optimize memory usage and implement garbage collection tuning',
+              implementationEffort: 'high',
+              expectedImpact: { memoryReduction: '20-30%' },
+              priority: 2
+            });
+            break;
+            
+          case 'cultural_review_queue':
+            recommendations.push({
+              type: 'workflow_optimization',
+              component: bottleneck.component,
+              description: 'Implement parallel cultural review processing',
+              implementationEffort: 'medium',
+              expectedImpact: { queueReduction: '50-70%' },
+              culturalConsiderations: 'Ensure parallel processing maintains cultural protocol integrity',
+              priority: 1
+            });
+            break;
+        }
+        
+        return recommendations;
+      }
+
+      async recordBottleneck(bottleneckData) {
+        try {
+          bottleneckDetections.labels(
+            bottleneckData.type,
+            bottleneckData.severity,
+            bottleneckData.component
+          ).inc();
+
+          await db.query(`
+            INSERT INTO bottleneck_events 
+            (bottleneck_type, severity, component, description, metrics, cultural_impact, resolution_steps)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+          `, [
+            bottleneckData.type,
+            bottleneckData.severity,
+            bottleneckData.component,
+            bottleneckData.description,
+            JSON.stringify(bottleneckData.metrics),
+            JSON.stringify(bottleneckData.culturalImpact || {}),
+            JSON.stringify(await this.generateResolutionSteps(bottleneckData))
+          ]);
+
+          console.log(`Bottleneck detected: ${bottleneckData.type} in ${bottleneckData.component}`);
+          
+        } catch (error) {
+          console.error('Failed to record bottleneck:', error);
+        }
+      }
+
+      async generateResolutionSteps(bottleneckData) {
+        const steps = [];
+        
+        switch (bottleneckData.type) {
+          case 'cpu_usage':
+            steps.push('Monitor CPU usage trends');
+            steps.push('Identify CPU-intensive processes');
+            steps.push('Consider horizontal scaling');
+            steps.push('Optimize algorithms and queries');
+            break;
+            
+          case 'memory_usage':
+            steps.push('Analyze memory leak patterns');
+            steps.push('Review garbage collection settings');
+            steps.push('Optimize memory allocation');
+            steps.push('Consider memory limit increases');
+            break;
+            
+          case 'cultural_review_queue':
+            steps.push('Prioritize urgent cultural reviews');
+            steps.push('Notify Cultural Advisors of queue depth');
+            steps.push('Implement temporary parallel processing');
+            steps.push('Review cultural workflow efficiency');
+            break;
+            
+          case 'elder_consultation_sla':
+            steps.push('Immediately notify Elder Council');
+            steps.push('Escalate overdue consultations');
+            steps.push('Review consultation prioritization');
+            steps.push('Implement emergency consultation protocols');
+            break;
+        }
+        
+        return steps;
+      }
+
+      async storeProfile(type, profile, culturalContext = null) {
+        await db.query(`
+          INSERT INTO performance_profiles (service_name, profile_type, profile_data, cultural_context, resource_usage)
+          VALUES ($1, $2, $3, $4, $5)
+        `, [
+          'act-placemat-platform',
+          type,
+          JSON.stringify(profile),
+          JSON.stringify(culturalContext),
+          JSON.stringify(await this.collectResourceMetrics())
+        ]);
+
+        // Cache recent profile
+        const cacheKey = `${config.redis.key_prefix}profile:${type}:latest`;
+        await redis.setex(cacheKey, config.redis.ttl, JSON.stringify(profile));
+      }
+
+      async storeRecommendation(recommendation) {
+        await db.query(`
+          INSERT INTO performance_recommendations 
+          (recommendation_type, component, description, implementation_effort, expected_impact, cultural_considerations, priority)
+          VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `, [
+          recommendation.type,
+          recommendation.component,
+          recommendation.description,
+          recommendation.implementationEffort,
+          JSON.stringify(recommendation.expectedImpact),
+          recommendation.culturalConsiderations,
+          recommendation.priority
+        ]);
+      }
+
+      // Helper methods for data retrieval
+      async getRecentResponseTimes() {
+        // This would normally query Prometheus
+        // Returning mock data for demonstration
+        return [
+          { component: 'api', p95: 1500, p99: 3000, culturalContext: false },
+          { component: 'cultural_services', p95: 2500, p99: 6000, culturalContext: true }
+        ];
+      }
+
+      async getCulturalReviewQueueDepth() {
+        const result = await db.query(`
+          SELECT COUNT(*) as queue_depth
+          FROM cultural_reviews
+          WHERE status = 'pending'
+        `);
+        return parseInt(result.rows[0].queue_depth);
+      }
+
+      async getOverdueElderConsultations(slaMilliseconds) {
+        const result = await db.query(`
+          SELECT id, experiment_id, created_at
+          FROM cultural_reviews
+          WHERE status = 'elder_review' 
+            AND created_at < NOW() - INTERVAL '${slaMilliseconds / 1000} seconds'
+        `);
+        return result.rows;
+      }
+
+      async getAffectedCommunities() {
+        const result = await db.query(`
+          SELECT DISTINCT community_id
+          FROM experiment_assignments ea
+          JOIN cultural_reviews cr ON ea.experiment_id = cr.experiment_id
+          WHERE cr.status IN ('pending', 'elder_review')
+        `);
+        return result.rows.map(r => r.community_id);
+      }
+
+      async getRecentBottlenecks(hours = 24) {
+        const result = await db.query(`
+          SELECT *
+          FROM bottleneck_events
+          WHERE created_at > NOW() - INTERVAL '${hours} hours'
+            AND resolved = FALSE
+          ORDER BY severity DESC, created_at DESC
+        `);
+        return result.rows;
+      }
+
+      async getDashboardMetrics() {
+        const [profiles, bottlenecks, recommendations] = await Promise.all([
+          db.query('SELECT COUNT(*) as count FROM performance_profiles WHERE created_at > NOW() - INTERVAL \'24 hours\''),
+          db.query('SELECT severity, COUNT(*) as count FROM bottleneck_events WHERE resolved = FALSE GROUP BY severity'),
+          db.query('SELECT status, COUNT(*) as count FROM performance_recommendations GROUP BY status')
+        ]);
+
+        return {
+          profiles: profiles.rows[0],
+          bottlenecks: bottlenecks.rows,
+          recommendations: recommendations.rows,
+          timestamp: new Date().toISOString()
+        };
+      }
+    }
+
+    // Initialize profiling service
+    const profilingService = new PerformanceProfilingService();
+
+    // Middleware for automatic request tracing
+    app.use((req, res, next) => {
+      const span = tracer.startSpan(`${req.method} ${req.path}`);
+      const startTime = Date.now();
+      
+      span.setTag('http.method', req.method);
+      span.setTag('http.url', req.url);
+      span.setTag('cultural_context', req.headers['cultural-context'] || 'standard');
+      
+      res.on('finish', () => {
+        const duration = (Date.now() - startTime) / 1000;
+        
+        span.setTag('http.status_code', res.statusCode);
+        span.finish();
+        
+        httpRequestDuration.labels(
+          req.method,
+          req.route ? req.route.path : req.path,
+          res.statusCode.toString(),
+          req.headers['cultural-context'] || 'standard'
+        ).observe(duration);
+      });
+      
+      req.span = span;
+      next();
+    });
+
+    // API Routes
+    app.post('/profiles/cpu', async (req, res) => {
+      try {
+        const { duration } = req.body;
+        await profilingService.startCPUProfiling(duration);
+        res.json({ status: 'started', duration });
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    app.post('/profiles/memory', async (req, res) => {
+      try {
+        const profile = await profilingService.startMemoryProfiling();
+        res.json(profile);
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    app.post('/profiles/heap', async (req, res) => {
+      try {
+        const profile = await profilingService.startHeapProfiling();
+        res.json(profile);
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    app.get('/bottlenecks', async (req, res) => {
+      try {
+        const { hours = 24 } = req.query;
+        const bottlenecks = await profilingService.getRecentBottlenecks(hours);
+        res.json({ bottlenecks });
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    app.get('/recommendations', async (req, res) => {
+      try {
+        const result = await db.query(`
+          SELECT *
+          FROM performance_recommendations
+          WHERE status = 'pending'
+          ORDER BY priority ASC, created_at DESC
+        `);
+        res.json({ recommendations: result.rows });
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    app.get('/dashboard', async (req, res) => {
+      try {
+        const metrics = await profilingService.getDashboardMetrics();
+        res.json(metrics);
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    app.get('/health', (req, res) => {
+      res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+    });
+
+    app.get('/ready', async (req, res) => {
+      try {
+        await db.query('SELECT 1');
+        await redis.ping();
+        res.json({ status: 'ready' });
+      } catch (error) {
+        res.status(503).json({ status: 'not ready', error: error.message });
+      }
+    });
+
+    app.get('/metrics', (req, res) => {
+      res.set('Content-Type', prometheus.register.contentType);
+      res.end(prometheus.register.metrics());
+    });
+
+    // Initialize and start server
+    async function start() {
+      try {
+        await profilingService.initializeDatabase();
+        
+        const port = config.server.port;
+        app.listen(port, () => {
+          console.log(`Performance Profiling service running on port ${port}`);
+        });
+      } catch (error) {
+        console.error('Failed to start Performance Profiling service:', error);
+        process.exit(1);
+      }
+    }
+
+    start();
+
+  package.json: |
+    {
+      "name": "act-placemat-performance-profiling",
+      "version": "1.0.0",
+      "description": "Performance Profiling and Bottleneck Identification Service",
+      "main": "server.js",
+      "dependencies": {
+        "express": "^4.18.2",
+        "pg": "^8.11.0",
+        "ioredis": "^5.3.2",
+        "js-yaml": "^4.1.0",
+        "prom-client": "^14.2.0",
+        "jaeger-client": "^3.19.0",
+        "opentracing": "^0.14.7",
+        "pidusage": "^3.0.2"
+      },
+      "engines": {
+        "node": ">=18.0.0"
+      }
+    }

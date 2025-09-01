@@ -1,0 +1,914 @@
+# ACT Placemat Alert Escalation Policies
+# Intelligent escalation and on-call management
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: escalation-policies
+  namespace: monitoring
+data:
+  escalation-config.yaml: |
+    # ========================================
+    # ESCALATION POLICY DEFINITIONS
+    # ========================================
+    
+    escalation_policies:
+      
+      # Critical Infrastructure Escalation
+      infrastructure_critical:
+        name: "Infrastructure Critical"
+        description: "Immediate escalation for infrastructure failures"
+        steps:
+          - delay: 0m
+            contacts: ["platform-oncall", "ops-team"]
+            channels: ["email", "slack", "pagerduty"]
+          - delay: 5m
+            contacts: ["platform-manager", "cto"]
+            channels: ["email", "phone", "slack"]
+          - delay: 15m
+            contacts: ["executive-team", "ceo"]
+            channels: ["email", "phone"]
+        
+      # Security Incident Escalation
+      security_critical:
+        name: "Security Critical"
+        description: "Security incident response escalation"
+        steps:
+          - delay: 0m
+            contacts: ["security-oncall", "security-team"]
+            channels: ["email", "slack", "pagerduty"]
+          - delay: 3m
+            contacts: ["ciso", "security-manager"]
+            channels: ["email", "phone", "slack"]
+          - delay: 10m
+            contacts: ["legal-team", "cto", "ceo"]
+            channels: ["email", "phone"]
+      
+      # Cultural Protocol Escalation
+      cultural_critical:
+        name: "Cultural Critical"
+        description: "Cultural protocol violation escalation"
+        steps:
+          - delay: 0m
+            contacts: ["cultural-advisors", "community-managers"]
+            channels: ["email", "slack"]
+          - delay: 10m
+            contacts: ["elder-council", "cultural-manager"]
+            channels: ["email", "phone"]
+          - delay: 30m
+            contacts: ["ceo", "board-cultural-advisor"]
+            channels: ["email", "phone"]
+      
+      # Data Sovereignty Escalation
+      data_sovereignty:
+        name: "Data Sovereignty"
+        description: "Data sovereignty breach escalation"
+        steps:
+          - delay: 0m
+            contacts: ["legal-team", "privacy-officer"]
+            channels: ["email", "slack", "phone"]
+          - delay: 5m
+            contacts: ["cultural-advisors", "security-team"]
+            channels: ["email", "phone"]
+          - delay: 15m
+            contacts: ["ceo", "board-legal"]
+            channels: ["email", "phone"]
+      
+      # Performance Degradation
+      performance_warning:
+        name: "Performance Warning"
+        description: "Performance issue escalation"
+        steps:
+          - delay: 0m
+            contacts: ["dev-oncall", "ops-team"]
+            channels: ["slack", "email"]
+          - delay: 15m
+            contacts: ["tech-lead", "platform-manager"]
+            channels: ["slack", "email"]
+          - delay: 45m
+            contacts: ["cto"]
+            channels: ["email", "phone"]
+      
+      # Community Health Issues
+      community_health:
+        name: "Community Health"
+        description: "Community platform health escalation"
+        steps:
+          - delay: 0m
+            contacts: ["community-managers", "support-team"]
+            channels: ["slack", "email"]
+          - delay: 30m
+            contacts: ["community-director", "product-manager"]
+            channels: ["slack", "email"]
+          - delay: 2h
+            contacts: ["ceo"]
+            channels: ["email"]
+      
+      # Financial System Issues
+      financial_critical:
+        name: "Financial Critical"
+        description: "Financial system escalation"
+        steps:
+          - delay: 0m
+            contacts: ["finance-team", "payments-oncall"]
+            channels: ["email", "slack", "pagerduty"]
+          - delay: 10m
+            contacts: ["finance-manager", "cfo"]
+            channels: ["email", "phone"]
+          - delay: 30m
+            contacts: ["ceo", "board-treasurer"]
+            channels: ["email", "phone"]
+    
+    # ========================================
+    # CONTACT DEFINITIONS
+    # ========================================
+    
+    contacts:
+      
+      # Platform Team
+      platform-oncall:
+        type: "on_call_schedule"
+        schedule_id: "platform_primary"
+        fallback: ["ops-team"]
+      
+      ops-team:
+        type: "group"
+        members: ["ops@actplacemat.org.au"]
+        channels:
+          slack: "#ops-alerts"
+          pagerduty: "ops-primary"
+      
+      platform-manager:
+        type: "individual"
+        email: "platform-manager@actplacemat.org.au"
+        phone: "+61-XXX-XXX-XXX"
+        slack: "@platform-manager"
+      
+      # Security Team
+      security-oncall:
+        type: "on_call_schedule"
+        schedule_id: "security_primary"
+        fallback: ["security-team"]
+      
+      security-team:
+        type: "group"
+        members: ["security@actplacemat.org.au"]
+        channels:
+          slack: "#security-alerts"
+          pagerduty: "security-primary"
+      
+      ciso:
+        type: "individual"
+        email: "ciso@actplacemat.org.au"
+        phone: "+61-XXX-XXX-XXX"
+        slack: "@ciso"
+      
+      security-manager:
+        type: "individual"
+        email: "security-manager@actplacemat.org.au"
+        phone: "+61-XXX-XXX-XXX"
+      
+      # Cultural Advisors
+      cultural-advisors:
+        type: "group"
+        members: ["cultural-advisors@actplacemat.org.au"]
+        channels:
+          slack: "#cultural-protocols"
+          email: "cultural-advisors@actplacemat.org.au"
+      
+      elder-council:
+        type: "group"
+        members: ["elders@actplacemat.org.au"]
+        channels:
+          email: "elders@actplacemat.org.au"
+          phone: "+61-XXX-XXX-XXX"  # Elder Council emergency line
+      
+      cultural-manager:
+        type: "individual"
+        email: "cultural-manager@actplacemat.org.au"
+        phone: "+61-XXX-XXX-XXX"
+      
+      board-cultural-advisor:
+        type: "individual"
+        email: "cultural-board@actplacemat.org.au"
+        phone: "+61-XXX-XXX-XXX"
+      
+      # Legal and Privacy
+      legal-team:
+        type: "group"
+        members: ["legal@actplacemat.org.au"]
+        channels:
+          slack: "#legal-alerts"
+          email: "legal@actplacemat.org.au"
+      
+      privacy-officer:
+        type: "individual"
+        email: "privacy@actplacemat.org.au"
+        phone: "+61-XXX-XXX-XXX"
+        slack: "@privacy-officer"
+      
+      board-legal:
+        type: "individual"
+        email: "legal-board@actplacemat.org.au"
+        phone: "+61-XXX-XXX-XXX"
+      
+      # Development Teams
+      dev-oncall:
+        type: "on_call_schedule"
+        schedule_id: "development_primary"
+        fallback: ["dev-team"]
+      
+      dev-team:
+        type: "group"
+        members: ["dev-team@actplacemat.org.au"]
+        channels:
+          slack: "#dev-alerts"
+          email: "dev-team@actplacemat.org.au"
+      
+      tech-lead:
+        type: "individual"
+        email: "tech-lead@actplacemat.org.au"
+        slack: "@tech-lead"
+      
+      # Community Management
+      community-managers:
+        type: "group"
+        members: ["community@actplacemat.org.au"]
+        channels:
+          slack: "#community-alerts"
+          email: "community@actplacemat.org.au"
+      
+      community-director:
+        type: "individual"
+        email: "community-director@actplacemat.org.au"
+        phone: "+61-XXX-XXX-XXX"
+      
+      support-team:
+        type: "group"
+        members: ["support@actplacemat.org.au"]
+        channels:
+          slack: "#support-alerts"
+      
+      # Finance Team
+      finance-team:
+        type: "group"
+        members: ["finance@actplacemat.org.au"]
+        channels:
+          slack: "#finance-alerts"
+          email: "finance@actplacemat.org.au"
+      
+      payments-oncall:
+        type: "on_call_schedule"
+        schedule_id: "payments_primary"
+        fallback: ["finance-team"]
+      
+      finance-manager:
+        type: "individual"
+        email: "finance-manager@actplacemat.org.au"
+        phone: "+61-XXX-XXX-XXX"
+      
+      cfo:
+        type: "individual"
+        email: "cfo@actplacemat.org.au"
+        phone: "+61-XXX-XXX-XXX"
+      
+      board-treasurer:
+        type: "individual"
+        email: "treasurer@actplacemat.org.au"
+        phone: "+61-XXX-XXX-XXX"
+      
+      # Executive Team
+      cto:
+        type: "individual"
+        email: "cto@actplacemat.org.au"
+        phone: "+61-XXX-XXX-XXX"
+        slack: "@cto"
+      
+      ceo:
+        type: "individual"
+        email: "ceo@actplacemat.org.au"
+        phone: "+61-XXX-XXX-XXX"
+        slack: "@ceo"
+      
+      executive-team:
+        type: "group"
+        members: ["executives@actplacemat.org.au"]
+        channels:
+          email: "executives@actplacemat.org.au"
+      
+      product-manager:
+        type: "individual"
+        email: "product@actplacemat.org.au"
+        slack: "@product-manager"
+    
+    # ========================================
+    # ON-CALL SCHEDULES
+    # ========================================
+    
+    on_call_schedules:
+      
+      platform_primary:
+        name: "Platform Primary On-Call"
+        timezone: "Australia/Sydney"
+        rotation_type: "weekly"
+        participants:
+          - "platform-engineer-1@actplacemat.org.au"
+          - "platform-engineer-2@actplacemat.org.au"
+          - "platform-engineer-3@actplacemat.org.au"
+        backup_schedule: "platform_secondary"
+      
+      platform_secondary:
+        name: "Platform Secondary On-Call"
+        timezone: "Australia/Sydney"
+        rotation_type: "weekly"
+        participants:
+          - "senior-platform-engineer@actplacemat.org.au"
+          - "platform-manager@actplacemat.org.au"
+      
+      security_primary:
+        name: "Security Primary On-Call"
+        timezone: "Australia/Sydney"
+        rotation_type: "weekly"
+        participants:
+          - "security-engineer-1@actplacemat.org.au"
+          - "security-engineer-2@actplacemat.org.au"
+        backup_schedule: "security_secondary"
+      
+      security_secondary:
+        name: "Security Secondary On-Call"
+        timezone: "Australia/Sydney"
+        rotation_type: "weekly"
+        participants:
+          - "senior-security-engineer@actplacemat.org.au"
+          - "ciso@actplacemat.org.au"
+      
+      development_primary:
+        name: "Development Primary On-Call"
+        timezone: "Australia/Sydney"
+        rotation_type: "daily"
+        participants:
+          - "dev-1@actplacemat.org.au"
+          - "dev-2@actplacemat.org.au"
+          - "dev-3@actplacemat.org.au"
+          - "dev-4@actplacemat.org.au"
+        backup_schedule: "development_secondary"
+      
+      development_secondary:
+        name: "Development Secondary On-Call"
+        timezone: "Australia/Sydney"
+        rotation_type: "weekly"
+        participants:
+          - "tech-lead@actplacemat.org.au"
+          - "senior-dev@actplacemat.org.au"
+      
+      payments_primary:
+        name: "Payments Primary On-Call"
+        timezone: "Australia/Sydney"
+        rotation_type: "weekly"
+        participants:
+          - "payments-engineer@actplacemat.org.au"
+          - "finance-manager@actplacemat.org.au"
+    
+    # ========================================
+    # BUSINESS HOURS CONFIGURATION
+    # ========================================
+    
+    business_hours:
+      timezone: "Australia/Sydney"
+      weekdays:
+        monday: "09:00-17:00"
+        tuesday: "09:00-17:00"
+        wednesday: "09:00-17:00"
+        thursday: "09:00-17:00"
+        friday: "09:00-17:00"
+      weekends:
+        saturday: "10:00-14:00"  # Limited weekend support
+        sunday: "10:00-14:00"
+      
+      # Special considerations for cultural protocols
+      cultural_hours:
+        description: "Cultural advisory team availability"
+        weekdays: "10:00-16:00"
+        weekends: "emergency_only"
+        public_holidays: "emergency_only"
+    
+    # ========================================
+    # ALERT ROUTING MATRIX
+    # ========================================
+    
+    routing_matrix:
+      
+      # Map alert types to escalation policies
+      alert_routing:
+        
+        # Infrastructure
+        KubernetesNodeDown: "infrastructure_critical"
+        KubernetesPodCrashLooping: "infrastructure_critical"
+        DatabaseConnectionPoolExhausted: "infrastructure_critical"
+        PrometheusTargetDown: "performance_warning"
+        AlertmanagerDown: "infrastructure_critical"
+        
+        # Security
+        SuspiciousLoginActivity: "security_critical"
+        UnauthorizedCulturalContentAccess: "security_critical"
+        PrivacyPolicyViolation: "data_sovereignty"
+        UnusualDataExportVolume: "security_critical"
+        
+        # Cultural Protocols
+        CulturalProtocolViolation: "cultural_critical"
+        DataSovereigntyBreach: "data_sovereignty"
+        ElderReviewBacklog: "cultural_critical"
+        CulturalComplianceBelow95Percent: "cultural_critical"
+        
+        # Performance
+        HighResponseTime: "performance_warning"
+        HighErrorRate: "performance_warning"
+        MemoryLeakDetected: "performance_warning"
+        HighPageLoadTimes: "performance_warning"
+        
+        # Community Health
+        CommunityGrowthStagnant: "community_health"
+        LowCommunityEngagement: "community_health"
+        CommunityChurnHigh: "community_health"
+        StoryCreationDecline: "community_health"
+        
+        # Financial
+        BenefitSharingProcessorDown: "financial_critical"
+        PaymentProcessingFailure: "financial_critical"
+        CommunityBenefitShareBelowTarget: "financial_critical"
+        UnusualFinancialTransaction: "financial_critical"
+        
+        # Default for unmapped alerts
+        default: "performance_warning"
+      
+      # Time-based routing modifications
+      time_based_routing:
+        
+        business_hours:
+          # During business hours, use standard escalation
+          modifier: "standard"
+        
+        after_hours:
+          # After hours, escalate more quickly for critical alerts
+          critical_alerts:
+            delay_reduction: "50%"  # Reduce delays by 50%
+            additional_contacts: ["cto"]  # Add CTO to critical escalations
+          
+          warning_alerts:
+            delay_increase: "100%"  # Double delays for warnings
+        
+        weekends:
+          # Weekend routing for emergencies only
+          critical_only: true
+          emergency_contacts: ["platform-oncall", "security-oncall", "cto"]
+        
+        cultural_protocols:
+          # Special handling for cultural protocol alerts
+          business_hours_only: false  # Can escalate 24/7
+          immediate_contacts: ["cultural-advisors", "elder-council"]
+          executive_escalation_time: "30m"  # Faster executive escalation
+    
+    # ========================================
+    # ALERT SUPPRESSION RULES
+    # ========================================
+    
+    suppression_rules:
+      
+      # Suppress redundant alerts during maintenance
+      maintenance_windows:
+        description: "Suppress alerts during scheduled maintenance"
+        schedule:
+          - day: "sunday"
+            time: "02:00-04:00"
+            timezone: "Australia/Sydney"
+        suppressed_alerts:
+          - "KubernetesNodeDown"
+          - "PrometheusTargetDown"
+          - "HighResponseTime"
+      
+      # Suppress lower severity alerts when critical alerts are active
+      severity_based:
+        - when_active: ["KubernetesNodeDown"]
+          suppress: ["HighResponseTime", "HighMemoryUsage"]
+        - when_active: ["CulturalProtocolViolation"]
+          suppress: ["ElderReviewBacklog"]
+        - when_active: ["DataSovereigntyBreach"]
+          suppress: ["UnusualDataExportVolume"]
+      
+      # Rate limiting for noisy alerts
+      rate_limits:
+        - alert_name: "HighErrorRate"
+          max_alerts_per_hour: 3
+          action: "suppress_after_limit"
+        - alert_name: "PerformanceDegradation"
+          max_alerts_per_hour: 2
+          action: "escalate_after_limit"
+
+---
+# Alert Escalation Controller Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alert-escalation-controller
+  namespace: monitoring
+  labels:
+    app: alert-escalation-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alert-escalation-controller
+  template:
+    metadata:
+      labels:
+        app: alert-escalation-controller
+    spec:
+      containers:
+      - name: escalation-controller
+        image: python:3.11-slim
+        command: ["/bin/sh"]
+        args:
+          - -c
+          - |
+            pip install pyyaml requests schedule
+            python /app/escalation_controller.py
+        env:
+        - name: ALERTMANAGER_URL
+          value: "http://alertmanager-service:9093"
+        - name: CONFIG_PATH
+          value: "/config/escalation-config.yaml"
+        volumeMounts:
+        - name: escalation-config
+          mountPath: /config
+        - name: escalation-script
+          mountPath: /app
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "50m"
+          limits:
+            memory: "256Mi"
+            cpu: "100m"
+      volumes:
+      - name: escalation-config
+        configMap:
+          name: escalation-policies
+      - name: escalation-script
+        configMap:
+          name: escalation-controller-script
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: escalation-controller-script
+  namespace: monitoring
+data:
+  escalation_controller.py: |
+    #!/usr/bin/env python3
+    """
+    ACT Placemat Alert Escalation Controller
+    Manages escalation policies and on-call rotations
+    """
+    
+    import os
+    import time
+    import yaml
+    import json
+    import logging
+    import requests
+    import schedule
+    from datetime import datetime, timedelta
+    from typing import Dict, List, Any
+    
+    # Configure logging
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+    
+    class EscalationController:
+        def __init__(self):
+            self.config_path = os.getenv('CONFIG_PATH', '/config/escalation-config.yaml')
+            self.alertmanager_url = os.getenv('ALERTMANAGER_URL', 'http://alertmanager-service:9093')
+            self.config = self.load_config()
+            self.active_escalations = {}
+            
+        def load_config(self) -> Dict[str, Any]:
+            """Load escalation configuration"""
+            try:
+                with open(self.config_path, 'r') as f:
+                    return yaml.safe_load(f)
+            except Exception as e:
+                logger.error(f"Failed to load config: {e}")
+                return {}
+        
+        def get_current_oncall(self, schedule_id: str) -> str:
+            """Get current on-call person for a schedule"""
+            try:
+                schedule_config = self.config.get('on_call_schedules', {}).get(schedule_id, {})
+                participants = schedule_config.get('participants', [])
+                
+                if not participants:
+                    return ""
+                
+                # Simple rotation based on day of year
+                day_of_year = datetime.now().timetuple().tm_yday
+                rotation_type = schedule_config.get('rotation_type', 'weekly')
+                
+                if rotation_type == 'daily':
+                    index = day_of_year % len(participants)
+                elif rotation_type == 'weekly':
+                    week_of_year = datetime.now().isocalendar()[1]
+                    index = week_of_year % len(participants)
+                else:
+                    index = 0
+                
+                return participants[index]
+                
+            except Exception as e:
+                logger.error(f"Error getting on-call for {schedule_id}: {e}")
+                return ""
+        
+        def resolve_contact(self, contact_id: str) -> Dict[str, Any]:
+            """Resolve contact details"""
+            try:
+                contact_config = self.config.get('contacts', {}).get(contact_id, {})
+                
+                if contact_config.get('type') == 'on_call_schedule':
+                    schedule_id = contact_config.get('schedule_id')
+                    oncall_person = self.get_current_oncall(schedule_id)
+                    if oncall_person:
+                        return {'email': oncall_person, 'type': 'individual'}
+                    else:
+                        # Fallback to backup
+                        fallback = contact_config.get('fallback', [])
+                        if fallback:
+                            return self.resolve_contact(fallback[0])
+                
+                return contact_config
+                
+            except Exception as e:
+                logger.error(f"Error resolving contact {contact_id}: {e}")
+                return {}
+        
+        def get_escalation_policy(self, alert_name: str) -> str:
+            """Get escalation policy for an alert"""
+            routing = self.config.get('routing_matrix', {}).get('alert_routing', {})
+            return routing.get(alert_name, routing.get('default', 'performance_warning'))
+        
+        def is_business_hours(self) -> bool:
+            """Check if current time is during business hours"""
+            now = datetime.now()
+            business_hours = self.config.get('business_hours', {})
+            
+            if now.weekday() < 5:  # Monday-Friday
+                day_name = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'][now.weekday()]
+                hours = business_hours.get('weekdays', {}).get(day_name, "")
+            else:  # Weekend
+                day_name = 'saturday' if now.weekday() == 5 else 'sunday'
+                hours = business_hours.get('weekends', {}).get(day_name, "")
+            
+            if not hours or hours == "emergency_only":
+                return False
+                
+            try:
+                start_time, end_time = hours.split('-')
+                start_hour, start_min = map(int, start_time.split(':'))
+                end_hour, end_min = map(int, end_time.split(':'))
+                
+                current_time = now.hour * 60 + now.minute
+                start_minutes = start_hour * 60 + start_min
+                end_minutes = end_hour * 60 + end_min
+                
+                return start_minutes <= current_time <= end_minutes
+                
+            except Exception as e:
+                logger.error(f"Error parsing business hours: {e}")
+                return False
+        
+        def process_alert(self, alert: Dict[str, Any]):
+            """Process a new alert for escalation"""
+            try:
+                alert_name = alert.get('labels', {}).get('alertname', '')
+                severity = alert.get('labels', {}).get('severity', 'warning')
+                
+                # Get escalation policy
+                policy_name = self.get_escalation_policy(alert_name)
+                policy = self.config.get('escalation_policies', {}).get(policy_name, {})
+                
+                if not policy:
+                    logger.warning(f"No escalation policy found for {alert_name}")
+                    return
+                
+                # Create escalation tracking
+                escalation_id = f"{alert_name}_{alert.get('fingerprint', '')}"
+                
+                self.active_escalations[escalation_id] = {
+                    'alert': alert,
+                    'policy': policy,
+                    'current_step': 0,
+                    'start_time': datetime.now(),
+                    'last_escalation': datetime.now(),
+                    'contacts_notified': []
+                }
+                
+                # Start immediate escalation
+                self.escalate_alert(escalation_id)
+                
+                logger.info(f"Started escalation for {alert_name} with policy {policy_name}")
+                
+            except Exception as e:
+                logger.error(f"Error processing alert: {e}")
+        
+        def escalate_alert(self, escalation_id: str):
+            """Escalate an alert to the next step"""
+            try:
+                escalation = self.active_escalations.get(escalation_id)
+                if not escalation:
+                    return
+                
+                policy = escalation['policy']
+                steps = policy.get('steps', [])
+                current_step = escalation['current_step']
+                
+                if current_step >= len(steps):
+                    logger.warning(f"Escalation {escalation_id} has reached final step")
+                    return
+                
+                step = steps[current_step]
+                
+                # Check if enough time has passed for this step
+                delay_str = step.get('delay', '0m')
+                delay_minutes = self.parse_delay(delay_str)
+                
+                time_since_start = datetime.now() - escalation['start_time']
+                required_delay = timedelta(minutes=delay_minutes)
+                
+                if time_since_start < required_delay:
+                    return  # Not time yet
+                
+                # Notify contacts
+                contacts = step.get('contacts', [])
+                channels = step.get('channels', ['email'])
+                
+                for contact_id in contacts:
+                    contact_info = self.resolve_contact(contact_id)
+                    if contact_info:
+                        self.notify_contact(escalation['alert'], contact_info, channels)
+                        escalation['contacts_notified'].append(contact_id)
+                
+                # Move to next step
+                escalation['current_step'] += 1
+                escalation['last_escalation'] = datetime.now()
+                
+                logger.info(f"Escalated {escalation_id} to step {current_step + 1}")
+                
+            except Exception as e:
+                logger.error(f"Error escalating alert {escalation_id}: {e}")
+        
+        def notify_contact(self, alert: Dict[str, Any], contact: Dict[str, Any], channels: List[str]):
+            """Send notification to a contact"""
+            try:
+                alert_name = alert.get('labels', {}).get('alertname', '')
+                summary = alert.get('annotations', {}).get('summary', '')
+                
+                # Email notification
+                if 'email' in channels and contact.get('email'):
+                    self.send_email_notification(contact['email'], alert_name, summary)
+                
+                # Slack notification
+                if 'slack' in channels and contact.get('slack'):
+                    self.send_slack_notification(contact['slack'], alert_name, summary)
+                
+                # Phone notification (placeholder)
+                if 'phone' in channels and contact.get('phone'):
+                    self.send_phone_notification(contact['phone'], alert_name, summary)
+                
+                # PagerDuty notification
+                if 'pagerduty' in channels:
+                    self.send_pagerduty_notification(alert, contact)
+                
+                logger.info(f"Notified {contact.get('email', contact.get('slack', 'unknown'))} via {channels}")
+                
+            except Exception as e:
+                logger.error(f"Error notifying contact: {e}")
+        
+        def send_email_notification(self, email: str, alert_name: str, summary: str):
+            """Send email notification (placeholder)"""
+            logger.info(f"Would send email to {email}: {alert_name} - {summary}")
+        
+        def send_slack_notification(self, slack_user: str, alert_name: str, summary: str):
+            """Send Slack notification (placeholder)"""
+            logger.info(f"Would send Slack message to {slack_user}: {alert_name} - {summary}")
+        
+        def send_phone_notification(self, phone: str, alert_name: str, summary: str):
+            """Send phone notification (placeholder)"""
+            logger.info(f"Would call {phone}: {alert_name} - {summary}")
+        
+        def send_pagerduty_notification(self, alert: Dict[str, Any], contact: Dict[str, Any]):
+            """Send PagerDuty notification (placeholder)"""
+            logger.info(f"Would send PagerDuty alert for {alert.get('labels', {}).get('alertname')}")
+        
+        def parse_delay(self, delay_str: str) -> int:
+            """Parse delay string to minutes"""
+            try:
+                if delay_str.endswith('m'):
+                    return int(delay_str[:-1])
+                elif delay_str.endswith('h'):
+                    return int(delay_str[:-1]) * 60
+                elif delay_str.endswith('s'):
+                    return int(delay_str[:-1]) // 60
+                else:
+                    return int(delay_str)
+            except:
+                return 0
+        
+        def process_escalations(self):
+            """Process all active escalations"""
+            try:
+                for escalation_id in list(self.active_escalations.keys()):
+                    self.escalate_alert(escalation_id)
+                    
+                    # Clean up old escalations (older than 24 hours)
+                    escalation = self.active_escalations[escalation_id]
+                    if datetime.now() - escalation['start_time'] > timedelta(hours=24):
+                        del self.active_escalations[escalation_id]
+                        logger.info(f"Cleaned up old escalation {escalation_id}")
+                        
+            except Exception as e:
+                logger.error(f"Error processing escalations: {e}")
+        
+        def get_alerts_from_alertmanager(self) -> List[Dict[str, Any]]:
+            """Get active alerts from Alertmanager"""
+            try:
+                response = requests.get(f"{self.alertmanager_url}/api/v1/alerts")
+                if response.status_code == 200:
+                    data = response.json()
+                    return data.get('data', [])
+                else:
+                    logger.error(f"Failed to get alerts: {response.status_code}")
+                    return []
+            except Exception as e:
+                logger.error(f"Error getting alerts: {e}")
+                return []
+        
+        def run_escalation_cycle(self):
+            """Run one escalation cycle"""
+            try:
+                # Get new alerts
+                alerts = self.get_alerts_from_alertmanager()
+                
+                for alert in alerts:
+                    # Check if this is a new alert we haven't seen
+                    alert_name = alert.get('labels', {}).get('alertname', '')
+                    escalation_id = f"{alert_name}_{alert.get('fingerprint', '')}"
+                    
+                    if escalation_id not in self.active_escalations:
+                        self.process_alert(alert)
+                
+                # Process existing escalations
+                self.process_escalations()
+                
+                logger.info(f"Escalation cycle complete. Active escalations: {len(self.active_escalations)}")
+                
+            except Exception as e:
+                logger.error(f"Error in escalation cycle: {e}")
+        
+        def run(self):
+            """Main escalation controller loop"""
+            logger.info("Starting Alert Escalation Controller")
+            
+            # Schedule the escalation cycle to run every minute
+            schedule.every(1).minutes.do(self.run_escalation_cycle)
+            
+            while True:
+                try:
+                    schedule.run_pending()
+                    time.sleep(30)  # Check every 30 seconds
+                except KeyboardInterrupt:
+                    logger.info("Shutting down escalation controller")
+                    break
+                except Exception as e:
+                    logger.error(f"Error in main loop: {e}")
+                    time.sleep(60)
+    
+    if __name__ == "__main__":
+        controller = EscalationController()
+        controller.run()
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: escalation-controller-service
+  namespace: monitoring
+  labels:
+    app: alert-escalation-controller
+spec:
+  selector:
+    app: alert-escalation-controller
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  type: ClusterIP

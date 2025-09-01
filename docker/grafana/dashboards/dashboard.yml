@@ -1,0 +1,59 @@
+# Grafana Dashboard Provisioning for ACT Placemat Intelligence Hub
+# Australian-compliant monitoring dashboard configuration
+
+apiVersion: 1
+
+providers:
+  - name: 'ACT Placemat Intelligence Hub'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/json/
+      foldersFromFilesStructure: true
+    
+  - name: 'Australian Compliance Dashboards'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 60
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/compliance/
+      foldersFromFilesStructure: true
+
+  - name: 'Multi-Agent System Monitoring'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 15
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/agents/
+      foldersFromFilesStructure: true
+
+  - name: 'Community Governance Metrics'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/community/
+      foldersFromFilesStructure: true
+
+  - name: 'Infrastructure Monitoring'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/infrastructure/
+      foldersFromFilesStructure: true
+
+  - name: 'Security and Network Monitoring'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/security/
+      foldersFromFilesStructure: true

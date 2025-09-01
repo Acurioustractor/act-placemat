@@ -1,0 +1,326 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Multi-Agent System Monitoring",
+    "tags": ["agents", "langgraph", "ai", "orchestration", "australia"],
+    "timezone": "Australia/Sydney",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Active Agents",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(business_metrics{category=\"agents\"})",
+            "legendFormat": "Active Agents",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "agents",
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 1
+                },
+                {
+                  "color": "green",
+                  "value": 3
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Agent Task Completion Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "rate(business_metrics{category=\"agent_tasks\",metric_name=\"completed\"}[5m]) / rate(business_metrics{category=\"agent_tasks\",metric_name=\"total\"}[5m]) * 100",
+            "legendFormat": "Completion Rate",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 80
+                },
+                {
+                  "color": "green",
+                  "value": 95
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 6,
+          "y": 0
+        }
+      },
+      {
+        "id": 3,
+        "title": "Agent Response Times",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(ai_request_duration_seconds_bucket{provider=\"langgraph\"}[5m]))",
+            "legendFormat": "95th percentile",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(ai_request_duration_seconds_bucket{provider=\"langgraph\"}[5m]))",
+            "legendFormat": "Median",
+            "refId": "B"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s",
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear"
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        }
+      },
+      {
+        "id": 4,
+        "title": "Inter-Agent Communication",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(business_metrics{category=\"agent_communication\"}[5m])",
+            "legendFormat": "{{metric_name}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "msg/min",
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear",
+              "stackSeries": "normal"
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        }
+      },
+      {
+        "id": 5,
+        "title": "Agent Memory Usage",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "business_metrics{category=\"agent_memory\"}",
+            "legendFormat": "{{metric_name}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bytes",
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear"
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": 6,
+        "title": "Task Queue Depth by Agent",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "queue_depth{queue_name=~\"agent_.*\"}",
+            "legendFormat": "{{queue_name}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "tasks",
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear",
+              "fillOpacity": 20
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        }
+      },
+      {
+        "id": 7,
+        "title": "Agent Error Rate",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(business_metrics{category=\"agent_errors\"}[5m])",
+            "legendFormat": "{{metric_name}} errors/min",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "errors/min",
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 1
+                },
+                {
+                  "color": "red",
+                  "value": 5
+                }
+              ]
+            },
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear"
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 16
+        }
+      },
+      {
+        "id": 8,
+        "title": "Democratic Task Prioritisation",
+        "type": "bargauge",
+        "targets": [
+          {
+            "expr": "business_metrics{category=\"democratic_priority\"}",
+            "legendFormat": "{{metric_name}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "votes",
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 3
+                },
+                {
+                  "color": "green",
+                  "value": 5
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 24
+        }
+      },
+      {
+        "id": 9,
+        "title": "Agent Collaboration Network",
+        "type": "nodeGraph",
+        "targets": [
+          {
+            "expr": "business_metrics{category=\"agent_collaboration\"}",
+            "legendFormat": "{{from_agent}} -> {{to_agent}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "nodeOptions": {
+                "color": {
+                  "mode": "continuous-GrYlRd"
+                }
+              }
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 24
+        }
+      }
+    ],
+    "time": {
+      "from": "now-30m",
+      "to": "now"
+    },
+    "refresh": "10s",
+    "schemaVersion": 36,
+    "version": 1,
+    "uid": "act-multi-agent-system",
+    "description": "Real-time monitoring of multi-agent system performance and coordination"
+  }
+}

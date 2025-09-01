@@ -1,0 +1,654 @@
+# Blue/Green Deployment Strategy for ACT Placemat
+# Enables instant traffic switching with cultural protocol validation and Elder Council approval
+
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: act-placemat-blue-green
+  namespace: act-placemat-production
+  labels:
+    app: act-placemat
+    deployment-strategy: blue-green
+    cultural-protocol: enabled
+  annotations:
+    cultural.act.place/review-required: "true"
+    cultural.act.place/elder-approval-threshold: "100"
+spec:
+  replicas: 6
+  strategy:
+    blueGreen:
+      # Blue/Green configuration
+      activeService: act-placemat-blue-green-active
+      previewService: act-placemat-blue-green-preview
+      
+      # Automatic promotion disabled - requires Elder Council approval
+      autoPromotionEnabled: false
+      
+      # Scale down delay after successful promotion
+      scaleDownDelaySeconds: 300 # 5 minutes for rollback window
+      
+      # Preview replica count
+      previewReplicaCount: 6
+      
+      # Pre-promotion analysis
+      prePromotionAnalysis:
+        templates:
+        - templateName: cultural-protocol-comprehensive-analysis
+        - templateName: blue-green-performance-analysis
+        - templateName: elder-council-approval-check
+        args:
+        - name: service-name
+          value: act-placemat-blue-green-preview
+        - name: cultural-compliance-threshold
+          value: "95"
+        - name: performance-threshold
+          value: "99"
+        - name: elder-approval-required
+          value: "true"
+      
+      # Post-promotion analysis
+      postPromotionAnalysis:
+        templates:
+        - templateName: post-promotion-validation
+        args:
+        - name: service-name
+          value: act-placemat-blue-green-active
+        - name: monitoring-duration
+          value: "10m"
+      
+      # Anti-affinity rules to ensure blue/green separation
+      antiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values: ["act-placemat"]
+            topologyKey: kubernetes.io/hostname
+
+  # Pod template specification
+  selector:
+    matchLabels:
+      app: act-placemat
+  template:
+    metadata:
+      labels:
+        app: act-placemat
+        cultural-protocol: enabled
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+        cultural.act.place/review-required: "true"
+        flagger.app/metric-template: "cultural-protocol-metrics"
+    spec:
+      serviceAccountName: act-placemat-service-account
+      containers:
+      - name: act-placemat
+        image: act-placemat:latest
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 8081
+          name: metrics
+          protocol: TCP
+        
+        env:
+        - name: DEPLOYMENT_STRATEGY
+          value: "blue-green"
+        - name: DEPLOYMENT_COLOR
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['rollouts-pod-template-hash']
+        - name: CULTURAL_PROTOCOL_ENABLED
+          value: "true"
+        - name: ELDER_CONSULTATION_REQUIRED
+          value: "true"
+        - name: PROMETHEUS_ENABLED
+          value: "true"
+        - name: BLUE_GREEN_MODE
+          value: "true"
+        
+        # Startup probe for faster readiness
+        startupProbe:
+          httpGet:
+            path: /startup
+            port: 8080
+          failureThreshold: 30
+          periodSeconds: 10
+        
+        # Health checks
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        
+        # Resource management
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+        
+        # Volume mounts for cultural protocol configuration
+        volumeMounts:
+        - name: cultural-protocol-config
+          mountPath: /etc/cultural-protocol
+          readOnly: true
+      
+      volumes:
+      - name: cultural-protocol-config
+        configMap:
+          name: cultural-protocol-config
+
+---
+# Blue/Green Service Definitions
+apiVersion: v1
+kind: Service
+metadata:
+  name: act-placemat-blue-green-active
+  namespace: act-placemat-production
+  labels:
+    app: act-placemat
+    service-type: blue-green-active
+  annotations:
+    cultural.act.place/traffic-type: "production"
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    name: http
+  - port: 8081
+    targetPort: 8081
+    name: metrics
+  selector:
+    app: act-placemat
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: act-placemat-blue-green-preview
+  namespace: act-placemat-production
+  labels:
+    app: act-placemat
+    service-type: blue-green-preview
+  annotations:
+    cultural.act.place/traffic-type: "preview"
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    name: http
+  - port: 8081
+    targetPort: 8081
+    name: metrics
+  selector:
+    app: act-placemat
+
+---
+# Ingress configuration for Blue/Green with cultural protocol headers
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: act-placemat-blue-green-ingress
+  namespace: act-placemat-production
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    # Cultural protocol headers
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Cultural-Protocol-Active: true";
+      more_set_headers "X-Elder-Consultation-Available: true";
+      more_set_headers "X-Indigenous-Data-Sovereignty: respected";
+    # Preview environment routing
+    nginx.ingress.kubernetes.io/server-snippet: |
+      location /preview {
+        proxy_pass http://act-placemat-blue-green-preview;
+        proxy_set_header X-Preview-Mode "true";
+        proxy_set_header X-Cultural-Review-Required "true";
+      }
+spec:
+  tls:
+  - hosts:
+    - act.place
+    - preview.act.place
+    secretName: act-placemat-tls
+  rules:
+  - host: act.place
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: act-placemat-blue-green-active
+            port:
+              number: 80
+  - host: preview.act.place
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: act-placemat-blue-green-preview
+            port:
+              number: 80
+
+---
+# Analysis Templates for Blue/Green Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: cultural-protocol-comprehensive-analysis
+  namespace: act-placemat-production
+spec:
+  args:
+  - name: service-name
+  - name: cultural-compliance-threshold
+  metrics:
+  - name: cultural-protocol-compliance
+    successCondition: result[0] >= {{args.cultural-compliance-threshold}}
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          (
+            sum(rate(cultural_protocol_events_total{service="{{args.service-name}}",status="approved"}[10m])) /
+            sum(rate(cultural_protocol_events_total{service="{{args.service-name}}"}[10m]))
+          ) * 100
+  
+  - name: elder-consultation-availability
+    successCondition: result[0] >= 90
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          (
+            sum(elder_consultation_capacity_available) /
+            sum(elder_consultation_capacity_total)
+          ) * 100
+  
+  - name: cultural-content-safety
+    failureCondition: result[0] > 0
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          sum(increase(cultural_protocol_violations_total{service="{{args.service-name}}"}[10m]))
+  
+  - name: traditional-owner-approval
+    successCondition: result[0] >= 95
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          (
+            sum(rate(traditional_owner_consultation_total{service="{{args.service-name}}",status="approved"}[10m])) /
+            sum(rate(traditional_owner_consultation_total{service="{{args.service-name}}"}[10m]))
+          ) * 100
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: blue-green-performance-analysis
+  namespace: act-placemat-production
+spec:
+  args:
+  - name: service-name
+  - name: performance-threshold
+  metrics:
+  - name: success-rate
+    successCondition: result[0] >= {{args.performance-threshold}}
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          (
+            sum(rate(http_requests_total{service="{{args.service-name}}",code=~"2.."}[5m])) /
+            sum(rate(http_requests_total{service="{{args.service-name}}"}[5m]))
+          ) * 100
+  
+  - name: response-time-p95
+    successCondition: result[0] < 1000
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          histogram_quantile(0.95, 
+            sum(rate(http_request_duration_seconds_bucket{service="{{args.service-name}}"}[5m])) by (le)
+          ) * 1000
+  
+  - name: error-rate
+    failureCondition: result[0] > 1
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          (
+            sum(rate(http_requests_total{service="{{args.service-name}}",code=~"5.."}[5m])) /
+            sum(rate(http_requests_total{service="{{args.service-name}}"}[5m]))
+          ) * 100
+  
+  - name: memory-usage
+    successCondition: result[0] < 80
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          (
+            avg(container_memory_working_set_bytes{pod=~"act-placemat-.*"}) /
+            avg(container_spec_memory_limit_bytes{pod=~"act-placemat-.*"})
+          ) * 100
+  
+  - name: cpu-usage
+    successCondition: result[0] < 70
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          avg(rate(container_cpu_usage_seconds_total{pod=~"act-placemat-.*"}[5m])) * 100
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: elder-council-approval-check
+  namespace: act-placemat-production
+spec:
+  args:
+  - name: elder-approval-required
+  metrics:
+  - name: elder-approval-status
+    successCondition: result[0] >= 1
+    failureCondition: result[0] < 1
+    provider:
+      job:
+        spec:
+          template:
+            spec:
+              containers:
+              - name: elder-approval-validator
+                image: act-placemat/cultural-validator:latest
+                env:
+                - name: ELDER_COUNCIL_API_URL
+                  value: "http://elder-council-service:8080"
+                - name: DEPLOYMENT_NAME
+                  value: "act-placemat-blue-green"
+                command:
+                - "/bin/sh"
+                - "-c"
+                args:
+                - |
+                  #!/bin/sh
+                  set -e
+                  
+                  if [ "{{args.elder-approval-required}}" = "true" ]; then
+                    echo "Checking Elder Council approval status..."
+                    
+                    # Check for approval annotation
+                    APPROVAL_STATUS=$(kubectl get rollout act-placemat-blue-green -o jsonpath='{.metadata.annotations.cultural\.act\.place/elder-approved}' 2>/dev/null || echo "false")
+                    
+                    if [ "$APPROVAL_STATUS" = "true" ]; then
+                      echo "Elder Council approval found"
+                      echo "1"
+                    else
+                      echo "Elder Council approval required but not found"
+                      
+                      # Send approval request to Elder Council
+                      DEPLOYMENT_HASH=$(kubectl get rollout act-placemat-blue-green -o jsonpath='{.status.blueGreen.previewSelector}' | cut -d'=' -f2)
+                      
+                      curl -X POST "$ELDER_COUNCIL_API_URL/approval-requests" \
+                        -H "Content-Type: application/json" \
+                        -d "{
+                          \"deployment\": \"act-placemat-blue-green\",
+                          \"strategy\": \"blue-green\",
+                          \"deploymentHash\": \"$DEPLOYMENT_HASH\",
+                          \"previewUrl\": \"https://preview.act.place\",
+                          \"timestamp\": \"$(date -Iseconds)\",
+                          \"requiredFor\": \"promotion\"
+                        }" || echo "Failed to send approval request"
+                      
+                      echo "0"
+                    fi
+                  else
+                    echo "Elder approval not required"
+                    echo "1"
+                  fi
+              restartPolicy: Never
+              serviceAccount: cultural-validator
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: post-promotion-validation
+  namespace: act-placemat-production
+spec:
+  args:
+  - name: service-name
+  - name: monitoring-duration
+  metrics:
+  - name: post-promotion-health
+    successCondition: result[0] >= 99
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          (
+            sum(rate(http_requests_total{service="{{args.service-name}}",code=~"2.."}[2m])) /
+            sum(rate(http_requests_total{service="{{args.service-name}}"}[2m]))
+          ) * 100
+  
+  - name: cultural-protocol-post-promotion
+    failureCondition: result[0] > 0
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          sum(increase(cultural_protocol_violations_total{service="{{args.service-name}}"}[2m]))
+  
+  - name: community-engagement-impact
+    successCondition: result[0] > 0
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          sum(rate(community_interactions_total{deployment="active"}[2m]))
+
+---
+# Cultural Protocol Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cultural-protocol-config
+  namespace: act-placemat-production
+  labels:
+    app: act-placemat
+    component: cultural-protocol
+data:
+  protocol.yaml: |
+    culturalProtocol:
+      enabled: true
+      strictMode: true
+      blueGreenDeployment:
+        previewEnvironment:
+          elderReviewRequired: true
+          culturalAdvisorReview: true
+          traditionalOwnerConsultation: true
+          communityFeedbackPeriod: "24h"
+        productionPromotion:
+          elderApprovalRequired: true
+          unanimousApproval: false
+          minimumApprovers: 2
+          emergencyBypass: false
+        rollbackTriggers:
+          culturalViolation: true
+          communityComplaint: true
+          elderObjection: true
+          traditionalOwnerObjection: true
+      contentClassification:
+        sacred:
+          accessLevel: "elder-council-only"
+          reviewRequired: true
+          sharingRestricted: true
+        sensitive:
+          accessLevel: "cultural-advisor-approved"
+          reviewRequired: true
+          communityConsent: true
+        general:
+          accessLevel: "community-accessible"
+          reviewOptional: true
+      monitoring:
+        enableMetrics: true
+        culturalComplianceTracking: true
+        elderConsultationTracking: true
+        communityEngagementTracking: true
+
+---
+# Elder Council Notification Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elder-council-notification-service
+  namespace: act-placemat-production
+  labels:
+    app: elder-council-notification-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: elder-council-notification-service
+  template:
+    metadata:
+      labels:
+        app: elder-council-notification-service
+    spec:
+      containers:
+      - name: notification-service
+        image: act-placemat/elder-council-notifier:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ELDER_COUNCIL_EMAIL_LIST
+          valueFrom:
+            secretKeyRef:
+              name: elder-council-contacts
+              key: email-list
+        - name: SMS_GATEWAY_URL
+          valueFrom:
+            secretKeyRef:
+              name: notification-config
+              key: sms-gateway-url
+        - name: DEPLOYMENT_DASHBOARD_URL
+          value: "https://dashboard.act.place/deployments"
+        command:
+        - "/bin/sh"
+        - "-c"
+        args:
+        - |
+          cat > /app/notification-server.js << 'EOF'
+          const express = require('express');
+          const nodemailer = require('nodemailer');
+          const app = express();
+          
+          app.use(express.json());
+          
+          const transporter = nodemailer.createTransporter({
+            // Email configuration would go here
+            host: process.env.SMTP_HOST,
+            port: process.env.SMTP_PORT,
+            secure: true,
+            auth: {
+              user: process.env.SMTP_USER,
+              pass: process.env.SMTP_PASS
+            }
+          });
+          
+          app.post('/notify-approval-required', async (req, res) => {
+            const { deployment, strategy, previewUrl, timestamp } = req.body;
+            
+            console.log('Sending Elder Council approval notification:', {
+              deployment, strategy, previewUrl, timestamp
+            });
+            
+            const emailBody = `
+              Greetings Elder Council,
+              
+              A new deployment requires your approval before proceeding to production:
+              
+              Deployment: ${deployment}
+              Strategy: ${strategy}
+              Preview URL: ${previewUrl}
+              Timestamp: ${timestamp}
+              
+              Please review the deployment at:
+              ${process.env.DEPLOYMENT_DASHBOARD_URL}
+              
+              Cultural protocols are active and awaiting your guidance.
+              
+              With respect,
+              ACT Placemat System
+            `;
+            
+            try {
+              const emailAddresses = process.env.ELDER_COUNCIL_EMAIL_LIST.split(',');
+              
+              for (const email of emailAddresses) {
+                await transporter.sendMail({
+                  from: 'system@act.place',
+                  to: email.trim(),
+                  subject: 'Elder Council Approval Required - Deployment Review',
+                  text: emailBody
+                });
+              }
+              
+              console.log('Approval notifications sent successfully');
+              res.json({ success: true, message: 'Notifications sent' });
+            } catch (error) {
+              console.error('Failed to send notifications:', error);
+              res.status(500).json({ error: 'Failed to send notifications' });
+            }
+          });
+          
+          app.listen(8080, () => {
+            console.log('Elder Council notification service running on port 8080');
+          });
+          EOF
+          
+          npm install express nodemailer
+          node /app/notification-server.js
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elder-council-notification-service
+  namespace: act-placemat-production
+spec:
+  selector:
+    app: elder-council-notification-service
+  ports:
+  - port: 8080
+    targetPort: 8080

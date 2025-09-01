@@ -1,0 +1,117 @@
+{
+  "metadata": {
+    "timestamp": "2025-08-29T21:54:21.429Z",
+    "database_url": "https://tednluwflfhxyucgwigh.supabase.co",
+    "audit_type": "comprehensive_schema_analysis"
+  },
+  "schema": {
+    "tables": {},
+    "relationships": [],
+    "indexes": {},
+    "functions": [],
+    "views": []
+  },
+  "analysis": {
+    "data_philosophy": {
+      "core_entities": {},
+      "relationship_patterns": {
+        "many_to_many": [],
+        "one_to_many": [],
+        "hierarchical": [],
+        "cross_domain": []
+      },
+      "flexibility_analysis": {
+        "json_columns": {},
+        "extensible_schemas": {},
+        "loose_coupling": {
+          "total_relationships": 0,
+          "cascade_deletes": 0,
+          "soft_references": 0,
+          "coupling_level": "medium"
+        },
+        "api_friendly_design": {}
+      },
+      "community_focus": {
+        "community_focused_tables": {},
+        "community_centricity_score": null
+      },
+      "social_impact_support": {
+        "impact_focused_tables": {},
+        "social_impact_score": null
+      }
+    },
+    "architectural_patterns": {
+      "domain_driven_design": {
+        "identified_domains": {
+          "people": [],
+          "projects": [],
+          "content": [],
+          "finance": [],
+          "events": [],
+          "system": []
+        },
+        "domain_separation_score": 0
+      },
+      "event_sourcing": {
+        "potential_event_tables": [],
+        "event_sourcing_readiness": "low"
+      },
+      "microservices_readiness": {
+        "service_groups": {},
+        "microservices_potential": 0,
+        "cross_service_coupling": 0
+      },
+      "data_lake_patterns": {
+        "raw_data_tables": [],
+        "processed_data_tables": [],
+        "metadata_tables": [],
+        "json_storage_tables": []
+      },
+      "graph_database_potential": {
+        "potential_node_types": [],
+        "potential_edge_types": [],
+        "graph_complexity_score": 0,
+        "graph_database_suitability": "medium"
+      }
+    },
+    "relationship_mapping": {},
+    "api_flexibility": {},
+    "community_support": {}
+  },
+  "summary": {
+    "total_tables": 0,
+    "total_relationships": 0,
+    "core_entities": 0,
+    "community_focus_score": 0,
+    "social_impact_score": 0,
+    "api_readiness": "high",
+    "architectural_maturity": "moderate"
+  },
+  "recommendations": [
+    {
+      "category": "Performance",
+      "priority": "high",
+      "recommendation": "Review and optimize indexes for frequently queried relationship tables"
+    },
+    {
+      "category": "Scalability",
+      "priority": "medium",
+      "recommendation": "Consider implementing read replicas for analytics workloads"
+    },
+    {
+      "category": "API Development",
+      "priority": "high",
+      "recommendation": "Leverage flexible JSON columns for dynamic API responses"
+    },
+    {
+      "category": "Community Features",
+      "priority": "high",
+      "recommendation": "Enhance relationship mapping with graph database integration"
+    },
+    {
+      "category": "Data Governance",
+      "priority": "medium",
+      "recommendation": "Implement comprehensive audit trails for all community interactions"
+    }
+  ]
+}

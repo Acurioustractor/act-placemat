@@ -1,0 +1,576 @@
+{
+  "timestamp": "2025-08-22T01:07:57.617Z",
+  "summary": {
+    "totalAnalyzed": 1000,
+    "highValue": 299,
+    "mediumValue": 308,
+    "lowValue": 393,
+    "averageScore": 0.5931299999999995,
+    "analysisVersion": "2.0",
+    "dataSource": "LinkedIn + Cross-platform Intelligence"
+  },
+  "strategicOpportunities": [
+    {
+      "name": "Bob Gee",
+      "score": 84,
+      "organization": "government",
+      "projects": [
+        "Justice Hub",
+        "Empathy Ledger",
+        "Youth Programs"
+      ],
+      "recommendations": [
+        {
+          "type": "engagement",
+          "priority": "high",
+          "action": "Direct personal outreach to Bob",
+          "reasoning": "Direct connection through Ben - personal approach recommended"
+        },
+        {
+          "type": "project_collaboration",
+          "priority": "high",
+          "action": "Explore collaboration on Justice Hub",
+          "reasoning": "Strong alignment with Justice Hub, Empathy Ledger, Youth Programs"
+        }
+      ]
+    },
+    {
+      "name": "Adrian Geary",
+      "score": 82,
+      "organization": "government",
+      "projects": [
+        "Justice Hub",
+        "PICC"
+      ],
+      "recommendations": [
+        {
+          "type": "engagement",
+          "priority": "high",
+          "action": "Direct personal outreach to Adrian",
+          "reasoning": "Direct connection through Ben - personal approach recommended"
+        },
+        {
+          "type": "project_collaboration",
+          "priority": "high",
+          "action": "Explore collaboration on Justice Hub",
+          "reasoning": "Strong alignment with Justice Hub, PICC"
+        }
+      ]
+    },
+    {
+      "name": "Dr Leanne Geppert",
+      "score": 81,
+      "organization": "youth",
+      "projects": [
+        "Empathy Ledger",
+        "Youth Programs"
+      ],
+      "recommendations": [
+        {
+          "type": "project_collaboration",
+          "priority": "high",
+          "action": "Explore collaboration on Empathy Ledger",
+          "reasoning": "Strong alignment with Empathy Ledger, Youth Programs"
+        }
+      ]
+    },
+    {
+      "name": "Chelsea McKinney",
+      "score": 80,
+      "organization": "justice",
+      "projects": [
+        "Justice Hub",
+        "Community Development"
+      ],
+      "recommendations": [
+        {
+          "type": "engagement",
+          "priority": "high",
+          "action": "Direct personal outreach to Chelsea",
+          "reasoning": "Direct connection through Ben - personal approach recommended"
+        },
+        {
+          "type": "project_collaboration",
+          "priority": "high",
+          "action": "Explore collaboration on Justice Hub",
+          "reasoning": "Strong alignment with Justice Hub, Community Development"
+        }
+      ]
+    },
+    {
+      "name": "Barry J Hunter",
+      "score": 78,
+      "organization": "indigenous",
+      "projects": [
+        "PICC"
+      ],
+      "recommendations": [
+        {
+          "type": "project_collaboration",
+          "priority": "high",
+          "action": "Explore collaboration on PICC",
+          "reasoning": "Strong alignment with PICC"
+        }
+      ]
+    },
+    {
+      "name": "Brad Crosbie",
+      "score": 78,
+      "organization": "indigenous",
+      "projects": [
+        "PICC"
+      ],
+      "recommendations": [
+        {
+          "type": "project_collaboration",
+          "priority": "high",
+          "action": "Explore collaboration on PICC",
+          "reasoning": "Strong alignment with PICC"
+        }
+      ]
+    },
+    {
+      "name": "Adam Wenitong",
+      "score": 77,
+      "organization": "indigenous",
+      "projects": [
+        "PICC"
+      ],
+      "recommendations": [
+        {
+          "type": "engagement",
+          "priority": "high",
+          "action": "Direct personal outreach to Adam",
+          "reasoning": "Direct connection through Ben - personal approach recommended"
+        },
+        {
+          "type": "project_collaboration",
+          "priority": "high",
+          "action": "Explore collaboration on PICC",
+          "reasoning": "Strong alignment with PICC"
+        }
+      ]
+    },
+    {
+      "name": "Bryanna Mariñas",
+      "score": 76,
+      "organization": "youth",
+      "projects": [
+        "Youth Programs"
+      ],
+      "recommendations": [
+        {
+          "type": "project_collaboration",
+          "priority": "high",
+          "action": "Explore collaboration on Youth Programs",
+          "reasoning": "Strong alignment with Youth Programs"
+        }
+      ]
+    },
+    {
+      "name": "Diogo Andrade",
+      "score": 76,
+      "organization": "youth",
+      "projects": [
+        "Youth Programs",
+        "Community Development"
+      ],
+      "recommendations": [
+        {
+          "type": "project_collaboration",
+          "priority": "high",
+          "action": "Explore collaboration on Youth Programs",
+          "reasoning": "Strong alignment with Youth Programs, Community Development"
+        }
+      ]
+    },
+    {
+      "name": "Bernard Curran",
+      "score": 76,
+      "organization": "health",
+      "projects": [],
+      "recommendations": []
+    },
+    {
+      "name": "Bronwyn Bate",
+      "score": 76,
+      "organization": "arts",
+      "projects": [],
+      "recommendations": []
+    },
+    {
+      "name": "Bianca Manning",
+      "score": 76,
+      "organization": "indigenous",
+      "projects": [
+        "Justice Hub",
+        "PICC"
+      ],
+      "recommendations": [
+        {
+          "type": "project_collaboration",
+          "priority": "high",
+          "action": "Explore collaboration on Justice Hub",
+          "reasoning": "Strong alignment with Justice Hub, PICC"
+        }
+      ]
+    },
+    {
+      "name": "Donna McEwan",
+      "score": 75,
+      "organization": "justice",
+      "projects": [
+        "Justice Hub",
+        "Youth Programs",
+        "Community Development"
+      ],
+      "recommendations": [
+        {
+          "type": "engagement",
+          "priority": "high",
+          "action": "Direct personal outreach to Donna",
+          "reasoning": "Direct connection through Ben - personal approach recommended"
+        },
+        {
+          "type": "project_collaboration",
+          "priority": "high",
+          "action": "Explore collaboration on Justice Hub",
+          "reasoning": "Strong alignment with Justice Hub, Youth Programs, Community Development"
+        }
+      ]
+    },
+    {
+      "name": "Benita Tiernan",
+      "score": 75,
+      "organization": "government",
+      "projects": [
+        "Justice Hub",
+        "Community Development"
+      ],
+      "recommendations": [
+        {
+          "type": "project_collaboration",
+          "priority": "high",
+          "action": "Explore collaboration on Justice Hub",
+          "reasoning": "Strong alignment with Justice Hub, Community Development"
+        }
+      ]
+    },
+    {
+      "name": "Bernice Hookey",
+      "score": 75,
+      "organization": "ngo",
+      "projects": [],
+      "recommendations": [
+        {
+          "type": "engagement",
+          "priority": "high",
+          "action": "Direct personal outreach to Bernice",
+          "reasoning": "Direct connection through Ben - personal approach recommended"
+        }
+      ]
+    }
+  ],
+  "sectorAnalysis": {
+    "unknown": {
+      "count": 749,
+      "highValue": 224,
+      "averageScore": 57
+    },
+    "government": {
+      "count": 61,
+      "highValue": 24,
+      "averageScore": 65
+    },
+    "education": {
+      "count": 61,
+      "highValue": 10,
+      "averageScore": 63
+    },
+    "health": {
+      "count": 29,
+      "highValue": 7,
+      "averageScore": 66
+    },
+    "ngo": {
+      "count": 33,
+      "highValue": 14,
+      "averageScore": 66
+    },
+    "justice": {
+      "count": 15,
+      "highValue": 3,
+      "averageScore": 66
+    },
+    "arts": {
+      "count": 21,
+      "highValue": 7,
+      "averageScore": 65
+    },
+    "youth": {
+      "count": 18,
+      "highValue": 5,
+      "averageScore": 70
+    },
+    "indigenous": {
+      "count": 13,
+      "highValue": 5,
+      "averageScore": 70
+    }
+  },
+  "networkHealth": {
+    "totalContacts": 1000,
+    "crossPlatformContacts": 0,
+    "strategicAlignment": 176,
+    "engagementReady": 179
+  },
+  "actionableInsights": [
+    {
+      "type": "immediate_action",
+      "priority": "high",
+      "title": "299 High-Value Contacts Ready for Engagement",
+      "description": "Strategic contacts with strong alignment to ACT projects",
+      "action": "Initiate personalized outreach within next 2 weeks",
+      "expectedOutcome": "Partnership discussions, collaboration opportunities"
+    },
+    {
+      "type": "sector_focus",
+      "priority": "high",
+      "title": "Focus on unknown Sector",
+      "description": "224 high-value contacts in unknown sector",
+      "action": "Develop sector-specific engagement strategy",
+      "expectedOutcome": "Sector leadership, policy influence"
+    },
+    {
+      "type": "network_expansion",
+      "priority": "medium",
+      "title": "308 Medium-Value Contacts for Network Growth",
+      "description": "Contacts with good potential for network expansion",
+      "action": "Gradual engagement through content sharing and events",
+      "expectedOutcome": "Expanded network reach, new collaboration paths"
+    }
+  ],
+  "topRecommendations": [
+    {
+      "contact": "Bob Gee",
+      "contactId": 642,
+      "type": "engagement",
+      "priority": "high",
+      "action": "Direct personal outreach to Bob",
+      "reasoning": "Direct connection through Ben - personal approach recommended",
+      "relationshipScore": 84,
+      "strategicValue": "high"
+    },
+    {
+      "contact": "Bob Gee",
+      "contactId": 642,
+      "type": "project_collaboration",
+      "priority": "high",
+      "action": "Explore collaboration on Justice Hub",
+      "reasoning": "Strong alignment with Justice Hub, Empathy Ledger, Youth Programs",
+      "relationshipScore": 84,
+      "strategicValue": "high"
+    },
+    {
+      "contact": "Adrian Geary",
+      "contactId": 117,
+      "type": "engagement",
+      "priority": "high",
+      "action": "Direct personal outreach to Adrian",
+      "reasoning": "Direct connection through Ben - personal approach recommended",
+      "relationshipScore": 82,
+      "strategicValue": "high"
+    },
+    {
+      "contact": "Adrian Geary",
+      "contactId": 117,
+      "type": "project_collaboration",
+      "priority": "high",
+      "action": "Explore collaboration on Justice Hub",
+      "reasoning": "Strong alignment with Justice Hub, PICC",
+      "relationshipScore": 82,
+      "strategicValue": "high"
+    },
+    {
+      "contact": "Dr Leanne Geppert",
+      "contactId": 1348,
+      "type": "project_collaboration",
+      "priority": "high",
+      "action": "Explore collaboration on Empathy Ledger",
+      "reasoning": "Strong alignment with Empathy Ledger, Youth Programs",
+      "relationshipScore": 81,
+      "strategicValue": "high"
+    },
+    {
+      "contact": "Chelsea McKinney",
+      "contactId": 899,
+      "type": "engagement",
+      "priority": "high",
+      "action": "Direct personal outreach to Chelsea",
+      "reasoning": "Direct connection through Ben - personal approach recommended",
+      "relationshipScore": 80,
+      "strategicValue": "high"
+    },
+    {
+      "contact": "Chelsea McKinney",
+      "contactId": 899,
+      "type": "project_collaboration",
+      "priority": "high",
+      "action": "Explore collaboration on Justice Hub",
+      "reasoning": "Strong alignment with Justice Hub, Community Development",
+      "relationshipScore": 80,
+      "strategicValue": "high"
+    },
+    {
+      "contact": "Barry J Hunter",
+      "contactId": 536,
+      "type": "project_collaboration",
+      "priority": "high",
+      "action": "Explore collaboration on PICC",
+      "reasoning": "Strong alignment with PICC",
+      "relationshipScore": 78,
+      "strategicValue": "high"
+    },
+    {
+      "contact": "Brad Crosbie",
+      "contactId": 658,
+      "type": "project_collaboration",
+      "priority": "high",
+      "action": "Explore collaboration on PICC",
+      "reasoning": "Strong alignment with PICC",
+      "relationshipScore": 78,
+      "strategicValue": "high"
+    },
+    {
+      "contact": "Adam Wenitong",
+      "contactId": 96,
+      "type": "engagement",
+      "priority": "high",
+      "action": "Direct personal outreach to Adam",
+      "reasoning": "Direct connection through Ben - personal approach recommended",
+      "relationshipScore": 77,
+      "strategicValue": "high"
+    },
+    {
+      "contact": "Adam Wenitong",
+      "contactId": 96,
+      "type": "project_collaboration",
+      "priority": "high",
+      "action": "Explore collaboration on PICC",
+      "reasoning": "Strong alignment with PICC",
+      "relationshipScore": 77,
+      "strategicValue": "high"
+    },
+    {
+      "contact": "Bianca Manning",
+      "contactId": 619,
+      "type": "project_collaboration",
+      "priority": "high",
+      "action": "Explore collaboration on Justice Hub",
+      "reasoning": "Strong alignment with Justice Hub, PICC",
+      "relationshipScore": 76,
+      "strategicValue": "high"
+    },
+    {
+      "contact": "Bryanna Mariñas",
+      "contactId": 728,
+      "type": "project_collaboration",
+      "priority": "high",
+      "action": "Explore collaboration on Youth Programs",
+      "reasoning": "Strong alignment with Youth Programs",
+      "relationshipScore": 76,
+      "strategicValue": "high"
+    },
+    {
+      "contact": "Catriona Harwood",
+      "contactId": 846,
+      "type": "engagement",
+      "priority": "high",
+      "action": "Direct personal outreach to Catriona",
+      "reasoning": "Direct connection through Ben - personal approach recommended",
+      "relationshipScore": 76,
+      "strategicValue": "medium"
+    },
+    {
+      "contact": "Catriona Harwood",
+      "contactId": 846,
+      "type": "project_collaboration",
+      "priority": "high",
+      "action": "Explore collaboration on Empathy Ledger",
+      "reasoning": "Strong alignment with Empathy Ledger, Community Development",
+      "relationshipScore": 76,
+      "strategicValue": "medium"
+    },
+    {
+      "contact": "Diogo Andrade",
+      "contactId": 1251,
+      "type": "project_collaboration",
+      "priority": "high",
+      "action": "Explore collaboration on Youth Programs",
+      "reasoning": "Strong alignment with Youth Programs, Community Development",
+      "relationshipScore": 76,
+      "strategicValue": "high"
+    },
+    {
+      "contact": "Benita Tiernan",
+      "contactId": 578,
+      "type": "project_collaboration",
+      "priority": "high",
+      "action": "Explore collaboration on Justice Hub",
+      "reasoning": "Strong alignment with Justice Hub, Community Development",
+      "relationshipScore": 75,
+      "strategicValue": "high"
+    },
+    {
+      "contact": "Bernice Hookey",
+      "contactId": 594,
+      "type": "engagement",
+      "priority": "high",
+      "action": "Direct personal outreach to Bernice",
+      "reasoning": "Direct connection through Ben - personal approach recommended",
+      "relationshipScore": 75,
+      "strategicValue": "high"
+    },
+    {
+      "contact": "Donna McEwan",
+      "contactId": 1291,
+      "type": "engagement",
+      "priority": "high",
+      "action": "Direct personal outreach to Donna",
+      "reasoning": "Direct connection through Ben - personal approach recommended",
+      "relationshipScore": 75,
+      "strategicValue": "high"
+    },
+    {
+      "contact": "Donna McEwan",
+      "contactId": 1291,
+      "type": "project_collaboration",
+      "priority": "high",
+      "action": "Explore collaboration on Justice Hub",
+      "reasoning": "Strong alignment with Justice Hub, Youth Programs, Community Development",
+      "relationshipScore": 75,
+      "strategicValue": "high"
+    }
+  ],
+  "executiveSummary": {
+    "overview": "Analyzed 1000 LinkedIn contacts with average relationship score of 59%. Identified 299 high-value strategic contacts ready for immediate engagement.",
+    "keyFindings": [
+      "299 contacts (30%) classified as high strategic value",
+      "308 contacts show moderate alignment with ACT projects",
+      "Cross-platform presence detected for 0 contacts",
+      "176 contacts show project alignment potential"
+    ],
+    "immediateActions": [
+      "Engage high-value contacts within 2 weeks",
+      "Develop sector-specific engagement strategies",
+      "Leverage cross-platform contacts for warm introductions",
+      "Create targeted content for aligned themes"
+    ],
+    "strategicImplications": [
+      "Strong foundation for partnership development",
+      "Opportunity for sector leadership positioning",
+      "Significant network effect potential",
+      "Cross-platform intelligence advantage"
+    ]
+  }
+}

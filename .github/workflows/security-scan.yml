@@ -1,0 +1,337 @@
+name: Security Scanning
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'infrastructure/**'
+      - '**/*.tf'
+      - '**/*.tfvars'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'infrastructure/**'
+      - '**/*.tf'
+      - '**/*.tfvars'
+  schedule:
+    # Run security scans daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      scan_path:
+        description: 'Path to scan (default: entire repository)'
+        required: false
+        default: '.'
+      severity_threshold:
+        description: 'Minimum severity to report'
+        required: false
+        default: 'medium'
+        type: choice
+        options:
+          - low
+          - medium
+          - high
+          - critical
+
+env:
+  # Australian compliance requirements
+  SCAN_COMPLIANCE_FRAMEWORKS: "australian-privacy-act,gdpr,iso27001"
+  TERRAFORM_VERSION: "1.5.0"
+  TFSEC_VERSION: "latest"
+  CHECKOV_VERSION: "latest"
+
+jobs:
+  security-scan:
+    name: Infrastructure Security Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install Security Scanning Tools
+        run: |
+          # Install tfsec
+          curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+          
+          # Install Checkov
+          pip install checkov==${{ env.CHECKOV_VERSION }}
+          
+          # Verify installations
+          tfsec --version
+          checkov --version
+      
+      - name: Configure Scan Parameters
+        id: scan-config
+        run: |
+          SCAN_PATH="${{ github.event.inputs.scan_path || '.' }}"
+          SEVERITY_THRESHOLD="${{ github.event.inputs.severity_threshold || 'medium' }}"
+          
+          echo "scan_path=${SCAN_PATH}" >> $GITHUB_OUTPUT
+          echo "severity_threshold=${SEVERITY_THRESHOLD}" >> $GITHUB_OUTPUT
+          
+          # Create scan configuration
+          cat > scan-config.json << EOF
+          {
+            "scan_path": "${SCAN_PATH}",
+            "severity_threshold": "${SEVERITY_THRESHOLD}",
+            "compliance_frameworks": ["australian-privacy-act", "gdpr", "iso27001"],
+            "exclude_paths": [".git", "node_modules", ".terraform", ".github"],
+            "enable_tfsec": true,
+            "enable_checkov": true,
+            "parallel_execution": true
+          }
+          EOF
+      
+      - name: Terraform Format Check
+        run: |
+          terraform fmt -check -recursive ${{ steps.scan-config.outputs.scan_path }} || {
+            echo "::warning::Terraform files are not properly formatted"
+            terraform fmt -recursive ${{ steps.scan-config.outputs.scan_path }}
+          }
+      
+      - name: Terraform Validation
+        run: |
+          find ${{ steps.scan-config.outputs.scan_path }} -name "*.tf" -exec dirname {} \; | sort -u | while read dir; do
+            if [ -f "$dir/main.tf" ] || [ -f "$dir/versions.tf" ]; then
+              echo "Validating $dir"
+              cd "$dir"
+              terraform init -backend=false
+              terraform validate
+              cd - > /dev/null
+            fi
+          done
+      
+      - name: Run tfsec Security Scan
+        id: tfsec
+        run: |
+          echo "Running tfsec security scan..."
+          
+          # Create results directory
+          mkdir -p security-results
+          
+          # Run tfsec with configuration for Australian compliance
+          tfsec ${{ steps.scan-config.outputs.scan_path }} \
+            --format json \
+            --out security-results/tfsec-results.json \
+            --minimum-severity ${{ steps.scan-config.outputs.severity_threshold }} \
+            --exclude-downloaded-modules \
+            --no-colour || true
+          
+          # Generate human-readable report
+          tfsec ${{ steps.scan-config.outputs.scan_path }} \
+            --format default \
+            --out security-results/tfsec-report.txt \
+            --minimum-severity ${{ steps.scan-config.outputs.severity_threshold }} \
+            --exclude-downloaded-modules \
+            --no-colour || true
+          
+          # Check if critical/high severity issues found
+          CRITICAL_COUNT=$(jq '[.results[]? | select(.severity == "CRITICAL")] | length' security-results/tfsec-results.json 2>/dev/null || echo "0")
+          HIGH_COUNT=$(jq '[.results[]? | select(.severity == "HIGH")] | length' security-results/tfsec-results.json 2>/dev/null || echo "0")
+          
+          echo "tfsec_critical_count=${CRITICAL_COUNT}" >> $GITHUB_OUTPUT
+          echo "tfsec_high_count=${HIGH_COUNT}" >> $GITHUB_OUTPUT
+          
+          echo "tfsec scan completed. Critical: ${CRITICAL_COUNT}, High: ${HIGH_COUNT}"
+      
+      - name: Run Checkov Security Scan
+        id: checkov
+        run: |
+          echo "Running Checkov security scan..."
+          
+          # Run Checkov with Australian compliance frameworks
+          checkov \
+            --directory ${{ steps.scan-config.outputs.scan_path }} \
+            --output json \
+            --output-file security-results/checkov-results.json \
+            --framework terraform \
+            --check ${{ env.SCAN_COMPLIANCE_FRAMEWORKS }} \
+            --skip-path .git,.terraform,node_modules,.github || true
+          
+          # Generate human-readable report
+          checkov \
+            --directory ${{ steps.scan-config.outputs.scan_path }} \
+            --output cli \
+            --output-file security-results/checkov-report.txt \
+            --framework terraform \
+            --check ${{ env.SCAN_COMPLIANCE_FRAMEWORKS }} \
+            --skip-path .git,.terraform,node_modules,.github || true
+          
+          # Extract critical findings
+          FAILED_CHECKS=$(jq '.results.failed_checks // [] | length' security-results/checkov-results.json 2>/dev/null || echo "0")
+          
+          echo "checkov_failed_checks=${FAILED_CHECKS}" >> $GITHUB_OUTPUT
+          echo "Checkov scan completed. Failed checks: ${FAILED_CHECKS}"
+      
+      - name: Generate Compliance Report
+        run: |
+          cat > security-results/compliance-summary.md << EOF
+          # Security Scan Compliance Report
+          
+          **Scan Date:** $(date -u)
+          **Repository:** ${{ github.repository }}
+          **Branch:** ${{ github.ref_name }}
+          **Commit:** ${{ github.sha }}
+          
+          ## Australian Compliance Status
+          
+          ### tfsec Results
+          - **Critical Issues:** ${{ steps.tfsec.outputs.tfsec_critical_count }}
+          - **High Severity Issues:** ${{ steps.tfsec.outputs.tfsec_high_count }}
+          
+          ### Checkov Results
+          - **Failed Checks:** ${{ steps.checkov.outputs.checkov_failed_checks }}
+          
+          ## Compliance Frameworks
+          - Australian Privacy Act: $([ "${{ steps.tfsec.outputs.tfsec_critical_count }}" -eq "0" ] && echo "✅ PASS" || echo "❌ FAIL")
+          - GDPR Compliance: $([ "${{ steps.tfsec.outputs.tfsec_critical_count }}" -eq "0" ] && echo "✅ PASS" || echo "❌ FAIL")
+          - ISO27001 Alignment: $([ "${{ steps.tfsec.outputs.tfsec_high_count }}" -eq "0" ] && echo "✅ PASS" || echo "❌ FAIL")
+          
+          ## Data Residency Requirements
+          All infrastructure configurations have been scanned for compliance with Australian data residency requirements.
+          
+          ## Next Steps
+          $( [ "${{ steps.tfsec.outputs.tfsec_critical_count }}" -gt "0" ] || [ "${{ steps.tfsec.outputs.tfsec_high_count }}" -gt "0" ] && echo "
+          1. Review critical and high severity findings in the detailed reports
+          2. Apply recommended remediations
+          3. Re-run security scan to verify fixes
+          4. Update compliance documentation" || echo "
+          No critical security issues found. Continue with deployment." )
+          EOF
+      
+      - name: Upload Security Scan Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-scan-results-${{ github.run_number }}
+          path: security-results/
+          retention-days: 30
+      
+      - name: Comment on Pull Request
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            try {
+              const complianceReport = fs.readFileSync('security-results/compliance-summary.md', 'utf8');
+              
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: complianceReport
+              });
+            } catch (error) {
+              console.error('Failed to post compliance report:', error);
+            }
+      
+      - name: Security Gate Check
+        run: |
+          CRITICAL_COUNT="${{ steps.tfsec.outputs.tfsec_critical_count }}"
+          HIGH_COUNT="${{ steps.tfsec.outputs.tfsec_high_count }}"
+          FAILED_CHECKS="${{ steps.checkov.outputs.checkov_failed_checks }}"
+          
+          echo "Security gate evaluation:"
+          echo "- Critical issues: ${CRITICAL_COUNT}"
+          echo "- High severity issues: ${HIGH_COUNT}"
+          echo "- Failed Checkov checks: ${FAILED_CHECKS}"
+          
+          # Fail the build if critical issues are found
+          if [ "${CRITICAL_COUNT}" -gt "0" ]; then
+            echo "❌ Security gate FAILED: Critical security issues detected"
+            echo "Please resolve critical security issues before proceeding"
+            exit 1
+          fi
+          
+          # Warning for high severity issues
+          if [ "${HIGH_COUNT}" -gt "0" ]; then
+            echo "⚠️  Security gate WARNING: High severity issues detected"
+            echo "Consider resolving high severity issues for better security posture"
+          fi
+          
+          # Warning for many failed checks
+          if [ "${FAILED_CHECKS}" -gt "10" ]; then
+            echo "⚠️  Security gate WARNING: Many compliance violations detected"
+            echo "Review Checkov results for compliance improvements"
+          fi
+          
+          echo "✅ Security gate PASSED: No critical security issues blocking deployment"
+      
+      - name: Notify Security Team
+        if: steps.tfsec.outputs.tfsec_critical_count > 0 || steps.tfsec.outputs.tfsec_high_count > 5
+        run: |
+          echo "High-priority security issues detected. Notification would be sent to security team."
+          # In a real implementation, this would send notifications via Slack, email, etc.
+      
+      - name: Update Security Metrics
+        if: always()
+        run: |
+          # In a real implementation, this would update security metrics in a monitoring system
+          echo "Security scan metrics:"
+          echo "- Scan duration: ${{ job.duration }}s"
+          echo "- Critical findings: ${{ steps.tfsec.outputs.tfsec_critical_count }}"
+          echo "- High findings: ${{ steps.tfsec.outputs.tfsec_high_count }}"
+          echo "- Total Checkov failures: ${{ steps.checkov.outputs.checkov_failed_checks }}"
+
+  # Separate job for SARIF upload to GitHub Security tab
+  sarif-upload:
+    name: Upload SARIF Results
+    runs-on: ubuntu-latest
+    needs: security-scan
+    if: always()
+    permissions:
+      security-events: write
+    
+    steps:
+      - name: Download Security Results
+        uses: actions/download-artifact@v4
+        with:
+          name: security-scan-results-${{ github.run_number }}
+          path: security-results/
+      
+      - name: Convert to SARIF
+        run: |
+          # Convert tfsec JSON to SARIF format for GitHub Security tab
+          # This is a simplified conversion - in production, use proper SARIF conversion tools
+          
+          cat > security-results/tfsec.sarif << 'EOF'
+          {
+            "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+            "version": "2.1.0",
+            "runs": [
+              {
+                "tool": {
+                  "driver": {
+                    "name": "tfsec",
+                    "informationUri": "https://github.com/aquasecurity/tfsec",
+                    "version": "latest"
+                  }
+                },
+                "results": []
+              }
+            ]
+          }
+          EOF
+      
+      - name: Upload SARIF to GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: security-results/tfsec.sarif

@@ -1,0 +1,28 @@
+{
+  "name": "@act/prisma",
+  "version": "1.0.0",
+  "description": "Database schema and migrations for ACT Placemat",
+  "main": "schema.prisma",
+  "scripts": {
+    "generate": "prisma generate",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "migrate:reset": "prisma migrate reset",
+    "studio": "prisma studio",
+    "seed": "tsx seeds/seed.ts",
+    "format": "prisma format",
+    "validate": "prisma validate",
+    "introspect": "prisma db pull"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.8.0"
+  },
+  "devDependencies": {
+    "prisma": "^5.8.0",
+    "tsx": "^4.6.0",
+    "typescript": "^5.0.0"
+  },
+  "prisma": {
+    "seed": "tsx seeds/seed.ts"
+  }
+}
