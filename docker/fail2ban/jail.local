@@ -1,0 +1,209 @@
+# Fail2ban Configuration for ACT Placemat Intelligence Hub
+# Australian-compliant network security rules
+
+[DEFAULT]
+# Australian timezone
+timezone = Australia/Sydney
+
+# Ignore local networks and Australian government IP ranges
+ignoreip = 127.0.0.1/8 ::1
+           172.16.0.0/12
+           192.168.0.0/16
+           10.0.0.0/8
+           172.20.0.0/16
+
+# Ban time: 24 hours (Australian business compliance)
+bantime = 86400
+
+# Find time: 10 minutes
+findtime = 600
+
+# Max retry attempts
+maxretry = 5
+
+# Email notifications (configure with Australian contact)
+destemail = security@actplacemat.org.au
+sender = fail2ban@actplacemat.org.au
+mta = mail
+
+# Action configuration with Australian logging
+action = %(action_mwl)s
+
+# Custom action for Australian compliance logging
+action_mwl = %(banaction)s[name=%(__name__)s, port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
+             %(mta)s-whois-lines[name=%(__name__)s, dest="%(destemail)s", logpath=%(logpath)s, chain="%(chain)s", sender="%(sender)s"]
+             australian-compliance-log[name=%(__name__)s, dest="%(destemail)s", logpath=%(logpath)s]
+
+# Backend for log file monitoring
+backend = auto
+
+# Log level
+loglevel = INFO
+logtarget = /var/log/fail2ban/fail2ban.log
+
+# Database for persistent bans (Australian data residency)
+dbpurgeage = 86400
+dbfile = /var/lib/fail2ban/fail2ban.sqlite3
+
+# Prison configuration
+usedns = warn
+logencoding = auto
+
+# NGINX specific jails
+
+[nginx-http-auth]
+enabled = true
+port = http,https
+logpath = /var/log/nginx/intelligence-hub.error.log
+          /var/log/nginx/error.log
+maxretry = 3
+bantime = 3600
+
+[nginx-limit-req]
+enabled = true
+port = http,https
+logpath = /var/log/nginx/intelligence-hub.error.log
+          /var/log/nginx/error.log
+maxretry = 10
+findtime = 300
+bantime = 1800
+
+[nginx-botsearch]
+enabled = true
+port = http,https
+logpath = /var/log/nginx/intelligence-hub.access.log
+          /var/log/nginx/access.log
+maxretry = 2
+bantime = 7200
+
+[nginx-noscript]
+enabled = true
+port = http,https
+logpath = /var/log/nginx/intelligence-hub.access.log
+          /var/log/nginx/access.log
+maxretry = 6
+bantime = 3600
+
+[nginx-noproxy]
+enabled = true
+port = http,https
+logpath = /var/log/nginx/intelligence-hub.access.log
+          /var/log/nginx/access.log
+maxretry = 2
+bantime = 7200
+
+[nginx-badbots]
+enabled = true
+port = http,https
+logpath = /var/log/nginx/intelligence-hub.access.log
+          /var/log/nginx/access.log
+maxretry = 2
+bantime = 86400
+
+# Intelligence Hub API specific protection
+
+[intelligence-hub-api-abuse]
+enabled = true
+port = http,https
+logpath = /var/log/nginx/intelligence-hub.access.log
+filter = intelligence-hub-api-abuse
+maxretry = 20
+findtime = 300
+bantime = 3600
+
+[intelligence-hub-auth-failure]
+enabled = true
+port = http,https
+logpath = /var/log/nginx/intelligence-hub.error.log
+filter = intelligence-hub-auth-failure
+maxretry = 5
+findtime = 300
+bantime = 1800
+
+# Australian-specific security rules
+
+[australian-compliance-scanner]
+enabled = true
+port = http,https
+logpath = /var/log/nginx/intelligence-hub.access.log
+filter = australian-compliance-scanner
+maxretry = 1
+findtime = 86400
+bantime = 604800  # 1 week ban for compliance violations
+
+[data-residency-violation]
+enabled = true
+port = http,https
+logpath = /var/log/nginx/intelligence-hub.access.log
+filter = data-residency-violation
+maxretry = 1
+findtime = 86400
+bantime = 2592000  # 30 day ban for residency violations
+
+# SSH protection (if SSH is exposed)
+[sshd]
+enabled = false  # Enable if SSH is exposed
+port = ssh
+logpath = /var/log/auth.log
+maxretry = 3
+bantime = 3600
+
+# Docker/System protection
+[docker-security]
+enabled = true
+port = all
+logpath = /var/log/docker/docker.log
+filter = docker-security
+maxretry = 3
+findtime = 600
+bantime = 7200
+
+# PostgreSQL protection
+[postgresql]
+enabled = true
+port = 5432
+logpath = /var/log/postgresql/postgresql.log
+filter = postgresql
+maxretry = 3
+findtime = 600
+bantime = 3600
+
+# Redis protection
+[redis]
+enabled = true
+port = 6379
+logpath = /var/log/redis/redis.log
+filter = redis
+maxretry = 5
+findtime = 300
+bantime = 1800
+
+# Community governance protection
+[community-vote-manipulation]
+enabled = true
+port = http,https
+logpath = /var/log/nginx/intelligence-hub.access.log
+filter = community-vote-manipulation
+maxretry = 10
+findtime = 300
+bantime = 7200
+
+# Australian business hours consideration
+[business-hours-protection]
+enabled = true
+port = http,https
+logpath = /var/log/nginx/intelligence-hub.access.log
+filter = business-hours-attacks
+maxretry = 2
+findtime = 300
+bantime = 14400  # 4 hour ban during business hours
+
+# Monitoring and reporting
+[monitoring-abuse]
+enabled = true
+port = 9090,3000
+logpath = /var/log/nginx/intelligence-hub.access.log
+filter = monitoring-abuse
+maxretry = 3
+findtime = 600
+bantime = 3600

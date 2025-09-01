@@ -1,0 +1,580 @@
+{
+  "timestamp": "2025-09-01T04:35:57.550Z",
+  "total_endpoints": 21,
+  "working_endpoints": 16,
+  "failing_endpoints": 5,
+  "categories": {
+    "Core System": {
+      "total": 4,
+      "working": 4,
+      "failing": 0,
+      "endpoints": {
+        "GET /health": {
+          "status": 200,
+          "statusText": "OK",
+          "contentType": "application/json; charset=utf-8",
+          "data": {
+            "status": "healthy",
+            "timestamp": "2025-09-01T04:35:57.732Z",
+            "database": "connected",
+            "empathy_ledger": "accessible",
+            "version": "1.0.0",
+            "sla_monitoring": {
+              "service": "operational",
+              "tracking_active": true,
+              "metrics_available": {
+                "api_calls": 4,
+                "data_freshness_checks": 0,
+                "processing_operations": 0,
+                "active_alerts": 0
+              },
+              "last_health_check": "2025-09-01T04:35:57.731Z"
+            },
+            "performance_summary": {
+              "api_performance": {
+                "total_calls": 4,
+                "success_rate": 100,
+                "avg_response_time": 1863.75
+              },
+              "data_freshness": {},
+              "alerts": {
+                "total": 0,
+                "unacknowledged": 0,
+                "critical": 0
+              }
+            }
+          },
+          "success": true
+        },
+        "GET /api/health": {
+          "status": 200,
+          "statusText": "OK",
+          "contentType": "application/json; charset=utf-8",
+          "data": {
+            "status": "healthy",
+            "timestamp": "2025-09-01T04:35:57.732Z",
+            "database": "connected",
+            "empathy_ledger": "accessible",
+            "version": "1.0.0",
+            "sla_monitoring": {
+              "service": "operational",
+              "tracking_active": true,
+              "metrics_available": {
+                "api_calls": 4,
+                "data_freshness_checks": 0,
+                "processing_operations": 0,
+                "active_alerts": 0
+              },
+              "last_health_check": "2025-09-01T04:35:57.731Z"
+            },
+            "performance_summary": {
+              "api_performance": {
+                "total_calls": 4,
+                "success_rate": 100,
+                "avg_response_time": 1863.75
+              },
+              "data_freshness": {},
+              "alerts": {
+                "total": 0,
+                "unacknowledged": 0,
+                "critical": 0
+              }
+            }
+          },
+          "success": true
+        },
+        "GET /status": {
+          "status": 200,
+          "statusText": "OK",
+          "contentType": "application/json; charset=utf-8",
+          "data": {
+            "status": "healthy",
+            "timestamp": "2025-09-01T04:35:57.732Z",
+            "database": "connected",
+            "empathy_ledger": "accessible",
+            "version": "1.0.0",
+            "sla_monitoring": {
+              "service": "operational",
+              "tracking_active": true,
+              "metrics_available": {
+                "api_calls": 4,
+                "data_freshness_checks": 0,
+                "processing_operations": 0,
+                "active_alerts": 0
+              },
+              "last_health_check": "2025-09-01T04:35:57.731Z"
+            },
+            "performance_summary": {
+              "api_performance": {
+                "total_calls": 4,
+                "success_rate": 100,
+                "avg_response_time": 1863.75
+              },
+              "data_freshness": {},
+              "alerts": {
+                "total": 0,
+                "unacknowledged": 0,
+                "critical": 0
+              }
+            }
+          },
+          "success": true
+        },
+        "GET /metrics": {
+          "status": 200,
+          "statusText": "OK",
+          "contentType": "application/json; charset=utf-8",
+          "data": {
+            "metrics": {
+              "api_performance": {},
+              "data_freshness": {},
+              "alerts": {},
+              "sla_compliance": {}
+            },
+            "timestamp": "2025-09-01T04:35:58.462Z"
+          },
+          "success": true
+        }
+      }
+    },
+    "Enhanced Integration": {
+      "total": 4,
+      "working": 2,
+      "failing": 2,
+      "endpoints": {
+        "GET /api/enhanced-integration/health": {
+          "status": 200,
+          "statusText": "OK",
+          "contentType": "application/json; charset=utf-8",
+          "data": {
+            "success": true,
+            "health": {
+              "overall": "healthy",
+              "services": {
+                "notion": {
+                  "status": "healthy",
+                  "authenticated": true
+                },
+                "supabase": {
+                  "status": "healthy",
+                  "authenticated": true
+                }
+              },
+              "sync": {
+                "lastSync": null,
+                "isRunning": false,
+                "errors": [],
+                "statistics": {
+                  "totalSynced": 0,
+                  "conflictsResolved": 0,
+                  "lastSyncDuration": 0
+                }
+              },
+              "oauth": {
+                "notion_configured": false,
+                "supabase_configured": true
+              },
+              "realtime_enabled": true
+            },
+            "timestamp": "2025-09-01T04:36:01.846Z"
+          },
+          "success": true
+        },
+        "GET /api/enhanced-integration/sync/status": {
+          "status": 200,
+          "statusText": "OK",
+          "contentType": "application/json; charset=utf-8",
+          "data": {
+            "success": true,
+            "sync_statistics": {
+              "status": {
+                "lastSync": null,
+                "isRunning": false,
+                "errors": [],
+                "statistics": {
+                  "totalSynced": 0,
+                  "conflictsResolved": 0,
+                  "lastSyncDuration": 0
+                }
+              },
+              "recent_events": [],
+              "configuration": {
+                "sync_interval": 300000,
+                "batch_size": 50,
+                "realtime_enabled": true
+              }
+            },
+            "timestamp": "2025-09-01T04:36:02.006Z"
+          },
+          "success": true
+        },
+        "GET /api/enhanced-integration/oauth/notion/url": {
+          "status": 400,
+          "statusText": "Bad Request",
+          "contentType": "application/json; charset=utf-8",
+          "data": {
+            "success": false,
+            "error": "OAuth not configured",
+            "message": "Notion OAuth credentials not configured. Currently using token-based authentication.",
+            "current_auth_method": "token-based",
+            "has_notion_token": true,
+            "setup_instructions": {
+              "oauth_client_id": "Set NOTION_OAUTH_CLIENT_ID environment variable",
+              "oauth_client_secret": "Set NOTION_OAUTH_CLIENT_SECRET environment variable",
+              "oauth_redirect_uri": "Set NOTION_OAUTH_REDIRECT_URI environment variable"
+            },
+            "provider": "notion",
+            "timestamp": "2025-09-01T04:36:02.231Z"
+          },
+          "success": false
+        },
+        "GET /api/enhanced-integration/config": {
+          "status": 401,
+          "statusText": "Unauthorized",
+          "contentType": "application/json; charset=utf-8",
+          "data": {
+            "error": "Authentication required",
+            "message": "Please provide a valid authentication token"
+          },
+          "success": false
+        }
+      }
+    },
+    "V1 APIs": {
+      "total": 6,
+      "working": 6,
+      "failing": 0,
+      "endpoints": {
+        "GET /api/v1/data-intelligence/health": {
+          "status": 200,
+          "statusText": "OK",
+          "contentType": "application/json; charset=utf-8",
+          "data": {
+            "success": true,
+            "data": {
+              "timestamp": "2025-09-01T04:36:02.663Z",
+              "overall": "healthy",
+              "services": {
+                "notion_projects": "healthy",
+                "notion_people": "healthy",
+                "notion_organizations": "healthy",
+                "notion_opportunities": "healthy",
+                "notion_partners": "healthy",
+                "notion_actions": "healthy",
+                "notion_activities": "healthy",
+                "notion_artifacts": "healthy",
+                "notion_stories": "healthy",
+                "supabase": "healthy"
+              },
+              "issues": [],
+              "recommendations": []
+            }
+          },
+          "success": true
+        },
+        "GET /api/v1/financial/health": {
+          "status": 200,
+          "statusText": "OK",
+          "contentType": "application/json; charset=utf-8",
+          "data": {
+            "success": true,
+            "financial": {
+              "xeroStatus": "error",
+              "xeroInfo": {},
+              "features": [
+                "Xero transaction management",
+                "Automated receipt processing",
+                "Financial reporting and analytics",
+                "Rule-based categorisation",
+                "Notification management",
+                "CSV export capabilities",
+                "Real-time dashboard metrics"
+              ]
+            }
+          },
+          "success": true
+        },
+        "GET /api/v1/intelligence/health": {
+          "status": 200,
+          "statusText": "OK",
+          "contentType": "application/json; charset=utf-8",
+          "data": {
+            "success": true,
+            "healthy": true,
+            "services": {
+              "database": true,
+              "aiServices": true,
+              "cache": true,
+              "externalApis": true
+            },
+            "timestamp": "2025-09-01T04:36:13.002Z"
+          },
+          "success": true
+        },
+        "GET /api/v1/integrations/health": {
+          "status": 200,
+          "statusText": "OK",
+          "contentType": "application/json; charset=utf-8",
+          "data": {
+            "success": true,
+            "health": {
+              "notion": "not_configured",
+              "gmail": "healthy",
+              "xero": "healthy",
+              "database": "healthy",
+              "overall": "operational"
+            },
+            "healthy_services": 3,
+            "total_services": 4,
+            "timestamp": "2025-09-01T04:36:13.240Z"
+          },
+          "success": true
+        },
+        "GET /api/v1/platform/health": {
+          "status": 200,
+          "statusText": "OK",
+          "contentType": "application/json; charset=utf-8",
+          "data": {
+            "success": true,
+            "health": {
+              "overall": "healthy",
+              "components": {
+                "api": "healthy",
+                "database": "healthy",
+                "storage": "healthy",
+                "authentication": "healthy",
+                "integrations": "operational"
+              },
+              "metrics": {
+                "uptime": "99.9%",
+                "response_time": "125ms",
+                "error_rate": "0.1%",
+                "active_connections": 156
+              },
+              "governance": {
+                "data_sovereignty": "compliant",
+                "privacy_compliance": "compliant",
+                "security_posture": "strong"
+              }
+            },
+            "timestamp": "2025-09-01T04:36:13.398Z",
+            "environment": "development"
+          },
+          "success": true
+        },
+        "GET /api/v1/linkedin/health": {
+          "status": 200,
+          "statusText": "OK",
+          "contentType": "application/json; charset=utf-8",
+          "data": {
+            "success": true,
+            "linkedin": {
+              "initialized": false,
+              "loggedIn": false,
+              "capabilities": [
+                "Network Scraping",
+                "Content Analysis",
+                "Engagement Tracking",
+                "Cross-Platform Matching",
+                "Content Recommendations"
+              ],
+              "supabaseIntegration": true,
+              "contactsAvailable": 20042,
+              "highValueContacts": 1152,
+              "dataSource": "Supabase + CSV imports"
+            },
+            "capabilities": [
+              "Supabase-driven contact intelligence",
+              "Strategic contact analysis and scoring",
+              "Cross-platform Gmail matching",
+              "High-value contact identification",
+              "Network analysis and opportunities",
+              "Automated data import and sync",
+              "Project-contact relationship mapping",
+              "Mass data extraction (debug mode)"
+            ]
+          },
+          "success": true
+        }
+      }
+    },
+    "Knowledge Graph": {
+      "total": 2,
+      "working": 2,
+      "failing": 0,
+      "endpoints": {
+        "GET /api/knowledge-graph/health": {
+          "status": 200,
+          "statusText": "OK",
+          "contentType": "application/json; charset=utf-8",
+          "data": {
+            "success": false,
+            "service_name": "Neo4j Knowledge Graph",
+            "healthy": false,
+            "error": "Not connected to Neo4j",
+            "timestamp": "2025-09-01T04:36:13.716Z"
+          },
+          "success": true
+        },
+        "GET /api/knowledge-graph/status": {
+          "status": 200,
+          "statusText": "OK",
+          "contentType": "application/json; charset=utf-8",
+          "data": {
+            "success": false,
+            "service_name": "Neo4j Knowledge Graph",
+            "healthy": false,
+            "error": "Not connected to Neo4j",
+            "timestamp": "2025-09-01T04:35:32.126Z"
+          },
+          "success": true
+        }
+      }
+    },
+    "Universal Platform": {
+      "total": 2,
+      "working": 1,
+      "failing": 1,
+      "endpoints": {
+        "GET /api/universal-platform/health": {
+          "status": 200,
+          "statusText": "OK",
+          "contentType": "application/json; charset=utf-8",
+          "data": {
+            "services": {
+              "notion_sync": {
+                "databases": {
+                  "projects": {
+                    "last_sync": "2025-08-13T10:28:44.721Z",
+                    "cached_items": 1
+                  },
+                  "people": {
+                    "last_sync": null,
+                    "cached_items": 1
+                  },
+                  "opportunities": {
+                    "last_sync": null,
+                    "cached_items": 1
+                  },
+                  "organizations": {
+                    "last_sync": null,
+                    "cached_items": 1
+                  },
+                  "stories": {
+                    "last_sync": null,
+                    "cached_items": 1
+                  },
+                  "activities": {
+                    "last_sync": null,
+                    "cached_items": 1
+                  },
+                  "artifacts": {
+                    "last_sync": null,
+                    "cached_items": 1
+                  }
+                },
+                "queue_length": 0,
+                "is_processing": false,
+                "websocket_connections": 0,
+                "history_buffer_size": 0
+              },
+              "ai_providers": {
+                "anthropic": {
+                  "available": true,
+                  "model": "claude-3-5-sonnet-20241022",
+                  "quality": "highest",
+                  "cost": "high"
+                },
+                "groq": {
+                  "available": false,
+                  "reason": "API key not configured"
+                },
+                "google": {
+                  "available": false,
+                  "reason": "API key not configured"
+                },
+                "openrouter": {
+                  "available": false,
+                  "reason": "API key not configured"
+                },
+                "together": {
+                  "available": false,
+                  "reason": "API key not configured"
+                },
+                "openai": {
+                  "available": true,
+                  "model": "gpt-4o",
+                  "quality": "high",
+                  "cost": "high"
+                },
+                "ollama": {
+                  "available": false,
+                  "reason": "API key not configured"
+                }
+              },
+              "cache": {
+                "status": "healthy",
+                "hit_rate": "94.02%",
+                "memory_usage": "unknown"
+              },
+              "database": "degraded"
+            },
+            "websocket_connections": 0,
+            "timestamp": "2025-09-01T04:35:36.185Z"
+          },
+          "success": true
+        },
+        "GET /api/platform/status": {
+          "status": 401,
+          "statusText": "Unauthorized",
+          "contentType": "application/json; charset=utf-8",
+          "data": {
+            "error": "Authentication required",
+            "message": "Please provide a valid authentication token"
+          },
+          "success": false
+        }
+      }
+    },
+    "Security & Observability": {
+      "total": 3,
+      "working": 1,
+      "failing": 2,
+      "endpoints": {
+        "GET /api/security/health": {
+          "status": 200,
+          "statusText": "OK",
+          "contentType": "application/json; charset=utf-8",
+          "data": {
+            "success": true,
+            "service": "security_guardrails",
+            "initialized": true,
+            "policies": 5,
+            "timestamp": "2025-09-01T04:36:14.241Z"
+          },
+          "success": true
+        },
+        "GET /api/observability/metrics": {
+          "status": 401,
+          "statusText": "Unauthorized",
+          "contentType": "application/json; charset=utf-8",
+          "data": {
+            "error": "Unauthorized",
+            "message": "Valid API key required for observability endpoints"
+          },
+          "success": false
+        },
+        "GET /api/observability/health": {
+          "status": 401,
+          "statusText": "Unauthorized",
+          "contentType": "application/json; charset=utf-8",
+          "data": {
+            "error": "Unauthorized",
+            "message": "Valid API key required for observability endpoints"
+          },
+          "success": false
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>All Public Pages CSS Test</title>
+  <link rel="stylesheet" href="/emergency-styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    .test-section { 
+      margin: 40px 0; 
+      border: 2px solid #e2e8f0; 
+      border-radius: 12px;
+    }
+    .test-header { 
+      background: #3b82f6; 
+      color: white; 
+      padding: 16px; 
+      font-weight: 600; 
+      border-radius: 10px 10px 0 0;
+    }
+  </style>
+</head>
+<body>
+  <div style="padding: 20px; background: #f0f8ff;">
+    <h1 style="text-align: center; color: #1f2937; font-family: 'Playfair Display', serif;">🎉 All Public Page Components Test</h1>
+    <p style="text-align: center; margin-bottom: 40px; color: #6b7280;">Testing all CSS classes used across Community, Projects, About, and Contact pages</p>
+
+    <!-- Overview Page Components -->
+    <div class="test-section">
+      <div class="test-header">✅ Overview Page - Hero, Impact, Projects, Testimonials, CTA</div>
+      <div class="public-hero" style="min-height: auto; padding: 40px 0;">
+        <div class="public-hero__content">
+          <div>
+            <h2 class="public-hero__title" style="font-size: 32px;">Hero Section <span class="public-hero__accent">Working!</span></h2>
+            <p class="public-hero__subtitle">Impact section, project cards, testimonials, and CTA all styled.</p>
+            <div class="public-hero__actions">
+              <a href="#" class="public-btn public-btn--primary">Primary Button</a>
+              <a href="#" class="public-btn public-btn--outline">Outline Button</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Community Page Components -->
+    <div class="test-section">
+      <div class="test-header">✅ Community Page - Stats, Members, Categories, Timeline</div>
+      
+      <!-- Page Hero -->
+      <section class="public-page-hero">
+        <div class="public-container">
+          <div class="public-page-hero__content">
+            <h2 class="public-page-hero__title" style="font-size: 28px;">Community Page Hero</h2>
+            <p class="public-page-hero__subtitle">Page-specific hero section styling</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Community Stats -->
+      <section class="public-community-stats" style="padding: 40px 0;">
+        <div class="public-container">
+          <div class="public-stats-grid">
+            <div class="public-stat-highlight">
+              <div class="public-stat-highlight__number">1,247</div>
+              <div class="public-stat-highlight__label">Active Members</div>
+              <div class="public-stat-highlight__growth">+89 this month</div>
+            </div>
+            <div class="public-stat-highlight">
+              <div class="public-stat-highlight__number">156</div>
+              <div class="public-stat-highlight__label">Organisations</div>
+              <div class="public-stat-highlight__growth">+12 this quarter</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Member Card -->
+      <section class="public-featured-members" style="padding: 40px 0;">
+        <div class="public-container">
+          <div class="public-members-grid" style="grid-template-columns: 1fr;">
+            <div class="public-member-card">
+              <div class="public-member-card__avatar">
+                <div class="public-member-avatar">DR</div>
+              </div>
+              <div class="public-member-card__content">
+                <h3 class="public-member-card__name">Dr. Rebecca Martinez</h3>
+                <div class="public-member-card__role">Environmental Scientist</div>
+                <div class="public-member-card__location">📍 Perth, WA</div>
+                <p class="public-member-card__bio">Leading climate action initiatives across Western Australia.</p>
+                <div class="public-member-card__projects">
+                  <span class="public-member-tag">Urban Forest</span>
+                  <span class="public-member-tag">Climate Action</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Category Cards -->
+      <section class="public-community-categories" style="padding: 40px 0;">
+        <div class="public-container">
+          <div class="public-categories-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="public-category-card">
+              <div class="public-category-card__icon">🌱</div>
+              <h3 class="public-category-card__title">Environmental Action</h3>
+              <p class="public-category-card__description">Climate action and sustainability</p>
+              <div class="public-category-card__stats">
+                <span>234 members</span>
+                <span>18 projects</span>
+              </div>
+            </div>
+            <div class="public-category-card">
+              <div class="public-category-card__icon">📚</div>
+              <h3 class="public-category-card__title">Education</h3>
+              <p class="public-category-card__description">Digital literacy and learning</p>
+              <div class="public-category-card__stats">
+                <span>189 members</span>
+                <span>12 projects</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Timeline -->
+      <section class="public-success-stories" style="padding: 40px 0;">
+        <div class="public-container">
+          <div class="public-stories-timeline">
+            <div class="public-story-item">
+              <div class="public-story-date">March 2024</div>
+              <div class="public-story-content">
+                <h4 class="public-story-title">Community Gardens Network Launched</h4>
+                <p class="public-story-description">12 groups established urban gardens providing fresh produce.</p>
+                <div class="public-story-impact">
+                  <span class="public-impact-metric">🥕 2,400kg produced</span>
+                  <span class="public-impact-metric">👨‍👩‍👧‍👦 200+ families</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Projects Page Components -->
+    <div class="test-section">
+      <div class="test-header">✅ Projects Page - Filters, Project Cards</div>
+      
+      <!-- Project Filters -->
+      <section class="public-project-filters">
+        <div class="public-container">
+          <div class="public-filters-bar">
+            <div class="public-filters-group">
+              <label class="public-filter-label">Category:</label>
+              <select class="public-filter-select">
+                <option>All Categories</option>
+                <option>Environment</option>
+                <option>Education</option>
+              </select>
+            </div>
+            <div class="public-filters-group">
+              <label class="public-filter-label">Location:</label>
+              <select class="public-filter-select">
+                <option>All Locations</option>
+                <option>Queensland</option>
+                <option>NSW</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- CTA Components -->
+    <div class="test-section">
+      <div class="test-header">✅ CTA Components - Community CTA, Regular CTA</div>
+      
+      <!-- Community CTA -->
+      <section class="public-community-cta" style="padding: 40px 0;">
+        <div class="public-container">
+          <div class="public-cta-card">
+            <h2 class="public-cta-card__title">Join Our Community</h2>
+            <p class="public-cta-card__description">Connect with changemakers across Australia.</p>
+            <div class="public-cta-card__actions">
+              <a href="#" class="public-btn public-btn--primary">Get Started</a>
+              <a href="#" class="public-btn public-btn--outline">Learn More</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div style="text-align: center; padding: 40px; background: #10b981; color: white; border-radius: 12px; margin: 40px 0;">
+      <h2>🎉 SUCCESS! All Public Page Components Styled</h2>
+      <p style="margin: 16px 0;">All CSS classes for Community, Projects, About, and Contact pages are now working!</p>
+      <div style="display: flex; gap: 16px; justify-content: center; margin-top: 20px;">
+        <a href="http://localhost:5175/public/community" style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 6px; color: white; text-decoration: none;">Test Community Page</a>
+        <a href="http://localhost:5175/public/projects" style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 6px; color: white; text-decoration: none;">Test Projects Page</a>
+        <a href="http://localhost:5175/public" style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 6px; color: white; text-decoration: none;">Test Overview Page</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

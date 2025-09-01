@@ -1,0 +1,876 @@
+# ACT Placemat Advanced Log Analysis and Alerting
+# AI-powered log analysis with community-specific alerting
+
+---
+# ========================================
+# ELASTALERT FOR LOG-BASED ALERTING
+# ========================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elastalert
+  namespace: monitoring
+  labels:
+    app: elastalert
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elastalert
+  template:
+    metadata:
+      labels:
+        app: elastalert
+    spec:
+      containers:
+      - name: elastalert
+        image: jertel/elastalert2:2.15.0
+        ports:
+        - containerPort: 3030
+        - containerPort: 3333
+        env:
+        - name: ELASTICSEARCH_HOST
+          value: "elasticsearch-service"
+        - name: ELASTICSEARCH_PORT
+          value: "9200"
+        - name: ELASTALERT_CONFIG
+          value: "/opt/elastalert/config/elastalert.yaml"
+        volumeMounts:
+        - name: elastalert-config
+          mountPath: /opt/elastalert/config
+        - name: elastalert-rules
+          mountPath: /opt/elastalert/rules
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3030
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3030
+          initialDelaySeconds: 30
+          periodSeconds: 10
+      volumes:
+      - name: elastalert-config
+        configMap:
+          name: elastalert-config
+      - name: elastalert-rules
+        configMap:
+          name: elastalert-rules
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elastalert-config
+  namespace: monitoring
+data:
+  elastalert.yaml: |
+    # ElastAlert configuration for ACT Placemat
+    rules_folder: /opt/elastalert/rules
+    run_every:
+      minutes: 1
+    buffer_time:
+      minutes: 15
+    es_host: elasticsearch-service
+    es_port: 9200
+    es_username: ""
+    es_password: ""
+    use_ssl: false
+    verify_certs: false
+    writeback_index: elastalert_status
+    writeback_alias: elastalert_alerts
+    alert_time_limit:
+      days: 2
+    
+    # Logging configuration
+    logging:
+      version: 1
+      incremental: false
+      disable_existing_loggers: false
+      formatters:
+        logline:
+          format: '%(asctime)s %(levelname)+8s %(name)+20s %(message)s'
+      handlers:
+        console:
+          class: logging.StreamHandler
+          formatter: logline
+          level: INFO
+          stream: ext://sys.stdout
+        file:
+          class : logging.FileHandler
+          formatter: logline
+          level: INFO
+          filename: /opt/elastalert/logs/elastalert.log
+      loggers:
+        elastalert:
+          level: INFO
+          handlers: []
+          propagate: true
+        elasticsearch:
+          level: INFO
+          handlers: []
+          propagate: true
+        urllib3:
+          level: INFO
+          handlers: []
+          propagate: true
+      root:
+        level: INFO
+        handlers: [console, file]
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elastalert-rules
+  namespace: monitoring
+data:
+  # Community Platform Health Alerts
+  community_platform_errors.yaml: |
+    name: "ACT Placemat - High Error Rate"
+    type: frequency
+    index: act-placemat-*
+    num_events: 10
+    timeframe:
+      minutes: 5
+    filter:
+    - terms:
+        log_level: ["ERROR", "FATAL"]
+    - terms:
+        kubernetes_namespace: ["act-production", "act-communities"]
+    
+    alert:
+    - "email"
+    - "slack"
+    
+    email:
+    - "ops@actplacemat.org.au"
+    - "dev-team@actplacemat.org.au"
+    
+    slack:
+    webhook_url: "YOUR_SLACK_WEBHOOK_URL"
+    slack_channel_override: "#alerts"
+    slack_username_override: "ElastAlert"
+    slack_emoji_override: ":warning:"
+    
+    alert_text: |
+      High error rate detected in ACT Placemat platform
+      
+      Time: {0}
+      Errors in last 5 minutes: {1}
+      
+      Recent error messages:
+      {2}
+    
+    alert_text_args:
+      - "@timestamp"
+      - num_matches
+      - message
+
+  cultural_protocol_violations.yaml: |
+    name: "ACT Placemat - Cultural Protocol Violation"
+    type: any
+    index: act-placemat-*
+    filter:
+    - bool:
+        should:
+          - match:
+              message: "cultural_protocol_violation"
+          - match:
+              message: "elder_consent_required"
+          - match:
+              message: "data_sovereignty_breach"
+    
+    alert:
+    - "email"
+    - "webhook"
+    
+    email:
+    - "cultural-advisors@actplacemat.org.au"
+    - "ops@actplacemat.org.au"
+    
+    http_post_url: "http://alertmanager-service:9093/api/v1/alerts"
+    http_post_payload:
+      alerts:
+        - labels:
+            alertname: "CulturalProtocolViolation"
+            severity: "critical"
+            service: "{kubernetes_container}"
+            namespace: "{kubernetes_namespace}"
+        - annotations:
+            summary: "Cultural protocol violation detected"
+            description: "{message}"
+    
+    alert_subject: "URGENT: Cultural Protocol Violation - {kubernetes_container}"
+    alert_text: |
+      A cultural protocol violation has been detected in the ACT Placemat platform.
+      
+      Service: {kubernetes_container}
+      Namespace: {kubernetes_namespace}
+      Time: {@timestamp}
+      
+      Details: {message}
+      
+      Immediate review required by cultural advisors.
+
+  performance_degradation.yaml: |
+    name: "ACT Placemat - Performance Degradation"
+    type: metric_aggregation
+    index: act-placemat-*
+    metric_agg_key: response_time_ms
+    metric_agg_type: avg
+    doc_type: _doc
+    buffer_time:
+      minutes: 5
+    timeframe:
+      minutes: 10
+    threshold: 2000
+    
+    filter:
+    - exists:
+        field: response_time_ms
+    - range:
+        response_time_ms:
+          gt: 0
+    
+    alert:
+    - "email"
+    - "slack"
+    
+    email:
+    - "ops@actplacemat.org.au"
+    
+    slack:
+    webhook_url: "YOUR_SLACK_WEBHOOK_URL"
+    slack_channel_override: "#performance"
+    
+    alert_text: |
+      Performance degradation detected in ACT Placemat
+      
+      Average response time: {metric_response_time_ms_avg}ms
+      Threshold: 2000ms
+      Time period: {timeframe}
+      
+      Service: {kubernetes_container}
+
+  community_health_anomaly.yaml: |
+    name: "ACT Placemat - Community Health Anomaly"
+    type: spike
+    index: act-placemat-*
+    spike_height: 3
+    spike_type: "up"
+    timeframe:
+      hours: 1
+    use_count_query: true
+    query_key: community_id
+    
+    filter:
+    - bool:
+        should:
+          - match:
+              community_action: "left"
+          - match:
+              message: "community_complaint"
+          - match:
+              message: "content_reported"
+    
+    alert:
+    - "email"
+    - "webhook"
+    
+    email:
+    - "community-managers@actplacemat.org.au"
+    - "ops@actplacemat.org.au"
+    
+    alert_text: |
+      Community health anomaly detected
+      
+      Community: {community_id}
+      Anomaly type: Unusual spike in negative events
+      Time: {@timestamp}
+      
+      This may indicate:
+      - Community conflict
+      - Policy violations
+      - Technical issues affecting user experience
+      
+      Community manager intervention recommended.
+
+  elder_review_backlog.yaml: |
+    name: "ACT Placemat - Elder Review Backlog"
+    type: frequency
+    index: act-placemat-*
+    num_events: 5
+    timeframe:
+      hours: 24
+    
+    filter:
+    - match:
+        message: "elder_review_pending"
+    - range:
+        "@timestamp":
+          gte: "now-24h"
+    
+    alert:
+    - "email"
+    
+    email:
+    - "elder-council@actplacemat.org.au"
+    - "cultural-advisors@actplacemat.org.au"
+    
+    alert_subject: "Elder Review Backlog - {num_matches} items pending"
+    alert_text: |
+      There are {num_matches} items pending elder review for more than 24 hours.
+      
+      This may indicate:
+      - High volume of culturally sensitive content
+      - Need for additional cultural advisory capacity
+      - Technical issues with the review system
+      
+      Please review the pending items at your earliest convenience.
+
+  data_export_requests.yaml: |
+    name: "ACT Placemat - Unusual Data Export Activity"
+    type: frequency
+    index: act-placemat-*
+    num_events: 10
+    timeframe:
+      hours: 1
+    
+    filter:
+    - match:
+        message: "data_export_requested"
+    
+    alert:
+    - "email"
+    - "webhook"
+    
+    email:
+    - "privacy-officer@actplacemat.org.au"
+    - "security@actplacemat.org.au"
+    
+    http_post_url: "http://alertmanager-service:9093/api/v1/alerts"
+    http_post_payload:
+      alerts:
+        - labels:
+            alertname: "UnusualDataExportActivity"
+            severity: "warning"
+        - annotations:
+            summary: "High volume of data export requests"
+            description: "{num_matches} data export requests in the last hour"
+    
+    alert_text: |
+      Unusual data export activity detected
+      
+      Number of requests: {num_matches}
+      Time period: 1 hour
+      
+      This may indicate:
+      - Legitimate user data portability requests
+      - Potential data harvesting attempt
+      - System malfunction
+      
+      Security review recommended.
+
+  ai_insight_errors.yaml: |
+    name: "ACT Placemat - AI Insight Generation Failures"
+    type: frequency
+    index: act-placemat-*
+    num_events: 5
+    timeframe:
+      minutes: 30
+    
+    filter:
+    - match:
+        kubernetes_container: "community-insights-engine"
+    - terms:
+        log_level: ["ERROR", "FATAL"]
+    
+    alert:
+    - "email"
+    - "slack"
+    
+    email:
+    - "ai-team@actplacemat.org.au"
+    - "ops@actplacemat.org.au"
+    
+    slack:
+    webhook_url: "YOUR_SLACK_WEBHOOK_URL"
+    slack_channel_override: "#ai-alerts"
+    
+    alert_text: |
+      AI insight generation failures detected
+      
+      Service: community-insights-engine
+      Failures in last 30 minutes: {num_matches}
+      
+      This may affect:
+      - Community health analysis
+      - Content recommendations
+      - Opportunity matching
+      
+      Technical review required.
+
+---
+# ========================================
+# LOG ANALYSIS PIPELINE
+# ========================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-analyzer
+  namespace: monitoring
+  labels:
+    app: log-analyzer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: log-analyzer
+  template:
+    metadata:
+      labels:
+        app: log-analyzer
+    spec:
+      containers:
+      - name: log-analyzer
+        image: python:3.11-slim
+        command: ["/bin/sh"]
+        args:
+          - -c
+          - |
+            pip install elasticsearch pandas scikit-learn numpy
+            python /app/log_analyzer.py
+        env:
+        - name: ELASTICSEARCH_HOST
+          value: "elasticsearch-service"
+        - name: ELASTICSEARCH_PORT
+          value: "9200"
+        - name: ANALYSIS_INTERVAL
+          value: "300"  # 5 minutes
+        volumeMounts:
+        - name: log-analyzer-script
+          mountPath: /app
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+      volumes:
+      - name: log-analyzer-script
+        configMap:
+          name: log-analyzer-script
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: log-analyzer-script
+  namespace: monitoring
+data:
+  log_analyzer.py: |
+    #!/usr/bin/env python3
+    """
+    ACT Placemat Log Analyzer
+    AI-powered analysis of platform logs for community insights
+    """
+    
+    import os
+    import time
+    import json
+    import logging
+    from datetime import datetime, timedelta
+    from elasticsearch import Elasticsearch
+    import pandas as pd
+    import numpy as np
+    from sklearn.cluster import KMeans
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    
+    # Configure logging
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+    
+    class CommunityLogAnalyzer:
+        def __init__(self):
+            self.es = Elasticsearch([{
+                'host': os.getenv('ELASTICSEARCH_HOST', 'elasticsearch-service'),
+                'port': int(os.getenv('ELASTICSEARCH_PORT', 9200))
+            }])
+            self.analysis_interval = int(os.getenv('ANALYSIS_INTERVAL', 300))
+            
+        def analyze_community_health(self):
+            """Analyze community health patterns from logs"""
+            try:
+                # Query for community-related logs
+                query = {
+                    "query": {
+                        "bool": {
+                            "must": [
+                                {"range": {"@timestamp": {"gte": "now-1h"}}},
+                                {"exists": {"field": "community_context"}}
+                            ]
+                        }
+                    },
+                    "aggs": {
+                        "communities": {
+                            "terms": {"field": "community_context"},
+                            "aggs": {
+                                "actions": {
+                                    "terms": {"field": "community_action"}
+                                },
+                                "error_rate": {
+                                    "filter": {"term": {"is_error": True}}
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                result = self.es.search(index="act-placemat-*", body=query)
+                
+                # Analyze results
+                health_scores = {}
+                for community in result['aggregations']['communities']['buckets']:
+                    community_id = community['key']
+                    actions = {action['key']: action['doc_count'] 
+                              for action in community['actions']['buckets']}
+                    error_count = community['error_rate']['doc_count']
+                    total_events = community['doc_count']
+                    
+                    # Calculate health score
+                    positive_actions = actions.get('joined', 0) + actions.get('created', 0)
+                    negative_actions = actions.get('left', 0) + error_count
+                    
+                    if total_events > 0:
+                        health_score = (positive_actions - negative_actions) / total_events
+                        health_scores[community_id] = {
+                            'score': health_score,
+                            'total_events': total_events,
+                            'error_rate': error_count / total_events if total_events > 0 else 0
+                        }
+                
+                # Log insights
+                for community_id, metrics in health_scores.items():
+                    if metrics['score'] < -0.5:
+                        logger.warning(f"Community {community_id} showing signs of distress: {metrics}")
+                        self.send_alert('community_health_warning', community_id, metrics)
+                    elif metrics['error_rate'] > 0.1:
+                        logger.warning(f"High error rate in community {community_id}: {metrics['error_rate']:.2%}")
+                
+                return health_scores
+                
+            except Exception as e:
+                logger.error(f"Error analyzing community health: {e}")
+                return {}
+    
+        def detect_anomalies(self):
+            """Detect anomalous patterns in platform usage"""
+            try:
+                # Query for performance metrics
+                query = {
+                    "query": {
+                        "bool": {
+                            "must": [
+                                {"range": {"@timestamp": {"gte": "now-1h"}}},
+                                {"exists": {"field": "response_time_ms"}}
+                            ]
+                        }
+                    },
+                    "aggs": {
+                        "performance_over_time": {
+                            "date_histogram": {
+                                "field": "@timestamp",
+                                "interval": "5m"
+                            },
+                            "aggs": {
+                                "avg_response_time": {"avg": {"field": "response_time_ms"}},
+                                "max_response_time": {"max": {"field": "response_time_ms"}},
+                                "error_count": {"filter": {"term": {"is_error": True}}}
+                            }
+                        }
+                    }
+                }
+                
+                result = self.es.search(index="act-placemat-*", body=query)
+                
+                # Extract time series data
+                timestamps = []
+                response_times = []
+                error_counts = []
+                
+                for bucket in result['aggregations']['performance_over_time']['buckets']:
+                    timestamps.append(bucket['key'])
+                    response_times.append(bucket['avg_response_time']['value'] or 0)
+                    error_counts.append(bucket['error_count']['doc_count'])
+                
+                # Simple anomaly detection using z-score
+                if len(response_times) > 3:
+                    response_array = np.array(response_times)
+                    z_scores = np.abs((response_array - np.mean(response_array)) / np.std(response_array))
+                    
+                    anomalies = np.where(z_scores > 2)[0]
+                    
+                    for anomaly_idx in anomalies:
+                        timestamp = timestamps[anomaly_idx]
+                        response_time = response_times[anomaly_idx]
+                        logger.warning(f"Performance anomaly detected at {timestamp}: {response_time}ms")
+                        
+                        # Send alert if response time is significantly high
+                        if response_time > 5000:
+                            self.send_alert('performance_anomaly', timestamp, response_time)
+                
+                return {
+                    'timestamps': timestamps,
+                    'response_times': response_times,
+                    'error_counts': error_counts,
+                    'anomaly_count': len(anomalies) if 'anomalies' in locals() else 0
+                }
+                
+            except Exception as e:
+                logger.error(f"Error detecting anomalies: {e}")
+                return {}
+    
+        def analyze_user_journeys(self):
+            """Analyze user journey completion rates"""
+            try:
+                # Query for user journey events
+                query = {
+                    "query": {
+                        "bool": {
+                            "must": [
+                                {"range": {"@timestamp": {"gte": "now-1h"}}},
+                                {"bool": {
+                                    "should": [
+                                        {"exists": {"field": "story_action"}},
+                                        {"exists": {"field": "community_action"}},
+                                        {"exists": {"field": "opportunity_action"}}
+                                    ]
+                                }}
+                            ]
+                        }
+                    },
+                    "aggs": {
+                        "journey_completions": {
+                            "terms": {"field": "user_action"},
+                            "aggs": {
+                                "completion_rate": {
+                                    "bucket_script": {
+                                        "buckets_path": {
+                                            "completed": "completed.doc_count",
+                                            "started": "started.doc_count"
+                                        },
+                                        "script": "params.completed / Math.max(params.started, 1)"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                result = self.es.search(index="act-placemat-*", body=query)
+                
+                # Analyze completion rates
+                journey_metrics = {}
+                for bucket in result['aggregations']['journey_completions']['buckets']:
+                    action = bucket['key']
+                    completion_rate = bucket.get('completion_rate', {}).get('value', 0)
+                    journey_metrics[action] = completion_rate
+                
+                # Alert on low completion rates
+                for action, rate in journey_metrics.items():
+                    if rate < 0.5:  # Less than 50% completion
+                        logger.warning(f"Low completion rate for {action}: {rate:.2%}")
+                        self.send_alert('low_completion_rate', action, rate)
+                
+                return journey_metrics
+                
+            except Exception as e:
+                logger.error(f"Error analyzing user journeys: {e}")
+                return {}
+    
+        def send_alert(self, alert_type, context, details):
+            """Send alert to monitoring system"""
+            alert_payload = {
+                "alerts": [{
+                    "labels": {
+                        "alertname": f"LogAnalysis_{alert_type}",
+                        "severity": "warning",
+                        "source": "log_analyzer",
+                        "context": str(context)
+                    },
+                    "annotations": {
+                        "summary": f"Log analysis detected: {alert_type}",
+                        "description": f"Context: {context}, Details: {details}"
+                    }
+                }]
+            }
+            
+            # In a real implementation, this would send to Alertmanager
+            logger.info(f"Alert would be sent: {alert_payload}")
+    
+        def generate_insights_report(self):
+            """Generate comprehensive insights report"""
+            try:
+                community_health = self.analyze_community_health()
+                anomalies = self.detect_anomalies()
+                journey_metrics = self.analyze_user_journeys()
+                
+                report = {
+                    "timestamp": datetime.now().isoformat(),
+                    "community_health": community_health,
+                    "performance_anomalies": anomalies,
+                    "user_journey_metrics": journey_metrics,
+                    "summary": {
+                        "healthy_communities": sum(1 for metrics in community_health.values() 
+                                                 if metrics['score'] > 0),
+                        "at_risk_communities": sum(1 for metrics in community_health.values() 
+                                                 if metrics['score'] < -0.3),
+                        "performance_anomaly_count": anomalies.get('anomaly_count', 0)
+                    }
+                }
+                
+                # Store report in Elasticsearch
+                self.es.index(
+                    index="act-placemat-insights",
+                    body=report
+                )
+                
+                logger.info(f"Insights report generated: {report['summary']}")
+                return report
+                
+            except Exception as e:
+                logger.error(f"Error generating insights report: {e}")
+                return {}
+    
+        def run(self):
+            """Main analysis loop"""
+            logger.info("Starting ACT Placemat log analyzer")
+            
+            while True:
+                try:
+                    logger.info("Running analysis cycle")
+                    self.generate_insights_report()
+                    time.sleep(self.analysis_interval)
+                    
+                except KeyboardInterrupt:
+                    logger.info("Shutting down log analyzer")
+                    break
+                except Exception as e:
+                    logger.error(f"Error in analysis cycle: {e}")
+                    time.sleep(60)  # Wait 1 minute before retrying
+    
+    if __name__ == "__main__":
+        analyzer = CommunityLogAnalyzer()
+        analyzer.run()
+
+---
+# ========================================
+# SERVICES
+# ========================================
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: elastalert-service
+  namespace: monitoring
+  labels:
+    app: elastalert
+spec:
+  selector:
+    app: elastalert
+  ports:
+  - name: web
+    port: 3030
+    targetPort: 3030
+  - name: api
+    port: 3333
+    targetPort: 3333
+  type: ClusterIP
+
+---
+# ========================================
+# PROMETHEUS RULES FOR LOG METRICS
+# ========================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-log-rules
+  namespace: monitoring
+data:
+  log-analysis.yml: |
+    groups:
+    - name: act-placemat-log-analysis
+      rules:
+      # Community health metrics from logs
+      - record: community:health_score
+        expr: (community_positive_actions_total - community_negative_actions_total) / community_total_actions_total
+      
+      - record: community:error_rate
+        expr: rate(community_errors_total[5m]) / rate(community_total_actions_total[5m])
+      
+      # Performance metrics from logs
+      - record: platform:avg_response_time_5m
+        expr: avg(rate(http_request_duration_seconds_sum[5m]) / rate(http_request_duration_seconds_count[5m]))
+      
+      - record: platform:error_rate_5m
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m])
+      
+      # Cultural protocol compliance
+      - record: cultural:compliance_rate
+        expr: rate(cultural_protocol_compliant_actions_total[1h]) / rate(cultural_protocol_required_actions_total[1h])
+      
+      # Alerts
+      - alert: CommunityHealthDegraded
+        expr: community:health_score < -0.5
+        for: 10m
+        labels:
+          severity: warning
+          component: community
+        annotations:
+          summary: "Community health score degraded"
+          description: "Community {{ $labels.community_id }} has health score {{ $value }}"
+      
+      - alert: HighLogErrorRate
+        expr: platform:error_rate_5m > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          component: platform
+        annotations:
+          summary: "High error rate detected in logs"
+          description: "Platform error rate is {{ $value | humanizePercentage }}"
+      
+      - alert: CulturalProtocolViolation
+        expr: rate(cultural_protocol_violations_total[1h]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          component: cultural
+        annotations:
+          summary: "Cultural protocol violation detected"
+          description: "{{ $value }} cultural protocol violations in the last hour"
+      
+      - alert: ElderReviewBacklog
+        expr: elder_review_pending_total > 5
+        for: 1h
+        labels:
+          severity: warning
+          component: cultural
+        annotations:
+          summary: "Elder review backlog detected"
+          description: "{{ $value }} items pending elder review for over 1 hour"

@@ -1,0 +1,553 @@
+# Redis Task Queue Schema Design
+# Universal task queue with priority scoring and robust message delivery for agent orchestration
+
+---
+# Redis Task Queue Schema Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-task-queue-schema
+  namespace: act-placemat
+  labels:
+    component: task-queue
+    service-type: redis
+    data-residency: australia
+  annotations:
+    description: "Redis task queue schema for LangGraph agent orchestration"
+    compliance.framework: "australian-privacy-act"
+data:
+  queue_schema: |
+    # Redis Task Queue Schema Design
+    # Designed for LangGraph multi-agent coordination with Australian compliance
+    
+    # Queue Data Structures
+    queue_structures:
+      # High-priority agent task queue (FIFO with priority)
+      high_priority_queue:
+        key: "act:queue:high"
+        type: "sorted_set"
+        score_field: "priority_timestamp"  # Unix timestamp + priority weight
+        description: "Critical agent tasks requiring immediate processing"
+        
+      # Standard priority agent task queue
+      standard_priority_queue:
+        key: "act:queue:standard"  
+        type: "sorted_set"
+        score_field: "priority_timestamp"
+        description: "Regular agent tasks for normal processing"
+        
+      # Low priority background task queue
+      low_priority_queue:
+        key: "act:queue:low"
+        type: "sorted_set" 
+        score_field: "priority_timestamp"
+        description: "Background tasks and cleanup operations"
+        
+      # Processing queue for in-flight tasks
+      processing_queue:
+        key: "act:queue:processing"
+        type: "hash"
+        description: "Tasks currently being processed by agents"
+        
+      # Dead letter queue for failed tasks
+      dead_letter_queue:
+        key: "act:queue:dlq"
+        type: "sorted_set"
+        score_field: "failure_timestamp"
+        description: "Failed tasks requiring manual intervention"
+        
+      # Completed tasks archive (for audit compliance)
+      completed_queue:
+        key: "act:queue:completed"
+        type: "sorted_set"
+        score_field: "completion_timestamp"
+        description: "Completed tasks archive for Australian compliance"
+
+    # Task Message Schema
+    task_message_schema:
+      task_id:
+        type: "string"
+        format: "uuid4"
+        description: "Unique task identifier"
+        required: true
+        
+      agent_type:
+        type: "string"
+        enum: 
+          - "financial-intelligence"
+          - "research-analyst"
+          - "compliance-officer"
+          - "community-coordinator"
+        description: "Target agent type for task execution"
+        required: true
+        
+      task_type:
+        type: "string"
+        enum:
+          - "analysis"
+          - "research"
+          - "compliance_check"
+          - "data_processing"
+          - "report_generation"
+          - "workflow_coordination"
+        description: "Type of task to be performed"
+        required: true
+        
+      priority:
+        type: "integer"
+        minimum: 1
+        maximum: 10
+        description: "Task priority (1=lowest, 10=highest)"
+        default: 5
+        required: true
+        
+      payload:
+        type: "object"
+        description: "Task-specific data and parameters"
+        properties:
+          input_data:
+            type: "object"
+            description: "Input data for task processing"
+          context:
+            type: "object"
+            description: "Additional context for task execution"
+          parameters:
+            type: "object"
+            description: "Task-specific parameters"
+        required: true
+        
+      metadata:
+        type: "object"
+        description: "Task metadata and tracking information"
+        properties:
+          created_at:
+            type: "string"
+            format: "iso8601"
+            description: "Task creation timestamp (Australian timezone)"
+          expires_at:
+            type: "string"
+            format: "iso8601"
+            description: "Task expiration timestamp"
+          retry_count:
+            type: "integer"
+            minimum: 0
+            maximum: 5
+            default: 0
+            description: "Number of retry attempts"
+          max_retries:
+            type: "integer"
+            minimum: 1
+            maximum: 5
+            default: 3
+            description: "Maximum retry attempts allowed"
+          estimated_duration:
+            type: "integer"
+            description: "Estimated processing time in seconds"
+          correlation_id:
+            type: "string"
+            description: "Correlation ID for related tasks"
+          trace_id:
+            type: "string"
+            description: "Distributed tracing identifier"
+        required: true
+        
+      compliance:
+        type: "object"
+        description: "Australian compliance and audit information"
+        properties:
+          data_classification:
+            type: "string"
+            enum: ["public", "internal", "restricted", "confidential"]
+            description: "Data classification level"
+            default: "restricted"
+          retention_period:
+            type: "string"
+            description: "Data retention period for compliance"
+            default: "7 years"
+          audit_required:
+            type: "boolean"
+            description: "Whether task requires audit logging"
+            default: true
+          data_residency:
+            type: "string"
+            description: "Data residency requirement"
+            default: "australia"
+        required: true
+
+    # Priority Scoring Algorithm
+    priority_scoring:
+      # Priority score calculation: base_priority * 1000 + current_timestamp
+      # This ensures FIFO within same priority level while respecting priority order
+      
+      scoring_formula: |
+        score = (priority * 1000000) + unix_timestamp
+        # Higher priority tasks get higher scores
+        # Within same priority, older tasks get higher scores (FIFO)
+        
+      priority_weights:
+        critical: 10      # System-critical operations
+        high: 8           # Important business operations  
+        standard: 5       # Regular processing
+        low: 3            # Background tasks
+        maintenance: 1    # System maintenance
+        
+      dynamic_adjustments:
+        aging_boost:
+          enabled: true
+          boost_interval: 300  # 5 minutes
+          boost_amount: 50     # Score increase per interval
+          max_boost: 500       # Maximum aging boost
+          
+        deadline_urgency:
+          enabled: true
+          urgency_threshold: 3600  # 1 hour before deadline
+          urgency_multiplier: 2.0  # Double the priority score
+          
+        retry_penalty:
+          enabled: true
+          penalty_per_retry: 100   # Score reduction per retry
+          max_penalty: 500         # Maximum retry penalty
+
+    # Queue Operation Patterns
+    queue_operations:
+      enqueue:
+        operation: "ZADD"
+        key_pattern: "act:queue:{priority_level}"
+        score_calculation: "priority_scoring.scoring_formula"
+        value: "json_encoded_task_message"
+        
+      dequeue:
+        operation: "ZPOPMAX"  # Pop highest score (highest priority + oldest)
+        key_pattern: "act:queue:{priority_level}"
+        atomic: true
+        
+      peek:
+        operation: "ZREVRANGE"
+        key_pattern: "act:queue:{priority_level}"
+        range: "0 0"  # Get highest priority task without removing
+        
+      requeue:
+        operation: "ZADD"
+        key_pattern: "act:queue:{priority_level}"
+        score_recalculation: true
+        retry_penalty_applied: true
+        
+      move_to_processing:
+        operation: "HSET"
+        key: "act:queue:processing"
+        field: "task_id"
+        value: "json_encoded_task_with_processing_info"
+        
+      move_to_completed:
+        operation: "ZADD"
+        key: "act:queue:completed"
+        score: "completion_timestamp"
+        value: "json_encoded_completed_task"
+        
+      move_to_dlq:
+        operation: "ZADD"
+        key: "act:queue:dlq"
+        score: "failure_timestamp"
+        value: "json_encoded_failed_task"
+
+    # Australian Compliance Features
+    compliance_features:
+      audit_logging:
+        enabled: true
+        log_all_operations: true
+        retention_period: "7 years"
+        storage_location: "australia"
+        
+      data_encryption:
+        at_rest: "AES-256"
+        in_transit: "TLS 1.3"
+        key_management: "google_kms_australia"
+        
+      data_residency:
+        enforcement: "strict"
+        allowed_regions: ["australia-southeast1", "australia-southeast2"]
+        validation: "continuous"
+        
+      privacy_protection:
+        pii_detection: true
+        automatic_masking: true
+        consent_tracking: true
+        right_to_deletion: true
+
+  # Redis Configuration for Task Queue
+  redis_config: |
+    # Redis configuration optimized for task queue operations
+    redis_optimization:
+      # Memory optimization
+      maxmemory_policy: "allkeys-lru"
+      maxmemory: "2GB"
+      
+      # Persistence configuration
+      save_intervals:
+        - "900 1"    # Save after 900 seconds if at least 1 key changed
+        - "300 10"   # Save after 300 seconds if at least 10 keys changed
+        - "60 10000" # Save after 60 seconds if at least 10000 keys changed
+        
+      # AOF (Append Only File) for durability
+      appendonly: "yes"
+      appendfsync: "everysec"
+      auto_aof_rewrite_percentage: 100
+      auto_aof_rewrite_min_size: "64mb"
+      
+      # Replication settings
+      replica_priority: 100
+      replica_read_only: "yes"
+      repl_diskless_sync: "no"
+      
+      # Security settings
+      requirepass: "enabled"  # Password from secret
+      protected_mode: "yes"
+      bind: "127.0.0.1 10.0.0.0/8"
+      
+      # Performance tuning
+      tcp_keepalive: 300
+      timeout: 0
+      tcp_backlog: 511
+      databases: 16
+      
+      # Slow log configuration
+      slowlog_log_slower_than: 10000  # 10ms
+      slowlog_max_len: 128
+      
+      # Client output buffer limits
+      client_output_buffer_limits:
+        normal: "0 0 0"
+        replica: "256mb 64mb 60"
+        pubsub: "32mb 8mb 60"
+
+  # Monitoring and Metrics Schema
+  monitoring_schema: |
+    # Queue monitoring metrics
+    queue_metrics:
+      queue_depths:
+        - metric: "act_queue_depth_total"
+          labels: ["priority_level", "data_residency"]
+          description: "Total number of tasks in queue by priority"
+          
+        - metric: "act_queue_processing_total"
+          labels: ["agent_type", "data_residency"]
+          description: "Number of tasks currently being processed"
+          
+        - metric: "act_queue_completed_total"
+          labels: ["task_type", "agent_type", "priority", "data_residency"]
+          description: "Total completed tasks"
+          
+        - metric: "act_queue_failed_total"
+          labels: ["task_type", "agent_type", "failure_reason", "data_residency"]
+          description: "Total failed tasks"
+          
+      performance_metrics:
+        - metric: "act_queue_processing_duration_seconds"
+          type: "histogram"
+          labels: ["task_type", "agent_type", "priority"]
+          description: "Task processing duration"
+          
+        - metric: "act_queue_wait_time_seconds"
+          type: "histogram"
+          labels: ["priority_level"]
+          description: "Time tasks wait in queue before processing"
+          
+        - metric: "act_queue_throughput_tasks_per_second"
+          type: "gauge"
+          labels: ["priority_level", "agent_type"]
+          description: "Queue throughput rate"
+          
+      compliance_metrics:
+        - metric: "act_queue_compliance_violations_total"
+          labels: ["violation_type", "data_residency"]
+          description: "Compliance violations detected"
+          
+        - metric: "act_queue_audit_events_total"
+          labels: ["event_type", "compliance_framework"]
+          description: "Audit events for compliance tracking"
+          
+        - metric: "act_queue_data_residency_checks_total"
+          labels: ["region", "compliance_status"]
+          description: "Data residency compliance checks"
+
+---
+# Task Queue Message Examples
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-task-queue-examples
+  namespace: act-placemat
+  labels:
+    component: task-queue
+    config-type: examples
+    data-residency: australia
+  annotations:
+    description: "Example task messages for Redis queue"
+    compliance.framework: "australian-privacy-act"
+data:
+  # Example high-priority financial analysis task
+  financial_analysis_task: |
+    {
+      "task_id": "550e8400-e29b-41d4-a716-446655440001",
+      "agent_type": "financial-intelligence",
+      "task_type": "analysis",
+      "priority": 8,
+      "payload": {
+        "input_data": {
+          "financial_report_id": "fr_2024_q1_001",
+          "analysis_type": "compliance_check",
+          "data_sources": ["supabase", "notion", "external_apis"]
+        },
+        "context": {
+          "request_source": "compliance_dashboard",
+          "user_id": "user_australia_001",
+          "session_id": "session_20240115_001"
+        },
+        "parameters": {
+          "compliance_frameworks": ["australian_privacy_act", "accc_guidelines"],
+          "analysis_depth": "comprehensive",
+          "output_format": "structured_report"
+        }
+      },
+      "metadata": {
+        "created_at": "2024-01-15T10:30:00+11:00",
+        "expires_at": "2024-01-15T12:30:00+11:00", 
+        "retry_count": 0,
+        "max_retries": 3,
+        "estimated_duration": 900,
+        "correlation_id": "corr_financial_batch_001",
+        "trace_id": "trace_20240115_financial_001"
+      },
+      "compliance": {
+        "data_classification": "restricted",
+        "retention_period": "7 years",
+        "audit_required": true,
+        "data_residency": "australia"
+      }
+    }
+
+  # Example research coordination task
+  research_coordination_task: |
+    {
+      "task_id": "550e8400-e29b-41d4-a716-446655440002",
+      "agent_type": "research-analyst",
+      "task_type": "research",
+      "priority": 6,
+      "payload": {
+        "input_data": {
+          "research_query": "australian renewable energy policies 2024",
+          "research_scope": "government_policies",
+          "data_sources": ["government_apis", "policy_databases", "news_feeds"]
+        },
+        "context": {
+          "request_source": "policy_dashboard",
+          "research_category": "environmental_policy",
+          "stakeholder_group": "renewable_energy_sector"
+        },
+        "parameters": {
+          "research_depth": "detailed",
+          "time_range": "2024-01-01 to 2024-12-31",
+          "geographic_scope": "australia",
+          "output_format": "executive_summary"
+        }
+      },
+      "metadata": {
+        "created_at": "2024-01-15T09:15:00+11:00",
+        "expires_at": "2024-01-15T17:15:00+11:00",
+        "retry_count": 0,
+        "max_retries": 2,
+        "estimated_duration": 1800,
+        "correlation_id": "corr_policy_research_001",
+        "trace_id": "trace_20240115_research_001"
+      },
+      "compliance": {
+        "data_classification": "internal",
+        "retention_period": "3 years",
+        "audit_required": true,
+        "data_residency": "australia"
+      }
+    }
+
+  # Example community coordination task
+  community_coordination_task: |
+    {
+      "task_id": "550e8400-e29b-41d4-a716-446655440003",
+      "agent_type": "community-coordinator",
+      "task_type": "workflow_coordination",
+      "priority": 7,
+      "payload": {
+        "input_data": {
+          "coordination_type": "multi_agent_workflow",
+          "participant_agents": ["financial-intelligence", "research-analyst"],
+          "workflow_id": "wf_community_impact_assessment_001"
+        },
+        "context": {
+          "community_project": "renewable_energy_transition",
+          "stakeholders": ["local_councils", "community_groups", "businesses"],
+          "geographic_region": "victoria_rural_communities"
+        },
+        "parameters": {
+          "coordination_strategy": "sequential_then_parallel",
+          "communication_protocol": "event_driven",
+          "consensus_mechanism": "weighted_voting",
+          "output_aggregation": "comprehensive_report"
+        }
+      },
+      "metadata": {
+        "created_at": "2024-01-15T11:45:00+11:00",
+        "expires_at": "2024-01-15T15:45:00+11:00",
+        "retry_count": 0,
+        "max_retries": 3,
+        "estimated_duration": 3600,
+        "correlation_id": "corr_community_workflow_001",
+        "trace_id": "trace_20240115_coordination_001"
+      },
+      "compliance": {
+        "data_classification": "restricted",
+        "retention_period": "7 years",
+        "audit_required": true,
+        "data_residency": "australia"
+      }
+    }
+
+  # Example low-priority maintenance task
+  maintenance_task: |
+    {
+      "task_id": "550e8400-e29b-41d4-a716-446655440004",
+      "agent_type": "compliance-officer",
+      "task_type": "data_processing",
+      "priority": 2,
+      "payload": {
+        "input_data": {
+          "maintenance_type": "data_cleanup",
+          "target_databases": ["agent_checkpoints", "task_audit_logs"],
+          "cleanup_criteria": "older_than_7_years"
+        },
+        "context": {
+          "maintenance_window": "overnight",
+          "business_impact": "minimal",
+          "automation_level": "fully_automated"
+        },
+        "parameters": {
+          "batch_size": 1000,
+          "safety_checks": true,
+          "backup_before_cleanup": true,
+          "compliance_validation": true
+        }
+      },
+      "metadata": {
+        "created_at": "2024-01-15T02:00:00+11:00",
+        "expires_at": "2024-01-15T06:00:00+11:00",
+        "retry_count": 0,
+        "max_retries": 1,
+        "estimated_duration": 7200,
+        "correlation_id": "corr_maintenance_batch_001",
+        "trace_id": "trace_20240115_maintenance_001"
+      },
+      "compliance": {
+        "data_classification": "internal",
+        "retention_period": "1 year",
+        "audit_required": true,
+        "data_residency": "australia"
+      }
+    }

@@ -1,0 +1,234 @@
+# Prometheus Configuration for ACT Placemat Intelligence Hub
+# Australian-compliant monitoring and metrics collection
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'act-placemat-intelligence-hub'
+    region: 'australia'
+    data_residency: 'australia'
+    compliance_framework: 'australian-privacy-act'
+
+# Rule files for alerting
+rule_files:
+  - "rules/*.yml"
+  - "../grafana/alerting/*.yml"
+
+# Scrape configuration
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    params:
+      collect[]:
+        - 'node'
+
+  # Intelligence Hub application metrics
+  - job_name: 'intelligence-hub'
+    static_configs:
+      - targets: ['intelligence-hub:3002']
+    scrape_interval: 15s
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    honor_labels: true
+    params:
+      format: ['prometheus']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: intelligence-hub:3002
+      - target_label: component
+        replacement: 'intelligence-hub'
+      - target_label: australian_service
+        replacement: 'true'
+
+  # API Gateway observability metrics
+  - job_name: 'api-gateway-observability'
+    static_configs:
+      - targets: ['api-gateway:3000']
+    scrape_interval: 15s
+    metrics_path: /api/observability/metrics
+    scrape_timeout: 10s
+    honor_labels: true
+    relabel_configs:
+      - target_label: component
+        replacement: 'api-gateway'
+      - target_label: service_type
+        replacement: 'data-lake-api'
+      - target_label: australian_service
+        replacement: 'true'
+
+  # NGINX metrics (if nginx-prometheus-exporter is configured)
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx:9113']
+    scrape_interval: 15s
+    metrics_path: /metrics
+    honor_labels: true
+    relabel_configs:
+      - target_label: component
+        replacement: 'reverse-proxy'
+      - target_label: australian_compliance
+        replacement: 'verified'
+
+  # PostgreSQL metrics (if postgres_exporter is configured)
+  - job_name: 'postgresql'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    params:
+      collect[]:
+        - 'postgresql'
+    relabel_configs:
+      - target_label: component
+        replacement: 'database'
+      - target_label: data_residency
+        replacement: 'australia'
+
+  # Redis metrics (if redis_exporter is configured)
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    scrape_interval: 15s
+    metrics_path: /metrics
+    relabel_configs:
+      - target_label: component
+        replacement: 'task-queue'
+      - target_label: australian_processing
+        replacement: 'enabled'
+
+  # Container/Docker metrics (if cadvisor is configured)
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    honor_labels: true
+    relabel_configs:
+      - target_label: component
+        replacement: 'container-metrics'
+
+  # Node exporter for system metrics (if configured)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    relabel_configs:
+      - target_label: component
+        replacement: 'system-metrics'
+      - target_label: server_location
+        replacement: 'australia'
+
+  # Fail2ban metrics (custom exporter if configured)
+  - job_name: 'fail2ban'
+    static_configs:
+      - targets: ['fail2ban-exporter:9191']
+    scrape_interval: 60s
+    metrics_path: /metrics
+    relabel_configs:
+      - target_label: component
+        replacement: 'security-monitoring'
+      - target_label: protection_type
+        replacement: 'intrusion-prevention'
+
+  # LangGraph/Multi-Agent specific metrics
+  - job_name: 'langgraph-agents'
+    static_configs:
+      - targets: ['intelligence-hub:3002']
+    scrape_interval: 10s
+    metrics_path: /api/metrics/agents
+    params:
+      format: ['prometheus']
+    relabel_configs:
+      - target_label: component
+        replacement: 'multi-agent-system'
+      - target_label: ai_processing
+        replacement: 'australian-compliant'
+
+  # Task queue metrics
+  - job_name: 'task-queue'
+    static_configs:
+      - targets: ['intelligence-hub:3002']
+    scrape_interval: 5s
+    metrics_path: /api/metrics/tasks
+    params:
+      format: ['prometheus']
+    relabel_configs:
+      - target_label: component
+        replacement: 'task-orchestration'
+      - target_label: democratic_priority
+        replacement: 'enabled'
+
+  # Australian compliance metrics
+  - job_name: 'compliance-monitoring'
+    static_configs:
+      - targets: ['intelligence-hub:3002']
+    scrape_interval: 60s
+    metrics_path: /api/metrics/compliance
+    params:
+      format: ['prometheus']
+    relabel_configs:
+      - target_label: component
+        replacement: 'compliance-monitoring'
+      - target_label: framework
+        replacement: 'australian-privacy-act'
+      - target_label: data_sovereignty
+        replacement: 'verified'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+      path_prefix: /
+      scheme: http
+      timeout: 10s
+      api_version: v1
+
+# Remote write configuration for long-term storage (if needed)
+# remote_write:
+#   - url: "https://australian-metrics-storage.example.com/api/v1/receive"
+#     basic_auth:
+#       username: "act-placemat"
+#       password_file: "/etc/prometheus/secrets/storage-password"
+#     write_relabel_configs:
+#       - target_label: data_residency
+#         replacement: 'australia'
+#       - target_label: compliance_verified
+#         replacement: 'true'
+
+# Storage configuration
+storage:
+  tsdb:
+    retention.time: 30d
+    retention.size: 10GB
+    min-block-duration: 2h
+    max-block-duration: 25h
+    no-lockfile: false
+    wal-compression: true
+
+# Web configuration
+web:
+  console.libraries: '/etc/prometheus/console_libraries'
+  console.templates: '/etc/prometheus/consoles'
+  enable-lifecycle: true
+  enable-admin-api: true
+  max-connections: 512
+  read-timeout: 30s
+  external-url: 'http://localhost:9090'
+
+# Tracing configuration (if needed)
+# tracing:
+#   endpoint: "jaeger:14268/api/traces"
+#   headers:
+#     australian-compliance: "verified"

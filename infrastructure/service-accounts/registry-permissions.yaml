@@ -1,0 +1,357 @@
+# Registry Permissions for ACT Placemat Intelligence Hub
+# Australian-compliant registry access control and image pull policies
+
+---
+# Registry Credentials Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: registry-credentials
+  namespace: act-placemat
+  labels:
+    component: registry
+    data-residency: australia
+  annotations:
+    description: "Credentials for ACT Placemat Docker Registry"
+    compliance.framework: "australian-privacy-act"
+    data.classification: "confidential"
+    audit.required: "true"
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: ${REGISTRY_DOCKER_CONFIG_JSON}
+
+---
+# Harbor Registry Credentials Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: harbor-credentials
+  namespace: act-placemat
+  labels:
+    component: registry
+    registry-type: harbor
+    data-residency: australia
+  annotations:
+    description: "Credentials for Harbor Registry"
+    compliance.framework: "australian-privacy-act"
+    data.classification: "confidential"
+    audit.required: "true"
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: ${HARBOR_DOCKER_CONFIG_JSON}
+
+---
+# Registry Configuration ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: registry-config
+  namespace: act-placemat
+  labels:
+    component: registry
+    data-residency: australia
+  annotations:
+    description: "Configuration for ACT Placemat Docker Registry"
+    compliance.framework: "australian-privacy-act"
+data:
+  registry_url: "registry.actplacemat.org.au:5000"
+  harbor_url: "harbor.actplacemat.org.au"
+  registry_namespace: "act-placemat"
+  data_residency: "australia"
+  compliance_framework: "australian-privacy-act"
+  vulnerability_scanning: "enabled"
+  image_signing: "required"
+  retention_policy: "7-years"
+  backup_enabled: "true"
+  audit_logging: "enabled"
+  allowed_registries: |
+    registry.actplacemat.org.au:5000
+    harbor.actplacemat.org.au
+    gcr.io/distroless
+    docker.io/library
+  blocked_registries: |
+    docker.io/malicioususer
+    quay.io/suspiciousrepo
+  australian_compliance_verified: "true"
+
+---
+# Image Pull Policy for Intelligence Hub
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: image-pull-policy
+  namespace: act-placemat
+  labels:
+    component: registry
+    data-residency: australia
+  annotations:
+    description: "Image pull policies for Australian compliance"
+    compliance.framework: "australian-privacy-act"
+data:
+  default_policy: "Always"
+  allowed_image_patterns: |
+    registry.actplacemat.org.au:5000/act-placemat/*
+    harbor.actplacemat.org.au/act-placemat/*
+    gcr.io/distroless/*
+    docker.io/library/alpine:*
+    docker.io/library/postgres:*
+    docker.io/library/redis:*
+    docker.io/library/nginx:*
+    prom/prometheus:*
+    grafana/grafana:*
+    fluent/fluentd:*
+  vulnerability_scan_required: "true"
+  image_signing_required: "true"
+  australian_source_preferred: "true"
+
+---
+# Pod Security Policy for Australian Compliance
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: australian-compliance-psp
+  namespace: act-placemat
+  labels:
+    component: security
+    data-residency: australia
+  annotations:
+    description: "Pod Security Policy enforcing Australian compliance"
+    compliance.framework: "australian-privacy-act"
+    data.classification: "confidential"
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  requiredDropCapabilities:
+    - ALL
+  allowedCapabilities:
+    - NET_BIND_SERVICE
+  volumes:
+    - configMap
+    - secret
+    - emptyDir
+    - persistentVolumeClaim
+    - projected
+    - downwardAPI
+  runAsUser:
+    rule: RunAsAny
+  runAsGroup:
+    rule: RunAsAny
+  seLinux:
+    rule: RunAsAny
+  fsGroup:
+    rule: RunAsAny
+  readOnlyRootFilesystem: true
+  defaultAllowPrivilegeEscalation: false
+  hostNetwork: false
+  hostIPC: false
+  hostPID: false
+  allowedHostPaths: []
+
+---
+# Network Policy for Registry Access
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: registry-access-policy
+  namespace: act-placemat
+  labels:
+    component: registry
+    data-residency: australia
+  annotations:
+    description: "Network policy for secure registry access"
+    compliance.framework: "australian-privacy-act"
+spec:
+  podSelector:
+    matchLabels:
+      component: agent
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          component: orchestrator
+    ports:
+    - protocol: TCP
+      port: 8080
+  egress:
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 5000  # Docker Registry
+    - protocol: TCP
+      port: 443   # Harbor HTTPS
+    - protocol: TCP
+      port: 80    # Harbor HTTP
+  - to:
+    - podSelector:
+        matchLabels:
+          component: registry
+    ports:
+    - protocol: TCP
+      port: 5000
+    - protocol: TCP
+      port: 8080
+
+---
+# Registry Resource Quotas
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: registry-resource-quota
+  namespace: act-placemat
+  labels:
+    component: registry
+    data-residency: australia
+  annotations:
+    description: "Resource quotas for registry services"
+    compliance.framework: "australian-privacy-act"
+spec:
+  hard:
+    requests.cpu: "2"
+    requests.memory: 4Gi
+    limits.cpu: "4"
+    limits.memory: 8Gi
+    persistentvolumeclaims: "10"
+    requests.storage: 100Gi
+    secrets: "20"
+    configmaps: "20"
+    services: "10"
+
+---
+# Registry Admission Controller Configuration
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionWebhook
+metadata:
+  name: australian-registry-validator
+  labels:
+    component: security
+    data-residency: australia
+  annotations:
+    description: "Validates images are from approved Australian registries"
+    compliance.framework: "australian-privacy-act"
+webhooks:
+- name: registry.validator.actplacemat.org.au
+  clientConfig:
+    service:
+      name: registry-validator
+      namespace: act-placemat
+      path: "/validate"
+  rules:
+  - operations: ["CREATE", "UPDATE"]
+    apiGroups: [""]
+    apiVersions: ["v1"]
+    resources: ["pods"]
+  - operations: ["CREATE", "UPDATE"]
+    apiGroups: ["apps"]
+    apiVersions: ["v1"]
+    resources: ["deployments", "replicasets", "daemonsets", "statefulsets"]
+  namespaceSelector:
+    matchLabels:
+      data-residency: australia
+  admissionReviewVersions: ["v1", "v1beta1"]
+  sideEffects: None
+  failurePolicy: Fail
+
+---
+# Registry Monitoring RBAC
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: registry-monitoring
+  namespace: act-placemat
+  labels:
+    component: monitoring
+    data-residency: australia
+  annotations:
+    description: "Role for monitoring registry health and metrics"
+    compliance.framework: "australian-privacy-act"
+rules:
+- apiGroups: [""]
+  resources: ["services", "endpoints", "pods"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch"]
+  resourceNames: ["registry-config", "image-pull-policy"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["networking.k8s.io"]
+  resources: ["networkpolicies"]
+  verbs: ["get", "list", "watch"]
+
+---
+# Registry Monitoring Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: registry-monitoring-binding
+  namespace: act-placemat
+  labels:
+    component: monitoring
+    data-residency: australia
+  annotations:
+    description: "Binds monitoring service account to registry monitoring role"
+    compliance.framework: "australian-privacy-act"
+subjects:
+- kind: ServiceAccount
+  name: monitoring
+  namespace: act-placemat
+roleRef:
+  kind: Role
+  name: registry-monitoring
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Registry Backup Role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: registry-backup
+  namespace: act-placemat
+  labels:
+    component: backup
+    data-residency: australia
+  annotations:
+    description: "Role for backing up registry data"
+    compliance.framework: "australian-privacy-act"
+    data.classification: "confidential"
+rules:
+- apiGroups: [""]
+  resources: ["persistentvolumeclaims"]
+  verbs: ["get", "list", "watch", "create"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "watch"]
+  resourceNames: ["registry-credentials", "harbor-credentials"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch"]
+  resourceNames: ["registry-config"]
+- apiGroups: ["batch"]
+  resources: ["jobs", "cronjobs"]
+  verbs: ["create", "get", "list", "watch"]
+
+---
+# Registry Backup Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: registry-backup-binding
+  namespace: act-placemat
+  labels:
+    component: backup
+    data-residency: australia
+  annotations:
+    description: "Binds backup service account to registry backup role"
+    compliance.framework: "australian-privacy-act"
+subjects:
+- kind: ServiceAccount
+  name: backup-recovery
+  namespace: act-placemat
+roleRef:
+  kind: Role
+  name: registry-backup
+  apiGroup: rbac.authorization.k8s.io

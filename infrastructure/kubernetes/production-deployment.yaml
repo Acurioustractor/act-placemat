@@ -1,0 +1,509 @@
+# ACT Placemat Production Deployment with Auto-Scaling and Monitoring
+# Production-ready configuration with comprehensive monitoring, security, and optimization
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: act-production
+  labels:
+    name: act-production
+    platform: act-placemat
+    environment: production
+    monitoring.coreos.com/enabled: "true"
+
+---
+# ========================================
+# PROMETHEUS MONITORING NAMESPACE
+# ========================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    name: monitoring
+    platform: act-placemat
+
+---
+# ========================================
+# PRODUCTION BACKEND DEPLOYMENT
+# ========================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-production
+  namespace: act-production
+  labels:
+    app: backend
+    environment: production
+    tier: application
+spec:
+  replicas: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2
+  selector:
+    matchLabels:
+      app: backend
+      environment: production
+  template:
+    metadata:
+      labels:
+        app: backend
+        environment: production
+        tier: application
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3001"
+        prometheus.io/path: "/metrics"
+        co.elastic.logs/enabled: "true"
+    spec:
+      containers:
+      - name: backend
+        image: act-placemat/backend:v1.0.0
+        ports:
+        - containerPort: 3001
+          name: http
+        - containerPort: 9090
+          name: metrics
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: database-credentials
+              key: url
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: redis-credentials
+              key: url
+        - name: LOG_LEVEL
+          value: "info"
+        - name: ENABLE_METRICS
+          value: "true"
+        - name: ENABLE_TRACING
+          value: "true"
+        - name: JAEGER_ENDPOINT
+          value: "http://jaeger-collector.monitoring.svc.cluster.local:14268/api/traces"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "2000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3001
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 2
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          capabilities:
+            drop:
+              - ALL
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: var-run
+          mountPath: /var/run
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: var-run
+        emptyDir: {}
+      securityContext:
+        fsGroup: 2000
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - backend
+              topologyKey: kubernetes.io/hostname
+
+---
+# ========================================
+# FRONTEND DEPLOYMENT
+# ========================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-production
+  namespace: act-production
+  labels:
+    app: frontend
+    environment: production
+    tier: presentation
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: frontend
+      environment: production
+  template:
+    metadata:
+      labels:
+        app: frontend
+        environment: production
+        tier: presentation
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3000"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: frontend
+        image: act-placemat/frontend:v1.0.0
+        ports:
+        - containerPort: 3000
+          name: http
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: BACKEND_URL
+          value: "http://backend-service.act-production.svc.cluster.local"
+        - name: ENABLE_ANALYTICS
+          value: "true"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          capabilities:
+            drop:
+              - ALL
+
+---
+# ========================================
+# HORIZONTAL POD AUTOSCALERS
+# ========================================
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: backend-hpa
+  namespace: act-production
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend-production
+  minReplicas: 5
+  maxReplicas: 50
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  - type: Pods
+    pods:
+      metric:
+        name: http_requests_per_second
+      target:
+        type: AverageValue
+        averageValue: "100"
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+      - type: Pods
+        value: 3
+        periodSeconds: 60
+      selectPolicy: Max
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 25
+        periodSeconds: 300
+      selectPolicy: Min
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: frontend-hpa
+  namespace: act-production
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: frontend-production
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+
+---
+# ========================================
+# SERVICES
+# ========================================
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: act-production
+  labels:
+    app: backend
+    environment: production
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9090"
+spec:
+  selector:
+    app: backend
+    environment: production
+  ports:
+  - name: http
+    port: 80
+    targetPort: 3001
+  - name: metrics
+    port: 9090
+    targetPort: 9090
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: act-production
+  labels:
+    app: frontend
+    environment: production
+spec:
+  selector:
+    app: frontend
+    environment: production
+  ports:
+  - name: http
+    port: 80
+    targetPort: 3000
+  type: ClusterIP
+
+---
+# ========================================
+# INGRESS WITH SSL TERMINATION
+# ========================================
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: act-placemat-ingress
+  namespace: act-production
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rate-limit: "1000"
+    nginx.ingress.kubernetes.io/rate-limit-connections: "10"
+spec:
+  tls:
+  - hosts:
+    - app.actplacemat.org.au
+    secretName: act-placemat-tls
+  rules:
+  - host: app.actplacemat.org.au
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-service
+            port:
+              number: 80
+
+---
+# ========================================
+# POD DISRUPTION BUDGETS
+# ========================================
+
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: backend-pdb
+  namespace: act-production
+spec:
+  minAvailable: 3
+  selector:
+    matchLabels:
+      app: backend
+      environment: production
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: frontend-pdb
+  namespace: act-production
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: frontend
+      environment: production
+
+---
+# ========================================
+# NETWORK POLICIES
+# ========================================
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: production-network-policy
+  namespace: act-production
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+  - from:
+    - podSelector: {}
+  egress:
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
+    - protocol: UDP
+      port: 53
+  - to:
+    - podSelector: {}
+
+---
+# ========================================
+# RESOURCE QUOTAS
+# ========================================
+
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: production-quota
+  namespace: act-production
+spec:
+  hard:
+    requests.cpu: "50"
+    requests.memory: 100Gi
+    limits.cpu: "100"
+    limits.memory: 200Gi
+    pods: "100"
+    persistentvolumeclaims: "20"
+    services: "20"
+
+---
+# ========================================
+# LIMIT RANGES
+# ========================================
+
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: production-limits
+  namespace: act-production
+spec:
+  limits:
+  - default:
+      memory: "1Gi"
+      cpu: "1000m"
+    defaultRequest:
+      memory: "512Mi"
+      cpu: "250m"
+    type: Container
+  - max:
+      memory: "4Gi"
+      cpu: "4000m"
+    min:
+      memory: "128Mi"
+      cpu: "100m"
+    type: Container

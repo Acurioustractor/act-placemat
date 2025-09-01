@@ -19,12 +19,17 @@ Detailed implementation plans and feature specifications:
 ### 🏛️ [Architecture](./Architecture/)
 Technical architecture and system design documents:
 - **[DATA_SERVING_STRATEGY.md](./Architecture/DATA_SERVING_STRATEGY.md)** - Data serving and API architecture
+- **[PROJECT_STRUCTURE.md](./Architecture/PROJECT_STRUCTURE.md)** - Project structure and separation strategy
+- **[OPTIMAL_PLATFORM_ARCHITECTURE.md](./Architecture/OPTIMAL_PLATFORM_ARCHITECTURE.md)** - Optimal platform design
+- **[Full Architecture Overview →](./Architecture/README.md)**
 
 ### 📋 [Guides](./Guides/)
 Setup, configuration, and operational guides:
 - **[QUICKSTART.md](./Guides/QUICKSTART.md)** - Quick setup and getting started guide
-- **[FRONTEND_BACKEND_CONNECTION_GUIDE.md](./Guides/FRONTEND_BACKEND_CONNECTION_GUIDE.md)** - Frontend-backend integration guide
-- **[PAGE_TESTING_GUIDE.md](./Guides/PAGE_TESTING_GUIDE.md)** - Testing procedures and guidelines
+- **[Setup Guides](./Guides/Setup/)** - Comprehensive setup documentation
+- **[Troubleshooting](./Guides/Troubleshooting/)** - Error resolution and debugging
+- **[FRONTEND_BACKEND_CONNECTION_GUIDE.md](./Guides/FRONTEND_BACKEND_CONNECTION_GUIDE.md)** - Integration guide
+- **[PAGE_TESTING_GUIDE.md](./Guides/PAGE_TESTING_GUIDE.md)** - Testing procedures
 
 ### 🧪 [Testing](./Testing/)
 Testing schedules, procedures, and methodologies:
@@ -38,9 +43,28 @@ Progress reports, analysis, and completed work documentation:
 - **[DATA_FIXES_COMPLETED.md](./Reports/DATA_FIXES_COMPLETED.md)** - Completed data fixes and improvements
 - **[SPRINT_PROGRESS.md](./Reports/SPRINT_PROGRESS.md)** - Sprint progress tracking
 
-### 📚 [Additional Resources](.)
-- **[Placemat code.md](./Placemat%20code.md)** - Core codebase documentation
-- **[Placemat how.md](./Placemat%20how.md)** - How-to guides and procedures
+### 🚀 [Deployment](./Deployment/)
+Production deployment and configuration guides:
+- **[DEPLOY_OPTIMAL_PLATFORM_ARCHITECTURE.md](./Deployment/DEPLOY_OPTIMAL_PLATFORM_ARCHITECTURE.md)** - Complete deployment guide
+- **[FIXED_COMPATIBILITY_DEPLOYMENT.md](./Deployment/FIXED_COMPATIBILITY_DEPLOYMENT.md)** - Compatibility fixes
+- **[Full Deployment Guide →](./Deployment/README.md)**
+
+### 🎬 [Showcase](./Showcase/)
+**Project presentations and demo materials for core placemat presentations phase:**
+- **[Project Showcases](./Showcase/Projects/)** - Individual project demonstration materials
+- **[Presentation Templates](./Showcase/Presentations/)** - ACT overview and technical presentation materials  
+- **[Showcase Guide →](./Showcase/README.md)** - Complete showcase documentation structure
+
+### 📝 [Content](./Content/)
+Blog posts, articles, and communications materials:
+- **[Blog Posts](./Content/)** - ACT blog content and articles
+- **[Content Guidelines →](./Content/README.md)** - Writing standards and community voice principles
+
+### 📚 [Reference](./Reference/)
+Historical documents and technical reference materials:
+- **[Development History](./Reference/Full_Development.md)** - Original comprehensive development vision
+- **[Technical References](./Reference/)** - Code documentation and organization summaries
+- **[Complete Reference Guide →](./Reference/README.md)** - All reference materials
 
 ---
 
@@ -48,8 +72,9 @@ Progress reports, analysis, and completed work documentation:
 
 ### 👥 **For Stakeholders**
 Start with:
-1. [Strategy/ACT_PLACEMAT_ALIGNMENT.md](./Strategy/ACT_PLACEMAT_ALIGNMENT.md) - Project overview and alignment
-2. [Implementation/EMPATHY_LEDGER_ACT_IMPLEMENTATION_PLAN.md](./Implementation/EMPATHY_LEDGER_ACT_IMPLEMENTATION_PLAN.md) - Main implementation roadmap
+1. [Showcase/Presentations/ACT-Overview-Presentation.md](./Showcase/Presentations/ACT-Overview-Presentation.md) - Complete organizational showcase
+2. [Strategy/ACT_PLACEMAT_ALIGNMENT.md](./Strategy/ACT_PLACEMAT_ALIGNMENT.md) - Project overview and alignment
+3. [Showcase/Projects/](./Showcase/Projects/) - Individual project demonstrations
 
 ### 💻 **For Developers**
 Start with:

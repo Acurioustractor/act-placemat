@@ -1,0 +1,64 @@
+# Add files here to ignore them from prettier formatting
+
+# Build directories
+/dist
+/build
+/coverage
+/.nx/cache
+/.nx/workspace-data
+/.next/
+/.cache/
+/.turbo/
+
+# Generated files
+*.d.ts
+/generated/
+**/node_modules/
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database
+*.sqlite
+*.db
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.temp
+
+# Public static assets
+public/
+static/
+
+# Specific file patterns
+CHANGELOG.md
+LICENSE
+*.min.js
+*.min.css
+
+# Documentation that should preserve formatting
+CONTRIBUTORS.md
+CODE_OF_CONDUCT.md
