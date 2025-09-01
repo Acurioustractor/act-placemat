@@ -1,0 +1,292 @@
+# Production Deployment Workflow with Workload Identity Federation
+# Secure deployment to ACT Placemat Intelligence Hub using WIF
+
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main, unified-intelligence ]
+    tags: [ 'v*' ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+env:
+  PROJECT_ID: act-placemat-intelligence-hub
+  REGION: australia-southeast1
+  CLUSTER_NAME: act-placemat-intelligence-hub
+  NAMESPACE: act-placemat
+  REGISTRY: registry.actplacemat.org.au:5000
+  
+permissions:
+  contents: read
+  id-token: write  # Required for WIF
+
+jobs:
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Authenticate to Google Cloud
+      id: auth
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: 'projects/123456789012/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider'
+        service_account: 'github-actions-security@act-placemat-intelligence-hub.iam.gserviceaccount.com'
+        token_format: 'access_token'
+        
+    - name: Configure gcloud
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        project_id: ${{ env.PROJECT_ID }}
+        
+    - name: Configure Docker for GCR
+      run: |
+        gcloud auth configure-docker ${{ env.REGISTRY }}
+        
+    - name: Security scan with Trivy
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        
+    - name: Upload security scan results
+      run: |
+        # Store security scan results in Secret Manager
+        echo "Uploading security scan results..."
+        gcloud secrets create security-scan-$(date +%Y%m%d-%H%M%S) \
+          --data-file=trivy-results.sarif \
+          --locations=australia-southeast1 \
+          --labels="data-residency=australia,compliance-framework=australian-privacy-act,scan-type=security"
+
+  build:
+    name: Build and Push Images
+    runs-on: ubuntu-latest
+    needs: security-scan
+    environment: production
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+      image-digest: ${{ steps.build.outputs.digest }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Authenticate to Google Cloud
+      id: auth
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: 'projects/123456789012/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider'
+        service_account: 'github-actions-deploy@act-placemat-intelligence-hub.iam.gserviceaccount.com'
+        token_format: 'access_token'
+        
+    - name: Configure gcloud
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        project_id: ${{ env.PROJECT_ID }}
+        
+    - name: Configure Docker for Registry
+      run: |
+        gcloud auth configure-docker ${{ env.REGISTRY }}
+        
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/act-placemat
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=sha,prefix={{branch}}-
+          
+    - name: Build and push Docker images
+      id: build
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: |
+          data-residency=australia
+          compliance-framework=australian-privacy-act
+          build-date=${{ steps.meta.outputs.created }}
+          git-sha=${{ github.sha }}
+          
+    - name: Sign container images
+      run: |
+        # Sign images with cosign for Australian compliance
+        echo "Signing container images..."
+        cosign sign --yes ${{ env.REGISTRY }}/act-placemat@${{ steps.build.outputs.digest }}
+        
+    - name: Log deployment event
+      run: |
+        echo "Logging deployment event to audit trail..."
+        gcloud logging write deployment-audit \
+          '{"action":"image_built","repository":"${{ github.repository }}","ref":"${{ github.ref }}","sha":"${{ github.sha }}","image":"${{ env.REGISTRY }}/act-placemat@${{ steps.build.outputs.digest }}","timestamp":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","compliance_framework":"australian-privacy-act","data_residency":"australia"}' \
+          --severity=INFO
+
+  deploy:
+    name: Deploy to Kubernetes
+    runs-on: ubuntu-latest
+    needs: build
+    environment: production
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Authenticate to Google Cloud
+      id: auth
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: 'projects/123456789012/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider'
+        service_account: 'github-actions-deploy@act-placemat-intelligence-hub.iam.gserviceaccount.com'
+        token_format: 'access_token'
+        
+    - name: Configure gcloud
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        project_id: ${{ env.PROJECT_ID }}
+        
+    - name: Get GKE credentials
+      run: |
+        gcloud container clusters get-credentials ${{ env.CLUSTER_NAME }} \
+          --region=${{ env.REGION }} \
+          --project=${{ env.PROJECT_ID }}
+          
+    - name: Verify cluster access
+      run: |
+        # Verify we can access the cluster with proper Australian data residency
+        kubectl get nodes -o jsonpath='{.items[*].metadata.labels.topology\.kubernetes\.io/zone}' | grep -E "australia-southeast[1-2]-[a-c]" || exit 1
+        echo "✅ Cluster access verified - nodes in Australian zones"
+        
+    - name: Deploy applications
+      run: |
+        # Deploy with image from build step
+        IMAGE_TAG="${{ needs.build.outputs.image-tag }}"
+        
+        # Update deployment manifests
+        cd infrastructure
+        
+        # Apply Secret Manager and WIF configurations
+        kubectl apply -f secrets/secret-manager-config.yaml
+        kubectl apply -f secrets/workload-identity-federation.yaml
+        
+        # Apply IAM configurations
+        kubectl apply -f iam/least-privilege-roles.yaml
+        kubectl apply -f iam/australian-compliance-roles.yaml
+        kubectl apply -f iam/organization-policies.yaml
+        kubectl apply -f iam/cmek-configuration.yaml
+        kubectl apply -f iam/iam-monitoring-audit.yaml
+        
+        # Apply base services with updated image
+        sed "s|IMAGE_TAG|${IMAGE_TAG}|g" base-services/langgraph-base.yaml | kubectl apply -f -
+        
+        echo "✅ Deployment completed successfully"
+        
+    - name: Verify deployment
+      run: |
+        # Wait for rollout
+        kubectl rollout status deployment/langgraph-orchestrator -n ${{ env.NAMESPACE }} --timeout=600s
+        kubectl rollout status deployment/financial-intelligence-agent -n ${{ env.NAMESPACE }} --timeout=600s
+        kubectl rollout status deployment/research-analyst-agent -n ${{ env.NAMESPACE }} --timeout=600s
+        kubectl rollout status deployment/compliance-officer-agent -n ${{ env.NAMESPACE }} --timeout=600s
+        kubectl rollout status deployment/community-coordinator-agent -n ${{ env.NAMESPACE }} --timeout=600s
+        
+        # Verify pods are running in Australian zones
+        kubectl get pods -n ${{ env.NAMESPACE }} -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.spec.nodeSelector.data-residency}{"\n"}{end}' | grep -v "australia" && exit 1 || echo "✅ All pods scheduled in Australian zones"
+        
+        # Health check
+        kubectl get pods -n ${{ env.NAMESPACE }} -l data-residency=australia --field-selector=status.phase=Running
+        
+    - name: Run smoke tests
+      run: |
+        echo "Running smoke tests..."
+        
+        # Test agent endpoints
+        kubectl run smoke-test-$(date +%s) \
+          --image=${{ env.REGISTRY }}/act-placemat/smoke-tests:latest \
+          --rm -i --restart=Never \
+          --namespace=${{ env.NAMESPACE }} \
+          --serviceaccount=github-actions-test \
+          --labels="data-residency=australia,compliance-framework=australian-privacy-act" \
+          -- /bin/sh -c "
+            echo 'Testing agent endpoints...'
+            curl -f http://financial-intelligence-agent:8080/health || exit 1
+            curl -f http://research-analyst-agent:8080/health || exit 1
+            curl -f http://compliance-officer-agent:8080/health || exit 1
+            curl -f http://community-coordinator-agent:8080/health || exit 1
+            echo '✅ All smoke tests passed'
+          "
+          
+    - name: Update deployment status
+      run: |
+        # Log successful deployment
+        gcloud logging write deployment-audit \
+          '{"action":"deployment_completed","repository":"${{ github.repository }}","ref":"${{ github.ref }}","sha":"${{ github.sha }}","environment":"production","status":"success","timestamp":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","compliance_framework":"australian-privacy-act","data_residency":"australia"}' \
+          --severity=INFO
+          
+        # Create deployment event in cluster
+        kubectl create event deployment-completed-$(date +%s) \
+          --message="Deployment completed successfully for ${{ github.ref }} (${{ github.sha }})" \
+          --reason="DeploymentCompleted" \
+          --type="Normal" \
+          --source="github-actions" \
+          --namespace=${{ env.NAMESPACE }}
+
+  notify:
+    name: Notify Completion
+    runs-on: ubuntu-latest
+    needs: [security-scan, build, deploy]
+    if: always()
+    environment: production
+    steps:
+    - name: Authenticate to Google Cloud
+      id: auth
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: 'projects/123456789012/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider'
+        service_account: 'github-actions-deploy@act-placemat-intelligence-hub.iam.gserviceaccount.com'
+        token_format: 'access_token'
+        
+    - name: Configure gcloud
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        project_id: ${{ env.PROJECT_ID }}
+        
+    - name: Send deployment notification
+      run: |
+        # Determine deployment status
+        if [[ "${{ needs.deploy.result }}" == "success" ]]; then
+          STATUS="SUCCESS"
+          SEVERITY="INFO"
+        else
+          STATUS="FAILED"
+          SEVERITY="ERROR"
+        fi
+        
+        # Log final deployment status
+        gcloud logging write deployment-audit \
+          '{"action":"deployment_notification","repository":"${{ github.repository }}","ref":"${{ github.ref }}","sha":"${{ github.sha }}","environment":"production","final_status":"'$STATUS'","timestamp":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","compliance_framework":"australian-privacy-act","data_residency":"australia","workflow_run_id":"${{ github.run_id }}"}' \
+          --severity=$SEVERITY
+          
+        echo "🇦🇺 Deployment $STATUS - ACT Placemat Intelligence Hub"
+        echo "Repository: ${{ github.repository }}"
+        echo "Reference: ${{ github.ref }}"
+        echo "Commit: ${{ github.sha }}"
+        echo "Environment: production"
+        echo "Compliance: Australian Privacy Act 1988"
+        echo "Data Residency: Australia"

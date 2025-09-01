@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACT Dual Theme System Test</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/styles/main.css">
+    <style>
+        body {
+            margin: 0;
+            transition: all 0.3s ease;
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: var(--space-md) var(--space-lg);
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: var(--theme-component-radius);
+            cursor: pointer;
+            font-weight: var(--font-weight-medium);
+            box-shadow: var(--shadow-lg);
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--space-2xl);
+        }
+        .demo-section {
+            margin-bottom: var(--space-3xl);
+            padding: var(--theme-component-padding);
+            background: var(--color-surface);
+            border-radius: var(--theme-component-radius);
+            box-shadow: var(--theme-component-shadow);
+            border: var(--theme-component-border);
+        }
+        .color-swatches {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: var(--space-md);
+            margin: var(--space-lg) 0;
+        }
+        .color-swatch {
+            padding: var(--space-lg);
+            border-radius: var(--radius-md);
+            text-align: center;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+        }
+        .swatch-primary { background: var(--color-primary); color: white; }
+        .swatch-secondary { background: var(--color-secondary); color: white; }
+        .swatch-accent { background: var(--color-accent); color: white; }
+        .swatch-surface { background: var(--color-surface); color: var(--color-text-primary); border: 1px solid var(--color-border); }
+        .form-demo {
+            display: grid;
+            gap: var(--space-lg);
+        }
+    </style>
+</head>
+<body data-theme="public">
+    <button class="theme-toggle" onclick="toggleTheme()">
+        Switch to Internal Theme
+    </button>
+
+    <div class="container">
+        <header>
+            <h1>ACT Platform Design System</h1>
+            <p class="lead">Dual theme system showcasing public (elegant) vs internal (practical) designs</p>
+        </header>
+
+        <main>
+            <!-- Typography Section -->
+            <section class="demo-section">
+                <h2>Typography Showcase</h2>
+                <p>This paragraph demonstrates our body text styling. It adapts beautifully between themes - more relaxed and editorial in the public theme, more functional in the internal theme.</p>
+                
+                <h3>Heading Level 3</h3>
+                <p>Here's some more text with a <a href="#">sample link</a> and some <strong>bold text</strong> and <em>italic text</em> to show inline styling.</p>
+                
+                <blockquote>
+                    "This blockquote shows how quotes are styled differently in each theme. Public theme uses elegant serif typography, while internal theme focuses on clarity."
+                    <cite>Design System Documentation</cite>
+                </blockquote>
+
+                <h4>Code Example</h4>
+                <p>Here's some inline <code>code styling</code> and a code block:</p>
+                <pre><code>function toggleTheme() {
+  const body = document.body;
+  const isPublic = body.getAttribute('data-theme') === 'public';
+  body.setAttribute('data-theme', isPublic ? 'internal' : 'public');
+}</code></pre>
+
+                <ul>
+                    <li>List item one with some text</li>
+                    <li>List item two with more content</li>
+                    <li>List item three to show spacing</li>
+                </ul>
+            </section>
+
+            <!-- Color System -->
+            <section class="demo-section">
+                <h2>Color System</h2>
+                <p>Our adaptive color system changes contextually between themes:</p>
+                <div class="color-swatches">
+                    <div class="color-swatch swatch-primary">Primary</div>
+                    <div class="color-swatch swatch-secondary">Secondary</div>
+                    <div class="color-swatch swatch-accent">Accent</div>
+                    <div class="color-swatch swatch-surface">Surface</div>
+                </div>
+            </section>
+
+            <!-- Form Elements -->
+            <section class="demo-section">
+                <h2>Form Elements</h2>
+                <p>Forms adapt their styling approach based on the theme:</p>
+                <form class="form-demo">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" placeholder="Enter your name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="your@email.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" placeholder="Tell us about your project..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="inline">
+                            <input type="checkbox"> I agree to the terms and conditions
+                        </label>
+                    </div>
+                    
+                    <button type="submit" style="padding: var(--space-md) var(--space-xl); background: var(--color-primary); color: white; border: none; border-radius: var(--theme-component-radius); cursor: pointer; font-weight: var(--font-weight-medium);">
+                        Submit Form
+                    </button>
+                </form>
+            </section>
+
+            <!-- Cards/Components -->
+            <section class="demo-section">
+                <h2>Component Styling</h2>
+                <p>This section itself is a component (demo-section) that adapts its padding, shadows, and borders based on the theme.</p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-lg); margin-top: var(--space-lg);">
+                    <div style="padding: var(--theme-component-padding); background: var(--color-surface-raised); border-radius: var(--theme-component-radius); box-shadow: var(--theme-component-shadow); border: var(--theme-component-border);">
+                        <h4>Sample Card</h4>
+                        <p>This card demonstrates theme-aware styling with adaptive padding, shadows, and borders.</p>
+                    </div>
+                    <div style="padding: var(--theme-component-padding); background: var(--color-surface-raised); border-radius: var(--theme-component-radius); box-shadow: var(--theme-component-shadow); border: var(--theme-component-border);">
+                        <h4>Another Card</h4>
+                        <p>Notice how the styling changes between public (elegant) and internal (structured) themes.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Theme Instructions -->
+            <section class="demo-section">
+                <h2>Theme Usage</h2>
+                <h4>Public Theme (Elegant & Editorial)</h4>
+                <ul>
+                    <li>Inspired by Oliver Jeffers and Baseborn Studio</li>
+                    <li>Uses Playfair Display for headings</li>
+                    <li>Generous spacing and elegant shadows</li>
+                    <li>Clean, borderless components</li>
+                    <li>Perfect for public-facing content</li>
+                </ul>
+
+                <h4>Internal Theme (Practical & Efficient)</h4>
+                <ul>
+                    <li>Inspired by Linear, GitHub, and Notion</li>
+                    <li>Uses Inter throughout for consistency</li>
+                    <li>Compact spacing and clear borders</li>
+                    <li>Structured, functional components</li>
+                    <li>Perfect for admin interfaces and tools</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const button = document.querySelector('.theme-toggle');
+            const isPublic = body.getAttribute('data-theme') === 'public';
+            
+            if (isPublic) {
+                body.setAttribute('data-theme', 'internal');
+                button.textContent = 'Switch to Public Theme';
+            } else {
+                body.setAttribute('data-theme', 'public');
+                button.textContent = 'Switch to Internal Theme';
+            }
+        }
+    </script>
+</body>
+</html>

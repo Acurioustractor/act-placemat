@@ -25,6 +25,7 @@ coverage/
 
 # Dependency directories
 node_modules/
+**/node_modules/
 
 # Optional npm cache directory
 .npm
@@ -67,6 +68,66 @@ dist/
 build/
 */dist/
 */build/
+**/dist/
+**/build/
 
 # Vercel
 .vercel
+
+dev-debug.log
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+# OS specific
+
+.nx/cache
+.nx/workspace-data
+.nx/
+**/.nx/
+.cursor/rules/nx-rules.mdc
+.github/instructions/nx.instructions.md
+
+# Next.js
+.next
+out
+
+# Expo
+node_modules/
+.expo/
+.yarn/
+dist/
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+cache/
+
+./.env.test.local
+
+# Large directories to reduce context size
+data/
+**/data/
+archive/
+**/cache/
+.cache/
+**/.cache/
+temp/
+tmp/
+**/temp/
+**/tmp/
+
+# Claude Code context management
+.claudeignore
+
+# Task files
+# tasks.json
+# tasks/ 

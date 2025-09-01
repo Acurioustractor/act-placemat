@@ -1,0 +1,697 @@
+# ACT Placemat Prometheus Alerting Rules
+# Comprehensive alerting for system health, performance, and business KPIs
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-alerting-rules
+  namespace: monitoring
+  labels:
+    prometheus: kube-prometheus
+    role: alert-rules
+data:
+  act-placemat-alerts.yml: |
+    groups:
+    # ========================================
+    # INFRASTRUCTURE & SYSTEM HEALTH ALERTS
+    # ========================================
+    - name: infrastructure-health
+      interval: 30s
+      rules:
+      
+      - alert: KubernetesNodeDown
+        expr: up{job="kubernetes-nodes"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          component: infrastructure
+          team: platform
+        annotations:
+          summary: "Kubernetes node is down"
+          description: "Node {{ $labels.instance }} has been down for more than 5 minutes"
+          runbook_url: "https://docs.actplacemat.org.au/runbooks/node-down"
+      
+      - alert: KubernetesNodeHighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+        for: 10m
+        labels:
+          severity: warning
+          component: infrastructure
+          team: platform
+        annotations:
+          summary: "High memory usage on Kubernetes node"
+          description: "Node {{ $labels.instance }} memory usage is {{ $value }}%"
+          
+      - alert: KubernetesNodeHighCPUUsage
+        expr: 100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 15m
+        labels:
+          severity: warning
+          component: infrastructure
+          team: platform
+        annotations:
+          summary: "High CPU usage on Kubernetes node"
+          description: "Node {{ $labels.instance }} CPU usage is {{ $value }}%"
+          
+      - alert: KubernetesNodeDiskSpaceLow
+        expr: (1 - (node_filesystem_avail_bytes / node_filesystem_size_bytes)) * 100 > 85
+        for: 10m
+        labels:
+          severity: warning
+          component: infrastructure
+          team: platform
+        annotations:
+          summary: "Low disk space on Kubernetes node"
+          description: "Node {{ $labels.instance }} disk usage is {{ $value }}% on {{ $labels.mountpoint }}"
+          
+      - alert: KubernetesPodCrashLooping
+        expr: rate(kube_pod_container_status_restarts_total[15m]) > 0
+        for: 5m
+        labels:
+          severity: critical
+          component: application
+          team: platform
+        annotations:
+          summary: "Pod is crash looping"
+          description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is restarting frequently"
+
+    # ========================================
+    # APPLICATION PERFORMANCE ALERTS
+    # ========================================
+    - name: application-performance
+      interval: 30s
+      rules:
+      
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="act-placemat-backend"}[5m])) > 2
+        for: 10m
+        labels:
+          severity: warning
+          component: backend
+          team: development
+        annotations:
+          summary: "High response time detected"
+          description: "95th percentile response time is {{ $value }}s for {{ $labels.method }} {{ $labels.endpoint }}"
+          
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) * 100 > 5
+        for: 5m
+        labels:
+          severity: critical
+          component: backend
+          team: development
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value }}% for {{ $labels.service }}"
+          
+      - alert: DatabaseConnectionPoolExhausted
+        expr: database_connection_pool_used / database_connection_pool_total > 0.9
+        for: 5m
+        labels:
+          severity: critical
+          component: database
+          team: platform
+        annotations:
+          summary: "Database connection pool nearly exhausted"
+          description: "Connection pool usage is {{ $value | humanizePercentage }}"
+          
+      - alert: DatabaseSlowQueries
+        expr: rate(database_slow_queries_total[5m]) > 10
+        for: 10m
+        labels:
+          severity: warning
+          component: database
+          team: development
+        annotations:
+          summary: "High number of slow database queries"
+          description: "{{ $value }} slow queries per second detected"
+          
+      - alert: MemoryLeakDetected
+        expr: increase(process_resident_memory_bytes[1h]) > 100000000  # 100MB increase per hour
+        for: 2h
+        labels:
+          severity: warning
+          component: application
+          team: development
+        annotations:
+          summary: "Potential memory leak detected"
+          description: "Memory usage for {{ $labels.job }} has increased by {{ $value | humanizeBytes }} in the last hour"
+
+    # ========================================
+    # COMMUNITY PLATFORM BUSINESS KPIs
+    # ========================================
+    - name: community-health-kpis
+      interval: 1m
+      rules:
+      
+      - alert: CommunityEngagementDrop
+        expr: (rate(community_interactions_total[1h]) / community_members_total) < 0.05
+        for: 30m
+        labels:
+          severity: warning
+          component: community
+          team: community-management
+        annotations:
+          summary: "Community engagement has dropped significantly"
+          description: "Engagement rate is {{ $value | humanizePercentage }} for community {{ $labels.community_id }}"
+          
+      - alert: HighCommunityChurnRate
+        expr: rate(community_members_left_total[24h]) / community_members_total > 0.1
+        for: 1h
+        labels:
+          severity: warning
+          component: community
+          team: community-management
+        annotations:
+          summary: "High community churn rate detected"
+          description: "Churn rate is {{ $value | humanizePercentage }} for community {{ $labels.community_id }}"
+          
+      - alert: StorySharingDecline
+        expr: rate(stories_created_total[24h]) < 5
+        for: 4h
+        labels:
+          severity: warning
+          component: content
+          team: community-management
+        annotations:
+          summary: "Story sharing activity has declined"
+          description: "Only {{ $value }} stories created in the last 24 hours"
+          
+      - alert: OpportunityApplicationsLow
+        expr: rate(opportunity_applications_total[24h]) < 2
+        for: 6h
+        labels:
+          severity: warning
+          component: opportunities
+          team: partnerships
+        annotations:
+          summary: "Low opportunity application rate"
+          description: "Only {{ $value }} opportunity applications in the last 24 hours"
+          
+      - alert: CommunityGrowthStalled
+        expr: rate(community_members_total[7d]) < 0.01
+        for: 24h
+        labels:
+          severity: warning
+          component: community
+          team: growth
+        annotations:
+          summary: "Community growth has stalled"
+          description: "Community growth rate is {{ $value | humanizePercentage }} over the last 7 days"
+
+    # ========================================
+    # CULTURAL PROTOCOLS & COMPLIANCE ALERTS
+    # ========================================
+    - name: cultural-compliance
+      interval: 30s
+      rules:
+      
+      - alert: CulturalProtocolViolation
+        expr: increase(cultural_protocol_violations_total[1h]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          component: cultural
+          team: cultural-advisors
+        annotations:
+          summary: "Cultural protocol violation detected"
+          description: "{{ $value }} cultural protocol violations in the last hour in {{ $labels.community_id }}"
+          
+      - alert: ElderReviewBacklog
+        expr: elder_review_pending_total > 5
+        for: 1h
+        labels:
+          severity: warning
+          component: cultural
+          team: cultural-advisors
+        annotations:
+          summary: "Elder review backlog detected"
+          description: "{{ $value }} items pending elder review for over 1 hour"
+          
+      - alert: DataSovereigntyBreach
+        expr: increase(data_sovereignty_breaches_total[1h]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          component: privacy
+          team: legal
+        annotations:
+          summary: "Data sovereignty breach detected"
+          description: "Potential data sovereignty breach detected in {{ $labels.community_id }}"
+          
+      - alert: UnauthorizedCulturalContentAccess
+        expr: increase(unauthorized_cultural_content_access_total[15m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          component: security
+          team: security
+        annotations:
+          summary: "Unauthorized access to cultural content"
+          description: "Unauthorized access attempt to cultural content by {{ $labels.user_type }}"
+          
+      - alert: LowCulturalComplianceRate
+        expr: cultural_protocol_compliance_rate < 0.95
+        for: 1h
+        labels:
+          severity: warning
+          component: cultural
+          team: cultural-advisors
+        annotations:
+          summary: "Cultural compliance rate below threshold"
+          description: "Cultural compliance rate is {{ $value | humanizePercentage }}"
+
+    # ========================================
+    # USER EXPERIENCE & ACCESSIBILITY ALERTS
+    # ========================================
+    - name: user-experience
+      interval: 1m
+      rules:
+      
+      - alert: HighPageLoadTime
+        expr: histogram_quantile(0.95, rate(page_load_duration_seconds_bucket[5m])) > 3
+        for: 10m
+        labels:
+          severity: warning
+          component: frontend
+          team: frontend
+        annotations:
+          summary: "High page load times detected"
+          description: "95th percentile page load time is {{ $value }}s"
+          
+      - alert: HighBounceRate
+        expr: user_session_bounce_rate > 0.7
+        for: 30m
+        labels:
+          severity: warning
+          component: ux
+          team: design
+        annotations:
+          summary: "High bounce rate detected"
+          description: "Bounce rate is {{ $value | humanizePercentage }}"
+          
+      - alert: AccessibilityFeatureFailure
+        expr: accessibility_feature_failures_total > 0
+        for: 5m
+        labels:
+          severity: warning
+          component: accessibility
+          team: frontend
+        annotations:
+          summary: "Accessibility feature failure detected"
+          description: "{{ $value }} accessibility feature failures in the last 5 minutes"
+          
+      - alert: MobileExperienceDegraded
+        expr: mobile_performance_score < 0.8
+        for: 15m
+        labels:
+          severity: warning
+          component: mobile
+          team: frontend
+        annotations:
+          summary: "Mobile experience degraded"
+          description: "Mobile performance score is {{ $value }}"
+
+    # ========================================
+    # SECURITY & PRIVACY ALERTS
+    # ========================================
+    - name: security-privacy
+      interval: 30s
+      rules:
+      
+      - alert: SuspiciousLoginActivity
+        expr: rate(failed_login_attempts_total[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+          component: security
+          team: security
+        annotations:
+          summary: "Suspicious login activity detected"
+          description: "{{ $value }} failed login attempts per second from {{ $labels.source_ip }}"
+          
+      - alert: UnusualDataExportVolume
+        expr: rate(data_export_requests_total[1h]) > 20
+        for: 15m
+        labels:
+          severity: warning
+          component: privacy
+          team: privacy
+        annotations:
+          summary: "Unusual data export activity"
+          description: "{{ $value }} data export requests in the last hour"
+          
+      - alert: PrivacyPolicyViolation
+        expr: increase(privacy_policy_violations_total[1h]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          component: privacy
+          team: legal
+        annotations:
+          summary: "Privacy policy violation detected"
+          description: "Privacy policy violation: {{ $labels.violation_type }}"
+          
+      - alert: SecurityScannerDown
+        expr: up{job="security-scanner"} == 0
+        for: 5m
+        labels:
+          severity: warning
+          component: security
+          team: security
+        annotations:
+          summary: "Security scanner is down"
+          description: "Security monitoring may be compromised"
+
+    # ========================================
+    # AI & INSIGHTS ENGINE ALERTS
+    # ========================================
+    - name: ai-insights
+      interval: 1m
+      rules:
+      
+      - alert: AIInsightGenerationFailure
+        expr: rate(ai_insight_generation_failures_total[15m]) > 0.1
+        for: 10m
+        labels:
+          severity: warning
+          component: ai
+          team: ai-team
+        annotations:
+          summary: "AI insight generation failing"
+          description: "{{ $value }} AI insight generation failures per second"
+          
+      - alert: CommunityInsightEngineDown
+        expr: up{job="community-insights-engine"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          component: ai
+          team: ai-team
+        annotations:
+          summary: "Community insights engine is down"
+          description: "Community analysis and recommendations unavailable"
+          
+      - alert: BiasDetectionAlert
+        expr: ai_bias_score > 0.3
+        for: 5m
+        labels:
+          severity: warning
+          component: ai
+          team: ai-ethics
+        annotations:
+          summary: "AI bias detected"
+          description: "Bias score of {{ $value }} detected in {{ $labels.ai_model }}"
+          
+      - alert: AIModelPerformanceDegraded
+        expr: ai_model_accuracy < 0.85
+        for: 30m
+        labels:
+          severity: warning
+          component: ai
+          team: ai-team
+        annotations:
+          summary: "AI model performance degraded"
+          description: "Model accuracy is {{ $value | humanizePercentage }} for {{ $labels.model_name }}"
+
+    # ========================================
+    # BENEFIT SHARING & ECONOMICS ALERTS
+    # ========================================
+    - name: benefit-sharing
+      interval: 5m
+      rules:
+      
+      - alert: BenefitSharingProcessorDown
+        expr: up{job="benefit-sharing-processor"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          component: economics
+          team: finance
+        annotations:
+          summary: "Benefit sharing processor is down"
+          description: "Community benefit distributions may be affected"
+          
+      - alert: PaymentProcessingFailure
+        expr: rate(payment_processing_failures_total[15m]) > 0.05
+        for: 10m
+        labels:
+          severity: warning
+          component: payments
+          team: finance
+        annotations:
+          summary: "High payment processing failure rate"
+          description: "{{ $value }} payment failures per second"
+          
+      - alert: CommunityBenefitThresholdNotMet
+        expr: community_benefit_share_percentage < 0.4
+        for: 1h
+        labels:
+          severity: warning
+          component: economics
+          team: governance
+        annotations:
+          summary: "Community benefit threshold not met"
+          description: "Community benefit share is {{ $value | humanizePercentage }}, below 40% threshold"
+          
+      - alert: UnusualFinancialTransaction
+        expr: financial_transaction_amount > 10000
+        for: 0m
+        labels:
+          severity: warning
+          component: finance
+          team: finance
+        annotations:
+          summary: "Large financial transaction detected"
+          description: "Transaction of ${{ $value }} detected for {{ $labels.transaction_type }}"
+
+    # ========================================
+    # MONITORING SYSTEM HEALTH
+    # ========================================
+    - name: monitoring-health
+      interval: 1m
+      rules:
+      
+      - alert: PrometheusTargetDown
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: warning
+          component: monitoring
+          team: platform
+        annotations:
+          summary: "Prometheus target is down"
+          description: "{{ $labels.job }} target {{ $labels.instance }} is down"
+          
+      - alert: AlertmanagerDown
+        expr: up{job="alertmanager"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          component: monitoring
+          team: platform
+        annotations:
+          summary: "Alertmanager is down"
+          description: "Alerting system is not functioning"
+          
+      - alert: GrafanaDown
+        expr: up{job="grafana"} == 0
+        for: 5m
+        labels:
+          severity: warning
+          component: monitoring
+          team: platform
+        annotations:
+          summary: "Grafana is down"
+          description: "Monitoring dashboards are unavailable"
+          
+      - alert: ElasticsearchClusterRed
+        expr: elasticsearch_cluster_health_status{color="red"} == 1
+        for: 2m
+        labels:
+          severity: critical
+          component: logging
+          team: platform
+        annotations:
+          summary: "Elasticsearch cluster is in red state"
+          description: "Logging and search functionality may be impaired"
+          
+      - alert: JaegerTracingDown
+        expr: up{job="jaeger"} == 0
+        for: 10m
+        labels:
+          severity: warning
+          component: tracing
+          team: platform
+        annotations:
+          summary: "Jaeger tracing is down"
+          description: "Distributed tracing unavailable"
+
+---
+# Update Prometheus configuration to include alerting rules
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config-with-alerts
+  namespace: monitoring
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+      external_labels:
+        cluster: 'act-placemat-production'
+        environment: 'production'
+    
+    rule_files:
+      - "/etc/prometheus/rules/*.yml"
+    
+    alerting:
+      alertmanagers:
+        - static_configs:
+            - targets:
+              - alertmanager-service:9093
+          path_prefix: /
+          scheme: http
+    
+    scrape_configs:
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['localhost:9090']
+        scrape_interval: 30s
+        metrics_path: /metrics
+      
+      - job_name: 'kubernetes-apiservers'
+        kubernetes_sd_configs:
+        - role: endpoints
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+          action: keep
+          regex: default;kubernetes;https
+      
+      - job_name: 'kubernetes-nodes'
+        kubernetes_sd_configs:
+        - role: node
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        relabel_configs:
+        - action: labelmap
+          regex: __meta_kubernetes_node_label_(.+)
+        - target_label: __address__
+          replacement: kubernetes.default.svc:443
+        - source_labels: [__meta_kubernetes_node_name]
+          regex: (.+)
+          target_label: __metrics_path__
+          replacement: /api/v1/nodes/${1}/proxy/metrics
+      
+      - job_name: 'kubernetes-pods'
+        kubernetes_sd_configs:
+        - role: pod
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+          action: keep
+          regex: true
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+          action: replace
+          target_label: __metrics_path__
+          regex: (.+)
+        - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+          action: replace
+          regex: ([^:]+)(?::\d+)?;(\d+)
+          replacement: $1:$2
+          target_label: __address__
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_(.+)
+        - source_labels: [__meta_kubernetes_namespace]
+          action: replace
+          target_label: kubernetes_namespace
+        - source_labels: [__meta_kubernetes_pod_name]
+          action: replace
+          target_label: kubernetes_pod_name
+      
+      # ACT Placemat specific job configurations
+      - job_name: 'act-placemat-backend'
+        kubernetes_sd_configs:
+        - role: endpoints
+          namespaces:
+            names:
+            - act-production
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_service_name]
+          action: keep
+          regex: backend-service
+        - source_labels: [__meta_kubernetes_endpoint_port_name]
+          action: keep
+          regex: metrics
+        metrics_path: /metrics
+        scrape_interval: 30s
+      
+      - job_name: 'act-placemat-frontend'
+        kubernetes_sd_configs:
+        - role: endpoints
+          namespaces:
+            names:
+            - act-production
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_service_name]
+          action: keep
+          regex: frontend-service
+        - source_labels: [__meta_kubernetes_endpoint_port_name]
+          action: keep
+          regex: metrics
+        metrics_path: /metrics
+        scrape_interval: 30s
+      
+      - job_name: 'community-insights-engine'
+        kubernetes_sd_configs:
+        - role: endpoints
+          namespaces:
+            names:
+            - act-communities
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_service_name]
+          action: keep
+          regex: insights-engine-service
+        metrics_path: /metrics
+        scrape_interval: 30s
+      
+      - job_name: 'benefit-sharing-processor'
+        kubernetes_sd_configs:
+        - role: endpoints
+          namespaces:
+            names:
+            - act-communities
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_service_name]
+          action: keep
+          regex: benefit-sharing-service
+        metrics_path: /metrics
+        scrape_interval: 30s
+      
+      # Monitoring infrastructure
+      - job_name: 'alertmanager'
+        static_configs:
+          - targets: ['alertmanager-service:9093']
+        scrape_interval: 30s
+      
+      - job_name: 'grafana'
+        static_configs:
+          - targets: ['grafana-service:3000']
+        scrape_interval: 30s
+        
+      - job_name: 'jaeger'
+        static_configs:
+          - targets: ['jaeger-query:16686']
+        scrape_interval: 30s
+        
+      - job_name: 'elasticsearch'
+        static_configs:
+          - targets: ['elasticsearch-service:9200']
+        scrape_interval: 30s

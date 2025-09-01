@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACT Goods Project - Snow Foundation Pitch Deck</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f8f9fa;
+            line-height: 1.6;
+        }
+        
+        .slide {
+            max-width: 1000px;
+            min-height: 600px;
+            margin: 0 auto 20px;
+            padding: 40px;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            page-break-after: always;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        @media screen and (max-width: 1100px) {
+            .slide {
+                margin: 0 20px 20px;
+                max-width: calc(100% - 40px);
+            }
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3a8a, #dc2626);
+            color: white;
+            padding: 30px;
+            margin: -40px -40px 40px -40px;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 300;
+            line-height: 1.2;
+        }
+        
+        .header p {
+            margin: 15px 0 0 0;
+            font-size: 1.1em;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+        
+        .slide h2 {
+            color: #1e3a8a;
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            margin-top: 15px;
+            border-bottom: 3px solid #dc2626;
+            padding-bottom: 10px;
+            line-height: 1.3;
+        }
+        
+        .slide h3 {
+            color: #dc2626;
+            font-size: 1.4em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .stat-box {
+            background: #f0f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #1e3a8a;
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #dc2626;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.9em;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border-left: 5px solid #f59e0b;
+        }
+        
+        .quote {
+            font-style: italic;
+            font-size: 1.1em;
+            color: #374151;
+            border-left: 4px solid #dc2626;
+            padding-left: 20px;
+            margin: 20px 0;
+        }
+        
+        .values-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .value-item {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .value-item h4 {
+            color: #1e3a8a;
+            margin: 0 0 10px 0;
+        }
+        
+        .financial-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .financial-table th,
+        .financial-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .financial-table th {
+            background: #f3f4f6;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .amount {
+            text-align: right;
+            font-weight: 600;
+        }
+        
+        .positive {
+            color: #10b981;
+        }
+        
+        .negative {
+            color: #dc2626;
+        }
+        
+        ul {
+            padding-left: 20px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            font-size: 0.9em;
+            color: #6b7280;
+        }
+        
+        @media print {
+            body { margin: 0; }
+            .slide { margin: 0; box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Slide 1: Title -->
+<div class="slide">
+    <div class="header">
+        <h1>The Goods Project</h1>
+        <p>Traditional Custodian-led Manufacturing Sovereignty</p>
+        <p>Snow Foundation Partnership Proposal | 2025</p>
+    </div>
+    
+    <div class="highlight-box">
+        <h3>Community Manufacturing Revolution</h3>
+        <p>Supporting First Nations communities to own their essential goods manufacturing - creating economic self-determination through Traditional knowledge-guided production of beds, washing machines, and household essentials.</p>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-number">500+</div>
+            <div class="stat-label">Community Members Supported</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">100%</div>
+            <div class="stat-label">Community Ownership Model</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">4</div>
+            <div class="stat-label">Traditional Country Communities</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">Zero</div>
+            <div class="stat-label">Product Failures in Testing</div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        A Curious Tractor | nicholas@act.place | Traditional Custodian-guided approach
+    </div>
+</div>
+
+<!-- Slide 2: The Challenge -->
+<div class="slide">
+    <h2>The Challenge: Health Equity Through Housing Dignity</h2>
+    
+    <div class="highlight-box">
+        <p><strong>150,900 First Nations people in remote communities</strong> lack access to durable household goods that directly impact health outcomes.</p>
+    </div>
+    
+    <h3>Critical Health Disparities</h3>
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-number">60x</div>
+            <div class="stat-label">Higher RHD prevalence rates</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">55%</div>
+            <div class="stat-label">Overcrowding in very remote areas</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">2x+</div>
+            <div class="stat-label">Cost of essential goods vs cities</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">18%</div>
+            <div class="stat-label">Live in substandard housing</div>
+        </div>
+    </div>
+    
+    <div class="quote">
+        "It's very hard and expensive. Hardly any people around the community have beds."
+        <br><em>— Dianne Stokes, Tennant Creek Community Leader</em>
+    </div>
+    
+    <h3>The Gap</h3>
+    <ul>
+        <li>No manufacturer prioritises community-led design for remote health needs</li>
+        <li>Products designed in urban centres fail quickly in remote conditions</li>
+        <li>Communities remain consumers rather than owners of production</li>
+        <li>Economic benefits extracted rather than retained locally</li>
+    </ul>
+</div>
+
+<!-- Slide 3: Our Solution -->
+<div class="slide">
+    <h2>Our Solution: Traditional Knowledge-Guided Manufacturing</h2>
+    
+    <h3>Community Manufacturing Sovereignty</h3>
+    <p>Following Traditional Custodian Richard Cassidy's guidance to "read the river, walk the walk, talk the talk then create our story" - communities control every aspect of production.</p>
+    
+    <div class="values-grid">
+        <div class="value-item">
+            <h4>Community Ownership</h4>
+            <p>100% community control of manufacturing, profits, and decision-making</p>
+        </div>
+        <div class="value-item">
+            <h4>Traditional Guidance</h4>
+            <p>Elder leadership and Cultural protocols guide all innovation</p>
+        </div>
+        <div class="value-item">
+            <h4>Health Focus</h4>
+            <p>Products designed to address sleep-related health outcomes</p>
+        </div>
+    </div>
+    
+    <h3>Proven Community Co-Design Process</h3>
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-number">4x3x3</div>
+            <div class="stat-label">Model: 4 communities, 3 products, 3 iterations</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">160+</div>
+            <div class="stat-label">Community interviews conducted</div>
+        </div>
+    </div>
+    
+    <div class="quote">
+        "This basket-style bed is easier to set up than anything else I've seen."
+        <br><em>— Alfred, Community Member</em>
+    </div>
+    
+    <h3>Innovation Beyond Products</h3>
+    <ul>
+        <li><strong>Economic Self-Determination:</strong> Communities become manufacturers, not consumers</li>
+        <li><strong>Circular Economy:</strong> Local plastic waste becomes manufacturing inputs</li>
+        <li><strong>Skills Transfer:</strong> Complete manufacturing expertise transferred to communities</li>
+        <li><strong>Cultural Integration:</strong> Traditional knowledge guides all design decisions</li>
+    </ul>
+</div>
+
+<!-- Slide 4: Impact & Evidence -->
+<div class="slide">
+    <h2>Impact & Evidence: Community-Controlled Success</h2>
+    
+    <h3>Current Achievements</h3>
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-number">250</div>
+            <div class="stat-label">Beds deployed across 4 communities</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">11</div>
+            <div class="stat-label">Indestructible washing machines operational</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">500+</div>
+            <div class="stat-label">Community members supported</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">0</div>
+            <div class="stat-label">Product failures in 12-month testing</div>
+        </div>
+    </div>
+    
+    <h3>Traditional Country Communities</h3>
+    <ul>
+        <li><strong>Warumungu Country (Tennant Creek):</strong> Primary manufacturing hub with community workspace</li>
+        <li><strong>Bwgcolman (Palm Island):</strong> Requested 100 additional beds after successful trials</li>
+        <li><strong>Kalkadoon Country (Mt Isa):</strong> Active co-design and testing community</li>
+        <li><strong>Central Desert Communities:</strong> Traditional knowledge integration focus</li>
+    </ul>
+    
+    <div class="highlight-box">
+        <h3>Empathy Ledger Impact Measurement</h3>
+        <p>Our innovative community-controlled evaluation captures authentic voices and ensures Traditional governance over success metrics - demonstrating improved sleep quality, reduced floor sleeping, enhanced dignity, and stronger community ownership.</p>
+    </div>
+    
+    <h3>Community Leadership Evidence</h3>
+    <ul>
+        <li>Traditional Custodians Norman Frank, Patricia Frank, LT and Dianne Stokes govern cultural protocols</li>
+        <li>Community members lead assembly and maintenance training</li>
+        <li>Local employment creation: 8+ community members in manufacturing roles</li>
+        <li>100% user satisfaction maintained throughout testing phase</li>
+    </ul>
+</div>
+
+<!-- Slide 5: 12 Month Goals -->
+<div class="slide">
+    <h2>12-Month Goals: Scaling Manufacturing Sovereignty</h2>
+    
+    <div class="highlight-box">
+        <h3>Traditional Custodian-Guided Expansion</h3>
+        <p>All goals operate under Traditional governance ensuring community authority over growth and maintaining cultural protocols.</p>
+    </div>
+    
+    <h3>1. Scale Community-Controlled Production</h3>
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-number">300</div>
+            <div class="stat-label">Additional beds through community enterprises</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">40</div>
+            <div class="stat-label">Indestructible washing machines</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">800+</div>
+            <div class="stat-label">Community members directly supported</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">100%</div>
+            <div class="stat-label">Community ownership maintained</div>
+        </div>
+    </div>
+    
+    <h3>2. Establish Manufacturing Sovereignty</h3>
+    <ul>
+        <li>Build community-owned facilities on Warumungu Country and Bwgcolman</li>
+        <li>Train 15+ local residents under Traditional governance</li>
+        <li>Transfer complete ownership of equipment and operations to community control</li>
+        <li>Establish Traditional governance protocols for business decisions</li>
+    </ul>
+    
+    <h3>3. Develop Traditional Knowledge-Guided Innovation</h3>
+    <ul>
+        <li>Complete community co-design of modular refrigeration units</li>
+        <li>Integrate Traditional Custodian guidance throughout development</li>
+        <li>Demonstrate scalable community manufacturing capability</li>
+        <li>Create replicable model for other Traditional Country communities</li>
+    </ul>
+</div>
+
+<!-- Slide 6: Financial Partnership -->
+<div class="slide">
+    <h2>Financial Partnership: Catalytic Investment Model</h2>
+    
+    <div class="highlight-box">
+        <h3>Community-Led Financial Development</h3>
+        <p>As a newly developing project, we prioritise money flowing back to communities while working towards community enterprises that generate stable income.</p>
+    </div>
+    
+    <h3>Current Foundation (Confirmed Income)</h3>
+    <table class="financial-table">
+        <tr>
+            <th>Source</th>
+            <th class="amount">Amount</th>
+            <th>Status</th>
+        </tr>
+        <tr>
+            <td>Snow Foundation (existing partnership)</td>
+            <td class="amount positive">$193,785</td>
+            <td>Confirmed</td>
+        </tr>
+        <tr>
+            <td>AMP Foundation</td>
+            <td class="amount positive">$21,900</td>
+            <td>Confirmed</td>
+        </tr>
+        <tr>
+            <td>Vincent Fairfax Family Foundation</td>
+            <td class="amount positive">$50,000</td>
+            <td>Confirmed</td>
+        </tr>
+        <tr style="font-weight: bold; border-top: 2px solid #1e3a8a;">
+            <td>Total Confirmed Investment</td>
+            <td class="amount positive">$265,685</td>
+            <td>Received</td>
+        </tr>
+    </table>
+    
+    <h3>FY26 Partnership Projections</h3>
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-number">$550K</div>
+            <div class="stat-label">Total projected income</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">$567K</div>
+            <div class="stat-label">Community-identified investment needs</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">-$17K</div>
+            <div class="stat-label">Strategic deficit showing realistic planning</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">$471K</div>
+            <div class="stat-label">Community asset value transfer</div>
+        </div>
+    </div>
+    
+    <h3>Sustainability Pathway</h3>
+    <ul>
+        <li><strong>Year 1:</strong> Grant-funded community enterprise establishment</li>
+        <li><strong>Year 2-3:</strong> Community co-investment and product sales revenue</li>
+        <li><strong>Year 4+:</strong> Self-sustaining community enterprises with retained profits</li>
+    </ul>
+</div>
+
+<!-- Slide 7: Snow Foundation Alignment -->
+<div class="slide">
+    <h2>Perfect Alignment: Snow Foundation Values</h2>
+    
+    <div class="values-grid">
+        <div class="value-item">
+            <h4>Humility</h4>
+            <p>Following Traditional Custodian guidance, recognising communities as experts</p>
+        </div>
+        <div class="value-item">
+            <h4>Social Justice</h4>
+            <p>Addressing systemic economic exclusion through manufacturing sovereignty</p>
+        </div>
+        <div class="value-item">
+            <h4>Collaboration</h4>
+            <p>Traditional governance controlling all partnerships and external relationships</p>
+        </div>
+        <div class="value-item">
+            <h4>Commitment</h4>
+            <p>Long-term community asset building and permanent ownership transfer</p>
+        </div>
+        <div class="value-item">
+            <h4>Empathy</h4>
+            <p>Community-controlled Empathy Ledger ensuring authentic voice-centered evaluation</p>
+        </div>
+        <div class="value-item">
+            <h4>Transparency</h4>
+            <p>Open-source methodology with community data ownership and control</p>
+        </div>
+    </div>
+    
+    <h3>Strategic Priorities Alignment</h3>
+    <div class="highlight-box">
+        <p><strong>First Nations Leadership:</strong> Traditional Custodians govern all aspects</p>
+        <p><strong>Innovation in Self-Determination:</strong> Manufacturing sovereignty model</p>
+        <p><strong>Systemic Change:</strong> Addressing economic exclusion root causes</p>
+        <p><strong>Community Collaboration:</strong> Multi-community network approach</p>
+    </div>
+    
+    <h3>Our Country Pillar Perfect Match</h3>
+    <ul>
+        <li><strong>Social Entrepreneurs:</strong> Nicholas Marchesi's proven track record (OAM, Young Australian of the Year)</li>
+        <li><strong>Social Justice Issues:</strong> Health equity through housing dignity</li>
+        <li><strong>Innovation:</strong> Revolutionary community ownership manufacturing model</li>
+        <li><strong>Risk-Taking:</strong> Bold vision matching Snow Foundation's approach</li>
+    </ul>
+</div>
+
+<!-- Slide 8: Call to Action -->
+<div class="slide">
+    <h2>Partnership Invitation: Catalysing Community Sovereignty</h2>
+    
+    <div class="highlight-box">
+        <h3>This is More Than Manufacturing</h3>
+        <p>This is about revolutionising how First Nations communities relate to manufacturing, ownership, and economic control. Your partnership enables genuine self-determination through production sovereignty.</p>
+    </div>
+    
+    <h3>What Your Partnership Enables</h3>
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-number">800+</div>
+            <div class="stat-label">Community members achieving better health outcomes</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">4</div>
+            <div class="stat-label">Traditional Country communities with manufacturing sovereignty</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">$471K</div>
+            <div class="stat-label">Community-owned assets created permanently</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">∞</div>
+            <div class="stat-label">Ongoing community wealth generation</div>
+        </div>
+    </div>
+    
+    <h3>Why Now?</h3>
+    <ul>
+        <li><strong>Proven Model:</strong> Successful community testing validates approach</li>
+        <li><strong>Community Demand:</strong> Communities requesting expansion demonstrates need</li>
+        <li><strong>Strategic Moment:</strong> Ready to scale manufacturing sovereignty</li>
+        <li><strong>Perfect Alignment:</strong> Values-driven partnership opportunity</li>
+    </ul>
+    
+    <div class="quote">
+        "Instead of communities buying products made elsewhere, we're supporting communities to make what they need and keep the profits."
+        <br><em>— Community Development Impact Statement</em>
+    </div>
+    
+    <h3>Next Steps</h3>
+    <p>We invite Snow Foundation to partner with us in demonstrating that communities can own their manufacturing, create local employment, and produce higher-quality products while achieving genuine economic self-determination.</p>
+    
+    <div class="footer">
+        <strong>Contact:</strong> Nicholas Marchesi | nicholas@act.place | 0424 054 113<br>
+        <strong>Traditional Guidance:</strong> Richard Cassidy | Traditional Custodian, Palm Island<br>
+        <strong>Community Hub:</strong> Wilya Janta, Tennant Creek | Manufacturing & Training Centre
+    </div>
+</div>
+
+</body>
+</html>

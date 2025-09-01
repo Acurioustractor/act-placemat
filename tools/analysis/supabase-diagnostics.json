@@ -1,0 +1,60 @@
+{
+  "timestamp": "2025-08-07T02:45:21.791Z",
+  "connection": "successful",
+  "results": {
+    "stories": {
+      "exists": false,
+      "readable": false,
+      "writable": false,
+      "count": 0,
+      "sampleData": null,
+      "error": ""
+    },
+    "projects": {
+      "exists": false,
+      "readable": false,
+      "writable": false,
+      "count": 0,
+      "sampleData": null,
+      "error": ""
+    },
+    "opportunities": {
+      "exists": false,
+      "readable": false,
+      "writable": false,
+      "count": 0,
+      "sampleData": null,
+      "error": ""
+    },
+    "organizations": {
+      "exists": false,
+      "readable": false,
+      "writable": false,
+      "count": 0,
+      "sampleData": null,
+      "error": ""
+    },
+    "people": {
+      "exists": false,
+      "readable": false,
+      "writable": false,
+      "count": 0,
+      "sampleData": null,
+      "error": ""
+    },
+    "artifacts": {
+      "exists": false,
+      "readable": false,
+      "writable": false,
+      "count": 0,
+      "sampleData": null,
+      "error": ""
+    }
+  },
+  "summary": {
+    "total": 6,
+    "existing": 0,
+    "accessible": 0,
+    "withData": 0
+  }
+}

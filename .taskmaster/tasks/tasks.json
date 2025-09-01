@@ -1,0 +1,269 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 11,
+        "title": "Setup Production Supabase Database with Security",
+        "description": "Establish a production-grade Supabase database with automated backups, row-level security, and proper schema design to support community data sovereignty.",
+        "details": "Implement a Supabase database (latest version 2.x) with the following components:\n1. Design database schema with tables for communities, projects, stories, partnerships, revenue tracking, and user permissions\n2. Configure Row Level Security (RLS) policies for each table based on user roles (Community, Partner, Admin)\n3. Set up automated daily backups with 30-day retention using Supabase's built-in backup system\n4. Implement database triggers for audit logging of sensitive data changes\n5. Create database functions for complex operations while maintaining security\n6. Configure database indexes for optimized query performance\n7. Set up database migrations using Supabase CLI (version 1.x+) for version control\n8. Implement data validation at the database level using constraints and checks\n\nTechnical specifications:\n- Use Postgres 15.x via Supabase\n- Implement pgvector extension for AI-related features\n- Configure connection pooling for production load\n- Set up proper database monitoring with Supabase's metrics dashboard",
+        "testStrategy": "1. Develop comprehensive unit tests for database functions and triggers\n2. Create integration tests verifying RLS policies work correctly for each user role\n3. Perform load testing with simulated production traffic (minimum 100 concurrent users)\n4. Verify backup and restore functionality in staging environment\n5. Conduct security penetration testing against database access points\n6. Test data integrity constraints with boundary and invalid inputs\n7. Verify proper indexing with EXPLAIN ANALYZE on common queries",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Implement Authentication System with Role-Based Permissions",
+        "description": "Develop a robust authentication system with role-based access control supporting Community, Partner, and Admin permission levels with secure token management.",
+        "details": "Implement authentication using Supabase Auth with the following specifications:\n1. Configure email/password, social login (Google, Facebook), and magic link authentication options\n2. Create custom user profiles table linked to auth.users with role information\n3. Implement role-based middleware for API routes with three primary roles: Community, Partner, Admin\n4. Set up JWT token handling with proper expiration and refresh token rotation\n5. Create secure password reset and email verification flows\n6. Implement session management with device tracking and forced logout capabilities\n7. Add multi-factor authentication option for sensitive operations\n8. Create role-specific login journeys and onboarding flows\n\nTechnical specifications:\n- Use Supabase Auth with custom JWT claims for roles\n- Implement Auth.js (NextAuth) v4.x for frontend authentication handling\n- Follow OWASP security best practices for authentication\n- Use bcrypt (10+ rounds) for password hashing\n- Implement rate limiting on authentication endpoints",
+        "testStrategy": "1. Create unit tests for authentication functions and middleware\n2. Develop integration tests for each authentication flow (signup, login, password reset)\n3. Test role-based access control for all protected routes\n4. Perform security testing including brute force protection and token security\n5. Test session management including timeout and refresh scenarios\n6. Verify proper error handling for authentication failures\n7. Conduct end-to-end testing of complete authentication journeys",
+        "priority": "high",
+        "dependencies": [
+          11
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Develop API Layer with Production-Ready Endpoints",
+        "description": "Create a comprehensive API layer with stabilized endpoints, proper error handling, rate limiting, and documentation to support all platform features.",
+        "details": "Implement a production-grade API with the following components:\n1. Design RESTful API endpoints for all core resources (communities, projects, stories, etc.)\n2. Implement GraphQL API using Apollo Server (v4.x) for complex data queries\n3. Create standardized error handling with proper HTTP status codes and error messages\n4. Implement rate limiting and request throttling using Express Rate Limit (v6.x)\n5. Add request validation using Zod (v3.x) or Joi for all incoming data\n6. Set up API versioning strategy for future compatibility\n7. Implement proper CORS configuration for security\n8. Create comprehensive API documentation using OpenAPI/Swagger\n\nTechnical specifications:\n- Use Node.js 18+ with Express 4.x or Next.js API routes\n- Implement middleware pattern for cross-cutting concerns\n- Use TypeScript for type safety throughout the API layer\n- Set up proper logging with Winston or Pino\n- Implement circuit breaker pattern for external service calls\n- Configure proper HTTP caching headers for appropriate endpoints",
+        "testStrategy": "1. Develop unit tests for all API handlers and middleware\n2. Create integration tests for complete API flows\n3. Perform load testing to verify 99.9% uptime under production load\n4. Test error scenarios and verify proper error responses\n5. Verify rate limiting functionality\n6. Test API versioning and backward compatibility\n7. Conduct security testing including OWASP Top 10 vulnerabilities\n8. Verify documentation accuracy with automated tests",
+        "priority": "high",
+        "dependencies": [
+          11,
+          12
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Implement Real-Time Data Synchronization System",
+        "description": "Build a robust real-time data synchronization system between Notion, Supabase, Xero, and other external data sources with retry logic and monitoring.",
+        "details": "Create a data synchronization system with the following components:\n1. Implement Notion API integration using official Node.js SDK for project and story data\n2. Set up Xero API integration for financial data using Xero Node.js SDK\n3. Create a webhook receiver system for real-time updates from external systems\n4. Implement a job queue using Bull (v4.x) with Redis for reliable processing\n5. Develop automated retry logic with exponential backoff for failed API calls\n6. Create data transformation layer to normalize data between systems\n7. Implement conflict resolution strategies for concurrent updates\n8. Set up comprehensive health monitoring and alerting\n\nTechnical specifications:\n- Use Redis 6.x+ for job queue and caching\n- Implement Bull Dashboard for queue monitoring\n- Use Axios or node-fetch for HTTP requests with interceptors\n- Set up Prometheus metrics for monitoring\n- Configure proper error logging with context\n- Implement circuit breaker pattern using Opossum\n- Use TypeScript interfaces for data mapping between systems",
+        "testStrategy": "1. Create unit tests for data transformation and normalization functions\n2. Develop integration tests with mock external APIs\n3. Test retry logic with simulated failures\n4. Verify conflict resolution with concurrent update scenarios\n5. Test end-to-end synchronization flows with staging environments\n6. Verify monitoring and alerting functionality\n7. Perform load testing with high volume data synchronization\n8. Test recovery scenarios after system outages",
+        "priority": "medium",
+        "dependencies": [
+          11,
+          13
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "Build Community Dashboard with Real-Time Updates",
+        "description": "Develop an intuitive community dashboard showing project status, revenue tracking, and partnership health with real-time updates and responsive design.",
+        "details": "Create a community dashboard with the following features:\n1. Implement a responsive dashboard layout using Next.js 14 with App Router\n2. Create real-time data visualization components using React with D3.js or Recharts\n3. Implement project status tracking with milestone visualization\n4. Build revenue tracking components showing current and historical financial data\n5. Create partnership health indicators with relationship strength metrics\n6. Implement real-time updates using Supabase Realtime or Socket.io\n7. Add customizable dashboard layouts for different community needs\n8. Implement proper loading states and error handling for all components\n\nTechnical specifications:\n- Use Next.js 14 with React Server Components where appropriate\n- Implement TailwindCSS 3.x for styling\n- Use SWR or React Query for data fetching with caching\n- Implement Supabase Realtime for live updates\n- Use Typescript for type safety\n- Implement responsive design for mobile, tablet and desktop\n- Use React Context API for global state management\n- Optimize for performance with code splitting and lazy loading",
+        "testStrategy": "1. Develop unit tests for all dashboard components\n2. Create integration tests for dashboard data flow\n3. Test real-time update functionality with simulated data changes\n4. Verify responsive design across device sizes\n5. Perform accessibility testing (WCAG 2.1 AA compliance)\n6. Test performance with Lighthouse and Web Vitals\n7. Conduct usability testing with community representatives\n8. Verify proper error state handling",
+        "priority": "medium",
+        "dependencies": [
+          13,
+          14
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 16,
+        "title": "Implement Story Management System with Consent Tracking",
+        "description": "Build a comprehensive story management system with consent tracking, AI-powered categorization, and dynamic permissions to ensure community control of narratives.",
+        "details": "Create a story management system with the following components:\n1. Implement story creation and editing interface with rich text editor (Tiptap or Lexical)\n2. Build media management system supporting images, videos, and audio with proper compression\n3. Create consent tracking system with versioned consent records and expiration dates\n4. Implement AI-powered story categorization using OpenAI API (GPT-4) or Hugging Face models\n5. Develop dynamic permission system allowing granular control over story visibility\n6. Create story workflow with draft, review, and published states\n7. Implement version history and change tracking for all story content\n8. Build notification system for consent updates and story status changes\n\nTechnical specifications:\n- Use React Hook Form with Zod validation\n- Implement AWS S3 or Cloudinary for media storage\n- Use OpenAI API with content moderation for AI features\n- Implement proper image optimization with next/image\n- Create custom hooks for story management logic\n- Use Supabase storage for file management\n- Implement proper GDPR compliance for consent tracking\n- Use React Context for story editing state management",
+        "testStrategy": "1. Develop unit tests for story management functions\n2. Create integration tests for complete story workflows\n3. Test consent tracking with various scenarios including revocation\n4. Verify AI categorization accuracy with diverse story samples\n5. Test permission system with different user roles\n6. Verify media handling with various file types and sizes\n7. Test accessibility of story creation interface\n8. Conduct user testing with community representatives",
+        "priority": "high",
+        "dependencies": [
+          12,
+          13,
+          15
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 17,
+        "title": "Develop Impact Visualization Engine",
+        "description": "Create a powerful impact visualization engine with revenue flow tracking, network effect mapping, and customizable reporting tools for communities to showcase their impact.",
+        "details": "Implement an impact visualization engine with the following features:\n1. Create interactive data visualization components using D3.js or Three.js\n2. Implement revenue flow tracking showing money movement through the ecosystem\n3. Build network effect mapping showing community connections and collaboration\n4. Create customizable impact metrics dashboard with community-defined KPIs\n5. Implement data export functionality in multiple formats (CSV, PDF, JSON)\n6. Build report generation system with templates for different audiences\n7. Create embeddable visualizations for external websites\n8. Implement time-series analysis for impact trends over time\n\nTechnical specifications:\n- Use D3.js v7 for custom visualizations\n- Implement React-PDF for report generation\n- Use Visx or Nivo for chart components\n- Implement proper data aggregation with date-fns\n- Create responsive visualizations that work across devices\n- Use Web Workers for complex data processing\n- Implement proper accessibility for all visualizations\n- Use React.memo and useMemo for performance optimization",
+        "testStrategy": "1. Develop unit tests for visualization components\n2. Create integration tests for data flow through visualization pipeline\n3. Test export functionality with various data sizes\n4. Verify visualization accuracy with known test datasets\n5. Test performance with large datasets\n6. Verify accessibility of all visualization components\n7. Test embeddable visualizations in different contexts\n8. Conduct user testing with community representatives",
+        "priority": "medium",
+        "dependencies": [
+          13,
+          15
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "Build Community Intelligence API",
+        "description": "Develop an intelligence layer with APIs for community, relationship, financial, and story intelligence to provide actionable insights while preserving community ownership.",
+        "details": "Create a community intelligence API with the following components:\n1. Implement project success pattern analysis using machine learning (scikit-learn or TensorFlow.js)\n2. Build relationship intelligence system mapping community connections\n3. Create financial intelligence with revenue forecasting and grant matching\n4. Implement story intelligence for voice amplification and advocacy\n5. Develop recommendation engine for community collaboration opportunities\n6. Create API endpoints for accessing intelligence insights\n7. Implement proper data anonymization for sensitive analysis\n8. Build explanation system for AI-generated insights\n\nTechnical specifications:\n- Use TensorFlow.js or ONNX.js for client-side ML capabilities\n- Implement Python FastAPI for complex ML processing\n- Use OpenAI API for natural language processing\n- Implement proper feature engineering pipeline\n- Create model versioning and evaluation system\n- Use Redis for caching intelligence results\n- Implement proper data privacy controls\n- Create custom algorithms for community-specific insights",
+        "testStrategy": "1. Develop unit tests for intelligence algorithms\n2. Create integration tests for complete intelligence pipelines\n3. Test recommendation quality with historical data\n4. Verify explanation clarity for AI-generated insights\n5. Test privacy preservation with sensitive data\n6. Verify API performance under load\n7. Conduct bias testing for all AI systems\n8. Test with diverse community datasets to ensure fairness",
+        "priority": "medium",
+        "dependencies": [
+          13,
+          14,
+          17
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 19,
+        "title": "Implement Community Data Control Tools",
+        "description": "Build comprehensive data control tools enabling complete data export, platform forking, and independence tracking to support the Beautiful Obsolescence mission.",
+        "details": "Create community data control tools with the following features:\n1. Implement complete data export functionality with all community data\n2. Build platform forking capability allowing communities to run independent instances\n3. Create independence tracking dashboard showing progress toward self-sufficiency\n4. Implement data portability tools with standard formats (JSON, CSV)\n5. Build data deletion and anonymization tools for GDPR compliance\n6. Create documentation system for community platform ownership\n7. Implement API key management for community control of data access\n8. Build audit logging for all data access and control operations\n\nTechnical specifications:\n- Use Node.js streams for efficient large data exports\n- Implement Docker containerization for portable deployment\n- Create Terraform scripts for infrastructure setup\n- Use JSON Schema for data format documentation\n- Implement proper encryption for exported data\n- Create step-by-step guides for platform independence\n- Use Web Workers for non-blocking export operations\n- Implement progressive downloads for large datasets",
+        "testStrategy": "1. Develop unit tests for export and portability functions\n2. Create integration tests for complete data control workflows\n3. Test platform forking with sample community data\n4. Verify data integrity through export and import cycles\n5. Test performance with large community datasets\n6. Verify security of exported data packages\n7. Test independence tracking metrics\n8. Conduct user testing with community representatives",
+        "priority": "high",
+        "dependencies": [
+          11,
+          13,
+          16
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 20,
+        "title": "Develop Mobile React Native App with Offline Capabilities",
+        "description": "Create a mobile application using React Native with offline capabilities, ensuring community members can access and contribute to the platform regardless of connectivity.",
+        "details": "Build a React Native mobile app with the following features:\n1. Implement cross-platform app using React Native 0.72+ with TypeScript\n2. Create offline-first architecture with local data storage\n3. Implement sync mechanism for offline changes when connectivity returns\n4. Build native camera and media integration for story collection\n5. Create location-based features with geolocation API\n6. Implement push notifications for important updates\n7. Build biometric authentication for secure access\n8. Create optimized UI for various screen sizes and devices\n\nTechnical specifications:\n- Use React Native 0.72+ with Expo managed workflow\n- Implement Redux Toolkit for state management\n- Use Watermelon DB for offline data storage\n- Implement proper conflict resolution for offline changes\n- Use React Navigation 6.x for app navigation\n- Create custom hooks for device capabilities\n- Implement proper error boundaries and crash reporting\n- Use React Native Paper or Native Base for UI components\n- Optimize bundle size with code splitting and lazy loading",
+        "testStrategy": "1. Develop unit tests for app components and logic\n2. Create integration tests for offline/online workflows\n3. Test sync mechanism with various connectivity scenarios\n4. Verify performance on low-end devices\n5. Test battery usage optimization\n6. Conduct usability testing on both iOS and Android\n7. Test accessibility features\n8. Verify proper error handling in offline mode",
+        "priority": "medium",
+        "dependencies": [
+          12,
+          13,
+          16,
+          19
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 21,
+        "title": "Comprehensive Codebase Audit and Reset Strategy",
+        "description": "Conduct a thorough audit of the entire codebase including frontend, backend, APIs, configuration, and styling systems to identify issues, document working components, and develop a clear reset strategy before further development.",
+        "details": "Perform a comprehensive codebase audit with the following components:\n\n1. **Frontend Application Analysis**:\n   - Review React/Next.js component architecture and identify structural issues\n   - Audit CSS/styling systems (check for inconsistencies, specificity issues, unused styles)\n   - Evaluate state management approach (Context API, Redux, etc.) for scalability\n   - Analyze build configuration and optimization settings\n   - Document component reusability and adherence to design system\n\n2. **Backend System Evaluation**:\n   - Review API architecture, endpoints, and documentation\n   - Analyze database schema design and relationships\n   - Evaluate authentication and authorization mechanisms\n   - Assess error handling and logging systems\n   - Document service boundaries and communication patterns\n\n3. **Configuration and Environment Assessment**:\n   - Audit .env files and environment variable management\n   - Review deployment configurations and CI/CD pipelines\n   - Evaluate secret management and security practices\n   - Document configuration inconsistencies across environments\n\n4. **Data Integration Analysis**:\n   - Map all data flows between systems (Notion, Supabase, Xero)\n   - Identify data synchronization issues and bottlenecks\n   - Document API integration points and failure modes\n   - Assess data transformation and normalization approaches\n\n5. **Documentation Review**:\n   - Evaluate existing documentation for completeness and accuracy\n   - Identify documentation gaps and outdated information\n   - Assess API documentation against actual implementation\n   - Review code comments and inline documentation quality\n\n6. **Performance Analysis**:\n   - Conduct performance profiling of critical application paths\n   - Identify bottlenecks in data loading and processing\n   - Evaluate caching strategies and effectiveness\n   - Document performance metrics and baseline measurements\n\n7. **Reset Strategy Development**:\n   - Create prioritized list of critical issues requiring immediate attention\n   - Develop phased approach for addressing technical debt\n   - Identify components for refactoring vs. complete replacement\n   - Document successful patterns to preserve and expand upon\n   - Create architectural vision document for system evolution\n\n8. **Historical Analysis**:\n   - Review git history to understand development patterns\n   - Identify recurring issues and their root causes\n   - Document architectural decisions and their consequences\n   - Create timeline of significant system changes\n\nDeliverables:\n- Comprehensive audit report with categorized findings\n- Prioritized issue backlog with severity ratings\n- Architectural vision document with reset strategy\n- Documentation gap analysis with recommendations\n- Performance baseline measurements and improvement targets",
+        "testStrategy": "Verify the completeness and effectiveness of the codebase audit and reset strategy through:\n\n1. **Audit Verification**:\n   - Create a checklist of all system components and verify each has been thoroughly reviewed\n   - Have at least two senior developers independently validate critical findings\n   - Cross-reference git history analysis with documented issues to ensure comprehensive coverage\n   - Verify all APIs have been tested and documented accurately\n\n2. **Issue Validation**:\n   - Create reproducible test cases for each identified issue\n   - Document environment configurations where issues occur\n   - Capture screenshots, logs, and performance metrics as evidence\n   - Validate severity ratings through team consensus\n\n3. **Reset Strategy Testing**:\n   - Conduct architectural review sessions with the development team\n   - Create proof-of-concept implementations for critical architectural changes\n   - Develop migration plans for data and functionality\n   - Test proposed solutions against identified issues to verify effectiveness\n\n4. **Documentation Assessment**:\n   - Review audit documentation for clarity and actionability\n   - Ensure all findings include context, impact, and recommended solutions\n   - Verify technical accuracy of all documentation\n   - Confirm documentation is accessible and understandable to all team members\n\n5. **Stakeholder Validation**:\n   - Present audit findings and reset strategy to key stakeholders\n   - Collect feedback on prioritization and approach\n   - Verify business requirements are addressed in the reset strategy\n   - Ensure alignment between technical recommendations and business goals\n\n6. **Metrics Baseline**:\n   - Document performance metrics before any changes\n   - Establish clear, measurable success criteria for the reset\n   - Create monitoring plan for tracking improvements\n   - Set up dashboards for visualizing progress",
+        "status": "pending",
+        "dependencies": [
+          14,
+          16,
+          18,
+          19,
+          20
+        ],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Complete Codebase Structure Analysis",
+            "description": "Analyze the entire codebase structure including all applications, directories, and file organization to understand the system architecture and identify structural issues.",
+            "dependencies": [],
+            "details": "Perform a comprehensive analysis of the codebase structure by: 1) Creating a complete map of all applications, directories, and files, 2) Documenting the architectural patterns used across the system, 3) Identifying inconsistencies in file organization and naming conventions, 4) Evaluating the modularity and separation of concerns, 5) Assessing code duplication and redundancy, 6) Analyzing dependencies between components and potential circular dependencies, 7) Evaluating build configurations and optimization settings, 8) Creating a visual representation of the system architecture.\n<info added on 2025-09-01T00:03:29.064Z>\n## Codebase Audit Findings\n\nThe initial scan revealed a significantly larger and more complex codebase than anticipated, representing years of sophisticated development work across multiple domains.\n\n### Core Applications\n- Backend: Node.js application running on port 4000\n- Frontend: React/Vite application running on port 5175\n- Mobile: React Native application (life-os-mobile)\n\n### System Components\n- Extensive documentation system with hundreds of files across 15+ categories\n- Sophisticated infrastructure utilizing Kubernetes, Docker, PostgreSQL, Redis, Neo4j, and Prometheus/Grafana monitoring\n- Multiple external integrations including Gmail, Notion, LinkedIn, Supabase, and Xero financial data\n- Archive of redundant applications suggesting historical over-building\n\n### Critical Issues Identified\n1. Scale and overwhelming complexity (thousands of files)\n2. CSS/styling system breakdown evidenced by multiple debug files and screenshots\n3. Documentation overload with hundreds of markdown files\n4. Architectural fragmentation shown by multiple server files and redundant applications\n\n### Positive Discoveries\n1. Comprehensive integration ecosystem with real data connections\n2. Sophisticated monitoring and deployment infrastructure\n3. Extensive testing frameworks\n4. Years of strategic documentation and analysis\n\nA detailed analysis has been documented in CODEBASE_AUDIT_ANALYSIS.md. This project requires careful analysis rather than hasty cleanup due to the sophistication and scale of the existing work.\n</info added on 2025-09-01T00:03:29.064Z>",
+            "status": "done",
+            "testStrategy": "Verify completeness by ensuring all repositories and branches are included in the analysis. Cross-reference findings with at least one senior developer familiar with the codebase. Create a checklist to ensure all system components have been thoroughly reviewed."
+          },
+          {
+            "id": 2,
+            "title": "API Ecosystem Audit",
+            "description": "Conduct a thorough audit of all API endpoints, integrations, and services to identify what is working correctly and what is broken or inefficient.",
+            "dependencies": [
+              "21.1"
+            ],
+            "details": "Audit the API ecosystem by: 1) Documenting all internal and external API endpoints, 2) Testing each endpoint for functionality and response accuracy, 3) Analyzing API authentication and security mechanisms, 4) Evaluating API performance and response times, 5) Identifying inconsistencies in API design patterns, 6) Documenting integration points with third-party services, 7) Creating a comprehensive API health report highlighting working vs. broken endpoints, 8) Recommending standardization approaches for API design.\n<info added on 2025-09-01T00:38:00.555Z>\nAUDIT RESULTS: API ECOSYSTEM ASSESSMENT\n\nCRITICAL FINDINGS:\n- Total discovered endpoints: 140+ across 3 server files\n- Working properly: Only 8 endpoints (~6%)\n- Broken/404: 130+ endpoints (~93%) \n- Major architectural fragmentation between server.js, unified-domain-server.js, intelligence-server.js\n\nKEY WORKING ENDPOINTS:\n- /api/dashboard/* - Working but slow (9s response times)\n- /api/v1/intelligence/status - Operational\n- /api/v1/platform/status - Claims 99.9% uptime\n- /api/organizations - Returns A Curious Tractor org data\n\nCRITICAL FAILURES:\n- Supabase integration COMPLETELY BROKEN (Invalid API key)\n- Empathy Ledger system 500 errors (database schema mismatch)\n- Notion API causing 8+ second delays due to schema issues\n- 93% of expected endpoints returning 404\n\nIMMEDIATE ACTIONS REQUIRED:\n1. Fix Supabase API key configuration (ALL database operations failing)\n2. Fix Empathy Ledger database schema (stories.privacy_level column missing)  \n3. Fix Notion database schema mismatches causing performance degradation\n4. Consolidate duplicate API routes across multiple server files\n\nFull detailed analysis added to CODEBASE_AUDIT_ANALYSIS.md with comprehensive API health matrix.\n</info added on 2025-09-01T00:38:00.555Z>",
+            "status": "done",
+            "testStrategy": "Create automated tests to verify API endpoint functionality. Document response times and error rates for each endpoint. Compare API documentation against actual implementation to identify discrepancies."
+          },
+          {
+            "id": 3,
+            "title": "CSS and Styling System Analysis",
+            "description": "Analyze the CSS and styling systems to identify inconsistencies, specificity issues, and unused styles that are causing visual and maintenance problems.",
+            "dependencies": [
+              "21.1"
+            ],
+            "details": "Analyze the CSS and styling systems by: 1) Auditing all CSS files and style implementations (CSS, SCSS, CSS-in-JS, etc.), 2) Identifying specificity conflicts and cascade issues, 3) Detecting unused or redundant styles, 4) Evaluating the consistency of design token implementation, 5) Assessing responsive design implementation, 6) Analyzing styling performance impacts, 7) Documenting styling approach inconsistencies across components, 8) Creating recommendations for a unified styling approach.",
+            "status": "done",
+            "testStrategy": "Use style linting tools to identify issues automatically. Test styling across different browsers and device sizes to verify consistency. Create visual regression tests to identify unintended style changes."
+          },
+          {
+            "id": 4,
+            "title": "Environment and Configuration Audit",
+            "description": "Audit all environment configurations, .env files, API keys, and connection settings to identify security issues and configuration inconsistencies across environments.",
+            "dependencies": [
+              "21.1",
+              "21.2"
+            ],
+            "details": "Conduct an environment and configuration audit by: 1) Documenting all .env files and environment variables across environments, 2) Identifying hardcoded credentials or sensitive information, 3) Evaluating secret management practices, 4) Assessing configuration differences between development, staging, and production, 5) Reviewing deployment configurations and CI/CD pipelines, 6) Analyzing environment-specific bugs and issues, 7) Documenting third-party service connections and their configuration, 8) Creating a secure configuration management strategy.\n<info added on 2025-09-01T00:44:16.463Z>\n## AUDIT RESULTS SUMMARY\n\nCRITICAL FINDINGS:\n- Total configuration files: 40+ across multiple directories\n- Major configuration sprawl with duplicates and conflicts\n- 3 CRITICAL issues causing 93% of system failures:\n\n1. SUPABASE INTEGRATION FAILURE:\n   - EventTrackingService using SUPABASE_ANON_KEY instead of SUPABASE_SERVICE_ROLE_KEY\n   - ALL database write operations failing with \"Invalid API key\"\n   - Affects event tracking, compliance records, analytics\n\n2. NOTION API SCHEMA MISMATCHES:\n   - Code expecting \"Priority\" and \"Date\" fields that don't exist in Notion databases\n   - Causing 8+ second response times due to 4 retry attempts per request\n   - Continuous failures during sync operations\n\n3. CONFIGURATION SPRAWL CRISIS:\n   - 40+ config files with potential conflicts\n   - Multiple .env files in different directories\n   - No centralized secret management\n\nSECURITY ANALYSIS:\n- Positive: Structured API key management, CORS configuration, security monitoring\n- Concerns: Hardcoded secrets, debug flags, configuration duplication\n- Critical: No secret vault, credentials in multiple locations, backup files exposed\n\nIMMEDIATE FIX IMPACT: \nResolving the Supabase key issue and Notion schema problems should restore ~80% of failing functionality.\n\nFull detailed analysis added to CODEBASE_AUDIT_ANALYSIS.md with comprehensive configuration inventory and security assessment.\n</info added on 2025-09-01T00:44:16.463Z>",
+            "status": "done",
+            "testStrategy": "Create a configuration comparison matrix across all environments. Verify that sensitive information is properly secured. Test application functionality with different environment configurations to identify environment-specific issues."
+          },
+          {
+            "id": 5,
+            "title": "Documentation Audit",
+            "description": "Review all existing documentation to identify what is useful versus overwhelming, outdated, or missing, and create a documentation improvement plan.",
+            "dependencies": [
+              "21.1",
+              "21.2",
+              "21.3",
+              "21.4"
+            ],
+            "details": "Perform a documentation audit by: 1) Cataloging all existing documentation (READMEs, wikis, inline comments, etc.), 2) Evaluating documentation accuracy and completeness, 3) Identifying outdated or incorrect information, 4) Assessing code comments and inline documentation quality, 5) Evaluating API documentation against actual implementation, 6) Identifying critical documentation gaps, 7) Analyzing documentation accessibility and organization, 8) Creating a prioritized documentation improvement plan.",
+            "status": "done",
+            "testStrategy": "Have developers unfamiliar with specific parts of the codebase attempt to understand them using only the documentation. Create a documentation quality scoring system based on completeness, accuracy, and clarity."
+          },
+          {
+            "id": 6,
+            "title": "Data Flow Analysis",
+            "description": "Map and analyze all data flows between systems including Notion, Supabase, and other integrations to identify synchronization issues and bottlenecks.",
+            "dependencies": [
+              "21.2",
+              "21.4"
+            ],
+            "details": "Analyze data flows by: 1) Creating comprehensive data flow diagrams for all system integrations, 2) Documenting data transformation and normalization approaches, 3) Identifying data synchronization issues between systems, 4) Evaluating data consistency across platforms, 5) Assessing error handling in data pipelines, 6) Analyzing caching strategies and their effectiveness, 7) Documenting data ownership and privacy considerations, 8) Creating performance profiles for critical data paths.",
+            "status": "in-progress",
+            "testStrategy": "Create test scenarios that trace data through the entire system. Measure data transfer times and identify bottlenecks. Verify data integrity by comparing source and destination data across integrations."
+          },
+          {
+            "id": 7,
+            "title": "Historical Development Analysis",
+            "description": "Review git history and development patterns to understand where and why development went wrong, identifying recurring issues and their root causes.",
+            "dependencies": [
+              "21.1",
+              "21.2",
+              "21.3"
+            ],
+            "details": "Conduct historical analysis by: 1) Reviewing git commit history to identify patterns and trends, 2) Analyzing pull request comments and code reviews, 3) Documenting architectural decisions and their consequences, 4) Creating a timeline of significant system changes, 5) Identifying recurring bugs and issues, 6) Evaluating development velocity and bottlenecks over time, 7) Assessing team collaboration patterns through commit history, 8) Documenting lessons learned from historical development approaches.",
+            "status": "pending",
+            "testStrategy": "Create a timeline visualization of system changes correlated with reported issues. Interview team members who have been involved with the project to gather historical context and validate findings."
+          },
+          {
+            "id": 8,
+            "title": "Reset Strategy and Foundation Recommendations",
+            "description": "Develop a comprehensive reset strategy with prioritized recommendations for addressing technical debt, refactoring components, and establishing a solid foundation for future development.",
+            "dependencies": [
+              "21.1",
+              "21.2",
+              "21.3",
+              "21.4",
+              "21.5",
+              "21.6",
+              "21.7"
+            ],
+            "details": "Create a reset strategy by: 1) Developing a prioritized list of critical issues requiring immediate attention, 2) Creating a phased approach for addressing technical debt, 3) Identifying components for refactoring versus complete replacement, 4) Documenting successful patterns to preserve and expand upon, 5) Establishing architectural principles and best practices for future development, 6) Creating a roadmap for implementing the reset strategy, 7) Defining metrics to measure the success of the reset initiative, 8) Developing a communication plan for stakeholders.",
+            "status": "pending",
+            "testStrategy": "Create a validation framework for the reset strategy with clear success criteria. Have senior technical stakeholders review and approve the strategy. Develop proof-of-concept implementations for critical architectural changes to validate approach."
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-08-30T03:21:26.683Z",
+      "updated": "2025-09-01T00:57:54.741Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

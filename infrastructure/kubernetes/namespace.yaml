@@ -1,0 +1,297 @@
+# ACT Universal AI Platform - Kubernetes Namespace
+# Community Empowerment Namespace with Australian Data Residency
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: act-community-platform
+  labels:
+    name: act-community-platform
+    purpose: community-empowerment
+    mission: beautiful-obsolescence-2027
+    data-residency: australia
+    compliance: australian-regulations
+    indigenous-sovereignty: protected
+    community-control: enabled
+    anti-extraction: enforced
+    values-enforcement: strict
+  annotations:
+    act.platform/description: "ACT Universal AI Platform for Community Empowerment"
+    act.platform/mission: "Beautiful Obsolescence by 2027"
+    act.platform/values: "Community control, Indigenous sovereignty, Anti-extraction"
+    act.platform/compliance: "ASIC, APRA, Privacy Act 2022"
+    act.platform/data-residency: "Australia"
+    kubectl.kubernetes.io/last-applied-configuration: ""
+---
+# Resource Quotas for Community-Controlled Platform
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: act-resource-quota
+  namespace: act-community-platform
+  labels:
+    component: resource-management
+    community-control: true
+spec:
+  hard:
+    # Compute Resources
+    requests.cpu: "10"          # 10 CPU cores for all services
+    requests.memory: 32Gi       # 32GB RAM for all services
+    limits.cpu: "20"            # Max 20 CPU cores
+    limits.memory: 64Gi         # Max 64GB RAM
+    
+    # Storage Resources
+    requests.storage: 500Gi     # 500GB storage for all PVCs
+    persistentvolumeclaims: "20" # Max 20 PVCs
+    
+    # Network Resources
+    services: "20"              # Max 20 services
+    services.loadbalancers: "3" # Max 3 load balancers
+    services.nodeports: "5"     # Max 5 NodePort services
+    
+    # Objects
+    pods: "100"                 # Max 100 pods
+    replicationcontrollers: "20" # Max 20 RCs
+    secrets: "50"               # Max 50 secrets
+    configmaps: "50"            # Max 50 ConfigMaps
+    
+    # Community Empowerment Resources
+    count/deployments.apps: "15"     # Max 15 deployments
+    count/statefulsets.apps: "10"    # Max 10 stateful sets
+    count/jobs.batch: "50"           # Max 50 jobs
+    count/cronjobs.batch: "20"       # Max 20 cron jobs
+---
+# Network Policies for Security and Community Protection
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: act-default-network-policy
+  namespace: act-community-platform
+  labels:
+    component: network-security
+    community-protection: enabled
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  
+  # Default Ingress Rules - Secure by Default
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: act-community-platform
+    ports:
+    - protocol: TCP
+      port: 8080  # Health checks
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 3000  # API Gateway
+    - protocol: TCP
+      port: 3001  # Values Compliance
+    - protocol: TCP
+      port: 3002  # Community Intelligence
+    
+  # Default Egress Rules - Community-Controlled External Access
+  egress:
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 53    # DNS
+    - protocol: UDP
+      port: 53    # DNS
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443   # HTTPS for API calls
+    - protocol: TCP
+      port: 80    # HTTP redirects
+  # Community-controlled external services
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 5432  # PostgreSQL external if needed
+    - protocol: TCP
+      port: 6379  # Redis external if needed
+---
+# Values Compliance Network Policy - Strictest Security
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: values-compliance-network-policy
+  namespace: act-community-platform
+  labels:
+    component: values-compliance
+    security-level: maximum
+    community-control: enforcer
+spec:
+  podSelector:
+    matchLabels:
+      app: values-compliance
+  policyTypes:
+  - Ingress
+  - Egress
+  
+  ingress:
+  # Allow all services to check values compliance
+  - from:
+    - podSelector:
+        matchLabels:
+          act.service: api-gateway
+    - podSelector:
+        matchLabels:
+          act.service: community-intelligence
+    - podSelector:
+        matchLabels:
+          act.service: relationship-intelligence
+    - podSelector:
+        matchLabels:
+          act.service: financial-intelligence
+    - podSelector:
+        matchLabels:
+          act.service: story-impact
+    - podSelector:
+        matchLabels:
+          act.service: governance-compliance
+    ports:
+    - protocol: TCP
+      port: 3001
+  
+  egress:
+  # Database access for compliance logging
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgres
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Indigenous Advisory API access
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+  # Community notification services
+  - to:
+    - podSelector:
+        matchLabels:
+          app: kafka
+    ports:
+    - protocol: TCP
+      port: 9092
+---
+# Pod Security Policy for Community Protection
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: act-community-security-policy
+  namespace: act-community-platform
+  labels:
+    component: security-policy
+    community-protection: enabled
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  requiredDropCapabilities:
+    - ALL
+  allowedCapabilities:
+    - NET_BIND_SERVICE  # Only for services that need to bind to privileged ports
+  volumes:
+    - 'configMap'
+    - 'emptyDir'
+    - 'projected'
+    - 'secret'
+    - 'downwardAPI'
+    - 'persistentVolumeClaim'
+  runAsUser:
+    rule: 'MustRunAsNonRoot'
+  seLinux:
+    rule: 'RunAsAny'
+  fsGroup:
+    rule: 'RunAsAny'
+  readOnlyRootFilesystem: true
+  hostNetwork: false
+  hostIPC: false
+  hostPID: false
+---
+# Service Account for Community-Controlled Operations
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: act-community-service-account
+  namespace: act-community-platform
+  labels:
+    component: service-account
+    community-control: true
+    values-compliance: required
+automountServiceAccountToken: true
+---
+# Cluster Role for Community Platform Operations
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: act-community-cluster-role
+  labels:
+    component: rbac
+    community-control: true
+rules:
+# Values Compliance Monitoring Permissions
+- apiGroups: [""]
+  resources: ["pods", "services", "endpoints"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets"]
+  verbs: ["get", "list", "watch"]
+# Community Control Metrics Access
+- apiGroups: ["metrics.k8s.io"]
+  resources: ["pods", "nodes"]
+  verbs: ["get", "list"]
+# Network Policy Management for Community Protection
+- apiGroups: ["networking.k8s.io"]
+  resources: ["networkpolicies"]
+  verbs: ["get", "list", "watch", "create", "update", "patch"]
+---
+# Cluster Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: act-community-cluster-role-binding
+  labels:
+    component: rbac
+    community-control: true
+subjects:
+- kind: ServiceAccount
+  name: act-community-service-account
+  namespace: act-community-platform
+roleRef:
+  kind: ClusterRole
+  name: act-community-cluster-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# Priority Class for Community-Critical Services
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: act-community-critical
+  labels:
+    component: scheduling
+    community-priority: critical
+value: 1000
+globalDefault: false
+description: "Critical priority for community empowerment services"
+---
+# Priority Class for Values Compliance (Highest Priority)
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: act-values-compliance-critical
+  labels:
+    component: scheduling
+    values-priority: maximum
+value: 1100
+globalDefault: false
+description: "Maximum priority for values compliance enforcement"

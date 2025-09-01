@@ -1,0 +1,489 @@
+/**
+ * Bot Command Center Styles
+ * Unified dashboard styling for ACT Universal Bot Platform
+ */
+
+/* Main Container */
+.bot-command-center {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 24px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+/* Header */
+.command-center-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.command-center-header h1 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 28px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Bot Cards */
+.bot-grid {
+  margin-top: 32px;
+}
+
+.bot-grid h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.bot-card {
+  height: 100%;
+  transition: all 0.3s ease;
+  border-radius: 12px !important;
+  border: 1px solid #e0e0e0;
+  background: white;
+}
+
+.bot-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+  border-color: #1890ff;
+}
+
+.bot-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  color: white;
+  font-size: 24px;
+}
+
+.bot-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.bot-metrics {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+  font-size: 12px;
+  color: #666;
+}
+
+/* Overview Dashboard */
+.overview-dashboard {
+  animation: fadeIn 0.5s ease;
+}
+
+.metrics-charts {
+  margin-top: 32px;
+}
+
+/* Activities Panel */
+.activities-panel {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  min-height: 600px;
+}
+
+.activity-list {
+  margin-top: 20px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  background: #fafafa;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.activity-item:hover {
+  background: #f0f0f0;
+}
+
+.activity-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  border-radius: 8px;
+  color: #555;
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-title {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 4px;
+}
+
+.activity-description {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.activity-time {
+  color: #999;
+  font-size: 12px;
+}
+
+.activity-status {
+  margin-left: auto;
+}
+
+/* Workflows Panel */
+.workflows-panel {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.workflow-details {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #666;
+}
+
+.workflow-details strong {
+  color: #333;
+}
+
+/* Learning Panel */
+.learning-panel {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.adaptations-card {
+  margin-top: 24px;
+}
+
+.adaptation-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.adaptation-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 8px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border-left: 3px solid #52c41a;
+}
+
+.adaptation-bot {
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+
+.adaptation-description {
+  color: #666;
+  font-size: 14px;
+  flex: 1;
+  margin: 0 12px;
+}
+
+.adaptation-impact {
+  white-space: nowrap;
+  color: #52c41a;
+  font-weight: 600;
+}
+
+/* Controls Panel */
+.controls-panel {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.control-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.policy-status {
+  padding: 16px 0;
+}
+
+.policy-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 8px;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.export-controls {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* Alerts Section */
+.alerts-section {
+  margin-bottom: 24px;
+}
+
+/* Bot Detail Modal */
+.bot-detail-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+.bot-detail-modal-content {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+/* Status Indicators */
+.status-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.status-idle {
+  background: #d9d9d9;
+}
+
+.status-running {
+  background: #1890ff;
+  animation: pulse 2s infinite;
+}
+
+.status-success {
+  background: #52c41a;
+}
+
+.status-error {
+  background: #f5222d;
+}
+
+.status-learning {
+  background: #722ed1;
+  animation: pulse 2s infinite;
+}
+
+/* Charts Container */
+.chart-container {
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .bot-grid .ant-col-xs-4 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+@media (max-width: 768px) {
+  .command-center-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .bot-grid .ant-col-xs-4 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+  
+  .export-controls {
+    flex-direction: column;
+  }
+  
+  .control-buttons button {
+    font-size: 14px;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(24, 144, 255, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(24, 144, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(24, 144, 255, 0);
+  }
+}
+
+/* Loading States */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #1890ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Community Benefit Badge */
+.community-benefit-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.community-benefit-badge::before {
+  content: "40%";
+  background: white;
+  color: #667eea;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+/* ACT Branding */
+.act-logo {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  margin-right: 12px;
+}
+
+/* Accessibility */
+.bot-card:focus,
+.control-buttons button:focus,
+.export-controls button:focus {
+  outline: 2px solid #1890ff;
+  outline-offset: 2px;
+}
+
+/* Dark Mode Support (future) */
+@media (prefers-color-scheme: dark) {
+  /* Dark mode styles would go here */
+}
+
+/* Print Styles */
+@media print {
+  .command-center-header,
+  .control-buttons,
+  .export-controls {
+    display: none;
+  }
+  
+  .bot-command-center {
+    background: white;
+    padding: 0;
+  }
+}

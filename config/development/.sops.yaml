@@ -1,0 +1,28 @@
+# SOPS Configuration for ACT Placemat
+# This file defines encryption rules for different types of secrets
+
+creation_rules:
+  # Environment files - encrypt specific keys only
+  - path_regex: \.env\..*
+    encrypted_regex: '^(.*_API_KEY|.*_SECRET|.*_PASSWORD|.*_TOKEN|DATABASE_URL|SUPABASE_SERVICE_ROLE_KEY|JWT_.*|ENCRYPTION_KEY|.*_PRIVATE_KEY)$'
+    age: |
+      age1qdltxt6aq44hdgzk7q8lq52jl6lz5zn23tqk5j2k5mqe3cq5j2mqj5w7f8
+
+  # Secrets files - encrypt everything
+  - path_regex: secrets\.ya?ml$
+    age: |
+      age1qdltxt6aq44hdgzk7q8lq52jl6lz5zn23tqk5j2k5mqe3cq5j2mqj5w7f8
+
+  # Production secrets - require multiple keys  
+  - path_regex: \.env\.production.*
+    age: |
+      age1qdltxt6aq44hdgzk7q8lq52jl6lz5zn23tqk5j2k5mqe3cq5j2mqj5w7f8,
+      age1anotherkeyforproductionsecrets123456789012345678901234567890
+
+  # Development secrets - single key is sufficient
+  - path_regex: \.env\.(development|local).*
+    age: |
+      age1qdltxt6aq44hdgzk7q8lq52jl6lz5zn23tqk5j2k5mqe3cq5j2mqj5w7f8
+
+# Global settings
+shamir_threshold: 1

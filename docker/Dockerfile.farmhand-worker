@@ -1,0 +1,31 @@
+FROM node:20-alpine
+
+# Install dependencies needed for native modules
+RUN apk add --no-cache python3 make g++ curl
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy application code
+COPY . .
+
+# Create a non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S farmhand -u 1001 -G nodejs
+
+# Change ownership of the working directory to the nodejs user
+RUN chown -R farmhand:nodejs /app
+USER farmhand
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node /app/src/workers/healthcheck.js
+
+# Run the Farmhand data pipeline worker
+CMD ["node", "src/workers/farmhandWorker.js"]

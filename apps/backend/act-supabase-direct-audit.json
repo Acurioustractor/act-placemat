@@ -1,0 +1,1298 @@
+{
+  "metadata": {
+    "timestamp": "2025-08-29T21:56:22.153Z",
+    "database_url": "https://tednluwflfhxyucgwigh.supabase.co",
+    "audit_type": "direct_table_analysis"
+  },
+  "schema": {
+    "tables": {
+      "people": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "contacts": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "users": {
+        "row_count": 2,
+        "columns": {
+          "id": {
+            "type": "uuid",
+            "sample_value": "c2946e82-4765-4fc7-a98a-dadfec7ff378",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": true
+          },
+          "email": {
+            "type": "string",
+            "sample_value": "admin@custodianeconomy.org",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "username": {
+            "type": "string",
+            "sample_value": "admin",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "name": {
+            "type": "string",
+            "sample_value": "System Administrator",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "user_role": {
+            "type": "string",
+            "sample_value": "admin",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "permissions": {
+            "type": "json/object",
+            "sample_value": [
+              "read",
+              "write",
+              "delete",
+              "admin"
+            ],
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "password_hash": {
+            "type": "string",
+            "sample_value": "admin2024",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "last_login": {
+            "type": "nullable",
+            "sample_value": null,
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "created_at": {
+            "type": "date/timestamp",
+            "sample_value": "2025-08-29T01:00:11.951999+00:00",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "updated_at": {
+            "type": "date/timestamp",
+            "sample_value": "2025-08-29T01:00:11.951999+00:00",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "is_active": {
+            "type": "boolean",
+            "sample_value": true,
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          }
+        },
+        "sample_data": null,
+        "relationships": []
+      },
+      "profiles": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "participants": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "projects": {
+        "row_count": 11,
+        "columns": {
+          "id": {
+            "type": "uuid",
+            "sample_value": "70abe3ee-82d6-47a5-a4eb-249e4ab1ee23",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": true
+          },
+          "name": {
+            "type": "string",
+            "sample_value": "Orange Sky",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "description": {
+            "type": "string",
+            "sample_value": "Project: Orange Sky",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "organization_id": {
+            "type": "nullable",
+            "sample_value": null,
+            "is_likely_foreign_key": true,
+            "is_likely_primary_key": false
+          },
+          "location": {
+            "type": "nullable",
+            "sample_value": null,
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "status": {
+            "type": "string",
+            "sample_value": "active",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "created_at": {
+            "type": "date/timestamp",
+            "sample_value": "2025-07-23T19:37:26.159912+00:00",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "updated_at": {
+            "type": "date/timestamp",
+            "sample_value": "2025-07-23T19:37:26.159912+00:00",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          }
+        },
+        "sample_data": null,
+        "relationships": []
+      },
+      "initiatives": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "programs": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "campaigns": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "organizations": {
+        "row_count": 20,
+        "columns": {
+          "id": {
+            "type": "uuid",
+            "sample_value": "6fa4f8ca-a3ea-473c-9f0e-5082ab918a6a",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": true
+          },
+          "name": {
+            "type": "string",
+            "sample_value": "Orange Sky",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "description": {
+            "type": "string",
+            "sample_value": "Community organization: Orange Sky",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "type": {
+            "type": "string",
+            "sample_value": "community",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "location": {
+            "type": "nullable",
+            "sample_value": null,
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "contact_email": {
+            "type": "nullable",
+            "sample_value": null,
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "website_url": {
+            "type": "nullable",
+            "sample_value": null,
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "created_at": {
+            "type": "date/timestamp",
+            "sample_value": "2025-07-23T19:37:20.074569+00:00",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "updated_at": {
+            "type": "date/timestamp",
+            "sample_value": "2025-07-23T19:37:20.074569+00:00",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          }
+        },
+        "sample_data": null,
+        "relationships": []
+      },
+      "orgs": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "partners": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "groups": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "teams": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "opportunities": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "grants": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "funding": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "jobs": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "volunteer": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "stories": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "content": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "media": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "posts": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "articles": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "blogs": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "events": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "activities": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "meetings": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "gatherings": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "relationships": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "connections": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "networks": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "collaborations": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "tags": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "categories": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "themes": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "skills": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "interests": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "locations": {
+        "row_count": 21,
+        "columns": {
+          "id": {
+            "type": "uuid",
+            "sample_value": "f5e219f4-272c-4a27-a487-7051bf87c221",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": true
+          },
+          "name": {
+            "type": "string",
+            "sample_value": "Perth",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "country": {
+            "type": "string",
+            "sample_value": "Australia",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "state_province": {
+            "type": "nullable",
+            "sample_value": null,
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "city": {
+            "type": "nullable",
+            "sample_value": null,
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "coordinates": {
+            "type": "nullable",
+            "sample_value": null,
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "created_at": {
+            "type": "date/timestamp",
+            "sample_value": "2025-07-23T19:37:23.044177+00:00",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          }
+        },
+        "sample_data": null,
+        "relationships": []
+      },
+      "areas": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "regions": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "suburbs": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "places": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "messages": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "notifications": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "conversations": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "communications": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "bookkeeping": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "finances": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "transactions": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "billing": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "sync_events": {
+        "row_count": 5,
+        "columns": {
+          "id": {
+            "type": "uuid",
+            "sample_value": "6122b0ac-13ed-409e-89cb-894c55d78ad2",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": true
+          },
+          "event_type": {
+            "type": "string",
+            "sample_value": "insert",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "table_name": {
+            "type": "string",
+            "sample_value": "system",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "record_id": {
+            "type": "uuid",
+            "sample_value": "0f56e0d2-620e-4064-b112-5d06217f48cc",
+            "is_likely_foreign_key": true,
+            "is_likely_primary_key": false
+          },
+          "operation_data": {
+            "type": "json/object",
+            "sample_value": {
+              "type": "maintenance",
+              "message": "Real-time sync triggers initialized"
+            },
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "sync_status": {
+            "type": "string",
+            "sample_value": "completed",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "sync_target": {
+            "type": "string",
+            "sample_value": "both",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "retry_count": {
+            "type": "number",
+            "sample_value": 0,
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "max_retries": {
+            "type": "number",
+            "sample_value": 3,
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "error_message": {
+            "type": "nullable",
+            "sample_value": null,
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "created_at": {
+            "type": "date/timestamp",
+            "sample_value": "2025-08-19T20:05:10.930332+00:00",
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "processed_at": {
+            "type": "nullable",
+            "sample_value": null,
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "priority": {
+            "type": "number",
+            "sample_value": 10,
+            "is_likely_foreign_key": false,
+            "is_likely_primary_key": false
+          },
+          "batch_id": {
+            "type": "nullable",
+            "sample_value": null,
+            "is_likely_foreign_key": true,
+            "is_likely_primary_key": false
+          }
+        },
+        "sample_data": null,
+        "relationships": []
+      },
+      "audit_logs": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "system_logs": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      },
+      "tracking": {
+        "row_count": 0,
+        "columns": {},
+        "sample_data": null,
+        "relationships": []
+      }
+    },
+    "relationships": [
+      {
+        "source_table": "projects",
+        "source_column": "organization_id",
+        "target_table": "organizations",
+        "target_column": "id",
+        "relationship_type": "foreign_key_inferred",
+        "confidence": "medium"
+      }
+    ],
+    "data_samples": {
+      "users": [
+        {
+          "id": "c2946e82-4765-4fc7-a98a-dadfec7ff378",
+          "email": "admin@custodianeconomy.org",
+          "username": "admin",
+          "name": "System Administrator",
+          "user_role": "admin",
+          "permissions": [
+            "read",
+            "write",
+            "delete",
+            "admin"
+          ],
+          "password_hash": "admin2024",
+          "last_login": null,
+          "created_at": "2025-08-29T01:00:11.951999+00:00",
+          "updated_at": "2025-08-29T01:00:11.951999+00:00",
+          "is_active": true
+        },
+        {
+          "id": "3506c56b-bc26-4c83-ba8d-0dcad1d8c738",
+          "email": "staff@custodianeconomy.org",
+          "username": "staff",
+          "name": "Staff Member",
+          "user_role": "staff",
+          "permissions": [
+            "read",
+            "write"
+          ],
+          "password_hash": "custodian2024",
+          "last_login": null,
+          "created_at": "2025-08-29T01:00:11.951999+00:00",
+          "updated_at": "2025-08-29T01:00:11.951999+00:00",
+          "is_active": true
+        }
+      ],
+      "projects": [
+        {
+          "id": "70abe3ee-82d6-47a5-a4eb-249e4ab1ee23",
+          "name": "Orange Sky",
+          "description": "Project: Orange Sky",
+          "organization_id": null,
+          "location": null,
+          "status": "active",
+          "created_at": "2025-07-23T19:37:26.159912+00:00",
+          "updated_at": "2025-07-23T19:37:26.159912+00:00"
+        },
+        {
+          "id": "974c0d03-ad39-4617-b23c-02aca13a91b1",
+          "name": "TOMNET",
+          "description": "Project: TOMNET",
+          "organization_id": "bc3807a3-4b46-46f4-b884-b63fde5df886",
+          "location": null,
+          "status": "active",
+          "created_at": "2025-07-23T19:37:26.298978+00:00",
+          "updated_at": "2025-07-23T19:37:26.298978+00:00"
+        },
+        {
+          "id": "270ec615-bb14-4b6d-8d99-de4754e313fe",
+          "name": "PICC",
+          "description": "Project: PICC",
+          "organization_id": "9c4e5de2-d80a-4e0b-8a89-1bbf09485532",
+          "location": null,
+          "status": "active",
+          "created_at": "2025-07-23T19:37:26.442586+00:00",
+          "updated_at": "2025-07-23T19:37:26.442586+00:00"
+        }
+      ],
+      "organizations": [
+        {
+          "id": "6fa4f8ca-a3ea-473c-9f0e-5082ab918a6a",
+          "name": "Orange Sky",
+          "description": "Community organization: Orange Sky",
+          "type": "community",
+          "location": null,
+          "contact_email": null,
+          "website_url": null,
+          "created_at": "2025-07-23T19:37:20.074569+00:00",
+          "updated_at": "2025-07-23T19:37:20.074569+00:00"
+        },
+        {
+          "id": "bc3807a3-4b46-46f4-b884-b63fde5df886",
+          "name": "TOMNET",
+          "description": "Community organization: TOMNET",
+          "type": "community",
+          "location": null,
+          "contact_email": null,
+          "website_url": null,
+          "created_at": "2025-07-23T19:37:20.224779+00:00",
+          "updated_at": "2025-07-23T19:37:20.224779+00:00"
+        },
+        {
+          "id": "9c4e5de2-d80a-4e0b-8a89-1bbf09485532",
+          "name": "PICC",
+          "description": "Community organization: PICC",
+          "type": "community",
+          "location": null,
+          "contact_email": null,
+          "website_url": null,
+          "created_at": "2025-07-23T19:37:20.376944+00:00",
+          "updated_at": "2025-07-23T19:37:20.376944+00:00"
+        }
+      ],
+      "locations": [
+        {
+          "id": "f5e219f4-272c-4a27-a487-7051bf87c221",
+          "name": "Perth",
+          "country": "Australia",
+          "state_province": null,
+          "city": null,
+          "coordinates": null,
+          "created_at": "2025-07-23T19:37:23.044177+00:00"
+        },
+        {
+          "id": "6ef1fd5b-50c8-45c3-a660-378a2172fefb",
+          "name": "Bundaburg",
+          "country": "Australia",
+          "state_province": null,
+          "city": null,
+          "coordinates": null,
+          "created_at": "2025-07-23T19:37:23.191525+00:00"
+        },
+        {
+          "id": "c57fb3f1-6b17-4018-890f-7a4182202b1a",
+          "name": "Central Coast",
+          "country": "Australia",
+          "state_province": null,
+          "city": null,
+          "coordinates": null,
+          "created_at": "2025-07-23T19:37:23.338322+00:00"
+        }
+      ],
+      "sync_events": [
+        {
+          "id": "6122b0ac-13ed-409e-89cb-894c55d78ad2",
+          "event_type": "insert",
+          "table_name": "system",
+          "record_id": "0f56e0d2-620e-4064-b112-5d06217f48cc",
+          "operation_data": {
+            "type": "maintenance",
+            "message": "Real-time sync triggers initialized"
+          },
+          "sync_status": "completed",
+          "sync_target": "both",
+          "retry_count": 0,
+          "max_retries": 3,
+          "error_message": null,
+          "created_at": "2025-08-19T20:05:10.930332+00:00",
+          "processed_at": null,
+          "priority": 10,
+          "batch_id": null
+        },
+        {
+          "id": "986c8dc7-429f-4386-aed4-2b54e6b4e0a4",
+          "event_type": "insert",
+          "table_name": "user_profiles",
+          "record_id": "fd5e2c22-6968-474e-b486-8203e888d9c9",
+          "operation_data": {
+            "id": "30dd153f-4a52-4cae-bae6-0eb181a07e69",
+            "bio": "A test user for knowledge graph sync testing",
+            "email": "testuser-2025-08-19T20-11-18-662Z@example.com",
+            "user_id": "fd5e2c22-6968-474e-b486-8203e888d9c9",
+            "location": null,
+            "interests": [
+              "climate_action",
+              "community_development"
+            ],
+            "avatar_url": null,
+            "created_at": "2025-08-19T20:11:18.741393+00:00",
+            "updated_at": "2025-08-19T20:11:18.741393+00:00",
+            "display_name": "Test User 2025-08-19T20-11-18-662Z",
+            "account_status": "active",
+            "last_active_at": null,
+            "expertise_areas": [
+              "project_management",
+              "data_analysis"
+            ],
+            "dashboard_layout": {},
+            "privacy_settings": {},
+            "cultural_protocols": {},
+            "accessibility_needs": {},
+            "content_preferences": {},
+            "preferred_languages": [
+              "en"
+            ],
+            "onboarding_completed": true,
+            "notification_preferences": {},
+            "collaboration_preferences": {}
+          },
+          "sync_status": "failed",
+          "sync_target": "neo4j",
+          "retry_count": 1,
+          "max_retries": 3,
+          "error_message": "Property values can only be of primitive types or arrays thereof. Encountered: Map{}.",
+          "created_at": "2025-08-19T20:11:18.741393+00:00",
+          "processed_at": "2025-08-19T20:11:20.664858+00:00",
+          "priority": 3,
+          "batch_id": null
+        },
+        {
+          "id": "77bc8355-d05a-4649-9ede-58c79ab2afdc",
+          "event_type": "insert",
+          "table_name": "user_profiles",
+          "record_id": "4888e5e4-21df-4e4e-b741-ea7f9d9b7190",
+          "operation_data": {
+            "id": "7eac75ee-9e2d-4f82-80e4-8f22e0a71995",
+            "bio": "A test user for knowledge graph sync testing",
+            "email": "testuser-2025-08-19T20-12-28-234Z@example.com",
+            "user_id": "4888e5e4-21df-4e4e-b741-ea7f9d9b7190",
+            "location": null,
+            "interests": [
+              "climate_action",
+              "community_development"
+            ],
+            "avatar_url": null,
+            "created_at": "2025-08-19T20:12:28.607278+00:00",
+            "updated_at": "2025-08-19T20:12:28.607278+00:00",
+            "display_name": "Test User 2025-08-19T20-12-28-234Z",
+            "account_status": "active",
+            "last_active_at": null,
+            "expertise_areas": [
+              "project_management",
+              "data_analysis"
+            ],
+            "dashboard_layout": {},
+            "privacy_settings": {},
+            "cultural_protocols": {},
+            "accessibility_needs": {},
+            "content_preferences": {},
+            "preferred_languages": [
+              "en"
+            ],
+            "onboarding_completed": true,
+            "notification_preferences": {},
+            "collaboration_preferences": {}
+          },
+          "sync_status": "failed",
+          "sync_target": "neo4j",
+          "retry_count": 1,
+          "max_retries": 3,
+          "error_message": "Property values can only be of primitive types or arrays thereof. Encountered: Map{}.",
+          "created_at": "2025-08-19T20:12:28.607278+00:00",
+          "processed_at": "2025-08-19T20:12:30.161807+00:00",
+          "priority": 3,
+          "batch_id": null
+        }
+      ]
+    }
+  },
+  "analysis": {
+    "data_philosophy": {
+      "total_tables": 55,
+      "total_relationships": 1,
+      "core_entity_count": 55,
+      "community_focus_score": 0.2727272727272727,
+      "social_impact_score": 0.23636363636363636,
+      "api_readiness_score": 0.06666666666666667,
+      "architectural_patterns": {
+        "domain_driven": {
+          "identified_domains": [
+            "people",
+            "projects",
+            "organizations",
+            "content",
+            "opportunities",
+            "events",
+            "relationships",
+            "system"
+          ],
+          "domain_count": 8,
+          "well_separated": true,
+          "domain_distribution": {
+            "people": 4,
+            "projects": 3,
+            "organizations": 5,
+            "content": 3,
+            "opportunities": 4,
+            "events": 3,
+            "relationships": 3,
+            "system": 30
+          }
+        },
+        "relationship_centric": false,
+        "event_sourced": true,
+        "microservice_ready": true
+      },
+      "flexibility_indicators": {
+        "json_schemas": 2,
+        "uuid_keys": 5,
+        "timestamped": 5,
+        "status_controlled": 1
+      }
+    },
+    "architectural_patterns": {},
+    "community_support": {
+      "core_entities": {
+        "people": [
+          {
+            "table": "people",
+            "purpose": "individual_identity_management",
+            "features": []
+          },
+          {
+            "table": "contacts",
+            "purpose": "individual_identity_management",
+            "features": []
+          },
+          {
+            "table": "users",
+            "purpose": "individual_identity_management",
+            "features": [
+              "timestamped",
+              "active_data",
+              "flexible_schema"
+            ]
+          },
+          {
+            "table": "profiles",
+            "purpose": "individual_identity_management",
+            "features": []
+          }
+        ],
+        "projects": [
+          {
+            "table": "projects",
+            "purpose": "collaborative_project_management",
+            "features": [
+              "timestamped",
+              "status_managed",
+              "relationship_enabled",
+              "active_data"
+            ]
+          },
+          {
+            "table": "initiatives",
+            "purpose": "collaborative_project_management",
+            "features": []
+          },
+          {
+            "table": "programs",
+            "purpose": "collaborative_project_management",
+            "features": []
+          }
+        ],
+        "organizations": [
+          {
+            "table": "organizations",
+            "purpose": "organizational_relationship_management",
+            "features": [
+              "timestamped",
+              "active_data"
+            ]
+          },
+          {
+            "table": "orgs",
+            "purpose": "organizational_relationship_management",
+            "features": []
+          },
+          {
+            "table": "partners",
+            "purpose": "organizational_relationship_management",
+            "features": []
+          },
+          {
+            "table": "groups",
+            "purpose": "organizational_relationship_management",
+            "features": []
+          },
+          {
+            "table": "teams",
+            "purpose": "organizational_relationship_management",
+            "features": []
+          }
+        ],
+        "content": [
+          {
+            "table": "content",
+            "purpose": "narrative_and_impact_documentation",
+            "features": []
+          },
+          {
+            "table": "media",
+            "purpose": "narrative_and_impact_documentation",
+            "features": []
+          },
+          {
+            "table": "posts",
+            "purpose": "narrative_and_impact_documentation",
+            "features": []
+          }
+        ],
+        "opportunities": [
+          {
+            "table": "opportunities",
+            "purpose": "opportunity_matching_and_distribution",
+            "features": []
+          },
+          {
+            "table": "grants",
+            "purpose": "opportunity_matching_and_distribution",
+            "features": []
+          },
+          {
+            "table": "jobs",
+            "purpose": "opportunity_matching_and_distribution",
+            "features": []
+          },
+          {
+            "table": "volunteer",
+            "purpose": "opportunity_matching_and_distribution",
+            "features": []
+          }
+        ],
+        "events": [
+          {
+            "table": "events",
+            "purpose": "community_engagement_and_coordination",
+            "features": []
+          },
+          {
+            "table": "meetings",
+            "purpose": "community_engagement_and_coordination",
+            "features": []
+          },
+          {
+            "table": "sync_events",
+            "purpose": "community_engagement_and_coordination",
+            "features": [
+              "timestamped",
+              "relationship_enabled",
+              "active_data",
+              "flexible_schema"
+            ]
+          }
+        ],
+        "relationships": [
+          {
+            "table": "relationships",
+            "purpose": "explicit_relationship_mapping",
+            "features": []
+          },
+          {
+            "table": "connections",
+            "purpose": "explicit_relationship_mapping",
+            "features": []
+          },
+          {
+            "table": "networks",
+            "purpose": "explicit_relationship_mapping",
+            "features": []
+          }
+        ],
+        "system": [
+          {
+            "table": "participants",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "campaigns",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "funding",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "stories",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "articles",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "blogs",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "activities",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "gatherings",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "collaborations",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "tags",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "categories",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "themes",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "skills",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "interests",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "locations",
+            "purpose": "system_support_and_infrastructure",
+            "features": [
+              "timestamped",
+              "active_data"
+            ]
+          },
+          {
+            "table": "areas",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "regions",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "suburbs",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "places",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "messages",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "notifications",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "conversations",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "communications",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "bookkeeping",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "finances",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "transactions",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "billing",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "audit_logs",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "system_logs",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          },
+          {
+            "table": "tracking",
+            "purpose": "system_support_and_infrastructure",
+            "features": []
+          }
+        ]
+      },
+      "community_features": {
+        "relationship_mapping": [],
+        "collaboration_support": [],
+        "impact_tracking": [],
+        "content_management": [],
+        "opportunity_matching": []
+      },
+      "data_patterns": {
+        "timestamped_tables": [
+          "users",
+          "projects",
+          "organizations",
+          "locations",
+          "sync_events"
+        ],
+        "uuid_primary_keys": [
+          "users",
+          "projects",
+          "organizations",
+          "locations",
+          "sync_events"
+        ],
+        "json_flexible_schemas": [
+          "users",
+          "sync_events"
+        ],
+        "status_controlled_tables": [
+          "projects"
+        ]
+      }
+    }
+  }
+}

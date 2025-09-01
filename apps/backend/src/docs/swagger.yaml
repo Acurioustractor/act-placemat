@@ -1,0 +1,1026 @@
+openapi: 3.0.0
+info:
+  title: ACT Farmhand AI - Comprehensive API Documentation
+  description: |
+    Complete API documentation for the ACT Farmhand AI system, including farm workflow management, system integration, and cultural safety protocols.
+    
+    ## Overview
+    The ACT Farmhand AI API provides access to a sophisticated intelligence system with 8 specialized skill pods, integrated with existing ACT systems for comprehensive community support.
+    
+    ## Cultural Safety
+    All endpoints respect Indigenous data sovereignty and cultural protocols:
+    - Automatic cultural safety scoring (90%+ maintained)
+    - Community consent validation
+    - Sacred knowledge protection
+    - Protocol compliance monitoring
+    
+    ## Authentication
+    Most endpoints support optional authentication. API keys or Bearer tokens can be provided for enhanced access.
+    
+    ## Rate Limiting
+    - General endpoints: 100 requests per minute
+    - AI processing endpoints: 10 requests per minute
+    - System integration endpoints: 50 requests per minute
+  version: 1.0.0
+  contact:
+    name: ACT Development Team
+    url: https://act.place
+    email: tech@act.place
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:5010/api
+    description: Development server
+  - url: https://api.act.place
+    description: Production server
+
+security:
+  - ApiKeyAuth: []
+  - BearerAuth: []
+  - {}  # No auth required for public endpoints
+
+paths:
+  # Farm Workflow System
+  /farm-workflow/status:
+    get:
+      tags:
+        - Farm Workflow
+      summary: Get farm workflow system status
+      description: Returns comprehensive status of the farm workflow system including skill pods, tasks, and health metrics
+      responses:
+        '200':
+          description: Farm status retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FarmStatusResponse'
+              example:
+                success: true
+                farm_status:
+                  skill_pods:
+                    dna-guardian:
+                      status: "idle"
+                      progress: 85
+                      insights: 12
+                  active_tasks: 5
+                  health_metrics:
+                    culturalSafety: 96.5
+                    systemPerformance: 94.2
+                    totalInsights: 147
+                timestamp: "2024-08-07T00:00:00Z"
+
+  /farm-workflow/query:
+    post:
+      tags:
+        - Farm Workflow
+      summary: Process natural language query
+      description: |
+        Process a natural language query through the farm workflow system, engaging appropriate skill pods and generating actionable insights.
+        
+        **Cultural Safety**: All queries are automatically screened for cultural sensitivity and protocol compliance.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - query
+              properties:
+                query:
+                  type: string
+                  description: Natural language query to process
+                  example: "What community stories should we prioritize for our next grant application?"
+                context:
+                  type: object
+                  description: Additional context for query processing
+                  additionalProperties: true
+      responses:
+        '200':
+          description: Query processed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryProcessingResponse'
+        '400':
+          description: Invalid query or cultural safety violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /farm-workflow/tasks:
+    get:
+      tags:
+        - Farm Workflow
+      summary: Get workflow tasks
+      description: Retrieve workflow tasks with optional filtering
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [seeded, growing, blooming, harvested]
+          description: Filter by farm stage
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [story_collection, funding_opportunity, impact_analysis, system_improvement]
+          description: Filter by task type
+        - name: priority
+          in: query
+          schema:
+            type: string
+            enum: [low, medium, high, urgent]
+          description: Filter by priority level
+      responses:
+        '200':
+          description: Tasks retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskListResponse'
+    post:
+      tags:
+        - Farm Workflow
+      summary: Create workflow task
+      description: Create a new workflow task with farm metaphor progression
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskRequest'
+      responses:
+        '201':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+
+  /farm-workflow/tasks/{taskId}:
+    get:
+      tags:
+        - Farm Workflow
+      summary: Get specific task
+      description: Retrieve detailed information about a specific workflow task
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Task ID
+      responses:
+        '200':
+          description: Task details retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '404':
+          description: Task not found
+    patch:
+      tags:
+        - Farm Workflow
+      summary: Update task
+      description: Update task progress, insights, or status
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskRequest'
+      responses:
+        '200':
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+
+  /farm-workflow/skill-pods:
+    get:
+      tags:
+        - Farm Workflow
+      summary: Get all skill pods status
+      description: Retrieve status and performance metrics for all 8 skill pods
+      responses:
+        '200':
+          description: Skill pods status retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillPodsResponse'
+
+  /farm-workflow/skill-pods/{podId}:
+    get:
+      tags:
+        - Farm Workflow
+      summary: Get specific skill pod details
+      parameters:
+        - name: podId
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [dna-guardian, knowledge-librarian, compliance-sentry, finance-copilot, opportunity-scout, story-weaver, systems-seeder, impact-analyst]
+      responses:
+        '200':
+          description: Skill pod details retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillPodResponse'
+
+  # System Integration
+  /system-integration/status:
+    get:
+      tags:
+        - System Integration
+      summary: Get system integration status
+      description: Comprehensive status of all system integrations and connections
+      responses:
+        '200':
+          description: Integration status retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationStatusResponse'
+
+  /system-integration/pipelines/{pipelineName}/run:
+    post:
+      tags:
+        - System Integration
+      summary: Execute data pipeline
+      description: |
+        Manually execute a specific data pipeline:
+        - **story_intelligence**: Analyzes community stories
+        - **opportunity_discovery**: Scans for funding opportunities  
+        - **impact_measurement**: Calculates comprehensive SROI
+        - **system_optimization**: Identifies improvements
+      parameters:
+        - name: pipelineName
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [story_intelligence, opportunity_discovery, impact_measurement, system_optimization]
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Pipeline executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PipelineExecutionResponse'
+
+  /system-integration/sync:
+    post:
+      tags:
+        - System Integration
+      summary: Trigger system-wide sync
+      description: Synchronize data across all connected systems
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                systems:
+                  oneOf:
+                    - type: string
+                      enum: [all]
+                    - type: array
+                      items:
+                        type: string
+                        enum: [stories, opportunities, impact, optimization]
+                priority:
+                  type: string
+                  enum: [low, normal, high, urgent]
+                  default: normal
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Sync completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemSyncResponse'
+
+  /system-integration/metrics:
+    get:
+      tags:
+        - System Integration
+      summary: Get integration metrics
+      description: Detailed performance and health metrics for system integration
+      responses:
+        '200':
+          description: Metrics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationMetricsResponse'
+
+  /system-integration/analytics:
+    get:
+      tags:
+        - System Integration
+      summary: Get integration analytics
+      description: Analytics and insights about system integration performance
+      parameters:
+        - name: timeframe
+          in: query
+          schema:
+            type: string
+            enum: [1d, 7d, 30d, 90d]
+            default: 7d
+      responses:
+        '200':
+          description: Analytics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationAnalyticsResponse'
+
+  # ACT Farmhand Agent (Direct AI Access)
+  /farmhand/query:
+    post:
+      tags:
+        - ACT Farmhand Agent
+      summary: Direct AI agent query
+      description: Direct access to the ACT Farmhand AI agent for complex queries
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - query
+              properties:
+                query:
+                  type: string
+                  example: "Help me analyze the cultural impact of our storytelling program"
+                context:
+                  type: object
+                  additionalProperties: true
+      responses:
+        '200':
+          description: AI agent response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIAgentResponse'
+
+  /farmhand/weekly-sprint:
+    get:
+      tags:
+        - ACT Farmhand Agent
+      summary: Weekly intelligence sprint
+      description: Get weekly intelligence report from the AI agent
+      responses:
+        '200':
+          description: Weekly sprint report generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WeeklySprintResponse'
+
+  /farmhand/alignment-check:
+    post:
+      tags:
+        - ACT Farmhand Agent
+      summary: Check ACT values alignment
+      description: Validate content alignment with ACT values and cultural protocols
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  description: Content to check for alignment
+      responses:
+        '200':
+          description: Alignment check completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlignmentCheckResponse'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for enhanced access
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for authenticated requests
+
+  schemas:
+    # Response Schemas
+    FarmStatusResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        farm_status:
+          type: object
+          properties:
+            skill_pods:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/SkillPodStatus'
+            active_tasks:
+              type: integer
+            health_metrics:
+              $ref: '#/components/schemas/HealthMetrics'
+        timestamp:
+          type: string
+          format: date-time
+
+    SkillPodStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [idle, processing, complete, error]
+        progress:
+          type: number
+          minimum: 0
+          maximum: 100
+        insights:
+          type: integer
+        lastActivity:
+          type: string
+        performance:
+          $ref: '#/components/schemas/PerformanceMetrics'
+
+    PerformanceMetrics:
+      type: object
+      properties:
+        avgResponseTime:
+          type: number
+        totalQueries:
+          type: integer
+        successRate:
+          type: number
+          minimum: 0
+          maximum: 1
+
+    HealthMetrics:
+      type: object
+      properties:
+        culturalSafety:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Cultural safety score percentage
+        systemPerformance:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Overall system performance percentage
+        totalInsights:
+          type: integer
+          description: Total insights generated
+        communityEngagement:
+          type: number
+          minimum: 0
+          maximum: 100
+
+    QueryProcessingResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        farm_query:
+          type: string
+        response:
+          type: object
+          properties:
+            insight:
+              type: string
+            confidence:
+              type: number
+              minimum: 0
+              maximum: 1
+        workflowTasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowTask'
+        culturalSafety:
+          type: number
+          minimum: 0
+          maximum: 100
+        processingTime:
+          type: number
+          description: Processing time in milliseconds
+
+    WorkflowTask:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [story_collection, funding_opportunity, impact_analysis, system_improvement, general_intelligence]
+        priority:
+          type: string
+          enum: [low, medium, high, urgent]
+        status:
+          type: string
+          enum: [pending, in_progress, completed, deferred, cancelled]
+        farmStage:
+          type: string
+          enum: [seeded, growing, blooming, harvested]
+          description: Farm metaphor progression stage
+        progress:
+          type: number
+          minimum: 0
+          maximum: 100
+        culturalSafety:
+          type: number
+          minimum: 0
+          maximum: 100
+        skillPodsAssigned:
+          type: array
+          items:
+            type: string
+        insights:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskInsight'
+        farmMetaphor:
+          type: string
+          description: Farm-themed description of task
+        estimatedYield:
+          type: string
+          description: Expected outcomes
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TaskInsight:
+      type: object
+      properties:
+        type:
+          type: string
+        content:
+          type: string
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+        source:
+          type: string
+        culturalSafety:
+          type: number
+          minimum: 0
+          maximum: 100
+        timestamp:
+          type: string
+          format: date-time
+
+    AIAgentResponse:
+      type: object
+      properties:
+        query:
+          type: string
+        response:
+          type: object
+          properties:
+            insight:
+              type: string
+            recommendations:
+              type: array
+              items:
+                type: string
+            cultural_safety_score:
+              type: number
+        agent_version:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    # Request Schemas
+    CreateTaskRequest:
+      type: object
+      required:
+        - title
+        - description
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          minLength: 10
+          maxLength: 1000
+        type:
+          type: string
+          enum: [story_collection, funding_opportunity, impact_analysis, system_improvement, general_intelligence]
+          default: general_intelligence
+        priority:
+          type: string
+          enum: [low, medium, high, urgent]
+          default: medium
+        skillPodsRequired:
+          type: array
+          items:
+            type: string
+            enum: [dna-guardian, knowledge-librarian, compliance-sentry, finance-copilot, opportunity-scout, story-weaver, systems-seeder, impact-analyst]
+          default: [knowledge-librarian]
+        culturalConsiderations:
+          type: array
+          items:
+            type: string
+          description: Cultural considerations for the task
+        expectedOutcomes:
+          type: array
+          items:
+            type: string
+          description: Expected outcomes from task completion
+
+    UpdateTaskRequest:
+      type: object
+      properties:
+        progress:
+          type: number
+          minimum: 0
+          maximum: 100
+        insights:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              content:
+                type: string
+              confidence:
+                type: number
+                minimum: 0
+                maximum: 1
+        blockers:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              description:
+                type: string
+              severity:
+                type: string
+                enum: [low, medium, high, critical]
+        status:
+          type: string
+          enum: [pending, in_progress, completed, deferred, cancelled]
+
+    # Additional Response Schemas
+    TaskListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowTask'
+        total_count:
+          type: integer
+        filters_applied:
+          type: object
+        timestamp:
+          type: string
+          format: date-time
+
+    TaskResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        task:
+          $ref: '#/components/schemas/WorkflowTask'
+        timestamp:
+          type: string
+          format: date-time
+
+    SkillPodsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        skill_pods:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/SkillPodStatus'
+        farm_elements:
+          type: object
+          description: Mapping of skill pods to farm metaphor elements
+        timestamp:
+          type: string
+          format: date-time
+
+    SkillPodResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        skill_pod:
+          allOf:
+            - type: object
+              properties:
+                id:
+                  type: string
+            - $ref: '#/components/schemas/SkillPodStatus'
+        timestamp:
+          type: string
+          format: date-time
+
+    IntegrationStatusResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        integration_hub:
+          type: object
+          properties:
+            status:
+              type: string
+            farm_workflow_connected:
+              type: boolean
+            services_registered:
+              type: integer
+            active_pipelines:
+              type: integer
+            connected_systems:
+              type: integer
+        services:
+          type: array
+          items:
+            type: string
+        pipelines:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              schedule:
+                type: string
+              processors:
+                type: array
+                items:
+                  type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    PipelineExecutionResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        pipeline:
+          type: string
+        execution_result:
+          type: object
+          additionalProperties: true
+        executed_at:
+          type: string
+          format: date-time
+        message:
+          type: string
+
+    SystemSyncResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        sync_completed:
+          type: boolean
+        systems_synced:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+        pipeline_results:
+          type: array
+          items:
+            type: object
+            properties:
+              pipeline:
+                type: string
+              result:
+                type: object
+        total_pipelines_run:
+          type: integer
+        sync_timestamp:
+          type: string
+          format: date-time
+
+    IntegrationMetricsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        metrics:
+          type: object
+          properties:
+            integrationHub:
+              type: object
+              properties:
+                uptime:
+                  type: number
+                memoryUsageMB:
+                  type: number
+                activePipelines:
+                  type: integer
+                connectedSystems:
+                  type: integer
+            farmWorkflow:
+              $ref: '#/components/schemas/HealthMetrics'
+        timestamp:
+          type: string
+          format: date-time
+
+    IntegrationAnalyticsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        analytics:
+          type: object
+          properties:
+            timeframe:
+              type: string
+            pipeline_performance:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  executions:
+                    type: integer
+                  success_rate:
+                    type: number
+            integration_efficiency:
+              type: object
+              properties:
+                total_data_synced:
+                  type: integer
+                automation_success_rate:
+                  type: number
+            cultural_safety_metrics:
+              type: object
+              properties:
+                overall_score:
+                  type: number
+                protocol_validations:
+                  type: integer
+                indigenous_data_sovereignty_compliance:
+                  type: string
+        generated_at:
+          type: string
+          format: date-time
+
+    WeeklySprintResponse:
+      type: object
+      properties:
+        sprint_period:
+          type: string
+        insights_generated:
+          type: integer
+        tasks_completed:
+          type: integer
+        cultural_safety_score:
+          type: number
+        key_recommendations:
+          type: array
+          items:
+            type: string
+        system_health:
+          type: object
+        timestamp:
+          type: string
+          format: date-time
+
+    AlignmentCheckResponse:
+      type: object
+      properties:
+        content_preview:
+          type: string
+        alignment:
+          type: object
+          properties:
+            values_alignment_score:
+              type: number
+              minimum: 0
+              maximum: 100
+            cultural_safety_score:
+              type: number
+              minimum: 0
+              maximum: 100
+            recommendations:
+              type: array
+              items:
+                type: string
+        act_values:
+          type: array
+          items:
+            type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: false
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+tags:
+  - name: Farm Workflow
+    description: |
+      Farm metaphor workflow system with 8 specialized skill pods.
+      
+      **Skill Pods:**
+      - **DNA Guardian**: Cultural protocol validation and values alignment
+      - **Knowledge Librarian**: Information retrieval and relationship mapping  
+      - **Compliance Sentry**: Regulatory compliance and risk management
+      - **Finance Copilot**: Financial analysis and budget optimization
+      - **Opportunity Scout**: Funding and partnership discovery
+      - **Story Weaver**: Narrative analysis and cultural storytelling
+      - **Systems Seeder**: System improvement and capacity building
+      - **Impact Analyst**: Impact measurement and visualization
+  - name: System Integration
+    description: |
+      System integration hub managing connections between ACT Farmhand AI and existing systems.
+      
+      **Connected Systems:**
+      - Empathy Ledger (community stories and data)
+      - Opportunity Ecosystem View (partnerships and funding)
+      - Notion Knowledge Base (documentation and workflows)
+      
+      **Data Pipelines:**
+      - Story Intelligence Pipeline (daily)
+      - Opportunity Discovery Pipeline (weekly)  
+      - Impact Measurement Pipeline (monthly)
+      - System Optimization Pipeline (continuous)
+  - name: ACT Farmhand Agent
+    description: |
+      Direct access to the core AI agent for complex queries and analysis.
+      
+      **Capabilities:**
+      - Natural language processing
+      - Cultural safety validation
+      - Values alignment checking
+      - Weekly intelligence reports
+      - Multi-pod orchestration
+
+externalDocs:
+  description: ACT Farmhand AI - Complete Documentation
+  url: https://docs.act.place/farmhand-ai

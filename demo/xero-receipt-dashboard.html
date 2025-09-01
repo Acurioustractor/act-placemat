@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xero-First Receipt Management | ACT</title>
+    <style>
+        /* GitHub-style design with Xero focus */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+            color: #1f2328;
+            background-color: #f6f8fa;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #13b5ea 0%, #1e88e5 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .dashboard {
+            margin: 2rem 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #d1d9e0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-number.expenses { color: #d73a49; }
+        .stat-number.income { color: #1a7f37; }
+        .stat-number.receipts { color: #0969da; }
+        .stat-number.missing { color: #f66a0a; }
+
+        .stat-label {
+            color: #656d76;
+            font-size: 0.95rem;
+        }
+
+        .controls {
+            background: white;
+            border: 1px solid #d1d9e0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: #13b5ea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: #1e88e5;
+            transform: translateY(-1px);
+        }
+
+        .btn.active {
+            background: #1565c0;
+            box-shadow: 0 0 0 2px rgba(19, 181, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #24292f;
+            border: 1px solid #d1d9e0;
+        }
+
+        .btn-secondary:hover {
+            background: #f6f8fa;
+            border-color: #13b5ea;
+        }
+
+        .filter-tabs {
+            display: flex;
+            background: #f6f8fa;
+            border-radius: 8px;
+            padding: 0.25rem;
+            margin-left: auto;
+        }
+
+        .filter-tab {
+            background: transparent;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .filter-tab.active {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .transaction-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .transaction-card {
+            background: white;
+            border: 1px solid #d1d9e0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+            border-left: 4px solid #d1d9e0;
+        }
+
+        .transaction-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: #13b5ea;
+        }
+
+        .transaction-card.expense { border-left-color: #d73a49; }
+        .transaction-card.income { border-left-color: #1a7f37; }
+        
+        /* Status-based styling */
+        .transaction-card.overdue {
+            border-left: 5px solid #d73a49;
+            background: #fff5f5;
+        }
+        
+        .transaction-card.unpaid {
+            border-left: 4px solid #f66a0a;
+            background: #fffbf0;
+        }
+        
+        .transaction-card.paid {
+            border-left: 4px solid #1a7f37;
+            background: #f6ffed;
+        }
+        
+        .transaction-card.no-receipt {
+            border-left: 4px solid #8250df;
+            background: #fbf7ff;
+        }
+        
+        .transaction-card.has-receipt {
+            border-left: 4px solid #1a7f37;
+            background: #f6ffed;
+        }
+        
+        /* Due date highlighting */
+        .due-date-urgent {
+            color: #d73a49;
+            font-weight: bold;
+            animation: pulse 1s infinite;
+        }
+        
+        .due-date-soon {
+            color: #f66a0a;
+            font-weight: 600;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .transaction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .transaction-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2328;
+            margin-bottom: 0.25rem;
+        }
+
+        .transaction-subtitle {
+            color: #656d76;
+            font-size: 0.875rem;
+        }
+
+        .amount-section {
+            text-align: right;
+        }
+
+        .amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .amount.expense { color: #d73a49; }
+        .amount.income { color: #1a7f37; }
+
+        .transaction-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: #656d76;
+            font-size: 0.8rem;
+        }
+
+        .status-badges {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .receipt-complete {
+            background: #dafbe1;
+            color: #1a7f37;
+            border: 1px solid #a2e2a8;
+        }
+
+        .receipt-missing {
+            background: #ffebe9;
+            color: #d73a49;
+            border: 1px solid #fdb8c0;
+        }
+
+        .receipt-found {
+            background: #fff8dc;
+            color: #9a6700;
+            border: 1px solid #f2cc60;
+        }
+
+        .payment-status {
+            background: #f1f8ff;
+            color: #0969da;
+            border: 1px solid #b6e3ff;
+        }
+
+        .payment-overdue {
+            background: #ffebe9;
+            color: #d73a49;
+            border: 1px solid #fdb8c0;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: white;
+            border: 1px solid #d1d9e0;
+            color: #656d76;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .action-btn:hover {
+            background: #f6f8fa;
+            border-color: #13b5ea;
+            color: #13b5ea;
+        }
+
+        .action-btn.priority-high { border-color: #d73a49; color: #d73a49; }
+        .action-btn.priority-urgent { 
+            background: #ffebe9; 
+            border-color: #d73a49; 
+            color: #d73a49;
+            font-weight: 600;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem;
+            color: #656d76;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #13b5ea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fff5f5;
+            color: #d73a49;
+            border: 1px solid #fdb8c0;
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .xero-link {
+            color: #13b5ea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .xero-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2rem; }
+            .controls { flex-direction: column; align-items: stretch; }
+            .transaction-header { flex-direction: column; gap: 1rem; }
+            .amount-section { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>💼 Xero Receipt Manager</h1>
+            <p>Real financial data with smart receipt discovery & Gmail enhancement</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="dashboard">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number expenses" id="totalExpenses">-</div>
+                    <div class="stat-label">Total Expenses</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number income" id="totalIncome">-</div>
+                    <div class="stat-label">Total Income</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number receipts" id="withReceipts">-</div>
+                    <div class="stat-label">Have Receipts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number missing" id="missingReceipts">-</div>
+                    <div class="stat-label">Missing Receipts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="foundInGmail" style="color: #9a6700;">-</div>
+                    <div class="stat-label">Found in Gmail</div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn active" data-days="7" onclick="loadTransactions(7)">
+                    📅 Last 7 Days
+                </button>
+                <button class="btn" data-days="14" onclick="loadTransactions(14)">
+                    📅 Last 14 Days
+                </button>
+                <button class="btn" data-days="30" onclick="loadTransactions(30)">
+                    📅 Last 30 Days
+                </button>
+                <button class="btn" data-days="90" onclick="loadTransactions(90)">
+                    📅 Last 90 Days
+                </button>
+
+                <button class="btn" onclick="exportTransactions()" style="background: #1a7f37;">
+                    📊 Export CSV
+                </button>
+
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-type="all" onclick="setFilter('all')">All</button>
+                    <button class="filter-tab" data-type="outgoing" onclick="setFilter('outgoing')">💳 Expenses</button>
+                    <button class="filter-tab" data-type="incoming" onclick="setFilter('incoming')">💰 Income</button>
+                    <button class="filter-tab" data-type="overdue" onclick="setFilter('overdue')">⚠️ Overdue</button>
+                    <button class="filter-tab" data-type="unpaid" onclick="setFilter('unpaid')">💸 Unpaid</button>
+                    <button class="filter-tab" data-type="paid" onclick="setFilter('paid')">✅ Paid</button>
+                    <button class="filter-tab" data-type="no-receipt" onclick="setFilter('no-receipt')">📄 No Receipt</button>
+                </div>
+            </div>
+
+            <div id="transactionsContainer">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading Xero transactions...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTransactions = [];
+        let currentFilter = 'all';
+        let currentDays = 90;
+        let currentOffset = 0;
+        window.currentStats = null;
+        
+        // Load transactions on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTransactions(90);
+        });
+
+        async function loadTransactions(days = 90) {
+            currentDays = days;
+            currentOffset = 0; // Reset pagination
+            const container = document.getElementById('transactionsContainer');
+            container.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading Xero transactions from last ${days} days...
+                </div>
+            `;
+
+            // Update active button
+            document.querySelectorAll('.btn[data-days]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.days == days);
+            });
+
+            try {
+                const url = `/api/xero-smart-receipts?days=${days}&type=${currentFilter}&enhance=true&limit=25`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.success) {
+                    currentTransactions = data.data;
+                    window.currentStats = data.stats;
+                    displayTransactions(currentTransactions);
+                    updateStats(data.stats);
+                } else {
+                    throw new Error(data.error || 'Failed to load transactions');
+                }
+
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                container.innerHTML = `
+                    <div class="error">
+                        <strong>Error loading Xero transactions:</strong> ${error.message}
+                        <br><br>
+                        Make sure:
+                        <ul style="margin: 1rem 0; padding-left: 2rem;">
+                            <li>Backend server is running on port 4000</li>
+                            <li>Xero OAuth tokens are valid (check /api/auth/token-status)</li>
+                            <li>Your Xero organization has transaction data</li>
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+
+        function setFilter(type) {
+            currentFilter = type;
+            
+            // Update active filter tab
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.type === type);
+            });
+
+            // For new filter types, filter existing transactions client-side
+            if (['overdue', 'unpaid', 'paid', 'no-receipt'].includes(type)) {
+                filterExistingTransactions(type);
+            } else {
+                // For standard filters, reload from server
+                loadTransactions(currentDays);
+            }
+        }
+
+        function filterExistingTransactions(filterType) {
+            if (!currentTransactions || currentTransactions.length === 0) {
+                loadTransactions(currentDays);
+                return;
+            }
+
+            let filtered = [...currentTransactions];
+
+            switch (filterType) {
+                case 'overdue':
+                    filtered = filtered.filter(t => t.isOverdue || (t.dueDate && new Date(t.dueDate) < new Date()));
+                    break;
+                case 'unpaid':
+                    filtered = filtered.filter(t => t.paymentStatus === 'awaiting' || t.amountDue > 0);
+                    break;
+                case 'paid':
+                    filtered = filtered.filter(t => t.paymentStatus === 'paid' || t.status === 'PAID' || t.isReconciled);
+                    break;
+                case 'no-receipt':
+                    filtered = filtered.filter(t => !t.hasAttachments || t.receiptStatus?.status === 'missing');
+                    break;
+            }
+
+            displayTransactions(filtered);
+            updateFilteredStats(filtered);
+        }
+
+        function updateFilteredStats(transactions) {
+            const totalIncoming = transactions.filter(t => t.direction === 'incoming').reduce((sum, t) => sum + t.amount, 0);
+            const totalOutgoing = transactions.filter(t => t.direction === 'outgoing').reduce((sum, t) => sum + t.amount, 0);
+            const withReceipts = transactions.filter(t => t.hasAttachments).length;
+            const missingReceipts = transactions.filter(t => !t.hasAttachments).length;
+            
+            document.getElementById('totalExpenses').textContent = formatLargeNumber(totalOutgoing);
+            document.getElementById('totalIncome').textContent = formatLargeNumber(totalIncoming);
+            document.getElementById('withReceipts').textContent = withReceipts.toLocaleString();
+            document.getElementById('missingReceipts').textContent = missingReceipts.toLocaleString();
+        }
+
+        function getDueDateClass(dueDate) {
+            const due = new Date(dueDate);
+            const now = new Date();
+            const daysDiff = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+            
+            if (daysDiff < 0) return 'due-date-urgent';
+            if (daysDiff <= 7) return 'due-date-soon';
+            return '';
+        }
+
+        function formatDueDate(dueDate) {
+            const due = new Date(dueDate);
+            const now = new Date();
+            const daysDiff = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+            
+            if (daysDiff < 0) {
+                return `${Math.abs(daysDiff)} days overdue`;
+            } else if (daysDiff === 0) {
+                return 'Due TODAY';
+            } else if (daysDiff <= 7) {
+                return `Due in ${daysDiff} days`;
+            } else {
+                return due.toLocaleDateString();
+            }
+        }
+
+        function getPaymentStatusDisplay(tx) {
+            if (tx.isOverdue || (tx.dueDate && new Date(tx.dueDate) < new Date())) {
+                return '⚠️ OVERDUE';
+            } else if (tx.paymentStatus === 'paid' || tx.status === 'PAID' || tx.isReconciled) {
+                return '✅ PAID';
+            } else if (tx.paymentStatus === 'awaiting' || tx.amountDue > 0) {
+                return `💸 DUE $${(tx.amountDue || tx.amount).toFixed(2)}`;
+            } else {
+                return `📝 ${tx.status || 'DRAFT'}`;
+            }
+        }
+
+        async function loadMore() {
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            if (!loadMoreBtn) return;
+            
+            loadMoreBtn.textContent = '⏳ Loading...';
+            loadMoreBtn.disabled = true;
+            
+            try {
+                currentOffset += 25; // Increment offset
+                const url = `/api/xero-smart-receipts?days=${currentDays}&type=${currentFilter}&enhance=true&limit=25&offset=${currentOffset}`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.success && data.data.length > 0) {
+                    // Append new transactions
+                    currentTransactions = currentTransactions.concat(data.data);
+                    window.currentStats = data.stats;
+                    
+                    // Re-display all transactions with updated pagination
+                    displayTransactions(currentTransactions);
+                } else {
+                    loadMoreBtn.textContent = '📄 No more transactions';
+                    loadMoreBtn.disabled = true;
+                }
+            } catch (error) {
+                console.error('Load more error:', error);
+                loadMoreBtn.textContent = '❌ Error loading more';
+                loadMoreBtn.disabled = true;
+            }
+        }
+
+        function displayTransactions(transactions) {
+            const container = document.getElementById('transactionsContainer');
+            
+            if (transactions.length === 0) {
+                container.innerHTML = `
+                    <div class="loading">
+                        📭 No transactions found in the selected time period and filter.
+                        <br><br>
+                        Try expanding the date range or changing the filter.
+                    </div>
+                `;
+                return;
+            }
+
+            const transactionCards = transactions.map(tx => createTransactionCard(tx)).join('');
+            container.innerHTML = `
+                <div class="transaction-grid">${transactionCards}</div>
+                <div style="text-align: center; margin: 2rem 0; padding: 1rem; background: white; border-radius: 8px;">
+                    <div style="color: #656d76; margin-bottom: 1rem;">
+                        Showing ${transactions.length} transactions 
+                        ${window.currentStats?.hasMore ? ` (Load more to see all ${window.currentStats.total})` : ` of ${window.currentStats?.total || 0} total`}
+                    </div>
+                    ${window.currentStats?.hasMore ? `
+                        <button class="btn" onclick="loadMore()" id="loadMoreBtn">
+                            📄 Load More Transactions
+                        </button>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function createTransactionCard(tx) {
+            const amount = Math.abs(tx.amount);
+            const typeClass = tx.direction === 'outgoing' ? 'expense' : 'income';
+            const amountPrefix = tx.direction === 'outgoing' ? '-' : '+';
+            
+            // Determine status classes for visual styling
+            let statusClasses = [typeClass];
+            if (tx.isOverdue || (tx.dueDate && new Date(tx.dueDate) < new Date())) {
+                statusClasses.push('overdue');
+            } else if (tx.paymentStatus === 'awaiting' || tx.amountDue > 0) {
+                statusClasses.push('unpaid');
+            } else if (tx.paymentStatus === 'paid' || tx.status === 'PAID' || tx.isReconciled) {
+                statusClasses.push('paid');
+            }
+            if (!tx.hasAttachments || tx.receiptStatus?.status === 'missing') {
+                statusClasses.push('no-receipt');
+            } else if (tx.hasAttachments && tx.receiptStatus?.status === 'complete') {
+                statusClasses.push('has-receipt');
+            }
+            
+            return `
+                <div class="transaction-card ${statusClasses.join(' ')}">
+                    <div class="transaction-header">
+                        <div>
+                            <div class="transaction-title">${tx.contact}</div>
+                            <div class="transaction-subtitle">${tx.description}</div>
+                        </div>
+                        <div class="amount-section">
+                            <div class="amount ${typeClass}">${amountPrefix}$${amount.toFixed(2)}</div>
+                            <div style="font-size: 0.8rem; color: #656d76;">${tx.currencyCode || 'AUD'}</div>
+                        </div>
+                    </div>
+
+                    <div class="transaction-meta">
+                        <div class="meta-item">
+                            📋 ${tx.reference || 'No reference'}
+                        </div>
+                        <div class="meta-item">
+                            🏦 ${tx.source === 'xero-bank' ? 'Bank Transaction' : 'Invoice/Bill'}
+                        </div>
+                        ${tx.dueDate ? `
+                            <div class="meta-item">
+                                📅 Due: <span class="${getDueDateClass(tx.dueDate)}">${formatDueDate(tx.dueDate)}</span>
+                            </div>
+                        ` : ''}
+                        <div class="meta-item">
+                            💰 Status: ${getPaymentStatusDisplay(tx)}
+                        </div>
+                    </div>
+
+                    <div class="status-badges">
+                        ${createReceiptStatusBadge(tx)}
+                        ${createPaymentStatusBadge(tx)}
+                        ${tx.isOverdue ? '<div class="status-badge payment-overdue">⚠️ OVERDUE</div>' : ''}
+                    </div>
+
+                    ${tx.suggestedActions && tx.suggestedActions.length > 0 ? `
+                        <div class="actions">
+                            ${tx.suggestedActions.map(action => `
+                                <button class="action-btn priority-${action.priority}" 
+                                        onclick="handleAction('${action.type}', '${tx.id}', '${action.emailId || ''}')">
+                                    ${action.icon} ${action.text}
+                                </button>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+
+                    <div style="margin-top: 1rem; text-align: right;">
+                        <a href="${tx.xeroUrl}" target="_blank" class="xero-link">
+                            🔗 View in Xero
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createReceiptStatusBadge(tx) {
+            if (!tx.receiptStatus) return '';
+
+            const { status, message, color } = tx.receiptStatus;
+            const statusClasses = {
+                complete: 'receipt-complete',
+                found: 'receipt-found',
+                missing: 'receipt-missing',
+                optional: 'receipt-optional'
+            };
+
+            return `<div class="status-badge ${statusClasses[status] || 'payment-status'}">${message}</div>`;
+        }
+
+        function createPaymentStatusBadge(tx) {
+            if (tx.direction === 'incoming') {
+                if (tx.paymentStatus === 'paid') return '<div class="status-badge receipt-complete">✅ Paid in full</div>';
+                if (tx.paymentStatus === 'partial') return '<div class="status-badge receipt-found">⏳ Partially paid</div>';
+                return '<div class="status-badge payment-status">💰 Payment pending</div>';
+            } else {
+                if (tx.paymentStatus === 'paid') return '<div class="status-badge receipt-complete">✅ Bill paid</div>';
+                if (tx.paymentStatus === 'awaiting') return '<div class="status-badge payment-status">💳 Payment due</div>';
+                return '<div class="status-badge payment-status">📝 Draft</div>';
+            }
+        }
+
+        function formatLargeNumber(amount) {
+            if (amount >= 1000000) {
+                return `$${(amount / 1000000).toFixed(1)}M`;
+            } else if (amount >= 1000) {
+                return `$${(amount / 1000).toFixed(0)}K`;
+            } else {
+                return `$${amount.toFixed(2)}`;
+            }
+        }
+
+        function updateStats(stats) {
+            document.getElementById('totalExpenses').textContent = formatLargeNumber(stats.totalOutgoing);
+            document.getElementById('totalIncome').textContent = formatLargeNumber(stats.totalIncoming);
+            document.getElementById('withReceipts').textContent = stats.withReceipts.toLocaleString();
+            document.getElementById('missingReceipts').textContent = stats.missingReceipts.toLocaleString();
+            document.getElementById('foundInGmail').textContent = stats.foundInGmail;
+        }
+
+        function handleAction(type, transactionId, emailId) {
+            const transaction = currentTransactions.find(t => t.id === transactionId);
+            if (!transaction) return;
+
+            switch (type) {
+                case 'find_receipt':
+                    alert('🔍 Receipt finder coming soon! This will search Gmail, Dropbox, and other sources.');
+                    break;
+                    
+                case 'upload_receipt':
+                    if (emailId) {
+                        alert(`📤 Upload from Gmail coming soon! This would upload the receipt from email ${emailId} to Xero.`);
+                    } else {
+                        alert('📤 Receipt upload feature coming soon!');
+                    }
+                    break;
+                    
+                case 'pay_bill':
+                    if (confirm(`Pay bill for ${transaction.contact} (${transaction.currencyCode} $${transaction.amountDue.toFixed(2)})?`)) {
+                        alert('💳 Payment integration coming soon! This would connect to your bank.');
+                    }
+                    break;
+                    
+                case 'categorize':
+                    alert('🏷️ Smart categorization coming soon! This would suggest categories based on vendor and calendar context.');
+                    break;
+                    
+                case 'no_receipt_needed':
+                    if (confirm(`Mark "${transaction.description}" as not requiring a receipt?\n\nThis will update the transaction in Xero with a note that no receipt is needed.`)) {
+                        alert('✅ Transaction marked as "no receipt needed". Feature coming soon - will add note to Xero!');
+                        // TODO: Implement Xero API call to add tracking note
+                    }
+                    break;
+
+                case 'overdue':
+                    alert(`⚠️ This transaction is overdue. Consider immediate payment or contact ${transaction.contact}.`);
+                    break;
+                    
+                default:
+                    console.log('Action:', type, 'for transaction:', transactionId);
+            }
+        }
+
+        function exportTransactions() {
+            if (!currentTransactions || currentTransactions.length === 0) {
+                alert('No transactions to export. Please load some data first.');
+                return;
+            }
+
+            const headers = [
+                'Date', 'Contact', 'Description', 'Reference', 'Type', 'Amount', 'Currency', 
+                'Status', 'Payment Status', 'Due Date', 'Has Receipt', 'Is Overdue', 'Source'
+            ];
+
+            const csvData = currentTransactions.map(tx => [
+                new Date(tx.date).toLocaleDateString(),
+                tx.contact,
+                tx.description,
+                tx.reference || '',
+                tx.direction === 'outgoing' ? 'Expense' : 'Income',
+                tx.amount.toFixed(2),
+                tx.currencyCode || 'AUD',
+                tx.status || '',
+                getPaymentStatusDisplay(tx).replace(/[📝💸✅⚠️]/g, '').trim(),
+                tx.dueDate ? new Date(tx.dueDate).toLocaleDateString() : '',
+                tx.hasAttachments ? 'Yes' : 'No',
+                tx.isOverdue ? 'Yes' : 'No',
+                tx.source || 'xero'
+            ]);
+
+            const csv = [headers, ...csvData]
+                .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+                .join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `xero-transactions-${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        }
+    </script>
+</body>
+</html>

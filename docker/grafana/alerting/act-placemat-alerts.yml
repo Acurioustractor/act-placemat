@@ -1,0 +1,174 @@
+# Grafana Alerting Rules for ACT Placemat Intelligence Hub
+# Australian-compliant monitoring and alerting
+
+groups:
+  - name: data_lake_health
+    interval: 30s
+    rules:
+      - alert: DataSourceDown
+        expr: data_source_connection_status == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: data-lake
+          data_residency: australia
+        annotations:
+          summary: "Data source {{ $labels.source }} is down"
+          description: "Data source {{ $labels.source }} ({{ $labels.type }}) has been unreachable for more than 2 minutes. This may impact data synchronisation and platform functionality."
+
+      - alert: DataSyncFailures
+        expr: rate(data_sync_status{status="failure"}[5m]) > 0.1
+        for: 1m
+        labels:
+          severity: warning
+          service: data-sync
+        annotations:
+          summary: "High data sync failure rate for {{ $labels.source }}"
+          description: "Data sync failures for {{ $labels.source }} exceed 10% over the last 5 minutes."
+
+      - alert: StaleData
+        expr: data_freshness_seconds > 3600
+        for: 5m
+        labels:
+          severity: warning
+          service: data-lake
+        annotations:
+          summary: "Stale data detected for {{ $labels.source }}"
+          description: "Data from {{ $labels.source }} hasn't been updated in over 1 hour."
+
+  - name: ai_services_monitoring
+    interval: 1m
+    rules:
+      - alert: AIServiceHighLatency
+        expr: histogram_quantile(0.95, rate(ai_request_duration_seconds_bucket[5m])) > 30
+        for: 3m
+        labels:
+          severity: warning
+          service: ai-services
+        annotations:
+          summary: "High AI service latency for {{ $labels.provider }}"
+          description: "95th percentile response time for {{ $labels.provider }} {{ $labels.model }} exceeds 30 seconds."
+
+      - alert: AIServiceFailures
+        expr: rate(ai_requests_total{status="error"}[5m]) / rate(ai_requests_total[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+          service: ai-services
+        annotations:
+          summary: "High AI service error rate for {{ $labels.provider }}"
+          description: "Error rate for {{ $labels.provider }} exceeds 5% over the last 5 minutes."
+
+      - alert: HighAICosts
+        expr: rate(ai_cost_usd_total[1h]) * 24 > 100
+        for: 5m
+        labels:
+          severity: warning
+          service: ai-costs
+        annotations:
+          summary: "High daily AI costs projected"
+          description: "Daily AI costs projected to exceed $100 USD based on current hourly spend rate."
+
+  - name: infrastructure_alerts
+    interval: 15s
+    rules:
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status_code=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.01
+        for: 2m
+        labels:
+          severity: critical
+          service: api-gateway
+        annotations:
+          summary: "High HTTP error rate"
+          description: "HTTP 5xx error rate exceeds 1% for route {{ $labels.route }}."
+
+      - alert: DatabaseConnectionExhaustion
+        expr: database_active_connections / database_connection_pool_size > 0.9
+        for: 1m
+        labels:
+          severity: warning
+          service: database
+        annotations:
+          summary: "Database connection pool nearly exhausted"
+          description: "Database connection pool is {{ $value | humanizePercentage }} full."
+
+      - alert: QueueBacklog
+        expr: queue_depth > 1000
+        for: 5m
+        labels:
+          severity: warning
+          service: task-queue
+        annotations:
+          summary: "High queue backlog in {{ $labels.queue_name }}"
+          description: "Queue {{ $labels.queue_name }} has {{ $value }} pending jobs."
+
+  - name: security_alerts
+    interval: 10s
+    rules:
+      - alert: SuspiciousActivityDetected
+        expr: rate(http_requests_total{status_code="401"}[1m]) > 10
+        for: 30s
+        labels:
+          severity: critical
+          service: security
+          australian_compliance: "high_priority"
+        annotations:
+          summary: "High rate of authentication failures"
+          description: "More than 10 authentication failures per minute detected on {{ $labels.route }}. Possible brute force attack."
+
+      - alert: RateLimitExceeded
+        expr: rate(http_requests_total{status_code="429"}[5m]) > 5
+        for: 1m
+        labels:
+          severity: warning
+          service: security
+        annotations:
+          summary: "High rate limiting activity"
+          description: "Rate limiting triggered more than 5 times per minute on {{ $labels.route }}."
+
+  - name: australian_compliance
+    interval: 1m
+    rules:
+      - alert: NonAustralianDataProcessing
+        expr: rate(http_requests_total{region!="australia"}[5m]) > 0
+        for: 0s
+        labels:
+          severity: critical
+          service: compliance
+          compliance_framework: "australian-privacy-act"
+        annotations:
+          summary: "Non-Australian data processing detected"
+          description: "Data processing detected outside of Australia. This violates data sovereignty requirements."
+
+      - alert: ComplianceScoreLow
+        expr: avg(business_metrics{category="compliance"}) < 90
+        for: 5m
+        labels:
+          severity: warning
+          service: compliance
+        annotations:
+          summary: "Australian Privacy Act compliance score below threshold"
+          description: "Compliance score has dropped to {{ $value }}%, below the required 90% threshold."
+
+  - name: community_governance
+    interval: 5m
+    rules:
+      - alert: LowCommunityEngagement
+        expr: business_metrics{category="engagement",metric_name="daily_active_users"} < 50
+        for: 30m
+        labels:
+          severity: warning
+          service: community
+        annotations:
+          summary: "Low community engagement"
+          description: "Daily active users have dropped to {{ $value }}, below the healthy threshold of 50."
+
+      - alert: DemocraticParticipationLow
+        expr: business_metrics{category="democratic_participation"} < 40
+        for: 1h
+        labels:
+          severity: warning
+          service: governance
+        annotations:
+          summary: "Low democratic participation rate"
+          description: "Democratic decision participation rate has dropped to {{ $value }}%, below the 40% threshold for legitimate governance decisions."

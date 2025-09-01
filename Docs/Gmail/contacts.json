@@ -1,0 +1,26 @@
+[
+  {
+    "id": "gmail_1",
+    "name": "Ben Knight",
+    "email": "knighttss@gmail.com",
+    "displayName": "Ben Knight",
+    "organization": "ACT Placemat",
+    "phone": "+61400000001"
+  },
+  {
+    "id": "gmail_2",
+    "name": "Nic Schiaffo",
+    "email": "nic@act.place",
+    "displayName": "Nic Schiaffo",
+    "organization": "ACT Placemat",
+    "phone": "+61400000002"
+  },
+  {
+    "id": "gmail_3",
+    "name": "Benjamin Knight",
+    "email": "benjamin@act.place",
+    "displayName": "Benjamin Knight",
+    "organization": "ACT Placemat",
+    "phone": "+61400000003"
+  }
+]

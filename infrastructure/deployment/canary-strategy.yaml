@@ -1,0 +1,440 @@
+# Canary Deployment Strategy for ACT Placemat
+# Implements staged traffic shifting with cultural protocol validation
+
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: act-placemat-canary
+  namespace: act-placemat-production
+  labels:
+    app: act-placemat
+    deployment-strategy: canary
+    cultural-protocol: enabled
+spec:
+  replicas: 6
+  strategy:
+    canary:
+      # Canary deployment configuration
+      steps:
+      # Stage 1: Cultural Validation (1% traffic)
+      - setWeight: 1
+        pause:
+          duration: "5m"
+      
+      # Cultural compliance check
+      - analysis:
+          templates:
+          - templateName: cultural-compliance-analysis
+          args:
+          - name: service-name
+            value: act-placemat
+          - name: cultural-threshold
+            value: "95"
+      
+      # Stage 2: Initial Community Testing (5% traffic)
+      - setWeight: 5
+        pause:
+          duration: "10m"
+      
+      # Performance and cultural analysis
+      - analysis:
+          templates:
+          - templateName: performance-analysis
+          - templateName: cultural-impact-analysis
+          args:
+          - name: success-rate
+            value: "99"
+          - name: cultural-compliance-score
+            value: "90"
+      
+      # Stage 3: Extended Community Testing (15% traffic)
+      - setWeight: 15
+        pause:
+          duration: "15m"
+      
+      # Stage 4: Broader Community Rollout (30% traffic)
+      - setWeight: 30
+        pause:
+          duration: "20m"
+      
+      # Stage 5: Community Leader Validation (50% traffic)
+      - setWeight: 50
+        pause:
+          duration: "30m"
+      
+      # Final cultural and performance validation
+      - analysis:
+          templates:
+          - templateName: comprehensive-analysis
+          args:
+          - name: error-rate-threshold
+            value: "0.1"
+          - name: cultural-violation-threshold
+            value: "0"
+          - name: elder-approval-required
+            value: "true"
+      
+      # Stage 6: Full deployment (100% traffic)
+      - setWeight: 100
+
+      # Canary service configuration
+      canaryService: act-placemat-canary
+      stableService: act-placemat-stable
+      
+      # Traffic routing configuration
+      trafficRouting:
+        nginx:
+          stableIngress: act-placemat-stable
+          annotationPrefix: nginx.ingress.kubernetes.io
+          additionalIngressAnnotations:
+            canary-by-header: X-Cultural-Canary
+            canary-by-header-value: "enabled"
+            canary-weight-total: "100"
+        
+      # Analysis configuration for each stage
+      analysis:
+        # Success conditions
+        successCondition: result[0] >= 0.95 and result[1] <= 0.1 and result[2] == 1
+        # Failure conditions trigger immediate rollback
+        failureCondition: result[0] < 0.90 or result[1] > 0.5 or result[2] == 0
+        
+        # Analysis interval and count
+        interval: 30s
+        count: 10
+        
+        # Metrics to analyze
+        metrics:
+        - name: success-rate
+          successCondition: result[0] >= 0.99
+          provider:
+            prometheus:
+              address: http://prometheus:9090
+              query: |
+                sum(rate(http_requests_total{job="act-placemat",code=~"2.."}[2m])) /
+                sum(rate(http_requests_total{job="act-placemat"}[2m]))
+        
+        - name: error-rate
+          successCondition: result[0] <= 0.01
+          provider:
+            prometheus:
+              address: http://prometheus:9090
+              query: |
+                sum(rate(http_requests_total{job="act-placemat",code=~"5.."}[2m])) /
+                sum(rate(http_requests_total{job="act-placemat"}[2m]))
+        
+        - name: cultural-compliance
+          successCondition: result[0] >= 0.95
+          provider:
+            prometheus:
+              address: http://prometheus:9090
+              query: |
+                sum(rate(cultural_protocol_compliance_total{job="act-placemat",status="approved"}[2m])) /
+                sum(rate(cultural_protocol_compliance_total{job="act-placemat"}[2m]))
+        
+        - name: elder-approval-rate
+          successCondition: result[0] >= 0.90
+          provider:
+            prometheus:
+              address: http://prometheus:9090
+              query: |
+                sum(rate(elder_consultation_total{job="act-placemat",status="approved"}[5m])) /
+                sum(rate(elder_consultation_total{job="act-placemat"}[5m]))
+
+  # Pod template specification
+  selector:
+    matchLabels:
+      app: act-placemat
+  template:
+    metadata:
+      labels:
+        app: act-placemat
+        cultural-protocol: enabled
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+        cultural.act.place/review-required: "true"
+    spec:
+      serviceAccountName: act-placemat-service-account
+      containers:
+      - name: act-placemat
+        image: act-placemat:latest
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 8081
+          name: metrics
+          protocol: TCP
+        
+        env:
+        - name: DEPLOYMENT_STRATEGY
+          value: "canary"
+        - name: CULTURAL_PROTOCOL_ENABLED
+          value: "true"
+        - name: ELDER_CONSULTATION_REQUIRED
+          value: "true"
+        - name: PROMETHEUS_ENABLED
+          value: "true"
+        
+        # Health checks
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        
+        # Resource management
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+
+---
+# Analysis Templates for Cultural Protocol Validation
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: cultural-compliance-analysis
+  namespace: act-placemat-production
+spec:
+  args:
+  - name: service-name
+  - name: cultural-threshold
+  metrics:
+  - name: cultural-compliance-score
+    successCondition: result[0] >= {{args.cultural-threshold}}
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          (
+            sum(rate(cultural_protocol_events_total{service="{{args.service-name}}",status="approved"}[5m])) +
+            sum(rate(elder_consultation_events_total{service="{{args.service-name}}",status="approved"}[5m]))
+          ) /
+          (
+            sum(rate(cultural_protocol_events_total{service="{{args.service-name}}"}[5m])) +
+            sum(rate(elder_consultation_events_total{service="{{args.service-name}}"}[5m]))
+          ) * 100
+  
+  - name: cultural-violation-count
+    failureCondition: result[0] > 0
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          sum(increase(cultural_protocol_violations_total{service="{{args.service-name}}"}[5m]))
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: performance-analysis
+  namespace: act-placemat-production
+spec:
+  args:
+  - name: success-rate
+  metrics:
+  - name: http-success-rate
+    successCondition: result[0] >= {{args.success-rate}}
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          sum(rate(http_requests_total{code=~"2.."}[2m])) /
+          sum(rate(http_requests_total[2m])) * 100
+  
+  - name: response-time-95th
+    successCondition: result[0] < 1000
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[2m])) by (le)) * 1000
+  
+  - name: memory-usage
+    successCondition: result[0] < 80
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          (
+            sum(container_memory_working_set_bytes{pod=~"act-placemat-.*"}) /
+            sum(container_spec_memory_limit_bytes{pod=~"act-placemat-.*"})
+          ) * 100
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: cultural-impact-analysis
+  namespace: act-placemat-production
+spec:
+  args:
+  - name: cultural-compliance-score
+  metrics:
+  - name: community-engagement-rate
+    successCondition: result[0] > 0
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          sum(rate(community_interactions_total[10m]))
+  
+  - name: elder-consultation-availability
+    successCondition: result[0] >= {{args.cultural-compliance-score}}
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          (
+            sum(elder_consultation_available_total) /
+            sum(elder_consultation_requests_total)
+          ) * 100
+  
+  - name: cultural-content-approval-rate
+    successCondition: result[0] >= {{args.cultural-compliance-score}}
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          sum(rate(content_cultural_review_total{status="approved"}[5m])) /
+          sum(rate(content_cultural_review_total[5m])) * 100
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: comprehensive-analysis
+  namespace: act-placemat-production
+spec:
+  args:
+  - name: error-rate-threshold
+  - name: cultural-violation-threshold
+  - name: elder-approval-required
+  metrics:
+  - name: overall-health-score
+    successCondition: result[0] >= 95
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          (
+            (sum(rate(http_requests_total{code=~"2.."}[5m])) / sum(rate(http_requests_total[5m]))) * 0.3 +
+            (1 - (sum(rate(http_requests_total{code=~"5.."}[5m])) / sum(rate(http_requests_total[5m])))) * 0.2 +
+            (sum(rate(cultural_protocol_compliance_total{status="approved"}[5m])) / sum(rate(cultural_protocol_compliance_total[5m]))) * 0.3 +
+            (sum(rate(elder_consultation_total{status="approved"}[5m])) / sum(rate(elder_consultation_total[5m]))) * 0.2
+          ) * 100
+  
+  - name: cultural-protocol-violations
+    failureCondition: result[0] > {{args.cultural-violation-threshold}}
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          sum(increase(cultural_protocol_violations_total[10m]))
+  
+  - name: elder-council-approval
+    successCondition: result[0] >= 1
+    failureCondition: result[0] < 1
+    provider:
+      job:
+        spec:
+          template:
+            spec:
+              containers:
+              - name: elder-approval-check
+                image: act-placemat/cultural-validator:latest
+                command:
+                - "/bin/sh"
+                - "-c"
+                args:
+                - |
+                  if [ "{{args.elder-approval-required}}" = "true" ]; then
+                    # Check for Elder Council approval in deployment metadata
+                    kubectl get deployment act-placemat-canary -o jsonpath='{.metadata.annotations.cultural\.act\.place/elder-approved}' | grep -q "true" && echo 1 || echo 0
+                  else
+                    echo 1
+                  fi
+              restartPolicy: Never
+
+---
+# Canary Service Definitions
+apiVersion: v1
+kind: Service
+metadata:
+  name: act-placemat-canary
+  namespace: act-placemat-production
+  labels:
+    app: act-placemat
+    service-type: canary
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    name: http
+  - port: 8081
+    targetPort: 8081
+    name: metrics
+  selector:
+    app: act-placemat
+    cultural-protocol: enabled
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: act-placemat-stable
+  namespace: act-placemat-production
+  labels:
+    app: act-placemat
+    service-type: stable
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    name: http
+  - port: 8081
+    targetPort: 8081
+    name: metrics
+  selector:
+    app: act-placemat
+
+---
+# ServiceMonitor for Prometheus Integration
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: act-placemat-canary-metrics
+  namespace: act-placemat-production
+  labels:
+    app: act-placemat
+    monitoring: enabled
+spec:
+  selector:
+    matchLabels:
+      app: act-placemat
+  endpoints:
+  - port: metrics
+    interval: 15s
+    path: /metrics
+    honorLabels: true
+  - port: http
+    interval: 30s
+    path: /cultural-metrics
+    honorLabels: true

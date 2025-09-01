@@ -1,0 +1,648 @@
+# Cloud SQL Postgres Configuration for ACT Placemat Intelligence Hub
+# High-availability database with Australian compliance and private networking
+
+---
+# Cloud SQL Postgres Instance Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudsql-postgres-config
+  namespace: act-placemat
+  labels:
+    component: database
+    database-type: postgres
+    data-residency: australia
+  annotations:
+    description: "Cloud SQL Postgres configuration for agent state and task queues"
+    compliance.framework: "australian-privacy-act"
+data:
+  instance_config: |
+    # Database instance configuration
+    instance:
+      name: "act-placemat-intelligence-hub-postgres"
+      database_version: "POSTGRES_16"
+      region: "australia-southeast1"
+      tier: "db-custom-4-16384"  # 4 vCPUs, 16GB RAM
+      
+    # Australian compliance settings
+    compliance:
+      data_residency: "australia"
+      encryption_at_rest: true
+      backup_location: "australia-southeast1"
+      point_in_time_recovery: true
+      
+    # High availability configuration
+    availability:
+      availability_type: "REGIONAL"  # Multi-zone HA
+      backup_enabled: true
+      backup_start_time: "02:00"  # 2 AM AEDT
+      backup_location: "australia-southeast1"
+      
+    # Network security
+    networking:
+      ip_configuration:
+        private_network: true
+        ipv4_enabled: false
+        require_ssl: true
+        authorized_networks: []  # Private only
+      vpc_network: "projects/act-placemat-intelligence-hub/global/networks/act-placemat-vpc"
+      
+    # Maintenance and updates
+    maintenance:
+      day: 7  # Sunday
+      hour: 3  # 3 AM AEDT
+      update_track: "stable"
+      
+    # Monitoring and insights
+    insights:
+      query_insights_enabled: true
+      query_string_length: 1024
+      record_application_tags: true
+      record_client_address: true
+
+  # Database configuration
+  database_config: |
+    # Performance and tuning
+    database_flags:
+      - name: "shared_preload_libraries"
+        value: "pg_stat_statements,auto_explain"
+      - name: "max_connections"
+        value: "200"
+      - name: "shared_buffers"
+        value: "4096MB"  # 25% of RAM
+      - name: "effective_cache_size"
+        value: "12288MB"  # 75% of RAM
+      - name: "work_mem"
+        value: "64MB"
+      - name: "maintenance_work_mem"
+        value: "512MB"
+      - name: "checkpoint_completion_target"
+        value: "0.9"
+      - name: "wal_buffers"
+        value: "16MB"
+      - name: "default_statistics_target"
+        value: "100"
+      - name: "random_page_cost"
+        value: "1.1"
+      - name: "effective_io_concurrency"
+        value: "200"
+      - name: "min_wal_size"
+        value: "2GB"
+      - name: "max_wal_size"
+        value: "8GB"
+      
+    # Security and audit settings
+    security_flags:
+      - name: "log_checkpoints"
+        value: "on"
+      - name: "log_connections"
+        value: "on"
+      - name: "log_disconnections"
+        value: "on"
+      - name: "log_lock_waits"
+        value: "on"
+      - name: "log_statement"
+        value: "ddl"
+      - name: "log_min_duration_statement"
+        value: "1000"  # Log slow queries > 1s
+      - name: "log_line_prefix"
+        value: "%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h "
+      - name: "log_timezone"
+        value: "Australia/Sydney"
+
+  # User configuration
+  users_config: |
+    users:
+      # Application user for agent services
+      - name: "langgraph_agent"
+        password_secret: "dbcred-prod-postgres-password"
+        privileges:
+          - "CONNECT"
+          - "CREATE"
+        databases:
+          - "agent_state_db"
+          - "task_queue_db"
+          
+      # Read-only user for monitoring and reporting
+      - name: "monitoring_user"
+        password_secret: "dbcred-prod-postgres-monitoring-password"
+        privileges:
+          - "CONNECT"
+        databases:
+          - "agent_state_db"
+          - "task_queue_db"
+        read_only: true
+        
+      # Backup user for automated backups
+      - name: "backup_user"
+        password_secret: "dbcred-prod-postgres-backup-password"
+        privileges:
+          - "CONNECT"
+          - "SELECT"
+        databases:
+          - "agent_state_db"
+          - "task_queue_db"
+
+  # Database schemas
+  databases_config: |
+    databases:
+      # Agent state database
+      - name: "agent_state_db"
+        description: "LangGraph agent execution state and checkpoints"
+        encoding: "UTF8"
+        locale: "en_AU.UTF-8"
+        timezone: "Australia/Sydney"
+        extensions:
+          - "uuid-ossp"
+          - "pg_stat_statements"
+          - "pg_trgm"
+          - "btree_gin"
+          
+      # Task queue database  
+      - name: "task_queue_db"
+        description: "Agent task queues and coordination"
+        encoding: "UTF8"
+        locale: "en_AU.UTF-8"
+        timezone: "Australia/Sydney"
+        extensions:
+          - "uuid-ossp"
+          - "pg_stat_statements"
+          - "pg_trgm"
+          - "btree_gin"
+
+---
+# Cloud SQL Proxy Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudsql-proxy
+  namespace: act-placemat
+  labels:
+    component: database-proxy
+    data-residency: australia
+  annotations:
+    description: "Cloud SQL Proxy for secure database connections"
+    compliance.framework: "australian-privacy-act"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      component: cloudsql-proxy
+      data-residency: australia
+  template:
+    metadata:
+      labels:
+        component: cloudsql-proxy
+        data-residency: australia
+      annotations:
+        compliance.framework: "australian-privacy-act"
+        data.classification: "restricted"
+        audit.required: "true"
+    spec:
+      serviceAccountName: cloudsql-proxy-service
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: "kubernetes.io/zone"
+                operator: In
+                values:
+                - "australia-southeast1-a"
+                - "australia-southeast1-b"
+                - "australia-southeast1-c"
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  component: cloudsql-proxy
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - name: cloud-sql-proxy
+        image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.8.0
+        imagePullPolicy: Always
+        args:
+        - "--structured-logs"
+        - "--port=5432"
+        - "--private-ip"
+        - "--health-check"
+        - "--max-connections=50"
+        - "--max-sigterm-delay=30s"
+        - "act-placemat-intelligence-hub:australia-southeast1:act-placemat-intelligence-hub-postgres"
+        env:
+        - name: TZ
+          value: "Australia/Sydney"
+        - name: DATA_RESIDENCY
+          value: "australia"
+        - name: COMPLIANCE_FRAMEWORK
+          value: "australian-privacy-act"
+        ports:
+        - name: postgres
+          containerPort: 5432
+          protocol: TCP
+        - name: health
+          containerPort: 9090
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /liveness
+            port: health
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /readiness
+            port: health
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1Gi
+          requests:
+            cpu: 200m
+            memory: 512Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1001
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: gcp-credentials
+          mountPath: /var/secrets/google
+          readOnly: true
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: gcp-credentials
+        secret:
+          secretName: cloudsql-proxy-gcp-credentials
+      imagePullSecrets:
+      - name: registry-credentials
+      nodeSelector:
+        data-residency: australia
+
+---
+# Cloud SQL Proxy Service Account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cloudsql-proxy-service
+  namespace: act-placemat
+  labels:
+    component: database-proxy
+    data-residency: australia
+  annotations:
+    description: "Service account for Cloud SQL Proxy"
+    compliance.framework: "australian-privacy-act"
+    iam.gke.io/gcp-service-account: "cloudsql-proxy@act-placemat-intelligence-hub.iam.gserviceaccount.com"
+    data.classification: "restricted"
+    audit.required: "true"
+automountServiceAccountToken: true
+
+---
+# Cloud SQL Proxy Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloudsql-proxy-service
+  namespace: act-placemat
+  labels:
+    component: database-proxy
+    data-residency: australia
+  annotations:
+    description: "Cloud SQL Proxy service for database connections"
+    compliance.framework: "australian-privacy-act"
+spec:
+  selector:
+    component: cloudsql-proxy
+    data-residency: australia
+  ports:
+  - name: postgres
+    port: 5432
+    targetPort: postgres
+    protocol: TCP
+  type: ClusterIP
+
+---
+# Database Connection Configuration Secret
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: database-connection-config
+  namespace: act-placemat
+  labels:
+    component: database
+    data-residency: australia
+  annotations:
+    description: "Database connection configuration from Secret Manager"
+    compliance.framework: "australian-privacy-act"
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: google-secret-manager
+    kind: SecretStore
+  data:
+  - secretKey: postgres-host
+    remoteRef:
+      key: database-postgres-host
+  - secretKey: postgres-port
+    remoteRef:
+      key: database-postgres-port
+  - secretKey: postgres-database
+    remoteRef:
+      key: database-postgres-database
+  - secretKey: postgres-username
+    remoteRef:
+      key: database-postgres-username
+  - secretKey: postgres-password
+    remoteRef:
+      key: dbcred-prod-postgres-password
+  - secretKey: postgres-ssl-mode
+    remoteRef:
+      key: database-postgres-ssl-mode
+  - secretKey: connection-pool-max-size
+    remoteRef:
+      key: database-connection-pool-max-size
+  - secretKey: connection-pool-timeout
+    remoteRef:
+      key: database-connection-pool-timeout
+
+---
+# Database Health Check CronJob
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: database-health-check
+  namespace: act-placemat
+  labels:
+    component: database
+    operation: health-check
+    data-residency: australia
+  annotations:
+    description: "Periodic health checks for Cloud SQL database"
+    compliance.framework: "australian-privacy-act"
+spec:
+  schedule: "*/5 * * * *"  # Every 5 minutes
+  timeZone: "Australia/Sydney"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            component: database-health-check
+            data-residency: australia
+        spec:
+          serviceAccountName: database-health-checker
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            fsGroup: 1001
+          containers:
+          - name: health-checker
+            image: postgres:16-alpine
+            env:
+            - name: TZ
+              value: "Australia/Sydney"
+            - name: DATA_RESIDENCY
+              value: "australia"
+            - name: COMPLIANCE_FRAMEWORK
+              value: "australian-privacy-act"
+            - name: PGHOST
+              valueFrom:
+                secretKeyRef:
+                  name: database-connection-config
+                  key: postgres-host
+            - name: PGPORT
+              valueFrom:
+                secretKeyRef:
+                  name: database-connection-config
+                  key: postgres-port
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: database-connection-config
+                  key: postgres-username
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: database-connection-config
+                  key: postgres-password
+            - name: PGDATABASE
+              value: "postgres"
+            - name: PGSSLMODE
+              valueFrom:
+                secretKeyRef:
+                  name: database-connection-config
+                  key: postgres-ssl-mode
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Starting database health check at $(date)"
+              
+              # Function to perform health check
+              perform_health_check() {
+                local db_name=$1
+                local check_name=$2
+                
+                echo "Health check: $check_name for database $db_name"
+                
+                # Basic connectivity test
+                if psql -d "$db_name" -c "SELECT 1 as health_check, current_timestamp as check_time, version() as pg_version;" > /dev/null 2>&1; then
+                  echo "✅ $check_name: Database $db_name is responsive"
+                  
+                  # Performance check - query execution time
+                  QUERY_TIME=$(psql -d "$db_name" -t -c "EXPLAIN (ANALYZE, BUFFERS) SELECT 1;" | grep "Execution Time" | awk '{print $3}' || echo "0")
+                  echo "📊 $check_name: Query execution time: ${QUERY_TIME}ms"
+                  
+                  # Connection count check
+                  ACTIVE_CONNECTIONS=$(psql -d "$db_name" -t -c "SELECT count(*) FROM pg_stat_activity WHERE state = 'active';" | tr -d ' ' || echo "0")
+                  echo "🔗 $check_name: Active connections: $ACTIVE_CONNECTIONS"
+                  
+                  # Database size check
+                  DB_SIZE=$(psql -d "$db_name" -t -c "SELECT pg_size_pretty(pg_database_size('$db_name'));" | tr -d ' ' || echo "Unknown")
+                  echo "💾 $check_name: Database size: $DB_SIZE"
+                  
+                  # Create health check event
+                  kubectl create event database-health-check-success-$db_name-$(date +%s) \
+                    --message="Database $db_name health check passed (query_time: ${QUERY_TIME}ms, connections: $ACTIVE_CONNECTIONS, size: $DB_SIZE)" \
+                    --reason="DatabaseHealthCheckPassed" \
+                    --type="Normal" \
+                    --source="database-health-check" \
+                    --namespace=act-placemat 2>/dev/null || true
+                    
+                  return 0
+                else
+                  echo "❌ $check_name: Database $db_name is not responsive"
+                  
+                  # Create health check failure event
+                  kubectl create event database-health-check-failure-$db_name-$(date +%s) \
+                    --message="Database $db_name health check failed - not responsive" \
+                    --reason="DatabaseHealthCheckFailed" \
+                    --type="Warning" \
+                    --source="database-health-check" \
+                    --namespace=act-placemat 2>/dev/null || true
+                    
+                  return 1
+                fi
+              }
+              
+              # Initialize health check tracking
+              HEALTH_FAILURES=0
+              
+              echo "=== System Database Health Check ==="
+              if ! perform_health_check "postgres" "SystemDB"; then
+                HEALTH_FAILURES=$((HEALTH_FAILURES + 1))
+              fi
+              
+              echo "=== Agent State Database Health Check ==="
+              if ! perform_health_check "agent_state_db" "AgentStateDB"; then
+                HEALTH_FAILURES=$((HEALTH_FAILURES + 1))
+              fi
+              
+              echo "=== Task Queue Database Health Check ==="
+              if ! perform_health_check "task_queue_db" "TaskQueueDB"; then
+                HEALTH_FAILURES=$((HEALTH_FAILURES + 1))
+              fi
+              
+              # Overall health assessment
+              if [ $HEALTH_FAILURES -eq 0 ]; then
+                echo "🎉 All database health checks passed"
+                OVERALL_STATUS="HEALTHY"
+              else
+                echo "⚠️ $HEALTH_FAILURES database health check(s) failed"
+                OVERALL_STATUS="UNHEALTHY"
+              fi
+              
+              # Generate health report
+              cat > /tmp/database-health-report.json << EOF
+              {
+                "health_check_time": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+                "overall_status": "$OVERALL_STATUS",
+                "compliance_framework": "Australian Privacy Act 1988",
+                "data_residency": "australia",
+                "databases_checked": ["postgres", "agent_state_db", "task_queue_db"],
+                "health_failures": $HEALTH_FAILURES,
+                "next_check": "$(date -d '+5 minutes' -u +%Y-%m-%dT%H:%M:%SZ)"
+              }
+              EOF
+              
+              # Store health report
+              kubectl create configmap database-health-report-$(date +%Y%m%d-%H%M) \
+                --from-file=report.json=/tmp/database-health-report.json \
+                --from-literal="overall_status=$OVERALL_STATUS" \
+                --from-literal="health_failures=$HEALTH_FAILURES" \
+                --from-literal="compliance_framework=australian-privacy-act" \
+                --from-literal="data_residency=australia" \
+                -n act-placemat --dry-run=client -o yaml | kubectl apply -f - 2>/dev/null || true
+              
+              echo "Database health check completed at $(date)"
+              echo "Overall status: $OVERALL_STATUS"
+              
+              # Exit with appropriate code
+              exit $HEALTH_FAILURES
+            resources:
+              limits:
+                cpu: 200m
+                memory: 256Mi
+              requests:
+                cpu: 100m
+                memory: 128Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              runAsNonRoot: true
+              runAsUser: 1001
+              capabilities:
+                drop:
+                - ALL
+            volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+          volumes:
+          - name: tmp
+            emptyDir: {}
+          imagePullSecrets:
+          - name: registry-credentials
+          nodeSelector:
+            data-residency: australia
+
+---
+# Database Health Checker Service Account  
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: database-health-checker
+  namespace: act-placemat
+  labels:
+    component: database
+    role: health-checker
+    data-residency: australia
+  annotations:
+    description: "Service account for database health checking"
+    compliance.framework: "australian-privacy-act"
+automountServiceAccountToken: true
+
+---
+# Database Health Checker RBAC Role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: database-health-checker
+  namespace: act-placemat
+  labels:
+    component: database
+    data-residency: australia
+  annotations:
+    description: "Role for database health checking operations"
+    compliance.framework: "australian-privacy-act"
+rules:
+# Event creation for health check results
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+# ConfigMap creation for health reports
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["create", "update", "patch"]
+  resourceNames: ["database-health-report-*"]
+
+---
+# Database Health Checker Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: database-health-checker-binding
+  namespace: act-placemat
+  labels:
+    component: database
+    data-residency: australia
+  annotations:
+    description: "Binds database-health-checker to health checking role"
+    compliance.framework: "australian-privacy-act"
+subjects:
+- kind: ServiceAccount
+  name: database-health-checker
+  namespace: act-placemat
+roleRef:
+  kind: Role
+  name: database-health-checker
+  apiGroup: rbac.authorization.k8s.io
