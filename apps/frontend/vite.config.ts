@@ -1,41 +1,39 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import path from 'path'
 
+// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
-  },
-  css: {
-    devSourcemap: false,
+  build: {
+    sourcemap: true,
+    emptyOutDir: true,
   },
   server: {
-    port: 5175,
-    host: '0.0.0.0',
-    strictPort: false,
+    port: 5174,
     proxy: {
-      // Proxy API calls to our working backend
-      '/api': {
-        target: 'http://localhost:4000',
+      // Real data endpoints from stable backend
+      '/api/real': {
+        target: 'http://localhost:4001',
         changeOrigin: true,
-        secure: false,
       },
-    },
-  },
-  build: {
-    outDir: 'dist',
-    sourcemap: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          router: ['react-router-dom'],
-          trpc: ['@trpc/client', '@trpc/react-query'],
-        },
+      // Main API endpoints (keeping old for compatibility)
+      '/api': {
+        target: 'http://localhost:4001',
+        changeOrigin: true,
       },
+      '/health': {
+        target: 'http://localhost:4001',
+        changeOrigin: true,
+      },
+      '/metrics': {
+        target: 'http://localhost:4001',
+        changeOrigin: true,
+      },
+      '/business-dashboard': {
+        target: 'http://localhost:4001/api',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/business-dashboard/, '/business-dashboard')
+      }
     },
   },
 })

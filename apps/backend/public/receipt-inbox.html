@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Receipt Inbox Zero</title>
+  <style>
+    :root { --bg:#0b0c10; --panel:#151821; --muted:#8b93a7; --text:#e6e9ef; --accent:#61dafb; --ok:#19c37d; --warn:#f5a623; --err:#ff5c5c; }
+    body { margin:0; background:var(--bg); color:var(--text); font:14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+    header { padding:16px 20px; border-bottom:1px solid #242838; display:flex; align-items:center; gap:12px; }
+    header h1 { margin:0; font-size:18px; }
+    .tag { padding:3px 8px; border-radius:999px; font-weight:600; }
+    .ok { background:#123; color:var(--ok); }
+    .warn { background:#221b0d; color:var(--warn); }
+    .err { background:#241214; color:var(--err); }
+    .toolbar { margin-left:auto; display:flex; gap:8px; }
+    button { background:#1f2433; color:var(--text); border:1px solid #2a3044; padding:8px 10px; border-radius:8px; cursor:pointer; }
+    button:hover { background:#242a3d; }
+    main { display:grid; grid-template-columns: 380px 1fr; height: calc(100vh - 60px); }
+    .list { border-right:1px solid #242838; overflow:auto; }
+    .item { padding:12px 14px; border-bottom:1px solid #1e2232; cursor:pointer; }
+    .item:hover { background:#131724; }
+    .item.active { background:#0f1320; }
+    .small { color:var(--muted); font-size:12px; }
+    .detail { padding:16px; overflow:auto; }
+    .grid { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+    .card { background:var(--panel); border:1px solid #23283a; border-radius:10px; padding:12px; }
+    .score { font-weight:700; }
+    .pill { padding:2px 6px; border-radius:6px; background:#1f2230; border:1px solid #2b3348; color:var(--muted); font-size:12px; }
+    a { color: var(--accent); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+  </style>
+  <script>
+    async function fetchJSON(url, opts={}) {
+      const res = await fetch(url, opts);
+      if (!res.ok) throw new Error(await res.text());
+      return res.json();
+    }
+    function fmtCurrency(x) { const n = Number(x||0); return (n<0?'-':'') + '$' + Math.abs(n).toFixed(2); }
+    function el(tag, attrs={}, children=[]) { const e = document.createElement(tag); Object.assign(e, attrs); children.forEach(c=>e.appendChild(typeof c==='string'?document.createTextNode(c):c)); return e; }
+    let state = { items: [], idx: 0, totals: {coveragePercent:0} };
+
+    async function loadCoverage(days=30) {
+      const json = await fetchJSON(`/api/bookkeeping/coverage?days=${days}`);
+      state.items = json.uncovered || [];
+      state.idx = 0;
+      state.totals = json.totals || { coveragePercent:0 };
+      render();
+    }
+    function renderHeader() {
+      const pct = state.totals.coveragePercent || 0;
+      const tagCls = pct >= 95 ? 'ok' : pct >= 80 ? 'warn' : 'err';
+      document.getElementById('coverage').textContent = `${pct}% covered`;
+      document.getElementById('coverage').className = `tag ${tagCls}`;
+      document.getElementById('counts').textContent = `Tx: ${state.totals.transactions||0} • Covered: ${state.totals.covered||0} • Uncovered: ${state.totals.uncovered||0}`;
+    }
+    function renderList() {
+      const list = document.getElementById('list');
+      list.innerHTML = '';
+      state.items.forEach((it, i) => {
+        const cand = it.candidate;
+        const row = el('div', { className: `item ${i===state.idx?'active':''}` }, [
+          el('div', { innerHTML: `${new Date(it.date).toLocaleDateString()} • ${fmtCurrency(it.amount)} • ${it.contact || 'No contact'}` }),
+          el('div', { className: 'small', innerHTML: cand ? `Candidate: ${cand.contact||'—'} • ${fmtCurrency(cand.total)} • score ${Math.round((cand.score||0)*100)}` : 'No candidate yet' })
+        ]);
+        row.onclick = () => { state.idx = i; renderDetail(); document.querySelectorAll('.item').forEach(n=>n.classList.remove('active')); row.classList.add('active'); };
+        list.appendChild(row);
+      });
+    }
+    function renderDetail() {
+      const it = state.items[state.idx];
+      const d = document.getElementById('detail');
+      if (!it) { d.innerHTML = '<div class="small">All clear — nothing to match 🎉</div>'; return; }
+      const cand = it.candidate;
+      d.innerHTML = '';
+      d.appendChild(el('div', {}, [
+        el('h2', { innerHTML: `${fmtCurrency(it.amount)} • ${new Date(it.date).toLocaleDateString()}` }),
+        el('div', { className: 'small', innerHTML: `Contact: ${it.contact||'—'} • Xero BankTransaction ID: ${it.id}` })
+      ]));
+      const grid = el('div', { className: 'grid' });
+      grid.appendChild(el('div', { className: 'card' }, [
+        el('h3', { innerHTML: 'Suggested Match' }),
+        el('div', { innerHTML: cand ? `${cand.contact||'—'} • ${fmtCurrency(cand.total)} • <span class="pill">score <span class="score">${cand.score}</span></span>` : 'No candidate yet' }),
+        el('div', { className: 'small', innerHTML: cand?.reason ? `Reason: ${cand.reason}` : '' }),
+        el('div', { className: 'small', innerHTML: cand ? `Xero Invoice ID: ${cand.invoiceId}` : '' })
+      ]));
+      grid.appendChild(el('div', { className: 'card' }, [
+        el('h3', { innerHTML: 'Actions' }),
+        el('div', { className: 'small', innerHTML: 'Open in Xero and attach via Dext/Xero UI if needed. (Direct attach from agent coming next.)' }),
+        el('div', { style: 'margin-top:8px' }, [
+          el('button', { innerText: 'Next (J)', onclick: nextItem }),
+          el('button', { innerText: 'Prev (K)', onclick: prevItem }),
+          el('button', { innerText: 'Refresh', onclick: () => loadCoverage() })
+        ])
+      ]));
+      d.appendChild(grid);
+    }
+    function nextItem(){ if (state.idx < state.items.length-1){ state.idx++; renderDetail(); highlight(); } }
+    function prevItem(){ if (state.idx>0){ state.idx--; renderDetail(); highlight(); } }
+    function highlight(){ const rows=[...document.querySelectorAll('.item')]; rows.forEach(n=>n.classList.remove('active')); if(rows[state.idx]) rows[state.idx].classList.add('active'); }
+    window.addEventListener('keydown', (e)=>{ if(e.key==='j'||e.key==='ArrowDown'){ nextItem(); e.preventDefault(); } if(e.key==='k'||e.key==='ArrowUp'){ prevItem(); e.preventDefault(); } });
+    window.addEventListener('load', async ()=>{ await loadCoverage(30); renderHeader(); renderList(); renderDetail(); });
+    function render(){ renderHeader(); renderList(); renderDetail(); }
+  </script>
+</head>
+<body>
+  <header>
+    <h1>Receipt Inbox Zero</h1>
+    <span id="coverage" class="tag warn">0% covered</span>
+    <span id="counts" class="small"></span>
+    <div class="toolbar">
+      <button onclick="loadCoverage(7)">Last 7d</button>
+      <button onclick="loadCoverage(30)">Last 30d</button>
+      <button onclick="loadCoverage(90)">Last 90d</button>
+    </div>
+  </header>
+  <main>
+    <div id="list" class="list"></div>
+    <div id="detail" class="detail"></div>
+  </main>
+</body>
+</html>
+

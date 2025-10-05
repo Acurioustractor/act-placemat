@@ -1,0 +1,71 @@
+{
+  "fetchedAt": "2025-10-04T00:21:08.765Z",
+  "duration": "29.2 seconds",
+  "databases": [
+    {
+      "name": "projects",
+      "count": 64,
+      "hasData": true,
+      "error": null
+    },
+    {
+      "name": "people",
+      "count": 234,
+      "hasData": true,
+      "error": null
+    },
+    {
+      "name": "organizations",
+      "count": 70,
+      "hasData": true,
+      "error": null
+    },
+    {
+      "name": "opportunities",
+      "count": 39,
+      "hasData": true,
+      "error": null
+    },
+    {
+      "name": "places",
+      "count": 18,
+      "hasData": true,
+      "error": null
+    },
+    {
+      "name": "activities",
+      "count": 0,
+      "hasData": false,
+      "error": "Could not find database with ID: 6d9ccb03-ddab-48d3-9490-f08427897112. Make sure the relevant pages and databases are shared with your integration."
+    },
+    {
+      "name": "stories",
+      "count": 0,
+      "hasData": false,
+      "error": "Could not find database with ID: 619ceac3-8d2a-4e30-bd73-0b81ccfadfc4. Make sure the relevant pages and databases are shared with your integration."
+    },
+    {
+      "name": "artifacts",
+      "count": 13,
+      "hasData": true,
+      "error": null
+    },
+    {
+      "name": "actions",
+      "count": 624,
+      "hasData": true,
+      "error": null
+    }
+  ],
+  "totals": {
+    "projects": 64,
+    "people": 234,
+    "organizations": 70,
+    "opportunities": 39,
+    "places": 18,
+    "activities": 0,
+    "stories": 0,
+    "artifacts": 13,
+    "actions": 624
+  }
+}

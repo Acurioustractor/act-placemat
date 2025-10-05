@@ -1,0 +1,1002 @@
+[
+  {
+    "id": "274ebcf9-81cf-813d-aefc-d6b93892576c",
+    "name": "Kenia Miranda Verdugo",
+    "organization": null,
+    "role": "Program Manager",
+    "tags": [],
+    "email": null,
+    "created": "2025-09-20T23:09:00.000Z",
+    "url": "https://www.notion.so/Kenia-Miranda-Verdugo-274ebcf981cf813daefcd6b93892576c"
+  },
+  {
+    "id": "270ebcf9-81cf-80bd-9fbe-e7f398e73458",
+    "name": "Nicholas Marchesi",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-09-16T02:49:00.000Z",
+    "url": "https://www.notion.so/Nicholas-Marchesi-270ebcf981cf80bd9fbee7f398e73458"
+  },
+  {
+    "id": "270ebcf9-81cf-8090-a62f-fe7985b45ac3",
+    "name": "Benjamin Knight",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-09-16T02:49:00.000Z",
+    "url": "https://www.notion.so/Benjamin-Knight-270ebcf981cf8090a62ffe7985b45ac3"
+  },
+  {
+    "id": "270ebcf9-81cf-8077-81cd-dfb0ac62e3f3",
+    "name": "Pollyanna Knight",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-09-16T02:42:00.000Z",
+    "url": "https://www.notion.so/Pollyanna-Knight-270ebcf981cf807781cddfb0ac62e3f3"
+  },
+  {
+    "id": "270ebcf9-81cf-8025-a2c2-ce0eaf0f04a5",
+    "name": "Georgia Falzon",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-09-16T02:42:00.000Z",
+    "url": "https://www.notion.so/Georgia-Falzon-270ebcf981cf8025a2c2ce0eaf0f04a5"
+  },
+  {
+    "id": "270ebcf9-81cf-801e-a554-cc97aaee5ebf",
+    "name": "Micheal",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-09-16T02:41:00.000Z",
+    "url": "https://www.notion.so/Micheal-270ebcf981cf801ea554cc97aaee5ebf"
+  },
+  {
+    "id": "26debcf9-81cf-813d-b9de-f05202015f2f",
+    "name": "Michael Chen",
+    "organization": null,
+    "role": "Senior Officer",
+    "tags": [],
+    "email": "michael.chen@government.act.gov.au",
+    "created": "2025-09-13T23:02:00.000Z",
+    "url": "https://www.notion.so/Michael-Chen-26debcf981cf813db9def05202015f2f"
+  },
+  {
+    "id": "26debcf9-81cf-8111-be0f-cf73654bf457",
+    "name": "Jane Doe",
+    "organization": null,
+    "role": "Director",
+    "tags": [],
+    "email": "jane.doe@justicefoundation.org",
+    "created": "2025-09-13T23:02:00.000Z",
+    "url": "https://www.notion.so/Jane-Doe-26debcf981cf8111be0fcf73654bf457"
+  },
+  {
+    "id": "26debcf9-81cf-81de-ae9b-e2e93002a8bc",
+    "name": "Sarah Williams",
+    "organization": null,
+    "role": "Executive Director",
+    "tags": [],
+    "email": "sarah.williams@philanthropynetwork.org",
+    "created": "2025-09-13T23:02:00.000Z",
+    "url": "https://www.notion.so/Sarah-Williams-26debcf981cf81deae9be2e93002a8bc"
+  },
+  {
+    "id": "26bebcf9-81cf-802b-844c-d391e2b744cb",
+    "name": "Susy Wenitong",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-09-11T22:54:00.000Z",
+    "url": "https://www.notion.so/Susy-Wenitong-26bebcf981cf802b844cd391e2b744cb"
+  },
+  {
+    "id": "26bebcf9-81cf-80c9-b89c-fc94ab43c2ed",
+    "name": "Madeline Alderuccio",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-09-11T22:28:00.000Z",
+    "url": "https://www.notion.so/Madeline-Alderuccio-26bebcf981cf80c9b89cfc94ab43c2ed"
+  },
+  {
+    "id": "26bebcf9-81cf-805f-a435-ed7d0425dae2",
+    "name": "Seide",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-09-11T22:25:00.000Z",
+    "url": "https://www.notion.so/Seide-26bebcf981cf805fa435ed7d0425dae2"
+  },
+  {
+    "id": "26bebcf9-81cf-80d9-9f93-fc3856f9a43a",
+    "name": "Tarik Dallinger-Dimizio",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-09-11T22:21:00.000Z",
+    "url": "https://www.notion.so/Tarik-Dallinger-Dimizio-26bebcf981cf80d99f93fc3856f9a43a"
+  },
+  {
+    "id": "26bebcf9-81cf-8047-871d-e8a78fd7551b",
+    "name": "Carolyn Ludovici",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-09-11T21:34:00.000Z",
+    "url": "https://www.notion.so/Carolyn-Ludovici-26bebcf981cf8047871de8a78fd7551b"
+  },
+  {
+    "id": "26bebcf9-81cf-80c7-904a-e27ca1afbc13",
+    "name": "Sally Grimsley-Ballard",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-09-11T21:11:00.000Z",
+    "url": "https://www.notion.so/Sally-Grimsley-Ballard-26bebcf981cf80c7904ae27ca1afbc13"
+  },
+  {
+    "id": "26bebcf9-81cf-80e2-994d-ce09a4803d73",
+    "name": "Tanya Turner",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-09-11T21:01:00.000Z",
+    "url": "https://www.notion.so/Tanya-Turner-26bebcf981cf80e2994dce09a4803d73"
+  },
+  {
+    "id": "26bebcf9-81cf-8022-a651-d0161ba48aab",
+    "name": "Narelle Gleeson-Henaway",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-09-11T20:48:00.000Z",
+    "url": "https://www.notion.so/Narelle-Gleeson-Henaway-26bebcf981cf8022a651d0161ba48aab"
+  },
+  {
+    "id": "26bebcf9-81cf-800a-a728-fcc05aab833e",
+    "name": "Milsam Sam",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-09-11T20:47:00.000Z",
+    "url": "https://www.notion.so/Milsam-Sam-26bebcf981cf800aa728fcc05aab833e"
+  },
+  {
+    "id": "26bebcf9-81cf-8054-9f5c-fe1fbbb2493f",
+    "name": "Rachel Atkinson",
+    "organization": null,
+    "role": "CEO",
+    "tags": [],
+    "email": null,
+    "created": "2025-09-11T20:45:00.000Z",
+    "url": "https://www.notion.so/Rachel-Atkinson-26bebcf981cf80549f5cfe1fbbb2493f"
+  },
+  {
+    "id": "266ebcf9-81cf-8163-aef8-f48085285b17",
+    "name": "Karen B.",
+    "organization": null,
+    "role": "SEO Account Manager",
+    "tags": [],
+    "email": "outreachseo56@gmail.com",
+    "created": "2025-09-06T23:01:00.000Z",
+    "url": "https://www.notion.so/Karen-B-266ebcf981cf8163aef8f48085285b17"
+  },
+  {
+    "id": "266ebcf9-81cf-81d1-b303-e578a125c965",
+    "name": "Shellee Strickland",
+    "organization": null,
+    "role": "CEO",
+    "tags": [],
+    "email": "shellee.strickland@murrup.org.au",
+    "created": "2025-09-06T23:01:00.000Z",
+    "url": "https://www.notion.so/Shellee-Strickland-266ebcf981cf81d1b303e578a125c965"
+  },
+  {
+    "id": "25febcf9-81cf-818c-86c0-de276f4d0918",
+    "name": "Adam Robinson",
+    "organization": null,
+    "role": "Chief Executive Officer",
+    "tags": [],
+    "email": "adam@streetsmartaustralia.org",
+    "created": "2025-08-30T23:03:00.000Z",
+    "url": "https://www.notion.so/Adam-Robinson-25febcf981cf818c86c0de276f4d0918"
+  },
+  {
+    "id": "25febcf9-81cf-8162-9a96-c8cb1c8a3a98",
+    "name": "Adam Robinson",
+    "organization": null,
+    "role": "Chief Executive Officer",
+    "tags": [],
+    "email": "adam@streetsmartaustralia.org",
+    "created": "2025-08-30T23:02:00.000Z",
+    "url": "https://www.notion.so/Adam-Robinson-25febcf981cf81629a96c8cb1c8a3a98"
+  },
+  {
+    "id": "25debcf9-81cf-802c-8eb1-d83db13ff181",
+    "name": "Uncle Allan Palm Island",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-08-28T22:54:00.000Z",
+    "url": "https://www.notion.so/Uncle-Allan-Palm-Island-25debcf981cf802c8eb1d83db13ff181"
+  },
+  {
+    "id": "25debcf9-81cf-80df-b3b1-c8cec76c1215",
+    "name": "Richard Cassidy",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-08-28T22:54:00.000Z",
+    "url": "https://www.notion.so/Richard-Cassidy-25debcf981cf80dfb3b1c8cec76c1215"
+  },
+  {
+    "id": "25cebcf9-81cf-8067-b7d6-ceb92be1e0e0",
+    "name": "Fiona McLeay (she/her)",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": "fmcleay@gmail.com",
+    "created": "2025-08-27T22:29:00.000Z",
+    "url": "https://www.notion.so/Fiona-McLeay-she-her-25cebcf981cf8067b7d6ceb92be1e0e0"
+  },
+  {
+    "id": "252ebcf9-81cf-81e6-bb85-ef8506922913",
+    "name": "Hannah Tonkin",
+    "organization": null,
+    "role": "Commissioner",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:19:00.000Z",
+    "url": "https://www.notion.so/Hannah-Tonkin-252ebcf981cf81e6bb85ef8506922913"
+  },
+  {
+    "id": "252ebcf9-81cf-816c-aaaa-ffeb800cfdb8",
+    "name": "Professor Eileen Baldry",
+    "organization": null,
+    "role": "Criminologist; Disability & justice",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:16:00.000Z",
+    "url": "https://www.notion.so/Professor-Eileen-Baldry-252ebcf981cf816caaaaffeb800cfdb8"
+  },
+  {
+    "id": "252ebcf9-81cf-81b9-b881-ed8e3f08114e",
+    "name": "Professor Kelly Richards",
+    "organization": null,
+    "role": "Criminologist; Youth justice",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:16:00.000Z",
+    "url": "https://www.notion.so/Professor-Kelly-Richards-252ebcf981cf81b9b881ed8e3f08114e"
+  },
+  {
+    "id": "252ebcf9-81cf-8126-93b1-e915e58e1f06",
+    "name": "Professor Chris Cunneen",
+    "organization": null,
+    "role": "Criminologist; Youth justice",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:16:00.000Z",
+    "url": "https://www.notion.so/Professor-Chris-Cunneen-252ebcf981cf812693b1e915e58e1f06"
+  },
+  {
+    "id": "252ebcf9-81cf-81e0-b0ab-d7f45740efe7",
+    "name": "Fiona Patten",
+    "organization": null,
+    "role": "Justice reform advocate",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:16:00.000Z",
+    "url": "https://www.notion.so/Fiona-Patten-252ebcf981cf81e0b0abd7f45740efe7"
+  },
+  {
+    "id": "252ebcf9-81cf-8129-8fee-f9fc313882ec",
+    "name": "Anne Hollonds",
+    "organization": null,
+    "role": "National Children’s Commissioner",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:16:00.000Z",
+    "url": "https://www.notion.so/Anne-Hollonds-252ebcf981cf81298feef9fc313882ec"
+  },
+  {
+    "id": "252ebcf9-81cf-8198-bc0b-edb525d898ab",
+    "name": "Brodie Germaine",
+    "organization": null,
+    "role": "Founder; Youth mentor",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Brodie-Germaine-252ebcf981cf8198bc0bedb525d898ab"
+  },
+  {
+    "id": "252ebcf9-81cf-8181-9a44-c4db30aa8ba0",
+    "name": "Zita Whalley",
+    "organization": null,
+    "role": "Communications / Partnerships",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Zita-Whalley-252ebcf981cf81819a44c4db30aa8ba0"
+  },
+  {
+    "id": "252ebcf9-81cf-81ba-9279-d14bae92acf2",
+    "name": "Tina Morris",
+    "organization": null,
+    "role": "Head of Communications",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Tina-Morris-252ebcf981cf81ba9279d14bae92acf2"
+  },
+  {
+    "id": "252ebcf9-81cf-81db-88e7-e202c51f81f9",
+    "name": "David McGuire",
+    "organization": null,
+    "role": "CEO",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/David-McGuire-252ebcf981cf81db88e7e202c51f81f9"
+  },
+  {
+    "id": "252ebcf9-81cf-8181-9cdf-caf0b539104c",
+    "name": "Megan Krakouer",
+    "organization": null,
+    "role": "Director; Advocate",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Megan-Krakouer-252ebcf981cf81819cdfcaf0b539104c"
+  },
+  {
+    "id": "252ebcf9-81cf-81f4-b4cc-c93ac45f1122",
+    "name": "Gerry Georgatos",
+    "organization": null,
+    "role": "National Coordinator; Advocate",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Gerry-Georgatos-252ebcf981cf81f4b4ccc93ac45f1122"
+  },
+  {
+    "id": "252ebcf9-81cf-813d-a8d1-cb8794f64570",
+    "name": "Maggie Munn",
+    "organization": null,
+    "role": "First Nations Justice Director",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Maggie-Munn-252ebcf981cf813da8d1cb8794f64570"
+  },
+  {
+    "id": "252ebcf9-81cf-81f5-a25c-e639d839f9eb",
+    "name": "Dr Hannah McGlade",
+    "organization": null,
+    "role": "Academic; UN expert",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Dr-Hannah-McGlade-252ebcf981cf81f5a25ce639d839f9eb"
+  },
+  {
+    "id": "252ebcf9-81cf-818f-9e26-d9f4c33cb5bf",
+    "name": "Shahleena Musk",
+    "organization": null,
+    "role": "Children’s Commissioner",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Shahleena-Musk-252ebcf981cf818f9e26d9f4c33cb5bf"
+  },
+  {
+    "id": "252ebcf9-81cf-81fd-be26-f03caaeeba68",
+    "name": "Brendan Murray",
+    "organization": null,
+    "role": "Former Executive Principal",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Brendan-Murray-252ebcf981cf81fdbe26f03caaeeba68"
+  },
+  {
+    "id": "252ebcf9-81cf-81de-a9ad-e0adc6fb8d6e",
+    "name": "Julie Edwards",
+    "organization": null,
+    "role": "CEO",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Julie-Edwards-252ebcf981cf81dea9ade0adc6fb8d6e"
+  },
+  {
+    "id": "252ebcf9-81cf-816e-b757-d9d54a55bcf5",
+    "name": "Dr Mindy Sotiri",
+    "organization": null,
+    "role": "Executive Director",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Dr-Mindy-Sotiri-252ebcf981cf816eb757d9d54a55bcf5"
+  },
+  {
+    "id": "252ebcf9-81cf-8114-8ae7-d6bcb630553b",
+    "name": "Nicola Forrest",
+    "organization": null,
+    "role": "Co‑founder & Co‑Chair",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Nicola-Forrest-252ebcf981cf81148ae7d6bcb630553b"
+  },
+  {
+    "id": "252ebcf9-81cf-81f1-aa6d-f77b37e3bfc2",
+    "name": "Dylan Voller",
+    "organization": null,
+    "role": "Youth justice advocate; lived experience",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Dylan-Voller-252ebcf981cf81f1aa6df77b37e3bfc2"
+  },
+  {
+    "id": "252ebcf9-81cf-8120-8743-f857cd87c8e5",
+    "name": "Keenan Mundine",
+    "organization": null,
+    "role": "Co‑founder; Lived‑experience advocate",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Keenan-Mundine-252ebcf981cf81208743f857cd87c8e5"
+  },
+  {
+    "id": "252ebcf9-81cf-811f-a561-dd2875dbbe69",
+    "name": "Judge Peter Johnstone",
+    "organization": null,
+    "role": "President",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Judge-Peter-Johnstone-252ebcf981cf811fa561dd2875dbbe69"
+  },
+  {
+    "id": "252ebcf9-81cf-8168-8ca1-dea06aa1636d",
+    "name": "Judge John Robertson (Ret.)",
+    "organization": null,
+    "role": "Former President; Chair (Qld Sentencing Advisory Council)",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Judge-John-Robertson-Ret-252ebcf981cf81688ca1dea06aa1636d"
+  },
+  {
+    "id": "252ebcf9-81cf-8123-88fa-f249f51bd628",
+    "name": "Judge Denis Reynolds (Ret.)",
+    "organization": null,
+    "role": "Former President",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Judge-Denis-Reynolds-Ret-252ebcf981cf812388faf249f51bd628"
+  },
+  {
+    "id": "252ebcf9-81cf-817c-942b-f7bdbedc4d61",
+    "name": "Judge Hylton Quail",
+    "organization": null,
+    "role": "President",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Judge-Hylton-Quail-252ebcf981cf817c942bf7bdbedc4d61"
+  },
+  {
+    "id": "252ebcf9-81cf-8139-97ae-f20bbdffd462",
+    "name": "Michael Berkman",
+    "organization": null,
+    "role": "MP; Justice Reform Advocate",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Michael-Berkman-252ebcf981cf813997aef20bbdffd462"
+  },
+  {
+    "id": "252ebcf9-81cf-8131-b500-df3a94f2e945",
+    "name": "Karly Warner",
+    "organization": null,
+    "role": "CEO",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Karly-Warner-252ebcf981cf8131b500df3a94f2e945"
+  },
+  {
+    "id": "252ebcf9-81cf-818a-a653-e8f007527c42",
+    "name": "Dujuan Hoosan",
+    "organization": null,
+    "role": "Youth advocate & speaker",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Dujuan-Hoosan-252ebcf981cf818aa653e8f007527c42"
+  },
+  {
+    "id": "252ebcf9-81cf-81e1-b1a1-de8da87b132a",
+    "name": "Toby Finlayson",
+    "organization": null,
+    "role": "Co‑founder & Creative Director",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Toby-Finlayson-252ebcf981cf81e1b1a1de8da87b132a"
+  },
+  {
+    "id": "252ebcf9-81cf-8106-ae66-cb5a340dbff3",
+    "name": "Muriel Bamblett",
+    "organization": null,
+    "role": "CEO",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T08:11:00.000Z",
+    "url": "https://www.notion.so/Muriel-Bamblett-252ebcf981cf8106ae66cb5a340dbff3"
+  },
+  {
+    "id": "252ebcf9-81cf-80b5-a47f-e6bf41585e95",
+    "name": "Muriel BamblettMuriel Bamblett",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T07:17:00.000Z",
+    "url": "https://www.notion.so/Muriel-BamblettMuriel-Bamblett-252ebcf981cf80b5a47fe6bf41585e95"
+  },
+  {
+    "id": "252ebcf9-81cf-8038-969d-fe1e3d8a36eb",
+    "name": "Alistair Ferguson",
+    "organization": null,
+    "role": "Founder & Executive Director",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T07:11:00.000Z",
+    "url": "https://www.notion.so/Alistair-Ferguson-252ebcf981cf8038969dfe1e3d8a36eb"
+  },
+  {
+    "id": "252ebcf9-81cf-806d-920d-e050203fdb00",
+    "name": "Sarah Hopkins",
+    "organization": null,
+    "role": "Chairperson",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T07:05:00.000Z",
+    "url": "https://www.notion.so/Sarah-Hopkins-252ebcf981cf806d920de050203fdb00"
+  },
+  {
+    "id": "252ebcf9-81cf-80e5-9f61-e55f4729a5de",
+    "name": "Cheryl Axleby",
+    "organization": null,
+    "role": "Co-chair",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T06:55:00.000Z",
+    "url": "https://www.notion.so/Cheryl-Axleby-252ebcf981cf80e59f61e55f4729a5de"
+  },
+  {
+    "id": "252ebcf9-81cf-80d1-92c2-cd00344f4c53",
+    "name": "Mick Gooda",
+    "organization": null,
+    "role": "Co-Commissioner",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T06:54:00.000Z",
+    "url": "https://www.notion.so/Mick-Gooda-252ebcf981cf80d192c2cd00344f4c53"
+  },
+  {
+    "id": "252ebcf9-81cf-8082-a619-cb6cacffca3b",
+    "name": "Bernie Shakeshaft",
+    "organization": null,
+    "role": "Founder & CEO",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T06:40:00.000Z",
+    "url": "https://www.notion.so/Bernie-Shakeshaft-252ebcf981cf8082a619cb6cacffca3b"
+  },
+  {
+    "id": "252ebcf9-81cf-8036-bdd9-c411ccee9290",
+    "name": "Dr Judy Atkinson",
+    "organization": null,
+    "role": "Emeritus Professor",
+    "tags": [],
+    "email": null,
+    "created": "2025-08-17T06:39:00.000Z",
+    "url": "https://www.notion.so/Dr-Judy-Atkinson-252ebcf981cf8036bdd9c411ccee9290"
+  },
+  {
+    "id": "251ebcf9-81cf-8197-82f8-fc76ca7e75c7",
+    "name": "Kate Bjur",
+    "organization": null,
+    "role": "Chief Executive Officer",
+    "tags": [],
+    "email": "kate@interlaceadvisory.com",
+    "created": "2025-08-16T23:02:00.000Z",
+    "url": "https://www.notion.so/Kate-Bjur-251ebcf981cf819782f8fc76ca7e75c7"
+  },
+  {
+    "id": "251ebcf9-81cf-8174-bbdb-eee8b2e9e870",
+    "name": "G Rangiawha",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": "grangiawha@hotmail.com",
+    "created": "2025-08-16T23:02:00.000Z",
+    "url": "https://www.notion.so/G-Rangiawha-251ebcf981cf8174bbdbeee8b2e9e870"
+  },
+  {
+    "id": "251ebcf9-81cf-8100-927d-c4e7d3aac80a",
+    "name": "Hailey Wetzel",
+    "organization": null,
+    "role": "Coordinator",
+    "tags": [],
+    "email": "HWetzel@picc.com.au",
+    "created": "2025-08-16T23:02:00.000Z",
+    "url": "https://www.notion.so/Hailey-Wetzel-251ebcf981cf8100927dc4e7d3aac80a"
+  },
+  {
+    "id": "251ebcf9-81cf-812b-8aea-e1b3514dfb84",
+    "name": "Matt",
+    "organization": null,
+    "role": "Coordinator",
+    "tags": [],
+    "email": "matt@gcys.org.au",
+    "created": "2025-08-16T23:02:00.000Z",
+    "url": "https://www.notion.so/Matt-251ebcf981cf812b8aeae1b3514dfb84"
+  },
+  {
+    "id": "24aebcf9-81cf-8158-8ce0-e67c0439f2e9",
+    "name": "Jordan Meehan",
+    "organization": null,
+    "role": "Co-founder",
+    "tags": [],
+    "email": "jordan@walkntalkcollective.org.au",
+    "created": "2025-08-09T23:04:00.000Z",
+    "url": "https://www.notion.so/Jordan-Meehan-24aebcf981cf81588ce0e67c0439f2e9"
+  },
+  {
+    "id": "24aebcf9-81cf-81d8-885b-f247b7de7045",
+    "name": "Chris Bennett",
+    "organization": null,
+    "role": "Co-founder",
+    "tags": [],
+    "email": "chris@walkntalkcollective.org.au",
+    "created": "2025-08-09T23:04:00.000Z",
+    "url": "https://www.notion.so/Chris-Bennett-24aebcf981cf81d8885bf247b7de7045"
+  },
+  {
+    "id": "246ebcf9-81cf-815f-81a9-f56d7106844f",
+    "name": "Test Contact from Gmail Intelligence",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": "test@gmainintelligence.com",
+    "created": "2025-08-05T20:13:00.000Z",
+    "url": "https://www.notion.so/Test-Contact-from-Gmail-Intelligence-246ebcf981cf815f81a9f56d7106844f"
+  },
+  {
+    "id": "243ebcf9-81cf-81b9-9ee9-c86af714c709",
+    "name": "David Cant",
+    "organization": null,
+    "role": "Executive Director",
+    "tags": [],
+    "email": "david@teaf.org.au",
+    "created": "2025-08-02T23:08:00.000Z",
+    "url": "https://www.notion.so/David-Cant-243ebcf981cf81b99ee9c86af714c709"
+  },
+  {
+    "id": "243ebcf9-81cf-8159-af8d-e1495b0cda4d",
+    "name": "Anthony Chesler",
+    "organization": null,
+    "role": "CEO",
+    "tags": [],
+    "email": "anthonyc@threadtogether.org",
+    "created": "2025-08-02T23:07:00.000Z",
+    "url": "https://www.notion.so/Anthony-Chesler-243ebcf981cf8159af8de1495b0cda4d"
+  },
+  {
+    "id": "243ebcf9-81cf-8139-a50a-d4e4beb9a9ab",
+    "name": "Larry Fingleson",
+    "organization": null,
+    "role": "Executive Director",
+    "tags": [],
+    "email": "larry@teaf.org.au",
+    "created": "2025-08-02T23:06:00.000Z",
+    "url": "https://www.notion.so/Larry-Fingleson-243ebcf981cf8139a50ad4e4beb9a9ab"
+  },
+  {
+    "id": "243ebcf9-81cf-817c-a80b-c9750a569d80",
+    "name": "Joe Kwon",
+    "organization": null,
+    "role": "CEO",
+    "tags": [],
+    "email": "joe.k@confitpathways.org",
+    "created": "2025-08-02T23:05:00.000Z",
+    "url": "https://www.notion.so/Joe-Kwon-243ebcf981cf817ca80bc9750a569d80"
+  },
+  {
+    "id": "23eebcf9-81cf-8032-b84f-eeb9305ca6de",
+    "name": "Benjamin Croft",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-07-28T20:02:00.000Z",
+    "url": "https://www.notion.so/Benjamin-Croft-23eebcf981cf8032b84feeb9305ca6de"
+  },
+  {
+    "id": "23eebcf9-81cf-80f4-8979-ddd64bdf8895",
+    "name": " Sharon Williams",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-07-28T00:13:00.000Z",
+    "url": "https://www.notion.so/Sharon-Williams-23eebcf981cf80f48979ddd64bdf8895"
+  },
+  {
+    "id": "23eebcf9-81cf-8064-a077-e6b6da0e0535",
+    "name": "Georgia Boe",
+    "organization": null,
+    "role": "Creative Director",
+    "tags": [],
+    "email": "georgia@sharingstoriesfoundation.org",
+    "created": "2025-07-28T00:10:00.000Z",
+    "url": "https://www.notion.so/Georgia-Boe-23eebcf981cf8064a077e6b6da0e0535"
+  },
+  {
+    "id": "23eebcf9-81cf-803e-9ae4-d28a47aa22b0",
+    "name": "Thea Snow",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-07-28T00:09:00.000Z",
+    "url": "https://www.notion.so/Thea-Snow-23eebcf981cf803e9ae4d28a47aa22b0"
+  },
+  {
+    "id": "23cebcf9-81cf-8184-9131-f0a9f8347a4c",
+    "name": "Joseph Friedman",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-07-26T23:03:00.000Z",
+    "url": "https://www.notion.so/Joseph-Friedman-23cebcf981cf81849131f0a9f8347a4c"
+  },
+  {
+    "id": "23cebcf9-81cf-81ba-9c4a-df59dc443687",
+    "name": "Ben Schokman",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-07-26T23:02:00.000Z",
+    "url": "https://www.notion.so/Ben-Schokman-23cebcf981cf81ba9c4adf59dc443687"
+  },
+  {
+    "id": "23aebcf9-81cf-8059-9649-f2701b24329a",
+    "name": "Randell",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-07-24T08:23:00.000Z",
+    "url": "https://www.notion.so/Randell-23aebcf981cf80599649f2701b24329a"
+  },
+  {
+    "id": "234ebcf9-81cf-80a7-9adb-ccabf8066626",
+    "name": "Keiron Lander",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-07-18T09:40:00.000Z",
+    "url": "https://www.notion.so/Keiron-Lander-234ebcf981cf80a79adbccabf8066626"
+  },
+  {
+    "id": "234ebcf9-81cf-80d5-b0d0-e4fa979947da",
+    "name": "Katie Norman",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-07-18T02:50:00.000Z",
+    "url": "https://www.notion.so/Katie-Norman-234ebcf981cf80d5b0d0e4fa979947da"
+  },
+  {
+    "id": "231ebcf9-81cf-80cf-8fa4-edf27b9e4057",
+    "name": "Natalie Lewis",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-07-15T22:03:00.000Z",
+    "url": "https://www.notion.so/Natalie-Lewis-231ebcf981cf80cf8fa4edf27b9e4057"
+  },
+  {
+    "id": "22eebcf9-81cf-81e6-ab40-fe4d920e084f",
+    "name": "Michelle Scott",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": "Michelle.Scott@sport.qld.gov.au",
+    "created": "2025-07-12T23:02:00.000Z",
+    "url": "https://www.notion.so/Michelle-Scott-22eebcf981cf81e6ab40fe4d920e084f"
+  },
+  {
+    "id": "22eebcf9-81cf-8122-b7fc-e8f175bb5088",
+    "name": "Ardi Muckan",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": "Ardi.Muckan@sport.qld.gov.au",
+    "created": "2025-07-12T23:02:00.000Z",
+    "url": "https://www.notion.so/Ardi-Muckan-22eebcf981cf8122b7fce8f175bb5088"
+  },
+  {
+    "id": "22eebcf9-81cf-81e5-8cff-dee7b1443767",
+    "name": "Tahlia Isaac",
+    "organization": null,
+    "role": "Chief Executive Officer",
+    "tags": [],
+    "email": "Tahlia@projectherself.org.au",
+    "created": "2025-07-12T23:02:00.000Z",
+    "url": "https://www.notion.so/Tahlia-Isaac-22eebcf981cf81e58cffdee7b1443767"
+  },
+  {
+    "id": "228ebcf9-81cf-811d-8662-d20103038807",
+    "name": "Justin Welfare",
+    "organization": null,
+    "role": "Project Manager",
+    "tags": [],
+    "email": "jwelfare@qic.com",
+    "created": "2025-07-06T00:47:00.000Z",
+    "url": "https://www.notion.so/Justin-Welfare-228ebcf981cf811d8662d20103038807"
+  },
+  {
+    "id": "228ebcf9-81cf-81a2-941d-f0078f67d2ad",
+    "name": "Julia Payne",
+    "organization": null,
+    "role": "Program Manager",
+    "tags": [],
+    "email": "jpayne@paulramsayfoundation.org.au",
+    "created": "2025-07-06T00:47:00.000Z",
+    "url": "https://www.notion.so/Julia-Payne-228ebcf981cf81a2941df0078f67d2ad"
+  },
+  {
+    "id": "228ebcf9-81cf-8130-930d-eef6b3e58b1d",
+    "name": "Michael Taylor",
+    "organization": null,
+    "role": "Managing Director",
+    "tags": [],
+    "email": "mtaylor@bryanfamilygroup.com.au",
+    "created": "2025-07-06T00:14:00.000Z",
+    "url": "https://www.notion.so/Michael-Taylor-228ebcf981cf8130930deef6b3e58b1d"
+  },
+  {
+    "id": "228ebcf9-81cf-8160-8139-f12cb510a5c6",
+    "name": "Chris Titley",
+    "organization": null,
+    "role": "Director",
+    "tags": [],
+    "email": "chris@sub11.com.au",
+    "created": "2025-07-06T00:13:00.000Z",
+    "url": "https://www.notion.so/Chris-Titley-228ebcf981cf81608139f12cb510a5c6"
+  },
+  {
+    "id": "228ebcf9-81cf-815c-8ae3-e8a91a2e3659",
+    "name": "Matthew Cox",
+    "organization": null,
+    "role": "Executive Director",
+    "tags": [],
+    "email": "mcox@thebryanfoundation.org.au",
+    "created": "2025-07-06T00:13:00.000Z",
+    "url": "https://www.notion.so/Matthew-Cox-228ebcf981cf815c8ae3e8a91a2e3659"
+  },
+  {
+    "id": "227ebcf9-81cf-8159-86a8-c412328d7809",
+    "name": "Sal Biggins",
+    "organization": null,
+    "role": "Partnership Manager",
+    "tags": [],
+    "email": "sbiggins@srau.org.au",
+    "created": "2025-07-05T23:44:00.000Z",
+    "url": "https://www.notion.so/Sal-Biggins-227ebcf981cf815986a8c412328d7809"
+  },
+  {
+    "id": "227ebcf9-81cf-812e-bd19-fb69e218900c",
+    "name": "D'Anne Cowie",
+    "organization": null,
+    "role": "Executive Director",
+    "tags": [],
+    "email": "dcowie@srau.org.au",
+    "created": "2025-07-05T23:44:00.000Z",
+    "url": "https://www.notion.so/D-Anne-Cowie-227ebcf981cf812ebd19fb69e218900c"
+  },
+  {
+    "id": "227ebcf9-81cf-81c9-85ac-e26e12c9f8f7",
+    "name": "Jake Reid",
+    "organization": null,
+    "role": "Co-founder",
+    "tags": [],
+    "email": "jake@endlessparks.com",
+    "created": "2025-07-05T12:13:00.000Z",
+    "url": "https://www.notion.so/Jake-Reid-227ebcf981cf81c985ace26e12c9f8f7"
+  },
+  {
+    "id": "227ebcf9-81cf-8153-9941-ef59f528d883",
+    "name": "April Long",
+    "organization": null,
+    "role": "Chief Executive Officer",
+    "tags": [],
+    "email": "along@srau.org.au",
+    "created": "2025-07-05T12:12:00.000Z",
+    "url": "https://www.notion.so/April-Long-227ebcf981cf81539941ef59f528d883"
+  },
+  {
+    "id": "227ebcf9-81cf-8199-a892-cd9fffda084a",
+    "name": "Cat Sullivan",
+    "organization": null,
+    "role": "First Nations Program and Engagement Specialist",
+    "tags": [],
+    "email": "C.Sullivan@qic.com",
+    "created": "2025-07-05T12:04:00.000Z",
+    "url": "https://www.notion.so/Cat-Sullivan-227ebcf981cf8199a892cd9fffda084a"
+  },
+  {
+    "id": "227ebcf9-81cf-8160-84b9-feb1cf30d888",
+    "name": "Talia Liddle",
+    "organization": null,
+    "role": "Artist",
+    "tags": [],
+    "email": "talialiddle@gmail.com",
+    "created": "2025-07-05T12:01:00.000Z",
+    "url": "https://www.notion.so/Talia-Liddle-227ebcf981cf816084b9feb1cf30d888"
+  },
+  {
+    "id": "227ebcf9-81cf-8106-bad0-f55cfff1557b",
+    "name": "Adam Wenitong",
+    "organization": null,
+    "role": null,
+    "tags": [],
+    "email": null,
+    "created": "2025-07-05T11:46:00.000Z",
+    "url": "https://www.notion.so/Adam-Wenitong-227ebcf981cf8106bad0f55cfff1557b"
+  },
+  {
+    "id": "227ebcf9-81cf-8126-8197-d3b12907b55c",
+    "name": "Lucy McGarry",
+    "organization": null,
+    "role": "Project Manager",
+    "tags": [],
+    "email": "lucy.mcgarry@barklybackbone.com.au",
+    "created": "2025-07-05T11:25:00.000Z",
+    "url": "https://www.notion.so/Lucy-McGarry-227ebcf981cf81268197d3b12907b55c"
+  }
+]

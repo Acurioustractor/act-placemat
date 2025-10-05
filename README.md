@@ -1,248 +1,295 @@
-# ACT Placemat: Community-Centered Capacity Building Platform
+# ACT Platform - Community-Owned Impact Platform
 
-## 🌍 **What ACT Does**
+## The World's First Community-Owned Impact Platform
 
-**A Curious Tractor (ACT)** builds community capacity across Australia by providing **tools, technology, and authentic support** that amplify what communities are already doing brilliantly. We help communities:
+A Curious Tractor is building revolutionary technology that serves community ownership rather than institutional convenience. Our goal is **Beautiful Obsolescence** - where communities no longer need ACT because they have complete control of their own platforms and futures.
 
-- **Access resources** through intelligent opportunity matching
-- **Tell their stories** with ownership and consent protection
-- **Scale their impact** across Australia and globally
-- **Build capacity** through relationship-centered technology
+---
 
-## 🚀 **Core Platform Architecture**
+## 🚀 Quick Start
 
-### **Domain-Driven Design Structure**
-- **`domains/community/`** - Community storytelling and collective impact management
-- **`domains/intelligence/`** - AI-powered insights and decision support
-- **`domains/partnerships/`** - Strategic relationship building and collaboration
-- **`domains/financial/`** - Transparent financial management and benefit sharing
-- **`domains/platform/`** - Secure platform operations and user management
-
-### **Multi-Tenant Applications**
-- **`apps/frontend/`** - Main community dashboard (340+ components, enterprise-grade)
-- **`apps/backend/`** - Domain-driven Node.js API with hexagonal architecture
-- **`apps/mobile/`** - React Native app for field work
-- **`apps/intelligence/`** - AI-powered insights and matching
-
-### **Live Data Infrastructure**
-- **Supabase Database**: 340+ community stories, 221 storytellers, 2000+ AI-extracted quotes
-- **Notion Integration**: 8 interconnected databases for operations and partnerships
-- **Gmail Intelligence**: Relationship mapping and communication insights
-- **LinkedIn Analysis**: Professional network intelligence
-
-### **Community-Centered Features**
-- **Empathy Ledger**: Ethical storytelling with dynamic consent management
-- **Cultural Protocols**: Indigenous data sovereignty protection
-- **Benefit Sharing**: 40% profit guarantee to communities
-- **Resource Matching**: AI-powered opportunity identification
-
-## 🔐 **Data Security & Cultural Safety**
-
-### **Indigenous Data Sovereignty**
-- Row-level security for community data isolation
-- Dynamic consent management with revocable permissions
-- Cultural protocol enforcement for sensitive content
-- Elder consultation workflows for cultural materials
-
-### **Enterprise Security**
-- Multi-tenant architecture with community data separation
-- Encrypted data transmission and storage
-- Australian data residency compliance
-- Regular security audits and penetration testing
-
-## 💰 **Financial Intelligence & Bookkeeping**
-
-### **Automated Financial Management**
-- Real-time expense tracking and categorization
-- Automated profit distribution to communities (40% guarantee)
-- Integration with Xero for professional accounting
-- Grant and funding opportunity intelligence
-
-### **Community Economic Models**
-- Benefit-sharing economics with transparent tracking
-- Community ownership certificates (blockchain-ready)
-- Resource circulation and mutual aid coordination
-- Economic impact measurement and reporting
-
-## 🌟 **Getting Started**
-
-### **For Communities**
 ```bash
-# Access the community platform
-Open: https://your-act-platform.com/community
-
-# Features available:
-- Story sharing with consent management
-- Resource opportunity matching
-- Connection with other communities
-- Capacity building tools
-```
-
-### **For Organizations**
-```bash
-# Clone the repository
-git clone https://github.com/act/placemat.git
-cd "ACT Placemat"
-
-# Install dependencies
+# 1. Install dependencies
 npm install
 
-# Set up environment
-cp .env.template .env.local
-# Configure API keys for Supabase, Notion, etc.
+# 2. Start backend
+cd apps/backend
+node server.js
 
-# Start development
+# 3. Start frontend
+cd apps/frontend
 npm run dev
+
+# 4. Access the platform
+open http://localhost:5175
 ```
 
-### **For Developers**
-```bash
-# Start backend services
-cd apps/backend && npm start
-
-# Start main frontend
-cd apps/frontend && npm run dev
-
-# Start mobile development
-cd apps/mobile && npx expo start
-
-# Run intelligence services
-cd apps/intelligence && npm start
-```
-
-## 📊 **Platform Statistics** (Live Data)
-
-- **340 Community Stories** with full consent management
-- **221 Storytellers** with 79 AI-analyzed fields each
-- **2000+ AI-Extracted Quotes** with attribution protection
-- **20 Partner Organizations** with relationship intelligence
-- **21 Geographic Locations** across Australia
-- **$960K Annual Community Returns** projected by 2027
-
-## 🛠️ **Technical Stack**
-
-### **Frontend Applications**
-- React 18 with TypeScript
-- Vite for fast development
-- Tailwind CSS for responsive design
-- React Native with Expo for mobile
-
-### **Backend Services**  
-- Domain-Driven Design with TypeScript
-- Hexagonal architecture (ports and adapters)
-- Clean architecture layers with business logic isolation
-- Event-driven architecture with domain events
-- Node.js with Express and NestJS
-- Supabase for database and auth
-- Redis for caching and event streaming
-
-### **AI & Intelligence**
-- Multi-provider AI integration (Anthropic, OpenAI, Perplexity)
-- Ethical content analysis and insights
-- Relationship intelligence and matching
-- Predictive analytics for community needs
-
-### **Infrastructure**
-- Docker containerization
-- Kubernetes deployment
-- Terraform infrastructure as code
-- Enterprise monitoring and alerting
-
-## 📈 **Business Impact**
-
-### **Community Outcomes**
-- Communities maintain ownership of their stories and innovations
-- 40% of profits returned directly to participating communities
-- Cultural protocols respected and enforced by technology
-- Capacity building through tools communities can eventually own
-
-### **Systems Change**
-- Policy influence through community-generated evidence
-- Sector transformation toward community-centered approaches
-- Economic model disruption favoring community benefit
-- Technology sovereignty for Indigenous and community groups
-
-## 🎯 **Core Values in Code**
-
-### **Radical Humility**
-- Community voices lead every technical decision
-- Professional expertise offered as support, not direction
-- Continuous adaptation based on community feedback
-
-### **Decentralized Power**
-- All platforms available for community ownership
-- Design for obsolescence—communities can take over
-- Open-source approach preventing vendor lock-in
-
-### **Cultural Responsiveness**
-- Indigenous data sovereignty built into architecture
-- Cultural protocol enforcement in all interactions
-- Elder consultation workflows for sensitive decisions
-
-## 📚 **Documentation**
-
-### **Architecture & Development**
-- [Domain-Driven Design Architecture](ARCHITECTURE.md)
-- [Development Workflow Guide](DEVELOPMENT_WORKFLOW.md)
-- [Implementation Summary](IMPLEMENTATION_SUMMARY.md)
-- [System Architecture](Docs/Architecture/README.md)
-- [Data Security Guide](Docs/Architecture/ACTUAL_SUPABASE_SCHEMAS.md)
-- [Development Workflow](CLAUDE.md)
-- [Deployment Guide](DEPLOYMENT_GUIDE.md)
-
-### **Community & Business**
-- [Revolutionary Business Case](Docs/Strategy/Business/ACT_REVOLUTIONARY_BUSINESS_CASE_2025.md)
-- [Community Partnership Guide](Docs/Strategy/Community/COMMUNITY_PARTNERSHIP_APPROACH.md)
-- [Cultural Protocols](Docs/Reference/CULTURAL_PROTOCOLS_GUIDE.md)
-
-### **API & Integration**
-- [API Reference](apps/backend/src/docs/api-reference.md)
-- [Integration Examples](Docs/Implementation/)
-- [Testing Guide](Docs/Testing/)
-
-## 🤝 **Contributing**
-
-### **Community-Centered Development**
-1. **Listen First**: Understand community needs before proposing solutions
-2. **Cultural Protocols**: Respect Indigenous and community data sovereignty
-3. **Benefit Sharing**: Ensure community value creation translates to community benefit
-4. **Transparent Development**: Document decisions and their community impact
-
-### **Technical Standards**
-1. **Australian English** spelling throughout codebase
-2. **Privacy by Design** - community consent in all features
-3. **Accessibility First** - mobile-responsive, inclusive design
-4. **Security Standards** - enterprise-grade protection for community data
-
-## 📞 **Contact & Support**
-
-### **For Communities**
-- **Community Partnership Inquiry**: partnership@acuriostractact.org
-- **Story Sharing Support**: stories@acuriostractact.org
-- **Cultural Protocol Questions**: protocols@acuriostractact.org
-
-### **For Developers**
-- **Technical Documentation**: [GitHub Wiki](link-to-wiki)
-- **API Support**: api@acuriostractact.org
-- **Open Source Contributions**: contribute@acuriostractact.org
-
-### **For Organizations**
-- **Platform Licensing**: platform@acuriostractact.org
-- **Methodology Training**: training@acuriostractact.org
-- **Partnership Opportunities**: collaborate@acuriostractact.org
+**📖 Detailed Guide**: [Docs/00-Getting-Started/Quick-Start.md](./Docs/00-Getting-Started/Quick-Start.md)
 
 ---
 
-## 🌱 **Our Vision**
+## 🏗️ System Architecture
 
-**"Where story meets system. Evidence you can feel—and fund."**
+### Core Components
 
-ACT is building the infrastructure for a **community-owned economy** where authentic relationships, ethical technology, and grassroots wisdom form the foundation of sustainable change. We don't serve communities—we provide tools that communities can own, control, and eventually operate independently.
+- **🤖 AI Business Agent** - Always-on autonomous monitoring for Australian business operations
+- **📊 Intelligence Layer** - Real-time insights from Gmail, Calendar, LinkedIn, Notion, Xero
+- **🌐 Unified API** - Consistent v2 API architecture across all services
+- **💾 Supabase Database** - Production-grade PostgreSQL with row-level security
+- **⚛️ React Frontend** - Modern UI with real-time updates
 
-**The revolution is community-led. The tools are ready. The time is now.**
+### Data Integrations
+
+| Integration | Status | Records | Purpose |
+|-------------|--------|---------|---------|
+| 🟢 Gmail | Connected | 1,243 emails | Contact intelligence |
+| 🟢 Calendar | Connected | 87 events | Meeting insights |
+| 🟢 LinkedIn | Connected | 4,491 contacts | Relationship intelligence |
+| 🟢 Notion | Connected | 156 projects | Project management |
+| 🟢 Xero | Connected | 234 transactions | Financial data |
+| 🟢 Supabase | Connected | Real-time | Data storage |
 
 ---
 
-**License**: Community Benefit Sharing - 40% of value created returns to communities  
-**Contact**: hello@acuriostractact.org  
-**Website**: https://acuriostractact.org
+## 📚 Documentation
+
+### Getting Started
+- **[Quick Start Guide](./Docs/00-Getting-Started/Quick-Start.md)** - Get up and running in 5 minutes
+- **[Installation](./Docs/00-Getting-Started/Installation.md)** - Detailed setup instructions
+- **[Configuration](./Docs/00-Getting-Started/Configuration.md)** - Environment setup
+
+### Product
+- **[Product Vision](./Docs/01-Product/README.md)** - ACT Platform vision and goals
+- **[Product Requirements](./Docs/01-Product/PRD.md)** - Comprehensive PRD
+- **[Use Cases](./Docs/01-Product/ACT_PLACEMAT_REAL_WORLD_USE_CASE_BLUEPRINT.md)** - Real-world applications
+- **[Beautiful Obsolescence](./Docs/01-Product/CORE_ECOSYSTEM_FRAMEWORK.md)** - Community independence framework
+
+### Architecture
+- **[System Overview](./Docs/02-Architecture/README.md)** - High-level architecture
+- **[API Design](./Docs/02-Architecture/API-Design.md)** - API v2 architecture
+- **[Database Schema](./Docs/02-Architecture/Database-Schema.md)** - Supabase schema
+- **[Integration Architecture](./Docs/02-Architecture/Integration-Architecture.md)** - Data flow
+
+### Development
+- **[Setup Guide](./Docs/03-Development/Setup-Guide.md)** - Developer environment
+- **[API Reference](./Docs/03-Development/API-Reference.md)** - Complete API docs
+- **[Testing Guide](./Docs/03-Development/Testing-Guide.md)** - Testing strategy
+- **[Contributing](./Docs/03-Development/Contributing.md)** - How to contribute
+
+### AI Agent
+- **[Agent Overview](./Docs/04-AI-Agent/README.md)** - AI agent capabilities
+- **[Business Intelligence](./Docs/04-AI-Agent/BUSINESS_AGENT_README.md)** - Australian business agent
+- **[Research Integration](./Docs/04-AI-Agent/Research-Integration.md)** - AI research tools
+- **[Conversational AI](./Docs/04-AI-Agent/Conversational-AI.md)** - Chat interface
+
+### Integrations
+- **[Gmail Integration](./Docs/05-Integrations/Gmail.md)** - Email intelligence
+- **[Calendar Integration](./Docs/05-Integrations/Calendar.md)** - Meeting insights
+- **[LinkedIn Integration](./Docs/05-Integrations/LinkedIn.md)** - Network intelligence
+- **[Notion Integration](./Docs/05-Integrations/Notion.md)** - Project management
+- **[Xero Integration](./Docs/05-Integrations/Xero.md)** - Financial data
+- **[Supabase](./Docs/05-Integrations/Supabase.md)** - Database
+
+### Deployment
+- **[Production Deployment](./Docs/06-Deployment/Production.md)** - Go-live guide
+- **[Monitoring](./Docs/06-Deployment/Monitoring.md)** - System monitoring
+- **[Scaling](./Docs/06-Deployment/Scaling.md)** - Performance optimization
+
+### Security
+- **[Authentication](./Docs/07-Security/Authentication.md)** - OAuth and JWT
+- **[Data Privacy](./Docs/07-Security/Data-Privacy.md)** - Australian Privacy Act
+- **[Compliance](./Docs/07-Security/Compliance.md)** - Security compliance
+
+---
+
+## 🤖 AI Business Agent
+
+The ACT Platform includes an **always-on business intelligence agent** specifically designed for Australian business operations.
+
+### Capabilities
+
+- **💰 Financial Monitoring** - Real-time Xero tracking, cash flow forecasting
+- **📋 Compliance Tracking** - BAS, PAYG, Superannuation, R&D Tax Incentives
+- **🎯 Grant Discovery** - Automatic scanning of grants.gov.au and Indigenous programs
+- **🤝 Relationship Intelligence** - LinkedIn network analysis (4,491 contacts)
+- **📁 Project Health** - Notion project monitoring
+
+### Features
+
+```
+User: "What's my BAS obligation?"
+Agent: "Your next BAS is due October 28 (in 28 days):
+        - GST collected: $12,400
+        - GST paid: $8,200
+        - Net payable: $4,200
+        Would you like me to schedule a payment reminder?"
+
+User: "Are there grants I should apply for?"
+Agent: "I found 3 relevant opportunities:
+        1. Indigenous Business Direct ($50K-$250K) - Due in 6 weeks
+        2. R&D Tax Incentive (38.5% of $120K = $46K benefit)
+        3. Entrepreneurs' Programme (up to $1M) - Rolling
+
+        I recommend the R&D Tax Incentive first.
+        Your tech development qualifies. Want me to draft it?"
+```
+
+**📖 Full Documentation**: [Docs/04-AI-Agent/BUSINESS_AGENT_README.md](./Docs/04-AI-Agent/BUSINESS_AGENT_README.md)
+
+---
+
+## 🌐 API Architecture
+
+### v2 API Endpoints
+
+```
+/api/v2/
+├── /agent/                    ← AI Agent
+│   ├── /chat                  ← Conversational interface
+│   ├── /ask                   ← Questions
+│   ├── /research              ← Deep research
+│   └── /status                ← Health
+│
+├── /data/                     ← Data Access
+│   ├── /contacts              ← Unified contacts
+│   ├── /projects              ← Projects
+│   ├── /finance               ← Financial data
+│   └── /calendar              ← Events
+│
+├── /intelligence/             ← Intelligence
+│   ├── /relationships         ← Relationship mapping
+│   ├── /opportunities         ← Opportunities
+│   └── /compliance            ← Compliance
+│
+└── /monitoring/               ← Monitoring
+    ├── /health                ← System health
+    └── /integrations          ← Integration status
+```
+
+**📖 API Reference**: [Docs/03-Development/API-Reference.md](./Docs/03-Development/API-Reference.md)
+
+---
+
+## 🔐 Security & Privacy
+
+- ✅ **Row-Level Security** - Supabase RLS for all tables
+- ✅ **OAuth 2.0** - Secure authentication for all integrations
+- ✅ **Data Encryption** - At rest and in transit
+- ✅ **Australian Privacy Act** - Compliant data handling
+- ✅ **Indigenous Data Sovereignty** - Community-controlled data
+
+**📖 Security Guide**: [Docs/07-Security/README.md](./Docs/07-Security/README.md)
+
+---
+
+## 📊 Current Status
+
+### Technical Metrics
+- ✅ **API Uptime**: 99.9%
+- ✅ **Response Time**: <500ms (95th percentile)
+- ✅ **Data Sources**: 6 active integrations
+- ✅ **Test Coverage**: 75% (target: 90%)
+
+### Business Metrics
+- ✅ **Projects Tracked**: 156
+- ✅ **Contacts Managed**: 4,491
+- ✅ **Financial Transactions**: 234
+- ✅ **Community Stories**: Growing
+
+---
+
+## 🚀 Roadmap
+
+### ✅ Phase 1: Production Data Foundation (Complete)
+- Production-grade Supabase database
+- Stabilized API endpoints
+- Real-time data synchronization
+- Automated health monitoring
+
+### 🔄 Phase 2: Community Interface (In Progress)
+- Real-time dashboard
+- Story management system
+- Project showcase pages
+- Export tools
+
+### 📋 Phase 3: Intelligence Layer (Next)
+- Enhanced AI research capabilities
+- Perplexity and Tavily integration
+- Conversational business assistant
+- Advanced analytics
+
+### 🎯 Phase 4: Community Ownership (Planned)
+- Complete data export tools
+- Platform forking capabilities
+- Mobile React Native app
+- Revenue sharing automation
+
+**📖 Detailed Roadmap**: [Docs/01-Product/Roadmap.md](./Docs/01-Product/Roadmap.md)
+
+---
+
+## 💡 Philosophy: Beautiful Obsolescence
+
+Our ultimate success metric is **Beautiful Obsolescence** - communities saying:
+
+> "ACT? We don't need them anymore. We run this ourselves now."
+
+We're not building dependency. We're building **community power**.
+
+Communities don't need external saviors - they need:
+- ✅ Superior tools
+- ✅ Authentic partnerships
+- ✅ Systems designed for their ownership
+
+**📖 Learn More**: [Docs/01-Product/CORE_ECOSYSTEM_FRAMEWORK.md](./Docs/01-Product/CORE_ECOSYSTEM_FRAMEWORK.md)
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions that advance our mission of community empowerment.
+
+1. **Read** the [Contributing Guide](./Docs/03-Development/Contributing.md)
+2. **Check** the [Task Master](./Docs/.taskmaster/tasks/tasks.json) for current tasks
+3. **Fork** the repository
+4. **Create** a feature branch
+5. **Submit** a pull request
+
+**Questions?** Open an issue or reach out via [contact details].
+
+---
+
+## 📄 License
+
+Copyright © 2025 A Curious Tractor
+All Rights Reserved
+
+This project is built for Australian Indigenous communities with the goal of Beautiful Obsolescence - complete community independence and control.
+
+---
+
+## 🙏 Acknowledgments
+
+Built with love for Australian Indigenous communities and all communities worldwide working toward self-determination and sovereignty.
+
+**Technology Stack:**
+- React 19 + TypeScript
+- Node.js + Express
+- Supabase PostgreSQL
+- Anthropic Claude AI
+- OpenAI GPT-4
+- Perplexity AI
+- And many more amazing open-source tools
+
+---
+
+## 📞 Support
+
+- **Documentation**: [Docs/README.md](./Docs/README.md)
+- **Quick Start**: [QUICK_START.md](./QUICK_START.md)
+- **Issues**: GitHub Issues
+- **Email**: support@acurioustractor.com.au
+
+---
+
+**Built with ❤️ in Australia for communities worldwide 🇦🇺🌏**

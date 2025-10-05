@@ -1,0 +1,119 @@
+{
+  "timestamp": "2025-10-04T04:54:04.451Z",
+  "tests": [
+    {
+      "name": "ENV: NOTION_TOKEN",
+      "status": "passed",
+      "details": "Notion API integration token (ntn_633000104472PL6T...)",
+      "warning": false
+    },
+    {
+      "name": "ENV: SUPABASE_URL",
+      "status": "passed",
+      "details": "Supabase project URL (https://tednluwflfhx...)",
+      "warning": false
+    },
+    {
+      "name": "ENV: SUPABASE_SERVICE_ROLE_KEY",
+      "status": "passed",
+      "details": "Supabase service role key (eyJhbGciOiJIUzI1NiIs...)",
+      "warning": false
+    },
+    {
+      "name": "ENV: NOTION_PEOPLE_DATABASE_ID",
+      "status": "passed",
+      "details": "People database ID (47bdc1c4-df99-4ddc-8...)",
+      "warning": false
+    },
+    {
+      "name": "ENV: NOTION_COMMUNICATIONS_DATABASE_ID",
+      "status": "warning",
+      "details": "Optional: Communications Dashboard ID",
+      "warning": true
+    },
+    {
+      "name": "ENV: NOTION_ACTIONS_DATABASE_ID",
+      "status": "passed",
+      "details": "Actions database ID",
+      "warning": false
+    },
+    {
+      "name": "ENV: GMAIL_CLIENT_ID",
+      "status": "passed",
+      "details": "Gmail API credentials",
+      "warning": false
+    },
+    {
+      "name": "ENV: GOOGLE_CLIENT_ID",
+      "status": "passed",
+      "details": "Google Calendar credentials",
+      "warning": false
+    },
+    {
+      "name": "Supabase Connection",
+      "status": "passed",
+      "details": "URL: https://tednluwflfhxyucgwigh.supabase.co",
+      "warning": false
+    },
+    {
+      "name": "contact_cadence_metrics Table",
+      "status": "passed",
+      "details": "Found 52 records. Sample fields: contact_id, last_interaction, days_since_last, touchpoints_last_7, touchpoints_last_30, touchpoints_last_90, total_touchpoints, active_sources, updated_at",
+      "warning": false
+    },
+    {
+      "name": "community_emails Table",
+      "status": "failed",
+      "details": "relation \"public.community_emails\" does not exist",
+      "warning": false
+    },
+    {
+      "name": "gmail_notion_contacts Table",
+      "status": "failed",
+      "details": "relation \"public.gmail_notion_contacts\" does not exist",
+      "warning": false
+    },
+    {
+      "name": "project_support_graph Table",
+      "status": "passed",
+      "details": "Project intelligence ready",
+      "warning": false
+    },
+    {
+      "name": "outreach_tasks Table",
+      "status": "passed",
+      "details": "Outreach automation ready",
+      "warning": false
+    },
+    {
+      "name": "Notion People Database",
+      "status": "passed",
+      "details": "Title: People",
+      "warning": false
+    },
+    {
+      "name": "People with Emails",
+      "status": "passed",
+      "details": "Found 3/10 sampled people have email addresses",
+      "warning": false
+    },
+    {
+      "name": "Communications Dashboard",
+      "status": "warning",
+      "details": "NOTION_COMMUNICATIONS_DATABASE_ID not set - add to .env",
+      "warning": true
+    },
+    {
+      "name": "Sync Service Initialization",
+      "status": "failed",
+      "details": "Service failed to initialize",
+      "warning": false
+    }
+  ],
+  "summary": {
+    "total": 18,
+    "passed": 13,
+    "failed": 3,
+    "warnings": 2
+  }
+}

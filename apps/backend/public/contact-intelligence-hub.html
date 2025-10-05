@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACT Contact Intelligence Hub</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container { max-width: 1600px; margin: 0 auto; }
+
+    header {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    h1 { color: #1a202c; font-size: 2.5em; margin-bottom: 10px; }
+    .subtitle { color: #718096; font-size: 1.1em; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .stat-value {
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      color: #718096;
+      font-size: 0.9em;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .search-section {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1em;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    button {
+      padding: 12px 24px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover { background: #5a67d8; }
+
+    .filter-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .filter-btn {
+      padding: 8px 16px;
+      background: #edf2f7;
+      color: #4a5568;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn.active {
+      background: #667eea;
+      color: white;
+      border-color: #5a67d8;
+    }
+
+    .contacts-grid {
+      display: grid;
+      gap: 15px;
+    }
+
+    .contact-card {
+      background: #f7fafc;
+      border-left: 4px solid #667eea;
+      padding: 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .contact-card:hover {
+      background: #edf2f7;
+      transform: translateX(5px);
+    }
+
+    .contact-name {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #1a202c;
+      margin-bottom: 5px;
+    }
+
+    .contact-position {
+      color: #4a5568;
+      margin-bottom: 10px;
+    }
+
+    .contact-meta {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+
+    .badge.has-email {
+      background: #c6f6d5;
+      color: #2f855a;
+    }
+
+    .badge.no-email {
+      background: #fed7d7;
+      color: #c53030;
+    }
+
+    .contact-actions {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .action-btn {
+      padding: 6px 12px;
+      font-size: 0.85em;
+      background: #4299e1;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .action-btn:hover { background: #3182ce; }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      overflow-y: auto;
+    }
+
+    .modal.show { display: flex; align-items: center; justify-content: center; }
+
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      max-width: 800px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .close-btn {
+      background: #e53e3e;
+      padding: 8px 16px;
+    }
+
+    .close-btn:hover { background: #c53030; }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #718096;
+    }
+
+    .email-draft {
+      background: #f7fafc;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+
+    .email-subject {
+      font-weight: bold;
+      margin-bottom: 10px;
+      padding: 10px;
+      background: white;
+      border-radius: 6px;
+    }
+
+    .email-body {
+      white-space: pre-wrap;
+      padding: 15px;
+      background: white;
+      border-radius: 6px;
+      margin: 10px 0;
+      line-height: 1.6;
+    }
+
+    .timing-recommendation {
+      background: #fef5e7;
+      border-left: 4px solid #d69e2e;
+      padding: 15px;
+      margin-top: 10px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🧠 Contact Intelligence Hub</h1>
+      <p class="subtitle">Manage all 20,398 LinkedIn contacts with AI-powered insights</p>
+    </header>
+
+    <!-- Stats -->
+    <div class="stats-grid" id="stats"></div>
+
+    <!-- Search -->
+    <div class="search-section">
+      <h2 style="margin-bottom: 20px;">Search Contacts</h2>
+
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search by name, company, position, or keywords...">
+        <button onclick="searchContacts()">Search</button>
+      </div>
+
+      <div class="filter-buttons">
+        <button class="filter-btn active" onclick="setFilter('all')">All Contacts</button>
+        <button class="filter-btn" onclick="setFilter('hasEmail')">Has Email (276)</button>
+        <button class="filter-btn" onclick="setFilter('noEmail')">Needs Enrichment (20,122)</button>
+      </div>
+
+      <div id="searchResults" class="contacts-grid"></div>
+    </div>
+  </div>
+
+  <!-- Modal for contact details -->
+  <div id="contactModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Contact Details</h2>
+        <button class="close-btn" onclick="closeModal()">Close</button>
+      </div>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script>
+    let currentFilter = 'all';
+    let currentQuery = '';
+
+    // Load stats on page load
+    async function loadStats() {
+      const response = await fetch('/api/stats');
+      const data = await response.json();
+
+      document.getElementById('stats').innerHTML = `
+        <div class="stat-card">
+          <div class="stat-value">${data.intelligence_layer.total_contacts.toLocaleString()}</div>
+          <div class="stat-label">Total Contacts</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${data.intelligence_layer.with_emails.toLocaleString()}</div>
+          <div class="stat-label">With Emails</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${data.intelligence_layer.without_emails.toLocaleString()}</div>
+          <div class="stat-label">Need Enrichment</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${data.intelligence_layer.total_projects}</div>
+          <div class="stat-label">Active Projects</div>
+        </div>
+      `;
+    }
+
+    // Search contacts
+    async function searchContacts() {
+      currentQuery = document.getElementById('searchInput').value;
+      const results = document.getElementById('searchResults');
+      results.innerHTML = '<div class="loading">Searching...</div>';
+
+      const hasEmailFilter = currentFilter === 'hasEmail' ? 'true' : currentFilter === 'noEmail' ? 'false' : null;
+
+      let url = `/api/contacts/search?limit=50`;
+      if (currentQuery) url += `&query=${encodeURIComponent(currentQuery)}`;
+      if (hasEmailFilter) url += `&hasEmail=${hasEmailFilter}`;
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.contacts.length === 0) {
+        results.innerHTML = '<div class="loading">No contacts found</div>';
+        return;
+      }
+
+      results.innerHTML = data.contacts.map(contact => `
+        <div class="contact-card" onclick="showContactDetails(${contact.id})">
+          <div class="contact-name">${contact.name}</div>
+          <div class="contact-position">${contact.position} at ${contact.company}</div>
+          <div class="contact-meta">
+            <span class="badge ${contact.hasEmail ? 'has-email' : 'no-email'}">
+              ${contact.hasEmail ? '✓ Has Email' : '⚠ No Email'}
+            </span>
+            ${contact.location ? `<span>${contact.location}</span>` : ''}
+          </div>
+          <div class="contact-actions">
+            <button class="action-btn" onclick="event.stopPropagation(); enrichContact(${contact.id})">
+              🔍 Enrich
+            </button>
+            <button class="action-btn" onclick="event.stopPropagation(); suggestProjects(${contact.id})">
+              🎯 Match Projects
+            </button>
+            ${contact.hasEmail ? `
+              <button class="action-btn" onclick="event.stopPropagation(); draftEmail(${contact.id})">
+                ✉️ Draft Email
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      `).join('');
+
+      results.innerHTML += `<div style="text-align: center; padding: 20px; color: #718096;">
+        Showing ${data.contacts.length} of ${data.total.toLocaleString()} contacts
+      </div>`;
+    }
+
+    // Set filter
+    function setFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      searchContacts();
+    }
+
+    // Show contact details
+    async function showContactDetails(id) {
+      document.getElementById('contactModal').classList.add('show');
+      document.getElementById('modalContent').innerHTML = '<div class="loading">Loading...</div>';
+
+      const response = await fetch(`/api/contacts/${id}`);
+      const contact = await response.json();
+
+      document.getElementById('modalContent').innerHTML = `
+        <h3>${contact.name}</h3>
+        <p><strong>${contact.position}</strong> at ${contact.company}</p>
+        ${contact.email ? `<p>📧 ${contact.email}</p>` : '<p style="color: #e53e3e;">⚠️ No email address</p>'}
+        ${contact.headline ? `<p style="margin-top: 15px;">${contact.headline}</p>` : ''}
+        ${contact.location ? `<p>📍 ${contact.location}</p>` : ''}
+
+        <div style="margin-top: 30px;">
+          <button onclick="enrichContact(${id})">🔍 Enrich Profile</button>
+          <button onclick="suggestProjects(${id})">🎯 Suggest Projects</button>
+          ${contact.email ? `<button onclick="draftEmail(${id})">✉️ Draft Email</button>` : ''}
+        </div>
+      `;
+    }
+
+    // Enrich contact
+    async function enrichContact(id) {
+      const modal = document.getElementById('contactModal');
+      const content = document.getElementById('modalContent');
+      modal.classList.add('show');
+      content.innerHTML = '<div class="loading">Analyzing contact...</div>';
+
+      const response = await fetch(`/api/contacts/${id}/enrich`, { method: 'POST' });
+      const data = await response.json();
+
+      content.innerHTML = `
+        <h3>Enrichment for ${data.name}</h3>
+
+        <div style="margin-top: 20px;">
+          <h4>Email Discovery</h4>
+          <p>Status: ${data.suggested_enrichments.email_discovery.status}</p>
+          <p>${data.suggested_enrichments.email_discovery.suggestion}</p>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <h4>Background Research</h4>
+          <ul>
+            ${data.suggested_enrichments.background_research.actions.map(a => `<li>${a}</li>`).join('')}
+          </ul>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <h4>Next Steps</h4>
+          <ul>
+            ${data.next_steps.map(s => `<li>${s}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+    }
+
+    // Suggest projects
+    async function suggestProjects(id) {
+      const modal = document.getElementById('contactModal');
+      const content = document.getElementById('modalContent');
+      modal.classList.add('show');
+      content.innerHTML = '<div class="loading">Analyzing project fit...</div>';
+
+      const response = await fetch(`/api/contacts/${id}/suggest-projects`);
+      const data = await response.json();
+
+      content.innerHTML = `
+        <h3>Project Suggestions for ${data.contact.name}</h3>
+        <p>${data.contact.position} at ${data.contact.company}</p>
+
+        <div style="margin-top: 20px;">
+          <h4>Recommended Projects (${data.total_projects} total analyzed)</h4>
+          ${data.suggested_projects.map(p => `
+            <div style="background: #f7fafc; padding: 15px; margin: 10px 0; border-radius: 8px;">
+              <strong>${p.project_name}</strong><br>
+              Fit Score: ${p.fit_score}/10<br>
+              Suggested Role: ${p.suggested_role}<br>
+              <em>${p.reason}</em>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // Draft email
+    async function draftEmail(id) {
+      const modal = document.getElementById('contactModal');
+      const content = document.getElementById('modalContent');
+      modal.classList.add('show');
+      content.innerHTML = '<div class="loading">Drafting email...</div>';
+
+      const response = await fetch(`/api/contacts/${id}/draft-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ project_name: 'General Introduction', email_type: 'introduction' })
+      });
+      const data = await response.json();
+
+      content.innerHTML = `
+        <h3>Email Draft</h3>
+
+        <div class="email-draft">
+          <div class="email-subject">Subject: ${data.subject}</div>
+          <div class="email-body">${data.body}</div>
+        </div>
+
+        <div class="timing-recommendation">
+          <strong>⏰ Timing Recommendation</strong><br>
+          ${data.timing_recommendation.optimal_day} at ${data.timing_recommendation.optimal_time}<br>
+          <em>${data.timing_recommendation.reason}</em>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <h4>💡 AI Suggestions</h4>
+          <ul>
+            ${data.ai_notes.map(note => `<li>${note}</li>`).join('')}
+          </ul>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <button>📋 Copy to Clipboard</button>
+          <button>📧 Send via Gmail</button>
+        </div>
+      `;
+    }
+
+    function closeModal() {
+      document.getElementById('contactModal').classList.remove('show');
+    }
+
+    // Initial load
+    loadStats();
+    searchContacts();
+  </script>
+</body>
+</html>

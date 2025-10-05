@@ -1,57 +1,61 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    './index.html',
+    './src/**/*.{js,ts,jsx,tsx}',
   ],
-  darkMode: 'class', // Enable class-based dark mode
   theme: {
     extend: {
       fontFamily: {
-        'display': ['Playfair Display', 'serif'],
-        'body': ['Inter', 'sans-serif'],
-        'mono': ['JetBrains Mono', 'monospace'],
+        sans: ['"Inter Variable"', 'Inter', 'system-ui', 'sans-serif'],
+        heading: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
-        // Australian-inspired color palette
-        ochre: {
-          50: '#fdf8f2',
-          100: '#fbecd9',
-          200: '#f6d6b2',
-          300: '#efb881',
-          400: '#e7944e',
-          500: '#e17a2a',
-          600: '#d2641f',
-          700: '#af4d1c',
-          800: '#8c3e1e',
-          900: '#72331b',
+        brand: {
+          50: '#f1f8f5',
+          100: '#dcefe5',
+          200: '#b9dfcb',
+          300: '#86c8a7',
+          400: '#55af82',
+          500: '#2f8f64',
+          600: '#1f734f',
+          700: '#195d41',
+          800: '#154a35',
+          900: '#123d2c',
         },
-        eucalyptus: {
-          50: '#f0f7f4',
-          100: '#dcede3',
-          200: '#bbddc9',
-          300: '#8dc4a7',
-          400: '#5ba680',
-          500: '#3d8b63',
-          600: '#2e6f4f',
-          700: '#255a41',
-          800: '#1f4735',
-          900: '#1a3c2e',
+        ocean: {
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bedbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
         },
-        sunset: {
-          50: '#fef3f2',
-          100: '#fee4e2',
-          200: '#fececa',
-          300: '#fca5a5',
-          400: '#f87171',
-          500: '#ef4444',
-          600: '#dc2626',
-          700: '#b91c1c',
-          800: '#991b1b',
-          900: '#7f1d1d',
+        clay: {
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5f5',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
         },
+      },
+      boxShadow: {
+        card: '0 18px 40px -24px rgba(15, 23, 42, 0.25)',
+        subtle: '0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04)',
+      },
+      borderRadius: {
+        xl: '1rem',
       },
     },
   },
   plugins: [],
-}
+};
