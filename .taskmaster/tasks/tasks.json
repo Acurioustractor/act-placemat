@@ -2,268 +2,370 @@
   "master": {
     "tasks": [
       {
-        "id": 11,
-        "title": "Setup Production Supabase Database with Security",
-        "description": "Establish a production-grade Supabase database with automated backups, row-level security, and proper schema design to support community data sovereignty.",
-        "details": "Implement a Supabase database (latest version 2.x) with the following components:\n1. Design database schema with tables for communities, projects, stories, partnerships, revenue tracking, and user permissions\n2. Configure Row Level Security (RLS) policies for each table based on user roles (Community, Partner, Admin)\n3. Set up automated daily backups with 30-day retention using Supabase's built-in backup system\n4. Implement database triggers for audit logging of sensitive data changes\n5. Create database functions for complex operations while maintaining security\n6. Configure database indexes for optimized query performance\n7. Set up database migrations using Supabase CLI (version 1.x+) for version control\n8. Implement data validation at the database level using constraints and checks\n\nTechnical specifications:\n- Use Postgres 15.x via Supabase\n- Implement pgvector extension for AI-related features\n- Configure connection pooling for production load\n- Set up proper database monitoring with Supabase's metrics dashboard",
-        "testStrategy": "1. Develop comprehensive unit tests for database functions and triggers\n2. Create integration tests verifying RLS policies work correctly for each user role\n3. Perform load testing with simulated production traffic (minimum 100 concurrent users)\n4. Verify backup and restore functionality in staging environment\n5. Conduct security penetration testing against database access points\n6. Test data integrity constraints with boundary and invalid inputs\n7. Verify proper indexing with EXPLAIN ANALYZE on common queries",
-        "priority": "high",
+        "id": 22,
+        "title": "Create UnifiedIntegrationService for Consolidated API Endpoints",
+        "description": "Develop a UnifiedIntegrationService class to consolidate Gmail, LinkedIn, Notion, and Supabase contact data with merging and deduplication logic, replacing scattered API endpoints with a structured /api/v2/integrations architecture.",
+        "details": "Implement the UnifiedIntegrationService with the following components:\n\n1. **Core Service Architecture**:\n   - Create a TypeScript class-based service using dependency injection pattern\n   - Implement interface-based design with `IIntegrationService` interface\n   - Set up error handling with custom IntegrationError classes\n   - Add comprehensive logging with correlation IDs for request tracing\n\n2. **Data Integration Methods**:\n   - Implement `getContacts()` method that:\n     - Fetches and merges contacts from Gmail, LinkedIn, and Notion\n     - Applies intelligent deduplication using fuzzy matching (Levenshtein distance)\n     - Enriches contacts with relationship intelligence from existing 1,000+ LinkedIn contacts\n     - Supports filtering, pagination, and sorting\n   - Implement `getProjects()` method that:\n     - Retrieves project data from Notion and Supabase\n     - Merges overlapping project information with conflict resolution\n     - Applies standardized project schema transformation\n   - Implement `getFinanceData()` method that:\n     - Consolidates financial data from multiple sources\n     - Implements data normalization for consistent format\n     - Provides aggregation capabilities for reporting\n\n3. **API Endpoint Structure**:\n   - Create RESTful endpoints under `/api/v2/integrations/`:\n     - `/api/v2/integrations/contacts` - replaces `/api/gmail-contact-intelligence` and others\n     - `/api/v2/integrations/projects` - consolidates project-related endpoints\n     - `/api/v2/integrations/finance` - centralizes financial data access\n   - Implement proper versioning with v2 prefix\n   - Add comprehensive query parameter support for filtering and customization\n   - Ensure backward compatibility with existing endpoints during transition\n\n4. **Caching and Performance**:\n   - Implement Redis-based caching for frequently accessed data\n   - Add cache invalidation strategies based on data source webhooks\n   - Implement request batching to minimize API calls to external services\n   - Add performance metrics collection for monitoring\n\n5. **Authentication and Security**:\n   - Implement OAuth token management for Gmail and LinkedIn\n   - Add secure credential storage using environment variables or a secrets manager\n   - Implement rate limiting to prevent API abuse\n   - Add proper permission checks before accessing integration data\n\n6. **Implementation Example**:\n```typescript\n// UnifiedIntegrationService.ts\nimport { Injectable } from '@nestjs/common';\nimport { LinkedInService, GmailService, NotionService, SupabaseService } from './providers';\nimport { Contact, Project, FinanceData } from './models';\nimport { CacheService } from '../cache/cache.service';\n\n@Injectable()\nexport class UnifiedIntegrationService implements IIntegrationService {\n  constructor(\n    private linkedInService: LinkedInService,\n    private gmailService: GmailService,\n    private notionService: NotionService,\n    private supabaseService: SupabaseService,\n    private cacheService: CacheService,\n  ) {}\n\n  async getContacts(filters: ContactFilters = {}): Promise<Contact[]> {\n    const cacheKey = `contacts:${JSON.stringify(filters)}`;\n    const cachedData = await this.cacheService.get(cacheKey);\n    \n    if (cachedData) {\n      return JSON.parse(cachedData);\n    }\n    \n    try {\n      // Fetch contacts from multiple sources in parallel\n      const [linkedInContacts, gmailContacts, notionContacts] = await Promise.all([\n        this.linkedInService.getContacts(filters),\n        this.gmailService.getContacts(filters),\n        this.notionService.getContacts(filters),\n      ]);\n      \n      // Merge and deduplicate contacts\n      const mergedContacts = this.mergeAndDeduplicateContacts(\n        linkedInContacts, \n        gmailContacts,\n        notionContacts\n      );\n      \n      // Enrich with relationship intelligence\n      const enrichedContacts = await this.enrichContactsWithRelationshipData(mergedContacts);\n      \n      // Cache results\n      await this.cacheService.set(cacheKey, JSON.stringify(enrichedContacts), 3600);\n      \n      return enrichedContacts;\n    } catch (error) {\n      throw new IntegrationError('Failed to fetch contacts', error);\n    }\n  }\n  \n  // Additional methods implementation...\n}\n```\n\n7. **API Controller Implementation**:\n```typescript\n// IntegrationsController.ts\nimport { Controller, Get, Query, UseGuards } from '@nestjs/common';\nimport { UnifiedIntegrationService } from './unified-integration.service';\nimport { AuthGuard } from '../auth/auth.guard';\n\n@Controller('api/v2/integrations')\n@UseGuards(AuthGuard)\nexport class IntegrationsController {\n  constructor(private integrationsService: UnifiedIntegrationService) {}\n\n  @Get('contacts')\n  async getContacts(@Query() filters) {\n    return this.integrationsService.getContacts(filters);\n  }\n\n  @Get('projects')\n  async getProjects(@Query() filters) {\n    return this.integrationsService.getProjects(filters);\n  }\n\n  @Get('finance')\n  async getFinanceData(@Query() filters) {\n    return this.integrationsService.getFinanceData(filters);\n  }\n}\n```",
+        "testStrategy": "Verify the UnifiedIntegrationService implementation with the following test strategy:\n\n1. **Unit Testing**:\n   - Create comprehensive unit tests for each method in the UnifiedIntegrationService\n   - Mock all external service dependencies (LinkedIn, Gmail, Notion, Supabase)\n   - Test deduplication logic with various overlapping contact scenarios\n   - Verify error handling for all potential failure points\n   - Test caching behavior with mock cache service\n   - Example test case:\n   ```typescript\n   describe('UnifiedIntegrationService', () => {\n     let service: UnifiedIntegrationService;\n     let mockLinkedInService: jest.Mocked<LinkedInService>;\n     // Other mock services...\n\n     beforeEach(() => {\n       // Setup mocks and service instance\n     });\n\n     describe('getContacts', () => {\n       it('should merge and deduplicate contacts from multiple sources', async () => {\n         // Arrange\n         mockLinkedInService.getContacts.mockResolvedValue([/* test data */]);\n         mockGmailService.getContacts.mockResolvedValue([/* test data */]);\n         mockNotionService.getContacts.mockResolvedValue([/* test data */]);\n         \n         // Act\n         const result = await service.getContacts();\n         \n         // Assert\n         expect(result.length).toBeLessThan(\n           mockLinkedInService.getContacts.mock.results[0].value.length +\n           mockGmailService.getContacts.mock.results[0].value.length +\n           mockNotionService.getContacts.mock.results[0].value.length\n         );\n         // Additional assertions for deduplication logic\n       });\n     });\n   });\n   ```\n\n2. **Integration Testing**:\n   - Create integration tests that connect to test instances of external services\n   - Test the complete flow from API endpoint to data retrieval\n   - Verify correct handling of authentication tokens\n   - Test caching behavior in a real environment\n   - Verify rate limiting functionality\n\n3. **API Endpoint Testing**:\n   - Test all new `/api/v2/integrations/*` endpoints with various query parameters\n   - Verify correct HTTP status codes for success and error scenarios\n   - Test pagination, filtering, and sorting functionality\n   - Verify response format matches API documentation\n   - Example API test:\n   ```typescript\n   describe('GET /api/v2/integrations/contacts', () => {\n     it('should return merged contacts with pagination', async () => {\n       const response = await request(app)\n         .get('/api/v2/integrations/contacts')\n         .query({ page: 1, limit: 10 })\n         .set('Authorization', `Bearer ${testToken}`);\n       \n       expect(response.status).toBe(200);\n       expect(response.body.data.length).toBeLessThanOrEqual(10);\n       expect(response.body.pagination).toBeDefined();\n     });\n   });\n   ```\n\n4. **Performance Testing**:\n   - Measure response times for various data sizes\n   - Test caching effectiveness with repeated requests\n   - Verify system behavior under high load\n   - Test with simulated slow external API responses\n\n5. **Backward Compatibility Testing**:\n   - Verify that existing client applications continue to work during transition\n   - Test that data returned from new endpoints matches format of old endpoints\n   - Create migration tests for clients moving from old to new endpoints\n\n6. **Security Testing**:\n   - Verify proper authentication and authorization checks\n   - Test API with invalid or expired tokens\n   - Verify rate limiting prevents abuse\n   - Test for potential data leakage between different users or contexts\n\n7. **Manual Testing Checklist**:\n   - Verify contact deduplication with real-world data samples\n   - Test relationship intelligence enrichment with known contacts\n   - Verify project data merging with conflicting information\n   - Test financial data aggregation with complex scenarios",
+        "status": "in-progress",
         "dependencies": [],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 12,
-        "title": "Implement Authentication System with Role-Based Permissions",
-        "description": "Develop a robust authentication system with role-based access control supporting Community, Partner, and Admin permission levels with secure token management.",
-        "details": "Implement authentication using Supabase Auth with the following specifications:\n1. Configure email/password, social login (Google, Facebook), and magic link authentication options\n2. Create custom user profiles table linked to auth.users with role information\n3. Implement role-based middleware for API routes with three primary roles: Community, Partner, Admin\n4. Set up JWT token handling with proper expiration and refresh token rotation\n5. Create secure password reset and email verification flows\n6. Implement session management with device tracking and forced logout capabilities\n7. Add multi-factor authentication option for sensitive operations\n8. Create role-specific login journeys and onboarding flows\n\nTechnical specifications:\n- Use Supabase Auth with custom JWT claims for roles\n- Implement Auth.js (NextAuth) v4.x for frontend authentication handling\n- Follow OWASP security best practices for authentication\n- Use bcrypt (10+ rounds) for password hashing\n- Implement rate limiting on authentication endpoints",
-        "testStrategy": "1. Create unit tests for authentication functions and middleware\n2. Develop integration tests for each authentication flow (signup, login, password reset)\n3. Test role-based access control for all protected routes\n4. Perform security testing including brute force protection and token security\n5. Test session management including timeout and refresh scenarios\n6. Verify proper error handling for authentication failures\n7. Conduct end-to-end testing of complete authentication journeys",
         "priority": "high",
-        "dependencies": [
-          11
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 13,
-        "title": "Develop API Layer with Production-Ready Endpoints",
-        "description": "Create a comprehensive API layer with stabilized endpoints, proper error handling, rate limiting, and documentation to support all platform features.",
-        "details": "Implement a production-grade API with the following components:\n1. Design RESTful API endpoints for all core resources (communities, projects, stories, etc.)\n2. Implement GraphQL API using Apollo Server (v4.x) for complex data queries\n3. Create standardized error handling with proper HTTP status codes and error messages\n4. Implement rate limiting and request throttling using Express Rate Limit (v6.x)\n5. Add request validation using Zod (v3.x) or Joi for all incoming data\n6. Set up API versioning strategy for future compatibility\n7. Implement proper CORS configuration for security\n8. Create comprehensive API documentation using OpenAPI/Swagger\n\nTechnical specifications:\n- Use Node.js 18+ with Express 4.x or Next.js API routes\n- Implement middleware pattern for cross-cutting concerns\n- Use TypeScript for type safety throughout the API layer\n- Set up proper logging with Winston or Pino\n- Implement circuit breaker pattern for external service calls\n- Configure proper HTTP caching headers for appropriate endpoints",
-        "testStrategy": "1. Develop unit tests for all API handlers and middleware\n2. Create integration tests for complete API flows\n3. Perform load testing to verify 99.9% uptime under production load\n4. Test error scenarios and verify proper error responses\n5. Verify rate limiting functionality\n6. Test API versioning and backward compatibility\n7. Conduct security testing including OWASP Top 10 vulnerabilities\n8. Verify documentation accuracy with automated tests",
-        "priority": "high",
-        "dependencies": [
-          11,
-          12
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 14,
-        "title": "Implement Real-Time Data Synchronization System",
-        "description": "Build a robust real-time data synchronization system between Notion, Supabase, Xero, and other external data sources with retry logic and monitoring.",
-        "details": "Create a data synchronization system with the following components:\n1. Implement Notion API integration using official Node.js SDK for project and story data\n2. Set up Xero API integration for financial data using Xero Node.js SDK\n3. Create a webhook receiver system for real-time updates from external systems\n4. Implement a job queue using Bull (v4.x) with Redis for reliable processing\n5. Develop automated retry logic with exponential backoff for failed API calls\n6. Create data transformation layer to normalize data between systems\n7. Implement conflict resolution strategies for concurrent updates\n8. Set up comprehensive health monitoring and alerting\n\nTechnical specifications:\n- Use Redis 6.x+ for job queue and caching\n- Implement Bull Dashboard for queue monitoring\n- Use Axios or node-fetch for HTTP requests with interceptors\n- Set up Prometheus metrics for monitoring\n- Configure proper error logging with context\n- Implement circuit breaker pattern using Opossum\n- Use TypeScript interfaces for data mapping between systems",
-        "testStrategy": "1. Create unit tests for data transformation and normalization functions\n2. Develop integration tests with mock external APIs\n3. Test retry logic with simulated failures\n4. Verify conflict resolution with concurrent update scenarios\n5. Test end-to-end synchronization flows with staging environments\n6. Verify monitoring and alerting functionality\n7. Perform load testing with high volume data synchronization\n8. Test recovery scenarios after system outages",
-        "priority": "medium",
-        "dependencies": [
-          11,
-          13
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 15,
-        "title": "Build Community Dashboard with Real-Time Updates",
-        "description": "Develop an intuitive community dashboard showing project status, revenue tracking, and partnership health with real-time updates and responsive design.",
-        "details": "Create a community dashboard with the following features:\n1. Implement a responsive dashboard layout using Next.js 14 with App Router\n2. Create real-time data visualization components using React with D3.js or Recharts\n3. Implement project status tracking with milestone visualization\n4. Build revenue tracking components showing current and historical financial data\n5. Create partnership health indicators with relationship strength metrics\n6. Implement real-time updates using Supabase Realtime or Socket.io\n7. Add customizable dashboard layouts for different community needs\n8. Implement proper loading states and error handling for all components\n\nTechnical specifications:\n- Use Next.js 14 with React Server Components where appropriate\n- Implement TailwindCSS 3.x for styling\n- Use SWR or React Query for data fetching with caching\n- Implement Supabase Realtime for live updates\n- Use Typescript for type safety\n- Implement responsive design for mobile, tablet and desktop\n- Use React Context API for global state management\n- Optimize for performance with code splitting and lazy loading",
-        "testStrategy": "1. Develop unit tests for all dashboard components\n2. Create integration tests for dashboard data flow\n3. Test real-time update functionality with simulated data changes\n4. Verify responsive design across device sizes\n5. Perform accessibility testing (WCAG 2.1 AA compliance)\n6. Test performance with Lighthouse and Web Vitals\n7. Conduct usability testing with community representatives\n8. Verify proper error state handling",
-        "priority": "medium",
-        "dependencies": [
-          13,
-          14
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 16,
-        "title": "Implement Story Management System with Consent Tracking",
-        "description": "Build a comprehensive story management system with consent tracking, AI-powered categorization, and dynamic permissions to ensure community control of narratives.",
-        "details": "Create a story management system with the following components:\n1. Implement story creation and editing interface with rich text editor (Tiptap or Lexical)\n2. Build media management system supporting images, videos, and audio with proper compression\n3. Create consent tracking system with versioned consent records and expiration dates\n4. Implement AI-powered story categorization using OpenAI API (GPT-4) or Hugging Face models\n5. Develop dynamic permission system allowing granular control over story visibility\n6. Create story workflow with draft, review, and published states\n7. Implement version history and change tracking for all story content\n8. Build notification system for consent updates and story status changes\n\nTechnical specifications:\n- Use React Hook Form with Zod validation\n- Implement AWS S3 or Cloudinary for media storage\n- Use OpenAI API with content moderation for AI features\n- Implement proper image optimization with next/image\n- Create custom hooks for story management logic\n- Use Supabase storage for file management\n- Implement proper GDPR compliance for consent tracking\n- Use React Context for story editing state management",
-        "testStrategy": "1. Develop unit tests for story management functions\n2. Create integration tests for complete story workflows\n3. Test consent tracking with various scenarios including revocation\n4. Verify AI categorization accuracy with diverse story samples\n5. Test permission system with different user roles\n6. Verify media handling with various file types and sizes\n7. Test accessibility of story creation interface\n8. Conduct user testing with community representatives",
-        "priority": "high",
-        "dependencies": [
-          12,
-          13,
-          15
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 17,
-        "title": "Develop Impact Visualization Engine",
-        "description": "Create a powerful impact visualization engine with revenue flow tracking, network effect mapping, and customizable reporting tools for communities to showcase their impact.",
-        "details": "Implement an impact visualization engine with the following features:\n1. Create interactive data visualization components using D3.js or Three.js\n2. Implement revenue flow tracking showing money movement through the ecosystem\n3. Build network effect mapping showing community connections and collaboration\n4. Create customizable impact metrics dashboard with community-defined KPIs\n5. Implement data export functionality in multiple formats (CSV, PDF, JSON)\n6. Build report generation system with templates for different audiences\n7. Create embeddable visualizations for external websites\n8. Implement time-series analysis for impact trends over time\n\nTechnical specifications:\n- Use D3.js v7 for custom visualizations\n- Implement React-PDF for report generation\n- Use Visx or Nivo for chart components\n- Implement proper data aggregation with date-fns\n- Create responsive visualizations that work across devices\n- Use Web Workers for complex data processing\n- Implement proper accessibility for all visualizations\n- Use React.memo and useMemo for performance optimization",
-        "testStrategy": "1. Develop unit tests for visualization components\n2. Create integration tests for data flow through visualization pipeline\n3. Test export functionality with various data sizes\n4. Verify visualization accuracy with known test datasets\n5. Test performance with large datasets\n6. Verify accessibility of all visualization components\n7. Test embeddable visualizations in different contexts\n8. Conduct user testing with community representatives",
-        "priority": "medium",
-        "dependencies": [
-          13,
-          15
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 18,
-        "title": "Build Community Intelligence API",
-        "description": "Develop an intelligence layer with APIs for community, relationship, financial, and story intelligence to provide actionable insights while preserving community ownership.",
-        "details": "Create a community intelligence API with the following components:\n1. Implement project success pattern analysis using machine learning (scikit-learn or TensorFlow.js)\n2. Build relationship intelligence system mapping community connections\n3. Create financial intelligence with revenue forecasting and grant matching\n4. Implement story intelligence for voice amplification and advocacy\n5. Develop recommendation engine for community collaboration opportunities\n6. Create API endpoints for accessing intelligence insights\n7. Implement proper data anonymization for sensitive analysis\n8. Build explanation system for AI-generated insights\n\nTechnical specifications:\n- Use TensorFlow.js or ONNX.js for client-side ML capabilities\n- Implement Python FastAPI for complex ML processing\n- Use OpenAI API for natural language processing\n- Implement proper feature engineering pipeline\n- Create model versioning and evaluation system\n- Use Redis for caching intelligence results\n- Implement proper data privacy controls\n- Create custom algorithms for community-specific insights",
-        "testStrategy": "1. Develop unit tests for intelligence algorithms\n2. Create integration tests for complete intelligence pipelines\n3. Test recommendation quality with historical data\n4. Verify explanation clarity for AI-generated insights\n5. Test privacy preservation with sensitive data\n6. Verify API performance under load\n7. Conduct bias testing for all AI systems\n8. Test with diverse community datasets to ensure fairness",
-        "priority": "medium",
-        "dependencies": [
-          13,
-          14,
-          17
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 19,
-        "title": "Implement Community Data Control Tools",
-        "description": "Build comprehensive data control tools enabling complete data export, platform forking, and independence tracking to support the Beautiful Obsolescence mission.",
-        "details": "Create community data control tools with the following features:\n1. Implement complete data export functionality with all community data\n2. Build platform forking capability allowing communities to run independent instances\n3. Create independence tracking dashboard showing progress toward self-sufficiency\n4. Implement data portability tools with standard formats (JSON, CSV)\n5. Build data deletion and anonymization tools for GDPR compliance\n6. Create documentation system for community platform ownership\n7. Implement API key management for community control of data access\n8. Build audit logging for all data access and control operations\n\nTechnical specifications:\n- Use Node.js streams for efficient large data exports\n- Implement Docker containerization for portable deployment\n- Create Terraform scripts for infrastructure setup\n- Use JSON Schema for data format documentation\n- Implement proper encryption for exported data\n- Create step-by-step guides for platform independence\n- Use Web Workers for non-blocking export operations\n- Implement progressive downloads for large datasets",
-        "testStrategy": "1. Develop unit tests for export and portability functions\n2. Create integration tests for complete data control workflows\n3. Test platform forking with sample community data\n4. Verify data integrity through export and import cycles\n5. Test performance with large community datasets\n6. Verify security of exported data packages\n7. Test independence tracking metrics\n8. Conduct user testing with community representatives",
-        "priority": "high",
-        "dependencies": [
-          11,
-          13,
-          16
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 20,
-        "title": "Develop Mobile React Native App with Offline Capabilities",
-        "description": "Create a mobile application using React Native with offline capabilities, ensuring community members can access and contribute to the platform regardless of connectivity.",
-        "details": "Build a React Native mobile app with the following features:\n1. Implement cross-platform app using React Native 0.72+ with TypeScript\n2. Create offline-first architecture with local data storage\n3. Implement sync mechanism for offline changes when connectivity returns\n4. Build native camera and media integration for story collection\n5. Create location-based features with geolocation API\n6. Implement push notifications for important updates\n7. Build biometric authentication for secure access\n8. Create optimized UI for various screen sizes and devices\n\nTechnical specifications:\n- Use React Native 0.72+ with Expo managed workflow\n- Implement Redux Toolkit for state management\n- Use Watermelon DB for offline data storage\n- Implement proper conflict resolution for offline changes\n- Use React Navigation 6.x for app navigation\n- Create custom hooks for device capabilities\n- Implement proper error boundaries and crash reporting\n- Use React Native Paper or Native Base for UI components\n- Optimize bundle size with code splitting and lazy loading",
-        "testStrategy": "1. Develop unit tests for app components and logic\n2. Create integration tests for offline/online workflows\n3. Test sync mechanism with various connectivity scenarios\n4. Verify performance on low-end devices\n5. Test battery usage optimization\n6. Conduct usability testing on both iOS and Android\n7. Test accessibility features\n8. Verify proper error handling in offline mode",
-        "priority": "medium",
-        "dependencies": [
-          12,
-          13,
-          16,
-          19
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 21,
-        "title": "Comprehensive Codebase Audit and Reset Strategy",
-        "description": "Conduct a thorough audit of the entire codebase including frontend, backend, APIs, configuration, and styling systems to identify issues, document working components, and develop a clear reset strategy before further development.",
-        "details": "Perform a comprehensive codebase audit with the following components:\n\n1. **Frontend Application Analysis**:\n   - Review React/Next.js component architecture and identify structural issues\n   - Audit CSS/styling systems (check for inconsistencies, specificity issues, unused styles)\n   - Evaluate state management approach (Context API, Redux, etc.) for scalability\n   - Analyze build configuration and optimization settings\n   - Document component reusability and adherence to design system\n\n2. **Backend System Evaluation**:\n   - Review API architecture, endpoints, and documentation\n   - Analyze database schema design and relationships\n   - Evaluate authentication and authorization mechanisms\n   - Assess error handling and logging systems\n   - Document service boundaries and communication patterns\n\n3. **Configuration and Environment Assessment**:\n   - Audit .env files and environment variable management\n   - Review deployment configurations and CI/CD pipelines\n   - Evaluate secret management and security practices\n   - Document configuration inconsistencies across environments\n\n4. **Data Integration Analysis**:\n   - Map all data flows between systems (Notion, Supabase, Xero)\n   - Identify data synchronization issues and bottlenecks\n   - Document API integration points and failure modes\n   - Assess data transformation and normalization approaches\n\n5. **Documentation Review**:\n   - Evaluate existing documentation for completeness and accuracy\n   - Identify documentation gaps and outdated information\n   - Assess API documentation against actual implementation\n   - Review code comments and inline documentation quality\n\n6. **Performance Analysis**:\n   - Conduct performance profiling of critical application paths\n   - Identify bottlenecks in data loading and processing\n   - Evaluate caching strategies and effectiveness\n   - Document performance metrics and baseline measurements\n\n7. **Reset Strategy Development**:\n   - Create prioritized list of critical issues requiring immediate attention\n   - Develop phased approach for addressing technical debt\n   - Identify components for refactoring vs. complete replacement\n   - Document successful patterns to preserve and expand upon\n   - Create architectural vision document for system evolution\n\n8. **Historical Analysis**:\n   - Review git history to understand development patterns\n   - Identify recurring issues and their root causes\n   - Document architectural decisions and their consequences\n   - Create timeline of significant system changes\n\nDeliverables:\n- Comprehensive audit report with categorized findings\n- Prioritized issue backlog with severity ratings\n- Architectural vision document with reset strategy\n- Documentation gap analysis with recommendations\n- Performance baseline measurements and improvement targets",
-        "testStrategy": "Verify the completeness and effectiveness of the codebase audit and reset strategy through:\n\n1. **Audit Verification**:\n   - Create a checklist of all system components and verify each has been thoroughly reviewed\n   - Have at least two senior developers independently validate critical findings\n   - Cross-reference git history analysis with documented issues to ensure comprehensive coverage\n   - Verify all APIs have been tested and documented accurately\n\n2. **Issue Validation**:\n   - Create reproducible test cases for each identified issue\n   - Document environment configurations where issues occur\n   - Capture screenshots, logs, and performance metrics as evidence\n   - Validate severity ratings through team consensus\n\n3. **Reset Strategy Testing**:\n   - Conduct architectural review sessions with the development team\n   - Create proof-of-concept implementations for critical architectural changes\n   - Develop migration plans for data and functionality\n   - Test proposed solutions against identified issues to verify effectiveness\n\n4. **Documentation Assessment**:\n   - Review audit documentation for clarity and actionability\n   - Ensure all findings include context, impact, and recommended solutions\n   - Verify technical accuracy of all documentation\n   - Confirm documentation is accessible and understandable to all team members\n\n5. **Stakeholder Validation**:\n   - Present audit findings and reset strategy to key stakeholders\n   - Collect feedback on prioritization and approach\n   - Verify business requirements are addressed in the reset strategy\n   - Ensure alignment between technical recommendations and business goals\n\n6. **Metrics Baseline**:\n   - Document performance metrics before any changes\n   - Establish clear, measurable success criteria for the reset\n   - Create monitoring plan for tracking improvements\n   - Set up dashboards for visualizing progress",
-        "status": "pending",
-        "dependencies": [
-          14,
-          16,
-          18,
-          19,
-          20
-        ],
-        "priority": "medium",
         "subtasks": [
           {
             "id": 1,
-            "title": "Complete Codebase Structure Analysis",
-            "description": "Analyze the entire codebase structure including all applications, directories, and file organization to understand the system architecture and identify structural issues.",
+            "title": "Design Core Service Architecture",
+            "description": "Create the TypeScript class-based UnifiedIntegrationService with interface-based design, error handling, and logging infrastructure.",
             "dependencies": [],
-            "details": "Perform a comprehensive analysis of the codebase structure by: 1) Creating a complete map of all applications, directories, and files, 2) Documenting the architectural patterns used across the system, 3) Identifying inconsistencies in file organization and naming conventions, 4) Evaluating the modularity and separation of concerns, 5) Assessing code duplication and redundancy, 6) Analyzing dependencies between components and potential circular dependencies, 7) Evaluating build configurations and optimization settings, 8) Creating a visual representation of the system architecture.\n<info added on 2025-09-01T00:03:29.064Z>\n## Codebase Audit Findings\n\nThe initial scan revealed a significantly larger and more complex codebase than anticipated, representing years of sophisticated development work across multiple domains.\n\n### Core Applications\n- Backend: Node.js application running on port 4000\n- Frontend: React/Vite application running on port 5175\n- Mobile: React Native application (life-os-mobile)\n\n### System Components\n- Extensive documentation system with hundreds of files across 15+ categories\n- Sophisticated infrastructure utilizing Kubernetes, Docker, PostgreSQL, Redis, Neo4j, and Prometheus/Grafana monitoring\n- Multiple external integrations including Gmail, Notion, LinkedIn, Supabase, and Xero financial data\n- Archive of redundant applications suggesting historical over-building\n\n### Critical Issues Identified\n1. Scale and overwhelming complexity (thousands of files)\n2. CSS/styling system breakdown evidenced by multiple debug files and screenshots\n3. Documentation overload with hundreds of markdown files\n4. Architectural fragmentation shown by multiple server files and redundant applications\n\n### Positive Discoveries\n1. Comprehensive integration ecosystem with real data connections\n2. Sophisticated monitoring and deployment infrastructure\n3. Extensive testing frameworks\n4. Years of strategic documentation and analysis\n\nA detailed analysis has been documented in CODEBASE_AUDIT_ANALYSIS.md. This project requires careful analysis rather than hasty cleanup due to the sophistication and scale of the existing work.\n</info added on 2025-09-01T00:03:29.064Z>",
+            "details": "Implement the IIntegrationService interface and UnifiedIntegrationService class with dependency injection pattern. Create custom IntegrationError classes for structured error handling. Set up comprehensive logging with correlation IDs for request tracing. Define the service constructor with all required dependencies (LinkedIn, Gmail, Notion, Supabase services).",
             "status": "done",
-            "testStrategy": "Verify completeness by ensuring all repositories and branches are included in the analysis. Cross-reference findings with at least one senior developer familiar with the codebase. Create a checklist to ensure all system components have been thoroughly reviewed."
+            "testStrategy": "Write unit tests for the service initialization, error handling mechanisms, and logging functionality. Mock all dependencies and verify proper injection. Test error propagation and correlation ID generation."
           },
           {
             "id": 2,
-            "title": "API Ecosystem Audit",
-            "description": "Conduct a thorough audit of all API endpoints, integrations, and services to identify what is working correctly and what is broken or inefficient.",
+            "title": "Implement Contact Integration Methods",
+            "description": "Develop the getContacts() method that fetches, merges, deduplicates, and enriches contact data from multiple sources.",
             "dependencies": [
-              "21.1"
+              "22.1"
             ],
-            "details": "Audit the API ecosystem by: 1) Documenting all internal and external API endpoints, 2) Testing each endpoint for functionality and response accuracy, 3) Analyzing API authentication and security mechanisms, 4) Evaluating API performance and response times, 5) Identifying inconsistencies in API design patterns, 6) Documenting integration points with third-party services, 7) Creating a comprehensive API health report highlighting working vs. broken endpoints, 8) Recommending standardization approaches for API design.\n<info added on 2025-09-01T00:38:00.555Z>\nAUDIT RESULTS: API ECOSYSTEM ASSESSMENT\n\nCRITICAL FINDINGS:\n- Total discovered endpoints: 140+ across 3 server files\n- Working properly: Only 8 endpoints (~6%)\n- Broken/404: 130+ endpoints (~93%) \n- Major architectural fragmentation between server.js, unified-domain-server.js, intelligence-server.js\n\nKEY WORKING ENDPOINTS:\n- /api/dashboard/* - Working but slow (9s response times)\n- /api/v1/intelligence/status - Operational\n- /api/v1/platform/status - Claims 99.9% uptime\n- /api/organizations - Returns A Curious Tractor org data\n\nCRITICAL FAILURES:\n- Supabase integration COMPLETELY BROKEN (Invalid API key)\n- Empathy Ledger system 500 errors (database schema mismatch)\n- Notion API causing 8+ second delays due to schema issues\n- 93% of expected endpoints returning 404\n\nIMMEDIATE ACTIONS REQUIRED:\n1. Fix Supabase API key configuration (ALL database operations failing)\n2. Fix Empathy Ledger database schema (stories.privacy_level column missing)  \n3. Fix Notion database schema mismatches causing performance degradation\n4. Consolidate duplicate API routes across multiple server files\n\nFull detailed analysis added to CODEBASE_AUDIT_ANALYSIS.md with comprehensive API health matrix.\n</info added on 2025-09-01T00:38:00.555Z>",
+            "details": "Implement parallel data fetching from Gmail, LinkedIn, and Notion APIs. Create fuzzy matching algorithms using Levenshtein distance for contact deduplication. Develop relationship intelligence enrichment using existing LinkedIn contacts. Add support for filtering, pagination, and sorting parameters. Implement caching strategy for optimized performance.\n<info added on 2025-09-15T03:47:50.414Z>\nBased on analysis of existing contact intelligence services and real data structure:\n\nRefactor implementation to leverage discovered data assets:\n- Connect to existing linkedin_contacts table containing 1,000+ contacts with strategic analysis\n- Integrate with person_identity_map table from existing ContactIntelligenceService\n- Utilize gmailService's contact extraction capabilities\n- Incorporate notionService's project and people database integration\n\nImplementation plan:\n1. Create adapter classes for each service (LinkedInAdapter, GmailAdapter, NotionAdapter, ContactIntelligenceAdapter) implementing the IIntegrationService interface\n2. Develop data access layer to query linkedin_contacts table, focusing on the 299 high-strategic-value contacts already identified\n3. Implement ContactIntelligenceService integration for AI-powered contact enrichment\n4. Build transformation layer to standardize data formats between service-specific models and the unified Contact interface\n5. Modify parallel fetching implementation to use real services instead of placeholder implementations\n6. Update deduplication logic to work with actual data structures from the person_identity_map table\n</info added on 2025-09-15T03:47:50.414Z>",
             "status": "done",
-            "testStrategy": "Create automated tests to verify API endpoint functionality. Document response times and error rates for each endpoint. Compare API documentation against actual implementation to identify discrepancies."
+            "testStrategy": "Test contact merging with known duplicate datasets. Verify fuzzy matching accuracy with various name variations. Test pagination and filtering with large datasets. Verify relationship intelligence enrichment logic with mock data."
           },
           {
             "id": 3,
-            "title": "CSS and Styling System Analysis",
-            "description": "Analyze the CSS and styling systems to identify inconsistencies, specificity issues, and unused styles that are causing visual and maintenance problems.",
+            "title": "Implement Project and Finance Integration Methods",
+            "description": "Develop the getProjects() and getFinanceData() methods for retrieving and consolidating project and financial information.",
             "dependencies": [
-              "21.1"
+              "22.1"
             ],
-            "details": "Analyze the CSS and styling systems by: 1) Auditing all CSS files and style implementations (CSS, SCSS, CSS-in-JS, etc.), 2) Identifying specificity conflicts and cascade issues, 3) Detecting unused or redundant styles, 4) Evaluating the consistency of design token implementation, 5) Assessing responsive design implementation, 6) Analyzing styling performance impacts, 7) Documenting styling approach inconsistencies across components, 8) Creating recommendations for a unified styling approach.",
+            "details": "Create the getProjects() method to retrieve and merge project data from Notion and Supabase with conflict resolution logic. Implement standardized project schema transformation. Develop the getFinanceData() method to consolidate financial data with normalization and aggregation capabilities. Add caching for both methods with appropriate invalidation strategies.",
             "status": "done",
-            "testStrategy": "Use style linting tools to identify issues automatically. Test styling across different browsers and device sizes to verify consistency. Create visual regression tests to identify unintended style changes."
+            "testStrategy": "Test project merging with conflicting data scenarios. Verify financial data aggregation with complex datasets. Test schema transformation accuracy. Verify cache invalidation triggers work correctly."
           },
           {
             "id": 4,
-            "title": "Environment and Configuration Audit",
-            "description": "Audit all environment configurations, .env files, API keys, and connection settings to identify security issues and configuration inconsistencies across environments.",
+            "title": "Create RESTful API Endpoint Structure",
+            "description": "Develop the controller layer with RESTful endpoints under /api/v2/integrations/ for contacts, projects, and finance data.",
             "dependencies": [
-              "21.1",
-              "21.2"
+              "22.1",
+              "22.2",
+              "22.3"
             ],
-            "details": "Conduct an environment and configuration audit by: 1) Documenting all .env files and environment variables across environments, 2) Identifying hardcoded credentials or sensitive information, 3) Evaluating secret management practices, 4) Assessing configuration differences between development, staging, and production, 5) Reviewing deployment configurations and CI/CD pipelines, 6) Analyzing environment-specific bugs and issues, 7) Documenting third-party service connections and their configuration, 8) Creating a secure configuration management strategy.\n<info added on 2025-09-01T00:44:16.463Z>\n## AUDIT RESULTS SUMMARY\n\nCRITICAL FINDINGS:\n- Total configuration files: 40+ across multiple directories\n- Major configuration sprawl with duplicates and conflicts\n- 3 CRITICAL issues causing 93% of system failures:\n\n1. SUPABASE INTEGRATION FAILURE:\n   - EventTrackingService using SUPABASE_ANON_KEY instead of SUPABASE_SERVICE_ROLE_KEY\n   - ALL database write operations failing with \"Invalid API key\"\n   - Affects event tracking, compliance records, analytics\n\n2. NOTION API SCHEMA MISMATCHES:\n   - Code expecting \"Priority\" and \"Date\" fields that don't exist in Notion databases\n   - Causing 8+ second response times due to 4 retry attempts per request\n   - Continuous failures during sync operations\n\n3. CONFIGURATION SPRAWL CRISIS:\n   - 40+ config files with potential conflicts\n   - Multiple .env files in different directories\n   - No centralized secret management\n\nSECURITY ANALYSIS:\n- Positive: Structured API key management, CORS configuration, security monitoring\n- Concerns: Hardcoded secrets, debug flags, configuration duplication\n- Critical: No secret vault, credentials in multiple locations, backup files exposed\n\nIMMEDIATE FIX IMPACT: \nResolving the Supabase key issue and Notion schema problems should restore ~80% of failing functionality.\n\nFull detailed analysis added to CODEBASE_AUDIT_ANALYSIS.md with comprehensive configuration inventory and security assessment.\n</info added on 2025-09-01T00:44:16.463Z>",
+            "details": "Create IntegrationsController with endpoints for /api/v2/integrations/contacts, /api/v2/integrations/projects, and /api/v2/integrations/finance. Implement comprehensive query parameter support for filtering and customization. Add proper request validation using Zod or similar library. Ensure consistent response formatting across all endpoints.",
             "status": "done",
-            "testStrategy": "Create a configuration comparison matrix across all environments. Verify that sensitive information is properly secured. Test application functionality with different environment configurations to identify environment-specific issues."
+            "testStrategy": "Test each endpoint with various query parameters. Verify proper error responses for invalid requests. Test backward compatibility with existing endpoints. Verify response format consistency."
           },
           {
             "id": 5,
-            "title": "Documentation Audit",
-            "description": "Review all existing documentation to identify what is useful versus overwhelming, outdated, or missing, and create a documentation improvement plan.",
+            "title": "Implement Caching and Performance Optimizations",
+            "description": "Add Redis-based caching, request batching, and performance metrics collection to the integration service.",
             "dependencies": [
-              "21.1",
-              "21.2",
-              "21.3",
-              "21.4"
+              "22.2",
+              "22.3"
             ],
-            "details": "Perform a documentation audit by: 1) Cataloging all existing documentation (READMEs, wikis, inline comments, etc.), 2) Evaluating documentation accuracy and completeness, 3) Identifying outdated or incorrect information, 4) Assessing code comments and inline documentation quality, 5) Evaluating API documentation against actual implementation, 6) Identifying critical documentation gaps, 7) Analyzing documentation accessibility and organization, 8) Creating a prioritized documentation improvement plan.",
-            "status": "done",
-            "testStrategy": "Have developers unfamiliar with specific parts of the codebase attempt to understand them using only the documentation. Create a documentation quality scoring system based on completeness, accuracy, and clarity."
+            "details": "Integrate Redis caching for frequently accessed data with appropriate TTL values. Implement cache invalidation strategies based on data source webhooks. Create request batching mechanisms to minimize API calls to external services. Add performance metrics collection using a monitoring library. Implement circuit breaker pattern for external service calls.",
+            "status": "in-progress",
+            "testStrategy": "Test cache hit/miss scenarios with various data requests. Verify cache invalidation works correctly when data changes. Measure performance improvements with and without caching. Test circuit breaker behavior during service outages."
           },
           {
             "id": 6,
-            "title": "Data Flow Analysis",
-            "description": "Map and analyze all data flows between systems including Notion, Supabase, and other integrations to identify synchronization issues and bottlenecks.",
+            "title": "Implement Authentication and Security Features",
+            "description": "Add OAuth token management, secure credential storage, rate limiting, and permission checks to the integration service.",
             "dependencies": [
-              "21.2",
-              "21.4"
+              "22.1"
             ],
-            "details": "Analyze data flows by: 1) Creating comprehensive data flow diagrams for all system integrations, 2) Documenting data transformation and normalization approaches, 3) Identifying data synchronization issues between systems, 4) Evaluating data consistency across platforms, 5) Assessing error handling in data pipelines, 6) Analyzing caching strategies and their effectiveness, 7) Documenting data ownership and privacy considerations, 8) Creating performance profiles for critical data paths.",
-            "status": "in-progress",
-            "testStrategy": "Create test scenarios that trace data through the entire system. Measure data transfer times and identify bottlenecks. Verify data integrity by comparing source and destination data across integrations."
+            "details": "Implement OAuth token management for Gmail and LinkedIn with refresh token handling. Set up secure credential storage using environment variables or a secrets manager. Add rate limiting middleware to prevent API abuse. Implement proper permission checks before accessing integration data. Create an authentication guard for all integration endpoints.\n<info added on 2025-09-15T04:10:34.758Z>\nBased on the analysis of existing auth infrastructure, implementing enhanced security features for the unified integration service including:\n\n1. OAuth token management with refresh token rotation and expiration tracking for Gmail, LinkedIn, and other integrated services\n2. Enhanced rate limiting specifically configured for integration endpoints with tiered limits based on endpoint sensitivity\n3. Security audit logging for all integration access attempts, capturing user ID, integration type, access timestamp, and operation type\n4. Integration-specific permission checks using a granular RBAC model to control access to different integration features\n5. Secure token storage with encryption at rest and key rotation policies\n6. Implementation of integration-specific consent enforcement with detailed scope tracking\n7. Cross-service authentication validation to prevent unauthorized access between integrated platforms\n</info added on 2025-09-15T04:10:34.758Z>\n<info added on 2025-09-15T04:15:12.134Z>\nSuccessfully implemented comprehensive authentication and security features for the unified integration service. Created integrationSecurity.js middleware with OAuth token management, integration-specific rate limiting (contacts: 100/15min, projects: 150/15min, finance: 50/15min, analytics: 30/15min), security audit logging, permission validation, cross-service auth validation, and consent enforcement. Built secureCredentialStorage.js service with AES-256 encryption for token storage, automatic token refresh, cleanup cycles, and key rotation capabilities. Updated all v2 integration API endpoints to use security bundles. Added environment variables for configuration. Tested successfully - authentication working correctly, health endpoint accessible, secured endpoints properly protected.\n</info added on 2025-09-15T04:15:12.134Z>",
+            "status": "done",
+            "testStrategy": "Test OAuth token refresh flows. Verify rate limiting blocks excessive requests. Test permission checks with various user roles. Verify secure handling of credentials throughout the application."
           },
           {
             "id": 7,
-            "title": "Historical Development Analysis",
-            "description": "Review git history and development patterns to understand where and why development went wrong, identifying recurring issues and their root causes.",
+            "title": "Develop Backward Compatibility Layer",
+            "description": "Create adapters and routes to ensure backward compatibility with existing API endpoints during transition.",
             "dependencies": [
-              "21.1",
-              "21.2",
-              "21.3"
+              "22.4"
             ],
-            "details": "Conduct historical analysis by: 1) Reviewing git commit history to identify patterns and trends, 2) Analyzing pull request comments and code reviews, 3) Documenting architectural decisions and their consequences, 4) Creating a timeline of significant system changes, 5) Identifying recurring bugs and issues, 6) Evaluating development velocity and bottlenecks over time, 7) Assessing team collaboration patterns through commit history, 8) Documenting lessons learned from historical development approaches.",
-            "status": "pending",
-            "testStrategy": "Create a timeline visualization of system changes correlated with reported issues. Interview team members who have been involved with the project to gather historical context and validate findings."
+            "details": "Implement adapter classes to transform between old and new data formats. Create legacy route handlers that use the new UnifiedIntegrationService internally. Add deprecation notices to old endpoints. Implement request mapping from legacy endpoints to new service methods. Create a migration guide for clients using the old API.\n<info added on 2025-09-15T04:20:37.917Z>\nDiscovered that the existing backward compatibility infrastructure is incomplete. While legacy adapter routes are defined, the actual transformation logic is missing. Identified gaps in the transformation functions needed to properly map legacy endpoint requests to the new v2 unified API structure. Currently implementing the missing transformation functions for data format conversion between old and new schemas. Also completing the middleware implementation that handles request/response transformations. These components are critical for ensuring seamless transition for clients still using the legacy endpoints while the system migrates to the UnifiedIntegrationService architecture.\n</info added on 2025-09-15T04:20:37.917Z>\n<info added on 2025-09-15T04:32:46.535Z>\nIdentified root cause of backward compatibility issues: the compatibility middleware is fully implemented but not connected to server routes. Legacy endpoints are still using original handlers instead of the compatibility layer. To resolve this:\n\n1. Server integration is missing - need to import backward compatibility handlers in server.js\n2. Legacy route handlers must be replaced with compatibility handlers that proxy to the v2 unified API\n3. Transformation functions are complete and working correctly - the issue is purely in the routing configuration\n4. Will implement a migration health check endpoint to monitor the transition status\n\nAction items:\n- Update server.js to import and register compatibility middleware\n- Replace all legacy endpoint definitions with compatibility layer handlers\n- Configure proper routing from legacy endpoints to UnifiedIntegrationService\n- Add health check endpoint at /api/migration/status to report compatibility layer status\n- Perform comprehensive testing to verify legacy requests properly flow through to v2 API\n</info added on 2025-09-15T04:32:46.535Z>\n<info added on 2025-09-15T04:42:28.359Z>\nBackward compatibility layer implementation completed successfully. All legacy endpoints now properly route through the compatibility middleware to the UnifiedIntegrationService. Server integration was completed by adding the necessary imports to server.js and replacing all six legacy route handlers (/api/contact-intelligence, /api/gmail-contact-intelligence, /api/calendar-contact-intelligence, /api/project-contact-linkage, /api/notion-publish, /api/financial-intelligence) with compatibility wrappers. Fixed missing ES6 exports for LEGACY_ENDPOINT_MAPPING and V1_API_MAPPING. Added migration health check endpoint at /api/migration/status. Testing confirms the server starts successfully with \"V1 API backward compatibility middleware applied\" message, legacy endpoints return data in original formats with proper transformation, and all responses include deprecation notices and migration guidance. The implementation provides complete backward compatibility features including deprecation headers, legacy endpoint usage logging, request/response transformation, migration guidance URLs, and seamless routing to the v2 API. Legacy clients can continue using old endpoints unchanged while the system internally leverages the new unified architecture.\n</info added on 2025-09-15T04:42:28.359Z>",
+            "status": "done",
+            "testStrategy": "Test all legacy endpoints continue to function correctly. Verify data consistency between old and new endpoints. Test deprecation notices are properly displayed. Verify complex queries work correctly through the compatibility layer."
           },
           {
             "id": 8,
-            "title": "Reset Strategy and Foundation Recommendations",
-            "description": "Develop a comprehensive reset strategy with prioritized recommendations for addressing technical debt, refactoring components, and establishing a solid foundation for future development.",
+            "title": "Create Documentation and Integration Tests",
+            "description": "Develop comprehensive API documentation and integration tests for the UnifiedIntegrationService.",
             "dependencies": [
-              "21.1",
-              "21.2",
-              "21.3",
-              "21.4",
-              "21.5",
-              "21.6",
-              "21.7"
+              "22.1",
+              "22.2",
+              "22.3",
+              "22.4",
+              "22.5",
+              "22.6",
+              "22.7"
             ],
-            "details": "Create a reset strategy by: 1) Developing a prioritized list of critical issues requiring immediate attention, 2) Creating a phased approach for addressing technical debt, 3) Identifying components for refactoring versus complete replacement, 4) Documenting successful patterns to preserve and expand upon, 5) Establishing architectural principles and best practices for future development, 6) Creating a roadmap for implementing the reset strategy, 7) Defining metrics to measure the success of the reset initiative, 8) Developing a communication plan for stakeholders.",
+            "details": "Create OpenAPI/Swagger documentation for all new endpoints. Write detailed integration tests covering the entire service functionality. Develop example code snippets for common integration scenarios. Create a monitoring dashboard for service performance. Implement end-to-end tests with actual external services in a staging environment.",
             "status": "pending",
-            "testStrategy": "Create a validation framework for the reset strategy with clear success criteria. Have senior technical stakeholders review and approve the strategy. Develop proof-of-concept implementations for critical architectural changes to validate approach."
+            "testStrategy": "Verify documentation accuracy with actual API responses. Test all documented examples work as expected. Run integration tests in CI/CD pipeline. Verify monitoring dashboard correctly displays service metrics. Test end-to-end flows with real external services in a controlled environment."
           }
         ]
+      },
+      {
+        "id": 23,
+        "title": "Build Co-founder Morning Intelligence Dashboard",
+        "description": "Develop a consolidated morning intelligence dashboard that aggregates high-value strategic contacts from LinkedIn, project status from Notion, financial data from Xero, and calendar intelligence into a unified interface with a single API endpoint.",
+        "details": "Implement the co-founder morning intelligence dashboard with the following components:\n\n1. **API Endpoint Development**:\n   - Create a new `/api/v2/intelligence/morning` endpoint that consolidates data from multiple sources\n   - Implement caching strategy with Redis to optimize morning load times (TTL: 1 hour)\n   - Add authentication middleware with role-based access control for co-founder specific views\n   - Structure response format with clear sections for contacts, projects, finances, and calendar\n\n2. **Data Integration and Consolidation**:\n   - Leverage the UnifiedIntegrationService to access the 299 high-value strategic contacts from LinkedIn\n   - Implement contact opportunity scoring algorithm based on:\n     - Last interaction date\n     - Relationship strength\n     - Strategic alignment with current initiatives\n     - Recent activity signals\n   - Connect to Notion API to extract project status data including:\n     - Projects approaching deadlines\n     - Recently updated projects\n     - Blocked items requiring attention\n   - Integrate with Xero API to provide financial overview:\n     - Cash position\n     - Accounts receivable aging\n     - Monthly burn rate and runway calculation\n     - Recent significant transactions\n   - Pull calendar intelligence from Google Calendar API:\n     - Today's meeting schedule\n     - Preparation requirements for upcoming meetings\n     - Suggested time blocks for deep work\n\n3. **Frontend Dashboard Implementation**:\n   - Create responsive dashboard layout using Next.js with Tailwind CSS\n   - Implement data visualization components for financial metrics using Recharts\n   - Build contact opportunity cards with actionable insights\n   - Design project status timeline visualization\n   - Implement calendar view with time blocking visualization\n   - Add filtering capabilities to focus on specific areas of interest\n\n4. **Intelligence Layer**:\n   - Develop priority ranking algorithm to surface most important items\n   - Implement natural language summary generation for daily overview\n   - Create notification system for critical items requiring immediate attention\n   - Build trend analysis for recurring patterns in project delays or financial fluctuations\n   - Implement \"morning brief\" feature that provides an executive summary of the day ahead\n\n5. **Performance Optimization**:\n   - Implement progressive loading strategy to display critical data first\n   - Use React Suspense and streaming for improved perceived performance\n   - Add background data refresh without disrupting user experience\n   - Implement service worker for offline access to previously loaded dashboard data\n   - Optimize API payload size through selective field inclusion\n\n6. **User Experience Considerations**:\n   - Design morning-specific UI with consideration for early-day cognitive load\n   - Implement dark/light mode toggle based on time of day\n   - Create customizable dashboard layout with drag-and-drop sections\n   - Add \"focus mode\" to highlight only the most critical information\n   - Implement keyboard shortcuts for quick navigation",
+        "testStrategy": "Verify the co-founder morning intelligence dashboard implementation with the following test strategy:\n\n1. **API Endpoint Testing**:\n   - Create unit tests for the `/api/v2/intelligence/morning` endpoint using Jest\n   - Test authentication and authorization with various user roles\n   - Verify proper error handling with mocked service failures\n   - Measure and benchmark API response times under various load conditions\n   - Test caching mechanism effectiveness with repeated requests\n\n2. **Data Integration Testing**:\n   - Create integration tests for each data source connection (LinkedIn, Notion, Xero, Calendar)\n   - Test data transformation and normalization functions\n   - Verify contact opportunity scoring algorithm with known test cases\n   - Test financial data calculations for accuracy\n   - Validate project status aggregation logic\n   - Verify calendar intelligence extraction with mock calendar data\n\n3. **Frontend Component Testing**:\n   - Develop unit tests for all dashboard components using React Testing Library\n   - Test responsive layout across device sizes (mobile, tablet, desktop)\n   - Verify visualization components render correctly with various data scenarios\n   - Test user interactions including filtering, sorting, and customization\n   - Verify accessibility compliance using axe-core or similar tools\n   - Test dark/light mode functionality\n\n4. **End-to-End Testing**:\n   - Create Cypress tests for complete dashboard workflows\n   - Test dashboard loading sequence and progressive enhancement\n   - Verify real data integration with staging environment\n   - Test offline functionality with service worker\n   - Measure and optimize load time performance\n   - Verify dashboard behavior with slow network conditions\n\n5. **User Acceptance Testing**:\n   - Conduct usability testing with co-founders during actual morning routines\n   - Collect feedback on information hierarchy and relevance\n   - Verify the dashboard reduces morning context-switching time\n   - Test the dashboard's effectiveness in surfacing actionable insights\n   - Validate that all critical morning information is properly consolidated\n\n6. **Performance and Load Testing**:\n   - Benchmark dashboard initial load time (target: under 2 seconds)\n   - Test API response time with simulated concurrent users\n   - Verify memory usage remains stable during extended dashboard sessions\n   - Test dashboard performance on lower-end devices\n   - Validate caching strategy effectiveness with repeated morning loads",
+        "status": "pending",
+        "dependencies": [
+          22
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Develop API Endpoint for Morning Intelligence Dashboard",
+            "description": "Create a new API endpoint that consolidates data from multiple sources with proper authentication and caching",
+            "dependencies": [],
+            "details": "Implement the `/api/v2/intelligence/morning` endpoint with Redis caching (TTL: 1 hour), role-based authentication middleware for co-founder access, and structured response format with sections for contacts, projects, finances, and calendar data. Ensure proper error handling and response formatting.",
+            "status": "in-progress",
+            "testStrategy": "Create unit tests for the endpoint using Jest, test authentication with various user roles, verify Redis caching functionality, and validate response structure against expected schema."
+          },
+          {
+            "id": 2,
+            "title": "Implement Data Integration Services",
+            "description": "Build integration services to fetch and process data from LinkedIn, Notion, Xero, and Google Calendar",
+            "dependencies": [
+              "23.1"
+            ],
+            "details": "Develop services to connect with external APIs: LinkedIn for strategic contacts with opportunity scoring, Notion for project status data, Xero for financial metrics, and Google Calendar for meeting schedules. Implement data transformation logic to standardize formats across sources and apply business logic for prioritization.",
+            "status": "pending",
+            "testStrategy": "Create mock services for each external API, write unit tests for data transformation functions, and develop integration tests to verify end-to-end data flow from external sources to the API response."
+          },
+          {
+            "id": 3,
+            "title": "Create Intelligence Processing Layer",
+            "description": "Develop algorithms for priority ranking, trend analysis, and natural language summary generation",
+            "dependencies": [
+              "23.2"
+            ],
+            "details": "Build intelligence processing components including priority ranking algorithm to surface important items, natural language summary generation for daily overview, notification system for critical items, trend analysis for patterns in project delays and financial fluctuations, and the 'morning brief' executive summary feature.",
+            "status": "pending",
+            "testStrategy": "Test priority ranking with predefined datasets, evaluate natural language summaries for accuracy and clarity, verify trend detection against historical data patterns, and conduct user acceptance testing for the morning brief feature."
+          },
+          {
+            "id": 4,
+            "title": "Design and Implement Frontend Dashboard",
+            "description": "Create responsive dashboard UI with data visualization components using Next.js and Tailwind CSS",
+            "dependencies": [
+              "23.1",
+              "23.2",
+              "23.3"
+            ],
+            "details": "Develop the frontend dashboard with responsive layout using Next.js and Tailwind CSS, implement data visualization components for financial metrics using Recharts, build contact opportunity cards, design project status timeline, implement calendar view with time blocking, and add filtering capabilities.",
+            "status": "pending",
+            "testStrategy": "Perform component testing with React Testing Library, verify responsive design across device sizes, test visualization accuracy with sample datasets, and conduct accessibility testing for WCAG 2.1 AA compliance."
+          },
+          {
+            "id": 5,
+            "title": "Implement Performance Optimization Features",
+            "description": "Optimize dashboard performance with progressive loading, React Suspense, and service worker implementation",
+            "dependencies": [
+              "23.4"
+            ],
+            "details": "Implement progressive loading strategy to display critical data first, use React Suspense and streaming for improved perceived performance, add background data refresh without disrupting user experience, implement service worker for offline access, and optimize API payload size through selective field inclusion.",
+            "status": "pending",
+            "testStrategy": "Measure load time improvements with Lighthouse, test offline functionality with service worker, verify background refresh functionality, and conduct performance testing under various network conditions."
+          },
+          {
+            "id": 6,
+            "title": "Enhance User Experience with Customization Features",
+            "description": "Add user experience enhancements including customizable layouts, focus mode, and time-based UI adaptations",
+            "dependencies": [
+              "23.4",
+              "23.5"
+            ],
+            "details": "Design morning-specific UI with consideration for early-day cognitive load, implement dark/light mode toggle based on time of day, create customizable dashboard layout with drag-and-drop sections, add 'focus mode' to highlight critical information, and implement keyboard shortcuts for quick navigation.",
+            "status": "pending",
+            "testStrategy": "Conduct usability testing with co-founders, verify dark/light mode transitions, test customization persistence across sessions, and evaluate keyboard shortcut functionality across different browsers."
+          }
+        ]
+      },
+      {
+        "id": 24,
+        "title": "Implement Continuous Synchronization Monitoring System",
+        "description": "Build a real-time monitoring system for Gmail, Calendar, Notion, LinkedIn, and Xero integrations with health checks, retry logic, and alerting to ensure 100% uptime for critical connections.",
+        "details": "Implement a comprehensive synchronization monitoring system with the following components:\n\n1. **Core Monitoring Infrastructure**:\n   - Develop a centralized monitoring service using Node.js and Express\n   - Implement a real-time event bus using Redis Pub/Sub for synchronization events\n   - Create a persistent monitoring database schema in Supabase for historical tracking\n\n2. **Integration-Specific Health Checks**:\n   - Implement Gmail API health checks using Google Node.js SDK with OAuth2 token validation\n   - Create Calendar API monitoring with periodic availability checks and permission verification\n   - Build Notion API health verification using webhook ping/pong and rate limit tracking\n   - Implement LinkedIn API connection monitoring with credential rotation alerts\n   - Create Xero financial data sync verification with data integrity checks\n\n3. **Retry Logic and Failure Handling**:\n   - Implement exponential backoff retry strategy with configurable parameters per integration\n   - Create dead letter queues for failed synchronization attempts using Bull Queue\n   - Develop circuit breaker pattern implementation to prevent cascade failures\n   - Build automated recovery procedures for common failure scenarios\n\n4. **API Endpoints Development**:\n   - Create `/api/v2/platform/sync` endpoint with the following functionality:\n     - GET: Retrieve current sync status for all integrations\n     - POST: Manually trigger synchronization for specific integration\n     - PUT: Update synchronization configuration parameters\n   - Implement `/api/v2/platform/health` endpoint with:\n     - GET: Obtain detailed health metrics for all integrations\n     - POST: Run on-demand health check for specific integration\n\n5. **Alerting and Notification System**:\n   - Implement multi-channel alerting via Slack, email, and SMS using Twilio\n   - Create severity-based alert routing with escalation policies\n   - Develop alert aggregation to prevent notification storms\n   - Build self-healing attempt logging with resolution tracking\n\n6. **Monitoring Dashboard**:\n   - Create real-time synchronization status dashboard using React and Socket.io\n   - Implement historical sync performance metrics with time-series visualization\n   - Build integration dependency map showing data flow between systems\n   - Develop custom alert configuration interface for operations team\n\n7. **Documentation and Operational Procedures**:\n   - Create comprehensive API documentation using OpenAPI/Swagger\n   - Develop runbooks for common failure scenarios and recovery procedures\n   - Build integration-specific troubleshooting guides\n   - Create on-call rotation documentation and escalation procedures",
+        "testStrategy": "Verify the continuous synchronization monitoring system with the following test strategy:\n\n1. **Unit Testing**:\n   - Create unit tests for all monitoring service components using Jest\n   - Test retry logic with simulated failure scenarios\n   - Verify alert generation and routing logic\n   - Test circuit breaker implementation with various failure thresholds\n\n2. **Integration Testing**:\n   - Develop integration tests for each external API connection (Gmail, Calendar, Notion, LinkedIn, Xero)\n   - Test end-to-end synchronization workflows with staging environments\n   - Verify webhook receivers with simulated external system events\n   - Test data transformation and validation during synchronization\n\n3. **API Endpoint Testing**:\n   - Create automated tests for `/api/v2/platform/sync` and `/api/v2/platform/health` endpoints\n   - Test authentication and authorization for API access\n   - Verify proper error handling and status codes\n   - Test rate limiting and throttling mechanisms\n\n4. **Performance Testing**:\n   - Conduct load testing with simulated high-volume synchronization events\n   - Measure alert latency under various system loads\n   - Test monitoring system performance with degraded network conditions\n   - Verify Redis pub/sub performance with high message throughput\n\n5. **Failure Scenario Testing**:\n   - Simulate API outages for each integration to verify detection and alerting\n   - Test recovery procedures for common failure scenarios\n   - Verify circuit breaker activation and recovery\n   - Test dead letter queue processing and manual intervention workflows\n\n6. **Security Testing**:\n   - Conduct penetration testing on monitoring API endpoints\n   - Verify secure storage of integration credentials\n   - Test OAuth token rotation and security\n   - Verify proper logging with sensitive data redaction\n\n7. **User Acceptance Testing**:\n   - Validate monitoring dashboard with operations team\n   - Test alert configurations and notification preferences\n   - Verify documentation clarity with support team\n   - Conduct simulated incident response drills",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Develop Core Monitoring Infrastructure",
+            "description": "Build the foundational monitoring service using Node.js, Express, Redis Pub/Sub, and Supabase for tracking integration health.",
+            "dependencies": [],
+            "details": "Implement a centralized monitoring service with Node.js and Express, create a real-time event bus using Redis Pub/Sub for synchronization events, design and implement a persistent monitoring database schema in Supabase for historical tracking, and establish connection pooling for efficient database operations.",
+            "status": "pending",
+            "testStrategy": "Write unit tests for the monitoring service using Jest, test Redis Pub/Sub event handling with mock events, verify database schema with sample data insertion and retrieval, and perform load testing to ensure the infrastructure can handle expected event volumes."
+          },
+          {
+            "id": 2,
+            "title": "Implement Integration-Specific Health Checks",
+            "description": "Create specialized health check modules for Gmail, Calendar, Notion, LinkedIn, and Xero integrations with appropriate authentication validation.",
+            "dependencies": [
+              "24.1"
+            ],
+            "details": "Develop Gmail API health checks using Google Node.js SDK with OAuth2 token validation, implement Calendar API monitoring with periodic availability checks, build Notion API health verification using webhook ping/pong mechanisms, create LinkedIn API connection monitoring with credential rotation alerts, and implement Xero financial data sync verification with data integrity checks.",
+            "status": "pending",
+            "testStrategy": "Create unit tests for each integration health check module, develop integration tests with API mocks, test authentication failure scenarios, verify rate limit handling, and implement end-to-end tests with sandbox environments where available."
+          },
+          {
+            "id": 3,
+            "title": "Build Retry Logic and Failure Handling System",
+            "description": "Implement robust retry mechanisms, dead letter queues, circuit breakers, and recovery procedures for handling synchronization failures.",
+            "dependencies": [
+              "24.1",
+              "24.2"
+            ],
+            "details": "Develop an exponential backoff retry strategy with configurable parameters per integration, create dead letter queues for failed synchronization attempts using Bull Queue, implement circuit breaker patterns to prevent cascade failures, and build automated recovery procedures for common failure scenarios with detailed logging.",
+            "status": "pending",
+            "testStrategy": "Test retry logic with simulated API failures, verify circuit breaker functionality under high failure rates, validate dead letter queue processing, and create scenario-based tests for recovery procedures with various failure types."
+          },
+          {
+            "id": 4,
+            "title": "Create API Endpoints for Sync Management",
+            "description": "Develop RESTful API endpoints for synchronization status monitoring, manual triggering, and configuration management.",
+            "dependencies": [
+              "24.1",
+              "24.2",
+              "24.3"
+            ],
+            "details": "Implement /api/v2/platform/sync endpoint with GET functionality to retrieve current sync status for all integrations, POST to manually trigger synchronization for specific integrations, PUT to update synchronization configuration parameters, and create /api/v2/platform/health endpoint with GET for detailed health metrics and POST for on-demand health checks.",
+            "status": "pending",
+            "testStrategy": "Develop comprehensive API tests using Supertest, verify proper authentication and authorization for all endpoints, test response formats and status codes, and validate rate limiting and throttling mechanisms."
+          },
+          {
+            "id": 5,
+            "title": "Implement Alerting and Notification System",
+            "description": "Build a multi-channel alerting system with severity-based routing, escalation policies, and self-healing attempt tracking.",
+            "dependencies": [
+              "24.1",
+              "24.3"
+            ],
+            "details": "Create multi-channel alerting via Slack, email, and SMS using Twilio, implement severity-based alert routing with escalation policies, develop alert aggregation to prevent notification storms, build self-healing attempt logging with resolution tracking, and create customizable notification templates for different alert types.",
+            "status": "pending",
+            "testStrategy": "Test alert generation for various failure scenarios, verify proper routing based on severity levels, validate escalation policy execution, test notification delivery across all channels, and verify alert aggregation functionality during high-volume incidents."
+          },
+          {
+            "id": 6,
+            "title": "Develop Monitoring Dashboard and Documentation",
+            "description": "Create a real-time synchronization status dashboard with visualization tools and comprehensive documentation for operations.",
+            "dependencies": [
+              "24.1",
+              "24.2",
+              "24.4",
+              "24.5"
+            ],
+            "details": "Build a real-time synchronization status dashboard using React and Socket.io, implement historical sync performance metrics with time-series visualization, create integration dependency maps showing data flow between systems, develop custom alert configuration interface, and produce comprehensive documentation including API documentation, runbooks, troubleshooting guides, and on-call procedures.",
+            "status": "pending",
+            "testStrategy": "Perform usability testing of the dashboard with operations team members, verify real-time updates with simulated events, test dashboard performance with large datasets, validate documentation accuracy through peer review, and conduct end-to-end testing of the complete monitoring system."
+          }
+        ]
+      },
+      {
+        "id": 25,
+        "title": "Consolidate Finance Management System into Unified API Structure",
+        "description": "Merge existing Xero integration, bookkeeping digest, and financial intelligence services into a unified /api/v2/data/finance structure with project-linked financial insights.",
+        "details": "Implement a consolidated finance management system with the following components:\n\n1. **API Architecture Restructuring**:\n   - Create a new `/api/v2/data/finance` route namespace with RESTful endpoints\n   - Implement controller classes following the repository pattern for clean separation of concerns\n   - Develop middleware for authentication, rate limiting, and request validation\n   - Set up comprehensive error handling with appropriate HTTP status codes and error messages\n\n2. **Service Layer Integration**:\n   - Create a `FinanceService` class that consolidates existing financial services:\n     - Xero integration service (maintain current working sync)\n     - Bookkeeping digest service\n     - Financial intelligence service\n   - Implement dependency injection for better testability and maintainability\n   - Use the adapter pattern to standardize interfaces between different financial data sources\n\n3. **Data Model Standardization**:\n   - Design unified data models for financial entities (transactions, accounts, reports)\n   - Create data transformation layers to convert between external API formats and internal models\n   - Implement data validation using Zod or similar TypeScript validation library\n   - Develop migration strategy for existing data to new unified structure\n\n4. **Project-Linked Financial Insights**:\n   - Implement relationship mapping between financial transactions and projects\n   - Create aggregation methods for project-specific financial reporting\n   - Develop financial intelligence algorithms that leverage existing relationship data\n   - Build caching mechanisms for expensive financial calculations using Redis\n\n5. **Endpoint Implementation**:\n   - `/api/v2/data/finance/transactions` - CRUD operations for financial transactions\n   - `/api/v2/data/finance/accounts` - Account management and balances\n   - `/api/v2/data/finance/reports` - Financial reporting and analytics\n   - `/api/v2/data/finance/projects/:id` - Project-specific financial data\n   - `/api/v2/data/finance/insights` - AI-powered financial intelligence\n\n6. **Documentation and Developer Experience**:\n   - Generate OpenAPI/Swagger documentation for all new endpoints\n   - Create usage examples and integration guides\n   - Implement request/response logging for debugging\n   - Add comprehensive JSDoc comments for all service methods",
+        "testStrategy": "Verify the finance management system consolidation with the following test strategy:\n\n1. **Unit Testing**:\n   - Create comprehensive unit tests for all service layer components using Jest\n   - Test data transformation functions with various input scenarios\n   - Verify financial calculation logic with known test cases\n   - Mock external dependencies (Xero API) to isolate tests\n\n2. **Integration Testing**:\n   - Develop integration tests for the complete finance API endpoints\n   - Test authentication and authorization with different user roles\n   - Verify data consistency between old and new API structures\n   - Test project-linking functionality with various project types\n\n3. **Data Migration Validation**:\n   - Create validation scripts to compare data before and after migration\n   - Verify all historical transactions are preserved with correct metadata\n   - Test edge cases like partial transactions or unusual financial entries\n   - Implement reconciliation reports to identify any discrepancies\n\n4. **Performance Testing**:\n   - Benchmark API response times under various load conditions\n   - Test caching mechanisms for financial calculations\n   - Verify system performance with large datasets\n   - Measure and optimize database query performance\n\n5. **End-to-End Testing**:\n   - Create automated E2E tests using Cypress or similar tools\n   - Test complete financial workflows from transaction creation to reporting\n   - Verify UI components that consume the new finance API\n   - Test mobile and desktop experiences\n\n6. **Regression Testing**:\n   - Ensure existing functionality continues to work with the new API structure\n   - Verify that all current Xero integration features remain functional\n   - Test backward compatibility with any existing clients of the finance APIs",
+        "status": "pending",
+        "dependencies": [
+          22,
+          23,
+          24
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 26,
+        "title": "Frontend Route Restructuring for Unified API Architecture",
+        "description": "Redesign the frontend routing system to align with the new unified API architecture, consolidating scattered routes into a clean hierarchical structure that matches the /api/v2 backend endpoints.",
+        "details": "Implement the frontend route restructuring with the following components:\n\n1. **Route Architecture Planning**:\n   - Document the current route structure and identify all affected components\n   - Create a mapping between existing routes and new consolidated routes:\n     - `/contact-intelligence/*` → `/intelligence/contacts/*`\n     - `/finance/*` → `/finance/*`\n     - `/projects/*` → `/projects/*`\n     - `/morning-dashboard/*` → `/intelligence/morning/*`\n   - Design a consistent URL pattern that mirrors the backend `/api/v2` structure\n   - Create a transition plan to ensure backward compatibility during migration\n\n2. **React Router Configuration Updates**:\n   - Refactor the main `Routes.tsx` configuration to implement the new route hierarchy\n   - Implement nested routing with React Router v6 using the `<Outlet />` component for layout sharing\n   - Add route parameters standardization (e.g., `:contactId`, `:projectId`)\n   - Create redirect routes for backward compatibility with existing bookmarked URLs\n   - Implement proper 404 handling for invalid routes\n   - Add route-based code splitting to optimize initial load performance\n\n3. **Navigation Component Updates**:\n   - Refactor the main navigation component to reflect the new route structure\n   - Update sidebar navigation with collapsible sections matching the new hierarchy\n   - Implement breadcrumb navigation component to show hierarchical context\n   - Add active state styling for current route in navigation components\n   - Ensure mobile responsiveness of updated navigation components\n\n4. **Data Fetching Alignment**:\n   - Update all API service calls to use the new `/api/v2` endpoints\n   - Implement consistent data fetching patterns using React Query or similar library\n   - Create adapter functions to handle any data structure differences\n   - Add loading states and error handling for all data fetching operations\n   - Implement optimistic UI updates where appropriate\n\n5. **Component Compatibility Updates**:\n   - Modify `FastContactDashboard` component to work with the new data flow\n   - Update all route-dependent components to use the new URL structure\n   - Refactor any hardcoded URLs in components to use React Router's navigation hooks\n   - Ensure all forms submit to the correct new API endpoints\n   - Update any route-based authorization checks\n\n6. **Testing and Documentation**:\n   - Create comprehensive documentation of the new route structure\n   - Update storybook stories for navigation components\n   - Add integration tests for critical user flows through the new routes\n   - Document any breaking changes for other developers",
+        "testStrategy": "Verify the frontend route restructuring with the following test strategy:\n\n1. **Manual Navigation Testing**:\n   - Create a test matrix covering all routes in both old and new structures\n   - Verify each route renders the correct component with proper data\n   - Test navigation flows between related sections (e.g., from contact list to detail view)\n   - Verify breadcrumb navigation shows correct hierarchy\n   - Test browser back/forward navigation works correctly with the new routes\n\n2. **Automated Testing**:\n   - Implement Cypress end-to-end tests for critical user journeys through the new route structure\n   - Create React Testing Library tests for navigation components\n   - Add unit tests for any route utility functions\n   - Test route-based code splitting works correctly\n   - Verify that redirects from old routes to new routes function properly\n\n3. **Cross-browser and Device Testing**:\n   - Test the new navigation on Chrome, Firefox, Safari, and Edge\n   - Verify mobile responsiveness on various device sizes\n   - Test tablet-specific layouts and navigation patterns\n   - Verify touch interactions work correctly on mobile devices\n\n4. **Performance Testing**:\n   - Measure and compare page load times before and after route restructuring\n   - Verify code splitting reduces initial bundle size\n   - Test navigation transition performance between routes\n   - Ensure API requests are properly batched and cached\n\n5. **Regression Testing**:\n   - Verify all existing features still work with the new route structure\n   - Test that `FastContactDashboard` and other key components receive correct data\n   - Verify all links and buttons navigate to the correct new routes\n   - Test that bookmarked pages and deep links continue to work (via redirects)\n   - Ensure authentication and authorization still function correctly with new routes",
+        "status": "pending",
+        "dependencies": [
+          22,
+          23,
+          25
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 27,
+        "title": "Implement Unified Authentication Service for Platform Integrations",
+        "description": "Create a centralized authentication service that handles OAuth flows for Gmail, Calendar, Notion, LinkedIn, and Xero through a single /api/v2/platform/auth endpoint with secure token management and refresh logic.",
+        "details": "Implement a unified authentication service with the following components:\n\n1. **Core Authentication Architecture**:\n   - Create an `AuthenticationService` class using TypeScript with dependency injection pattern\n   - Implement the OAuth 2.0 authorization code flow with PKCE (Proof Key for Code Exchange) for enhanced security\n   - Design a platform-agnostic interface that abstracts provider-specific OAuth implementations\n   - Use environment variables for storing client IDs and secrets with proper encryption\n   - Implement JWT-based token storage with proper encryption at rest\n\n2. **Unified OAuth Endpoint**:\n   - Create `/api/v2/platform/auth` endpoint with the following routes:\n     - `POST /api/v2/platform/auth/connect` - Initiates OAuth flow for a specified platform\n     - `GET /api/v2/platform/auth/callback` - Handles OAuth callbacks from all platforms\n     - `GET /api/v2/platform/auth/status` - Returns connection status for all integrated platforms\n     - `DELETE /api/v2/platform/auth/:platform` - Revokes access for a specific platform\n\n3. **Platform-Specific Implementations**:\n   - Gmail/Calendar: Implement using Google Identity Services library with offline access\n   - Notion: Integrate Notion API OAuth flow with workspace-level permissions\n   - LinkedIn: Implement LinkedIn OAuth 2.0 flow with proper scopes for profile and connection data\n   - Xero: Implement Xero OAuth 2.0 with tenant selection and financial permissions\n\n4. **Token Management System**:\n   - Create a secure token storage system in the database with encryption\n   - Implement automatic token refresh logic that runs before expiration\n   - Build a token rotation system that periodically updates refresh tokens when supported\n   - Implement proper error handling for expired or invalid tokens\n   - Create a background job that validates token health and triggers reconnection flows when needed\n\n5. **Admin Interface Components**:\n   - Build a connection management dashboard for co-founders\n   - Implement visual connection status indicators for each platform\n   - Create one-click reconnection flows for expired connections\n   - Add detailed connection history and audit logging\n   - Implement connection health monitoring with alerts for failing integrations\n\n6. **Security Considerations**:\n   - Implement CSRF protection for all authentication endpoints\n   - Add rate limiting to prevent brute force attacks\n   - Create proper scope management to request minimal permissions\n   - Implement secure storage of tokens with encryption and access controls\n   - Add comprehensive logging for security audits with PII redaction\n\n7. **Migration Strategy**:\n   - Create a migration plan to transition from existing scattered auth endpoints\n   - Implement backward compatibility layer for legacy code during transition\n   - Build data migration scripts to consolidate existing tokens into new system\n   - Create documentation for developers to update integration code",
+        "testStrategy": "Verify the unified authentication service with the following test strategy:\n\n1. **Unit Testing**:\n   - Create unit tests for each method in the AuthenticationService class\n   - Test token refresh logic with mocked expired tokens\n   - Verify error handling for various OAuth failure scenarios\n   - Test platform-specific OAuth implementations with mocked responses\n   - Validate security measures like CSRF protection and token encryption\n\n2. **Integration Testing**:\n   - Implement integration tests for the complete OAuth flow for each platform\n   - Test the token refresh mechanism with actual waiting periods\n   - Verify proper database storage and retrieval of encrypted tokens\n   - Test the migration from legacy auth endpoints to the new unified system\n   - Validate proper scopes are requested for each platform\n\n3. **End-to-End Testing**:\n   - Create E2E tests that perform actual OAuth connections to test platforms\n   - Verify the admin interface functionality for managing connections\n   - Test reconnection flows when tokens expire or become invalid\n   - Validate proper error messages and user guidance during auth failures\n   - Test the complete user journey from connection initiation to successful API usage\n\n4. **Security Testing**:\n   - Perform penetration testing on authentication endpoints\n   - Verify token storage security with encryption audit\n   - Test for common OAuth vulnerabilities (CSRF, token leakage)\n   - Validate proper implementation of PKCE for supported platforms\n   - Verify secure handling of client secrets and credentials\n\n5. **Performance Testing**:\n   - Test token refresh performance under load\n   - Verify connection handling with multiple simultaneous auth requests\n   - Measure response times for auth endpoints under various conditions\n   - Test background job performance for token health checking\n   - Validate system behavior during API rate limiting from providers\n\n6. **User Acceptance Testing**:\n   - Have co-founders test the unified connection interface\n   - Verify the clarity of connection status indicators\n   - Test reconnection flows from the admin dashboard\n   - Validate that all required platform functionalities work after authentication\n   - Ensure proper error messages guide users through connection issues",
+        "status": "pending",
+        "dependencies": [
+          22
+        ],
+        "priority": "high",
+        "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-08-30T03:21:26.683Z",
-      "updated": "2025-09-01T00:57:54.741Z",
+      "updated": "2025-09-15T04:56:02.801Z",
       "description": "Tasks for master context"
+    }
+  },
+  "architectural-cleanup": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "CSS Architecture Recovery - Phase 1",
+        "description": "Resolve CSS conflicts between foundation.css and ContactIntelligence.modern.css by fixing theme() function conflicts and re-enabling proper styling to ensure the frontend compiles without errors.",
+        "details": "This task involves addressing critical CSS architecture issues that are preventing proper frontend compilation:\n\n1. Identify and fix approximately 70+ theme() function conflicts between foundation.css and ContactIntelligence.modern.css\n   - Analyze each conflict to determine the correct CSS property values\n   - Resolve conflicts by either:\n     a. Updating selectors to be more specific\n     b. Consolidating duplicate rules\n     c. Refactoring theme() function calls to use consistent parameters\n\n2. Re-enable foundation.css:\n   - Ensure all foundation styles are properly imported in the build process\n   - Verify that foundation styles don't override custom application styles\n   - Check for any missing imports or incorrect paths\n\n3. Re-enable ContactIntelligence styling:\n   - Restore all ContactIntelligence-specific styles\n   - Ensure proper cascade order so component-specific styles take precedence appropriately\n\n4. Verify clean compilation:\n   - Run the build process and address any remaining CSS errors\n   - Check browser console for CSS-related warnings\n   - Ensure styles are applied correctly to all components\n\nThis is a high-priority emergency fix as it affects the entire application's appearance and functionality.",
+        "testStrategy": "1. Run the frontend build process and verify there are no CSS compilation errors in the terminal output\n\n2. Launch the application and navigate to http://localhost:5175/ to confirm:\n   - The application loads without CSS errors in the browser console\n   - All components display with proper styling\n   - No visual regressions in the UI\n\n3. Perform cross-browser testing in:\n   - Chrome\n   - Firefox\n   - Safari\n   - Edge\n   to ensure consistent styling across browsers\n\n4. Verify specific components that use ContactIntelligence styling render correctly\n\n5. Check responsive behavior at different viewport sizes to ensure the CSS fixes don't break mobile/tablet layouts\n\n6. Document any remaining CSS warnings that aren't critical but should be addressed in future tasks",
+        "status": "done",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "API Duplication Analysis and Inventory",
+        "description": "Create a comprehensive inventory of duplicate API endpoints across intelligence, contact, and financial domains to guide future consolidation efforts.",
+        "details": "This task involves conducting a thorough analysis of the existing API landscape to identify and document duplicate endpoints:\n\n1. Set up an API scanning environment:\n   - Configure API discovery tools (like Swagger Scanner or custom scripts)\n   - Establish access to all API documentation and endpoints\n\n2. Scan and catalog all existing API endpoints:\n   - Intelligence APIs (estimate 5+ duplicates)\n   - Contact APIs (estimate 4+ duplicates)\n   - Financial APIs (estimate 3+ duplicates)\n\n3. For each API endpoint, document:\n   - Endpoint URL pattern\n   - HTTP method (GET, POST, PUT, DELETE)\n   - Request/response payload structure\n   - Authentication requirements\n   - Current functionality status (working/broken)\n   - Usage metrics (if available)\n   - Service owner/team\n\n4. Group similar endpoints to identify duplicates:\n   - Compare endpoint signatures and functionality\n   - Document differences in implementation\n   - Note any version differences\n\n5. Create a consolidation priority matrix:\n   - Rank duplicates based on usage frequency\n   - Assess complexity of consolidation\n   - Estimate impact of changes\n   - Recommend consolidation approach\n\n6. Generate a JSON report with:\n   - Complete duplicate API mapping\n   - Consolidation roadmap with priorities\n   - Timeline recommendations\n   - Risk assessment for each consolidation\n\n7. Present findings to stakeholders for review and approval before proceeding with consolidation efforts.",
+        "testStrategy": "1. Verify completeness of API inventory:\n   - Cross-reference with existing API documentation\n   - Validate with development teams that all known endpoints are captured\n   - Run automated API discovery tools to ensure no endpoints are missed\n\n2. Validate duplicate identification:\n   - Have at least two engineers independently review the duplicate classifications\n   - Test sample API calls on suspected duplicates to confirm identical functionality\n   - Document any edge cases or subtle differences\n\n3. Test the JSON report structure:\n   - Ensure the report follows the agreed-upon schema\n   - Validate that all required fields are populated\n   - Check that the JSON is properly formatted and parseable\n\n4. Verify priority matrix accuracy:\n   - Review usage metrics against monitoring tools\n   - Confirm complexity assessments with relevant development teams\n   - Validate that the priority ranking aligns with business objectives\n\n5. Conduct stakeholder review:\n   - Present findings to API owners and architects\n   - Gather feedback on consolidation recommendations\n   - Incorporate stakeholder input into the final report\n\n6. Final validation:\n   - Ensure the report identifies at least the expected number of duplicates:\n     * 5+ intelligence API duplicates\n     * 4+ contact API duplicates\n     * 3+ financial API duplicates\n   - Verify that all endpoints are correctly classified as functional or broken",
+        "status": "done",
+        "dependencies": [
+          1
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Intelligence API Consolidation",
+        "description": "Consolidate the five duplicate intelligence API endpoints into a single unified /api/v2/intelligence endpoint while maintaining backward compatibility with existing functionality.",
+        "details": "This task involves consolidating multiple duplicate intelligence API endpoints into a single, unified endpoint:\n\n1. Review the API inventory from Task 2 to confirm all intelligence endpoints:\n   - /api/intelligence\n   - /api/v1/intelligence\n   - /api/v2/intelligence\n   - /api/universal-intelligence\n   - /api/intelligent-suggestions\n\n2. Create a unified API architecture:\n   - Design a comprehensive schema for the consolidated /api/v2/intelligence endpoint\n   - Map all existing endpoint functionality to the new unified structure\n   - Document parameter mappings and response format standardization\n\n3. Implementation approach:\n   - Create a new consolidated controller for /api/v2/intelligence that handles all intelligence-related requests\n   - Implement request routing logic to properly direct different intelligence query types\n   - Standardize response formats while preserving all existing functionality\n   - Add comprehensive logging to track usage patterns\n\n4. Implement backward compatibility:\n   - Modify existing endpoints to proxy requests to the new consolidated endpoint\n   - Ensure response transformation maintains the expected format for each legacy endpoint\n   - Add deprecation notices in response headers for old endpoints\n\n5. Refactor dependent services:\n   - Update the morning-dashboard/briefing service to use the new consolidated endpoint\n   - Ensure all existing intelligence features continue to function correctly\n\n6. Code cleanup:\n   - Consolidate duplicate code across the 5+ intelligence API files\n   - Implement proper error handling and validation in the unified endpoint\n   - Document the new API structure thoroughly in API documentation",
+        "testStrategy": "1. Functional testing:\n   - Create a comprehensive test suite that verifies all functionality from each original endpoint works in the consolidated endpoint\n   - Test each endpoint with various parameter combinations to ensure complete feature parity\n   - Verify the morning-dashboard/briefing continues to function correctly with the new endpoint\n\n2. Backward compatibility testing:\n   - Ensure all existing endpoints still function correctly by proxying to the new endpoint\n   - Verify response formats match the original endpoints exactly\n   - Test with actual client applications that use these endpoints\n\n3. Performance testing:\n   - Benchmark the consolidated endpoint against the original endpoints\n   - Verify response times are equivalent or improved\n   - Test under load to ensure the consolidated endpoint handles traffic efficiently\n\n4. Integration testing:\n   - Test the entire application flow that uses intelligence data\n   - Verify dashboards, reports, and other features that consume intelligence data work correctly\n   - Test cross-service interactions that depend on intelligence APIs\n\n5. Regression testing:\n   - Run the full application test suite to ensure no regressions\n   - Manually verify key workflows that depend on intelligence data\n\n6. Documentation verification:\n   - Ensure API documentation is updated to reflect the new consolidated endpoint\n   - Verify deprecation notices are clear and provide migration guidance",
+        "status": "done",
+        "dependencies": [
+          2
+        ],
+        "priority": "medium",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-09-15T07:46:07.070Z",
+      "updated": "2025-09-15T07:55:44.289Z",
+      "description": "Emergency architectural debt cleanup - CSS fixes, API consolidation, service deduplication"
     }
   }
 }

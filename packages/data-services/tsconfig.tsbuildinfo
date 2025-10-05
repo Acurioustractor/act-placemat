@@ -1,1 +1,0 @@
-{"root":["./src/index.ts","./src/connectors/notionconnector.ts","./src/connectors/supabaseconnector.ts","./src/core/baseconnector.ts","./src/transformers/basetransformer.ts","./src/transformers/storytransformer.ts","./src/types/index.ts","./src/utils/datamanager.ts"],"errors":true,"version":"5.8.3"}

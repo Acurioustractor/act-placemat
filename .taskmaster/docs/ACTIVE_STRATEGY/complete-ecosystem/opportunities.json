@@ -1,0 +1,849 @@
+[
+  {
+    "id": "273ebcf9-81cf-8092-af75-f86d566368ca",
+    "created": "2025-09-19T20:46:00.000Z",
+    "lastEdited": "2025-09-20T05:13:00.000Z",
+    "url": "https://www.notion.so/Regional-Arts-Fellowship-273ebcf981cf8092af75f86d566368ca",
+    "title": "Regional Arts Fellowship",
+    "Projects": [
+      "265ebcf9-81cf-802b-bb31-fe479e378f01"
+    ],
+    "Probability": null,
+    "Costs": null,
+    "Organisation": [],
+    "Amount": 45000,
+    "Team members": [],
+    "Stage": "Closed Won",
+    "Next Action": null,
+    "Deadline": null,
+    "Artifacts": []
+  },
+  {
+    "id": "273ebcf9-81cf-8091-92e9-df8e69632f6f",
+    "created": "2025-09-19T20:46:00.000Z",
+    "lastEdited": "2025-09-20T05:21:00.000Z",
+    "url": "https://www.notion.so/Snow-Fellowship-273ebcf981cf809192e9df8e69632f6f",
+    "title": "Snow Fellowship",
+    "Projects": [
+      "177ebcf9-81cf-805f-b111-f407079f9794"
+    ],
+    "Probability": "75%",
+    "Costs": null,
+    "Organisation": [
+      "31dedb9c-7208-421d-94a1-aab00d810c56"
+    ],
+    "Amount": 200000,
+    "Team members": [],
+    "Stage": "Applied",
+    "Next Action": "Submit final application materials",
+    "Deadline": "2025-10-15",
+    "Artifacts": []
+  },
+  {
+    "id": "26bebcf9-81cf-80fe-b7f2-fa1a6add4bb1",
+    "created": "2025-09-11T21:58:00.000Z",
+    "lastEdited": "2025-09-20T05:16:00.000Z",
+    "url": "https://www.notion.so/Uncle-Allan-Website-26bebcf981cf80feb7f2fa1a6add4bb1",
+    "title": "Uncle Allan Website",
+    "Projects": [
+      "261ebcf9-81cf-807c-a602-c1fb446853ff"
+    ],
+    "Probability": null,
+    "Costs": null,
+    "Organisation": [],
+    "Amount": null,
+    "Team members": [],
+    "Stage": "Closed Won",
+    "Next Action": null,
+    "Deadline": null,
+    "Artifacts": []
+  },
+  {
+    "id": "26bebcf9-81cf-8074-a0a7-c5b1acc76770",
+    "created": "2025-09-11T21:54:00.000Z",
+    "lastEdited": "2025-09-20T05:16:00.000Z",
+    "url": "https://www.notion.so/Fishers-Oysters-Tours-26bebcf981cf8074a0a7c5b1acc76770",
+    "title": "Fishers Oysters Tours",
+    "Projects": [
+      "17bebcf9-81cf-801b-9a06-edf3f35bf7f4"
+    ],
+    "Probability": null,
+    "Costs": null,
+    "Organisation": [],
+    "Amount": null,
+    "Team members": [],
+    "Stage": "Closed Won",
+    "Next Action": null,
+    "Deadline": null,
+    "Artifacts": []
+  },
+  {
+    "id": "26bebcf9-81cf-80c9-a5ee-feaff8ab9852",
+    "created": "2025-09-11T21:46:00.000Z",
+    "lastEdited": "2025-09-20T05:13:00.000Z",
+    "url": "https://www.notion.so/Justice-Mapping-FRRR-26bebcf981cf80c9a5eefeaff8ab9852",
+    "title": "Justice Mapping FRRR",
+    "Projects": [],
+    "Probability": null,
+    "Costs": null,
+    "Organisation": [
+      "26bebcf9-81cf-8081-9d87-d047a5cc7181"
+    ],
+    "Amount": 30000,
+    "Team members": [],
+    "Stage": "Negotiation",
+    "Next Action": null,
+    "Deadline": null,
+    "Artifacts": []
+  },
+  {
+    "id": "26bebcf9-81cf-807e-9b41-c4dfadf89864",
+    "created": "2025-09-11T21:41:00.000Z",
+    "lastEdited": "2025-09-20T05:13:00.000Z",
+    "url": "https://www.notion.so/Bali-Founders-Retreat-26bebcf981cf807e9b41c4dfadf89864",
+    "title": "Bali Founders Retreat",
+    "Projects": [],
+    "Probability": null,
+    "Costs": null,
+    "Organisation": [],
+    "Amount": null,
+    "Team members": [],
+    "Stage": "Discovery",
+    "Next Action": null,
+    "Deadline": null,
+    "Artifacts": []
+  },
+  {
+    "id": "26bebcf9-81cf-8097-a066-e61db20645be",
+    "created": "2025-09-11T21:09:00.000Z",
+    "lastEdited": "2025-09-20T05:16:00.000Z",
+    "url": "https://www.notion.so/For-those-who-care-26bebcf981cf8097a066e61db20645be",
+    "title": "For those who care",
+    "Projects": [
+      "235ebcf9-81cf-8172-b0ee-ccf0ebb01fd3"
+    ],
+    "Probability": null,
+    "Costs": null,
+    "Organisation": [
+      "26bebcf9-81cf-8061-84cf-fee60dcef69b"
+    ],
+    "Amount": null,
+    "Team members": [],
+    "Stage": "Closed Won",
+    "Next Action": null,
+    "Deadline": null,
+    "Artifacts": []
+  },
+  {
+    "id": "26bebcf9-81cf-8035-954f-f84979aeef2f",
+    "created": "2025-09-11T21:08:00.000Z",
+    "lastEdited": "2025-09-20T05:16:00.000Z",
+    "url": "https://www.notion.so/June-s-Patch-26bebcf981cf8035954ff84979aeef2f",
+    "title": "June's Patch",
+    "Projects": [
+      "228ebcf9-81cf-8041-9b47-ff1845d97e43"
+    ],
+    "Probability": null,
+    "Costs": 30000,
+    "Organisation": [
+      "2bfbf1b4-bb32-43ee-9d74-651cdd72786f"
+    ],
+    "Amount": 30000,
+    "Team members": [],
+    "Stage": "Closed Won",
+    "Next Action": null,
+    "Deadline": null,
+    "Artifacts": []
+  },
+  {
+    "id": "26bebcf9-81cf-8014-9849-d653b3181f88",
+    "created": "2025-09-11T21:07:00.000Z",
+    "lastEdited": "2025-09-20T05:16:00.000Z",
+    "url": "https://www.notion.so/Contained-26bebcf981cf80149849d653b3181f88",
+    "title": "Contained",
+    "Projects": [
+      "228ebcf9-81cf-809e-8368-f9dae2a41129"
+    ],
+    "Probability": null,
+    "Costs": 30000,
+    "Organisation": [
+      "26bebcf9-81cf-8011-992a-c8bc677eac83"
+    ],
+    "Amount": 30000,
+    "Team members": [],
+    "Stage": "Discovery",
+    "Next Action": null,
+    "Deadline": null,
+    "Artifacts": []
+  },
+  {
+    "id": "26bebcf9-81cf-80a8-8bec-c70abecb792f",
+    "created": "2025-09-11T20:46:00.000Z",
+    "lastEdited": "2025-09-20T05:08:00.000Z",
+    "url": "https://www.notion.so/PICC-Hull-River-Trip-26bebcf981cf80a88becc70abecb792f",
+    "title": "PICC Hull River Trip",
+    "Projects": [
+      "261ebcf9-81cf-8009-b935-d0224f7ae130"
+    ],
+    "Probability": null,
+    "Costs": 5000,
+    "Organisation": [
+      "234ebcf9-81cf-807d-8ff7-fc94ac7f4d39"
+    ],
+    "Amount": 60000,
+    "Team members": [],
+    "Stage": "Closed Won",
+    "Next Action": null,
+    "Deadline": null,
+    "Artifacts": []
+  },
+  {
+    "id": "23aebcf9-81cf-80c4-80ca-d6fa622baeb1",
+    "created": "2025-07-24T01:05:00.000Z",
+    "lastEdited": "2025-09-19T20:50:00.000Z",
+    "url": "https://www.notion.so/Backing-the-Future-FRRR-23aebcf981cf80c480cad6fa622baeb1",
+    "title": "Backing the Future - FRRR",
+    "Projects": [
+      "177ebcf9-81cf-805f-b111-f407079f9794"
+    ],
+    "Probability": "75%",
+    "Costs": 40000,
+    "Organisation": [
+      "23aebcf9-81cf-8058-96e9-db710341e04b"
+    ],
+    "Amount": 50000,
+    "Team members": [],
+    "Stage": "Closed Won",
+    "Next Action": "Start project",
+    "Deadline": "2025-07-17",
+    "Artifacts": []
+  },
+  {
+    "id": "239ebcf9-81cf-8033-8e54-d467814128d5",
+    "created": "2025-07-23T23:19:00.000Z",
+    "lastEdited": "2025-09-20T05:17:00.000Z",
+    "url": "https://www.notion.so/MingaMinga-Rangers-Support-239ebcf981cf80338e54d467814128d5",
+    "title": "MingaMinga Rangers Support",
+    "Projects": [
+      "23cebcf9-81cf-8007-bcd2-ca49d1256719"
+    ],
+    "Probability": "25%",
+    "Costs": null,
+    "Organisation": [],
+    "Amount": null,
+    "Team members": [],
+    "Stage": "Negotiation",
+    "Next Action": null,
+    "Deadline": "2025-09-10",
+    "Artifacts": [
+      "239ebcf9-81cf-808b-bc2e-f9ca1ed36e3f"
+    ]
+  },
+  {
+    "id": "239ebcf9-81cf-801a-a197-d77d4ad9c8c2",
+    "created": "2025-07-23T23:18:00.000Z",
+    "lastEdited": "2025-09-20T05:13:00.000Z",
+    "url": "https://www.notion.so/Oonchiumpa-Design-and-Strategy-239ebcf981cf801aa197d77d4ad9c8c2",
+    "title": "Oonchiumpa Design and Strategy",
+    "Projects": [
+      "1d4ebcf9-81cf-80a2-8c12-e5c56d78de10"
+    ],
+    "Probability": "25%",
+    "Costs": null,
+    "Organisation": [
+      "23aebcf9-81cf-8025-9ebe-dc4d23fb2627"
+    ],
+    "Amount": null,
+    "Team members": [],
+    "Stage": "Negotiation",
+    "Next Action": null,
+    "Deadline": "2025-09-10",
+    "Artifacts": [
+      "239ebcf9-81cf-80cc-b639-d240048b7619"
+    ]
+  },
+  {
+    "id": "239ebcf9-81cf-8025-8033-ea563384819e",
+    "created": "2025-07-23T23:02:00.000Z",
+    "lastEdited": "2025-09-20T05:17:00.000Z",
+    "url": "https://www.notion.so/JusticeHub-Pitch-239ebcf981cf80258033ea563384819e",
+    "title": "JusticeHub Pitch",
+    "Projects": [
+      "179ebcf9-81cf-8005-ad63-d2a736280011"
+    ],
+    "Probability": "25%",
+    "Costs": null,
+    "Organisation": [],
+    "Amount": null,
+    "Team members": [],
+    "Stage": "Negotiation",
+    "Next Action": null,
+    "Deadline": "2025-09-10",
+    "Artifacts": [
+      "239ebcf9-81cf-80a1-ba9e-c6459d337ede",
+      "239ebcf9-81cf-8058-bf1c-def534c0254c"
+    ]
+  },
+  {
+    "id": "239ebcf9-81cf-80b2-9fc6-f51e9510c3d3",
+    "created": "2025-07-23T22:55:00.000Z",
+    "lastEdited": "2025-09-20T05:13:00.000Z",
+    "url": "https://www.notion.so/The-Harvest-Support-239ebcf981cf80b29fc6f51e9510c3d3",
+    "title": "The Harvest Support",
+    "Projects": [
+      "11debcf9-81cf-8082-8fd0-d6031a9709f2"
+    ],
+    "Probability": "25%",
+    "Costs": null,
+    "Organisation": [],
+    "Amount": null,
+    "Team members": [],
+    "Stage": "Negotiation",
+    "Next Action": null,
+    "Deadline": "2025-09-10",
+    "Artifacts": [
+      "239ebcf9-81cf-805a-b66a-e3ac04873334"
+    ]
+  },
+  {
+    "id": "238ebcf9-81cf-80c9-8a97-e99cc645a6c0",
+    "created": "2025-07-22T03:11:00.000Z",
+    "lastEdited": "2025-07-28T00:09:00.000Z",
+    "url": "https://www.notion.so/Centre-for-Public-Impact-238ebcf981cf80c98a97e99cc645a6c0",
+    "title": "Centre for Public Impact",
+    "Projects": [
+      "187ebcf9-81cf-8032-a28f-db8b76442ecd"
+    ],
+    "Probability": "50%",
+    "Costs": null,
+    "Organisation": [
+      "23aebcf9-81cf-80c6-9e6d-f95ebcc8f898"
+    ],
+    "Amount": 5000,
+    "Team members": [
+      "23eebcf9-81cf-803e-9ae4-d28a47aa22b0"
+    ],
+    "Stage": "Closed Lost",
+    "Next Action": null,
+    "Deadline": "2025-07-10",
+    "Artifacts": []
+  },
+  {
+    "id": "238ebcf9-81cf-8045-b1e8-e078c49ff894",
+    "created": "2025-07-22T00:34:00.000Z",
+    "lastEdited": "2025-09-19T20:50:00.000Z",
+    "url": "https://www.notion.so/Centrecorp-Washers-and-beds-238ebcf981cf8045b1e8e078c49ff894",
+    "title": "Centrecorp Washers and beds",
+    "Projects": [
+      "177ebcf9-81cf-805f-b111-f407079f9794"
+    ],
+    "Probability": "50%",
+    "Costs": 50000,
+    "Organisation": [
+      "23aebcf9-81cf-8081-ad01-fb12a73cbc0b"
+    ],
+    "Amount": 50000,
+    "Team members": [
+      "23aebcf9-81cf-8059-9649-f2701b24329a"
+    ],
+    "Stage": "Closed Won",
+    "Next Action": "Board meeting",
+    "Deadline": "2025-07-30",
+    "Artifacts": []
+  },
+  {
+    "id": "238ebcf9-81cf-8092-8442-ee973f0f9fbc",
+    "created": "2025-07-22T00:33:00.000Z",
+    "lastEdited": "2025-09-19T20:50:00.000Z",
+    "url": "https://www.notion.so/MELT-238ebcf981cf80928442ee973f0f9fbc",
+    "title": "MELT",
+    "Projects": [
+      "229ebcf9-81cf-8004-b7ee-fe9a9683c75a"
+    ],
+    "Probability": "90%",
+    "Costs": 5000,
+    "Organisation": [
+      "23aebcf9-81cf-8084-9015-e4b3b8f51d38"
+    ],
+    "Amount": 5000,
+    "Team members": [],
+    "Stage": "Closed Won",
+    "Next Action": null,
+    "Deadline": "2025-09-10",
+    "Artifacts": [
+      "239ebcf9-81cf-8003-9161-ced51829e6f4"
+    ]
+  },
+  {
+    "id": "238ebcf9-81cf-80e9-9153-c12d48160916",
+    "created": "2025-07-22T00:32:00.000Z",
+    "lastEdited": "2025-09-19T20:50:00.000Z",
+    "url": "https://www.notion.so/TFN-Goods-238ebcf981cf80e99153c12d48160916",
+    "title": "TFN Goods.",
+    "Projects": [
+      "177ebcf9-81cf-805f-b111-f407079f9794"
+    ],
+    "Probability": "50%",
+    "Costs": 100000,
+    "Organisation": [
+      "23aebcf9-81cf-80b0-b6de-d61a623b431c"
+    ],
+    "Amount": 130000,
+    "Team members": [
+      "26bebcf9-81cf-80c9-b89c-fc94ab43c2ed"
+    ],
+    "Stage": "Closed Won",
+    "Next Action": "Good for now",
+    "Deadline": "2025-07-30",
+    "Artifacts": []
+  },
+  {
+    "id": "238ebcf9-81cf-802f-87c1-d39e42af47ae",
+    "created": "2025-07-22T00:20:00.000Z",
+    "lastEdited": "2025-09-19T20:50:00.000Z",
+    "url": "https://www.notion.so/RED-DUST-Beds-238ebcf981cf802f87c1d39e42af47ae",
+    "title": "RED DUST Beds",
+    "Projects": [
+      "177ebcf9-81cf-805f-b111-f407079f9794"
+    ],
+    "Probability": "25%",
+    "Costs": 20000,
+    "Organisation": [
+      "238ebcf9-81cf-8018-b64c-f9f4c59cf89e"
+    ],
+    "Amount": 20000,
+    "Team members": [],
+    "Stage": "Closed Won",
+    "Next Action": "Send through prices",
+    "Deadline": "2025-07-24",
+    "Artifacts": []
+  },
+  {
+    "id": "238ebcf9-81cf-805d-9c25-eb1581ce4151",
+    "created": "2025-07-22T00:05:00.000Z",
+    "lastEdited": "2025-09-20T05:12:00.000Z",
+    "url": "https://www.notion.so/Climate-Justice-Innovation-Lab-Research-website-238ebcf981cf805d9c25eb1581ce4151",
+    "title": "Climate Justice Innovation Lab Research / website",
+    "Projects": [],
+    "Probability": "50%",
+    "Costs": 5000,
+    "Organisation": [],
+    "Amount": 25000,
+    "Team members": [],
+    "Stage": "Negotiation",
+    "Next Action": null,
+    "Deadline": "2025-07-28",
+    "Artifacts": []
+  },
+  {
+    "id": "238ebcf9-81cf-80ec-992c-c22e7a642f54",
+    "created": "2025-07-22T00:02:00.000Z",
+    "lastEdited": "2025-09-20T05:09:00.000Z",
+    "url": "https://www.notion.so/NAIDOC-Filming-238ebcf981cf80ec992cc22e7a642f54",
+    "title": "NAIDOC Filming ",
+    "Projects": [
+      "179ebcf9-81cf-80be-a071-d6a6d13c821a"
+    ],
+    "Probability": "90%",
+    "Costs": null,
+    "Organisation": [
+      "23aebcf9-81cf-80f5-b550-ff6c50d6944f"
+    ],
+    "Amount": 1000,
+    "Team members": [],
+    "Stage": "Closed Won",
+    "Next Action": null,
+    "Deadline": "2025-08-02",
+    "Artifacts": []
+  },
+  {
+    "id": "238ebcf9-81cf-8042-8aed-c11be68d20ed",
+    "created": "2025-07-22T00:02:00.000Z",
+    "lastEdited": "2025-09-20T05:12:00.000Z",
+    "url": "https://www.notion.so/Maningrida-Impact-Measurement-and-Story-238ebcf981cf80428aedc11be68d20ed",
+    "title": "Maningrida Impact Measurement and Story",
+    "Projects": [
+      "1e7ebcf9-81cf-8038-9969-ccc7fb897b43"
+    ],
+    "Probability": "50%",
+    "Costs": 3000,
+    "Organisation": [
+      "26bebcf9-81cf-8014-9b14-cc354ebd1b20"
+    ],
+    "Amount": 30000,
+    "Team members": [],
+    "Stage": "Negotiation",
+    "Next Action": "Conversation about case studies",
+    "Deadline": "2025-07-23",
+    "Artifacts": []
+  },
+  {
+    "id": "238ebcf9-81cf-80a8-88bb-c321b300f0cc",
+    "created": "2025-07-22T00:01:00.000Z",
+    "lastEdited": "2025-09-19T20:50:00.000Z",
+    "url": "https://www.notion.so/Oonchiumpa-Station-Build-238ebcf981cf80a888bbc321b300f0cc",
+    "title": "Oonchiumpa Station Build",
+    "Projects": [
+      "1d4ebcf9-81cf-80a2-8c12-e5c56d78de10"
+    ],
+    "Probability": "50%",
+    "Costs": 90000,
+    "Organisation": [
+      "23aebcf9-81cf-8025-9ebe-dc4d23fb2627"
+    ],
+    "Amount": 100000,
+    "Team members": [
+      "133ebcf9-81cf-8064-aa72-de6249eb3b50"
+    ],
+    "Stage": "Closed Won",
+    "Next Action": "Nic going to Alice",
+    "Deadline": "2025-07-28",
+    "Artifacts": []
+  },
+  {
+    "id": "237ebcf9-81cf-809d-858d-fb3f04c20ab6",
+    "created": "2025-07-21T23:59:00.000Z",
+    "lastEdited": "2025-09-19T20:50:00.000Z",
+    "url": "https://www.notion.so/BG-Fit-Kickstarter-237ebcf981cf809d858dfb3f04c20ab6",
+    "title": "BG Fit - Kickstarter",
+    "Projects": [
+      "18febcf9-81cf-80fe-a738-fe374e01cd08"
+    ],
+    "Probability": "25%",
+    "Costs": 10000,
+    "Organisation": [],
+    "Amount": 20000,
+    "Team members": [],
+    "Stage": "Closed Won",
+    "Next Action": null,
+    "Deadline": "2025-09-10",
+    "Artifacts": []
+  },
+  {
+    "id": "237ebcf9-81cf-8084-a968-d705bbea8103",
+    "created": "2025-07-21T23:59:00.000Z",
+    "lastEdited": "2025-09-19T20:50:00.000Z",
+    "url": "https://www.notion.so/BG-Fit-Police-237ebcf981cf8084a968d705bbea8103",
+    "title": "BG Fit - Police",
+    "Projects": [
+      "18febcf9-81cf-80fe-a738-fe374e01cd08"
+    ],
+    "Probability": "25%",
+    "Costs": 5000,
+    "Organisation": [],
+    "Amount": 30000,
+    "Team members": [],
+    "Stage": "Closed Won",
+    "Next Action": null,
+    "Deadline": "2025-09-10",
+    "Artifacts": []
+  },
+  {
+    "id": "237ebcf9-81cf-8062-b2c1-e3f105ac02de",
+    "created": "2025-07-21T23:58:00.000Z",
+    "lastEdited": "2025-09-19T20:51:00.000Z",
+    "url": "https://www.notion.so/BG-Fit-Qld-Gives-237ebcf981cf8062b2c1e3f105ac02de",
+    "title": "BG Fit - Qld Gives",
+    "Projects": [
+      "18febcf9-81cf-80fe-a738-fe374e01cd08"
+    ],
+    "Probability": "25%",
+    "Costs": 15000,
+    "Organisation": [],
+    "Amount": 27000,
+    "Team members": [],
+    "Stage": "Closed Won",
+    "Next Action": null,
+    "Deadline": "2025-09-10",
+    "Artifacts": []
+  },
+  {
+    "id": "237ebcf9-81cf-80ed-a099-fe8c8167e169",
+    "created": "2025-07-21T23:58:00.000Z",
+    "lastEdited": "2025-09-19T20:50:00.000Z",
+    "url": "https://www.notion.so/SMART-Connect-237ebcf981cf80eda099fe8c8167e169",
+    "title": "SMART Connect",
+    "Projects": [
+      "18febcf9-81cf-800c-9f79-e44c2e9728ba"
+    ],
+    "Probability": "25%",
+    "Costs": 5000,
+    "Organisation": [],
+    "Amount": 50000,
+    "Team members": [],
+    "Stage": "Closed Won",
+    "Next Action": null,
+    "Deadline": "2025-09-10",
+    "Artifacts": []
+  },
+  {
+    "id": "237ebcf9-81cf-8053-8589-edbc0dbc511a",
+    "created": "2025-07-21T23:57:00.000Z",
+    "lastEdited": "2025-09-20T05:12:00.000Z",
+    "url": "https://www.notion.so/Goods-Snow-Foundation-2025-Wages-237ebcf981cf80538589edbc0dbc511a",
+    "title": "Goods. Snow Foundation 2025 Wages",
+    "Projects": [
+      "177ebcf9-81cf-805f-b111-f407079f9794"
+    ],
+    "Probability": "75%",
+    "Costs": null,
+    "Organisation": [
+      "31dedb9c-7208-421d-94a1-aab00d810c56"
+    ],
+    "Amount": 100000,
+    "Team members": [
+      "404b880f-5f48-4c52-8e88-f58a5ad342eb",
+      "26bebcf9-81cf-80c7-904a-e27ca1afbc13"
+    ],
+    "Stage": "Closed Won",
+    "Next Action": "Update re stories // Empathy Ledger",
+    "Deadline": "2025-09-10",
+    "Artifacts": [
+      "239ebcf9-81cf-80c7-b492-ca254c8d0cec"
+    ]
+  },
+  {
+    "id": "237ebcf9-81cf-806d-97d9-cbdc9bbccb8f",
+    "created": "2025-07-21T23:36:00.000Z",
+    "lastEdited": "2025-09-19T20:41:00.000Z",
+    "url": "https://www.notion.so/Sharing-Stories-Foundation-Website-237ebcf981cf806d97d9cbdc9bbccb8f",
+    "title": "Sharing Stories Foundation Website",
+    "Projects": [
+      "187ebcf9-81cf-8032-a28f-db8b76442ecd"
+    ],
+    "Probability": "50%",
+    "Costs": null,
+    "Organisation": [
+      "23aebcf9-81cf-8065-943f-e485c514349c"
+    ],
+    "Amount": 10000,
+    "Team members": [
+      "23eebcf9-81cf-8064-a077-e6b6da0e0535",
+      "23eebcf9-81cf-80f4-8979-ddd64bdf8895"
+    ],
+    "Stage": "Closed Lost",
+    "Next Action": "Send plan and artifacts",
+    "Deadline": "2025-07-22",
+    "Artifacts": []
+  },
+  {
+    "id": "237ebcf9-81cf-8041-8792-f16ce415a1be",
+    "created": "2025-07-21T23:35:00.000Z",
+    "lastEdited": "2025-09-20T05:13:00.000Z",
+    "url": "https://www.notion.so/Diagrama-role-237ebcf981cf80418792f16ce415a1be",
+    "title": "Diagrama role",
+    "Projects": [
+      "179ebcf9-81cf-8076-95f2-e39db7b980a5"
+    ],
+    "Probability": "50%",
+    "Costs": null,
+    "Organisation": [
+      "143ebcf9-81cf-808a-b82d-f4dc4e4edb0d"
+    ],
+    "Amount": 50000,
+    "Team members": [
+      "415d9b02-f32d-46b1-b822-a675e75a730a"
+    ],
+    "Stage": "Discovery",
+    "Next Action": "Overview and call for actions",
+    "Deadline": "2025-08-07",
+    "Artifacts": [
+      "239ebcf9-81cf-806b-8b5c-f29017589612"
+    ]
+  },
+  {
+    "id": "237ebcf9-81cf-807f-8629-c527a664663f",
+    "created": "2025-07-21T23:28:00.000Z",
+    "lastEdited": "2025-09-20T05:13:00.000Z",
+    "url": "https://www.notion.so/QFCC-Empathy-Ledger-Build-and-Support-237ebcf981cf807f8629c527a664663f",
+    "title": "QFCC Empathy Ledger Build and Support",
+    "Projects": [
+      "187ebcf9-81cf-8032-a28f-db8b76442ecd"
+    ],
+    "Probability": "50%",
+    "Costs": null,
+    "Organisation": [
+      "237ebcf9-81cf-8057-aabe-f76f79348e26"
+    ],
+    "Amount": 50000,
+    "Team members": [
+      "231ebcf9-81cf-80cf-8fa4-edf27b9e4057"
+    ],
+    "Stage": "Discovery",
+    "Next Action": "Pitch meeting",
+    "Deadline": "2025-07-30",
+    "Artifacts": []
+  },
+  {
+    "id": "237ebcf9-81cf-8058-9619-decb5923c09c",
+    "created": "2025-07-21T23:23:00.000Z",
+    "lastEdited": "2025-09-28T20:26:00.000Z",
+    "url": "https://www.notion.so/PICC-Photo-Kiosk-237ebcf981cf80589619decb5923c09c",
+    "title": "PICC Photo Kiosk",
+    "Projects": [
+      "22eebcf9-81cf-8002-abe6-d81960ea19da"
+    ],
+    "Probability": "75%",
+    "Costs": 20000,
+    "Organisation": [
+      "234ebcf9-81cf-807d-8ff7-fc94ac7f4d39"
+    ],
+    "Amount": 60000,
+    "Team members": [
+      "26bebcf9-81cf-8054-9f5c-fe1fbbb2493f",
+      "26bebcf9-81cf-8022-a651-d0161ba48aab",
+      "26bebcf9-81cf-800a-a728-fcc05aab833e"
+    ],
+    "Stage": "Closed Won",
+    "Next Action": "Palm tip",
+    "Deadline": "2025-07-23",
+    "Artifacts": []
+  },
+  {
+    "id": "237ebcf9-81cf-802b-981a-daf147c94c90",
+    "created": "2025-07-21T23:23:00.000Z",
+    "lastEdited": "2025-09-19T20:51:00.000Z",
+    "url": "https://www.notion.so/ANAT-Confessional-and-support-237ebcf981cf802b981adaf147c94c90",
+    "title": "ANAT Confessional and support",
+    "Projects": [],
+    "Probability": "90%",
+    "Costs": 3000,
+    "Organisation": [
+      "237ebcf9-81cf-80b4-8a50-e4572d3a588f"
+    ],
+    "Amount": 5000,
+    "Team members": [],
+    "Stage": "Closed Won",
+    "Next Action": "Build plan",
+    "Deadline": "2025-07-29",
+    "Artifacts": [
+      "239ebcf9-81cf-8098-a282-da9ec8aca6f9"
+    ]
+  },
+  {
+    "id": "237ebcf9-81cf-8035-ba7c-ccbeb58a5ecd",
+    "created": "2025-07-21T23:00:00.000Z",
+    "lastEdited": "2025-09-19T20:51:00.000Z",
+    "url": "https://www.notion.so/PICC-Storm-Stories-237ebcf981cf8035ba7cccbeb58a5ecd",
+    "title": "PICC Storm Stories",
+    "Projects": [
+      "178ebcf9-81cf-801c-8815-fb32a9259a1c"
+    ],
+    "Probability": "90%",
+    "Costs": 20000,
+    "Organisation": [
+      "234ebcf9-81cf-807d-8ff7-fc94ac7f4d39"
+    ],
+    "Amount": 60000,
+    "Team members": [
+      "26bebcf9-81cf-8054-9f5c-fe1fbbb2493f",
+      "26bebcf9-81cf-8022-a651-d0161ba48aab",
+      "26bebcf9-81cf-800a-a728-fcc05aab833e"
+    ],
+    "Stage": "Closed Won",
+    "Next Action": "Build into the Hull River Process",
+    "Deadline": "2025-07-25",
+    "Artifacts": [
+      "239ebcf9-81cf-801e-bb01-e528487333b2"
+    ]
+  },
+  {
+    "id": "234ebcf9-81cf-80a6-9fc3-f04fd192ed7c",
+    "created": "2025-07-18T09:42:00.000Z",
+    "lastEdited": "2025-09-20T05:21:00.000Z",
+    "url": "https://www.notion.so/Digital-Communications-Contract-234ebcf981cf80a69fc3f04fd192ed7c",
+    "title": "Digital Communications Contract",
+    "Projects": [
+      "1f4ebcf9-81cf-80c5-9b67-de30812aeee4"
+    ],
+    "Probability": "10%",
+    "Costs": null,
+    "Organisation": [
+      "237ebcf9-81cf-80b7-aaf2-db7c3ba6fcfe"
+    ],
+    "Amount": 45000,
+    "Team members": [
+      "227ebcf9-81cf-8142-9615-e5bf386bc304",
+      "227ebcf9-81cf-8126-8197-d3b12907b55c"
+    ],
+    "Stage": "Closed Lost",
+    "Next Action": "Archive - contract terminated",
+    "Deadline": "2025-07-25",
+    "Artifacts": []
+  },
+  {
+    "id": "234ebcf9-81cf-8040-9e34-c78245988e2b",
+    "created": "2025-07-18T09:41:00.000Z",
+    "lastEdited": "2025-09-20T05:21:00.000Z",
+    "url": "https://www.notion.so/Backbone-Mapping-234ebcf981cf80409e34c78245988e2b",
+    "title": "Backbone Mapping",
+    "Projects": [
+      "229ebcf9-81cf-80f1-a053-e6b8cd3b0362"
+    ],
+    "Probability": "50%",
+    "Costs": null,
+    "Organisation": [
+      "237ebcf9-81cf-80c6-8344-ce0db56e21b8"
+    ],
+    "Amount": 50000,
+    "Team members": [
+      "227ebcf9-81cf-8126-8197-d3b12907b55c"
+    ],
+    "Stage": "Applied",
+    "Next Action": "Finalize scope and submit proposal",
+    "Deadline": "2025-10-30",
+    "Artifacts": [
+      "234ebcf9-81cf-8061-9989-f9c62228d7fd"
+    ]
+  },
+  {
+    "id": "234ebcf9-81cf-8042-b364-f7d86c5602f2",
+    "created": "2025-07-18T09:41:00.000Z",
+    "lastEdited": "2025-09-20T05:21:00.000Z",
+    "url": "https://www.notion.so/PICC-Annual-Report-Contract-234ebcf981cf8042b364f7d86c5602f2",
+    "title": "PICC Annual Report Contract",
+    "Projects": [
+      "22eebcf9-81cf-808f-bad4-f9e0a6640252"
+    ],
+    "Probability": "50%",
+    "Costs": null,
+    "Organisation": [
+      "234ebcf9-81cf-807d-8ff7-fc94ac7f4d39"
+    ],
+    "Amount": 70000,
+    "Team members": [
+      "26bebcf9-81cf-8054-9f5c-fe1fbbb2493f",
+      "26bebcf9-81cf-8022-a651-d0161ba48aab",
+      "26bebcf9-81cf-800a-a728-fcc05aab833e"
+    ],
+    "Stage": "Negotiation",
+    "Next Action": "Contract negotiation with PICC board",
+    "Deadline": "2025-11-15",
+    "Artifacts": []
+  },
+  {
+    "id": "234ebcf9-81cf-80fe-9dc6-e14895bea8dc",
+    "created": "2025-07-18T09:39:00.000Z",
+    "lastEdited": "2025-09-20T05:21:00.000Z",
+    "url": "https://www.notion.so/Custodial-Pathways-Partnership-234ebcf981cf80fe9dc6e14895bea8dc",
+    "title": "Custodial Pathways Partnership",
+    "Projects": [
+      "1d7ebcf9-81cf-808b-a394-f2e547d6ee6c"
+    ],
+    "Probability": "75%",
+    "Costs": null,
+    "Organisation": [
+      "234ebcf9-81cf-800f-a913-ce2b0d397423"
+    ],
+    "Amount": 50000,
+    "Team members": [
+      "234ebcf9-81cf-80a7-9adb-ccabf8066626"
+    ],
+    "Stage": "Discovery",
+    "Next Action": "Present strategy to board",
+    "Deadline": "2025-10-31",
+    "Artifacts": [
+      "234ebcf9-81cf-8023-bbd0-eb6535584382"
+    ]
+  }
+]

@@ -1,0 +1,1734 @@
+[
+  {
+    "object": "page",
+    "id": "271ebcf9-81cf-80b8-a6c1-f9c272721e67",
+    "created_time": "2025-09-17T04:19:00.000Z",
+    "last_edited_time": "2025-09-17T04:21:00.000Z",
+    "created_by": {
+      "object": "user",
+      "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+    },
+    "last_edited_by": {
+      "object": "user",
+      "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+    },
+    "cover": null,
+    "icon": null,
+    "parent": {
+      "type": "database_id",
+      "database_id": "7005d0d1-41d3-436c-9f86-526d275c2f10"
+    },
+    "archived": false,
+    "in_trash": false,
+    "is_locked": false,
+    "properties": {
+      "Delight Factor": {
+        "id": "%3CT%7DK",
+        "type": "select",
+        "select": {
+          "id": "<QqS",
+          "name": "🎯 Targeted",
+          "color": "green"
+        }
+      },
+      "Organisation Contacts": {
+        "id": "%3Dl%3Fk",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [
+            {
+              "type": "title",
+              "title": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "Joe Kwon",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Joe Kwon",
+                  "href": null
+                }
+              ]
+            }
+          ],
+          "function": "show_original"
+        }
+      },
+      "Next Funding Opportunity": {
+        "id": "%40_yL",
+        "type": "date",
+        "date": null
+      },
+      "Next Contact Due": {
+        "id": "EuNX",
+        "type": "date",
+        "date": null
+      },
+      "Active Actions Count": {
+        "id": "HGXM",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [],
+          "function": "show_original"
+        }
+      },
+      "Project Status Summary": {
+        "id": "L%7BK~",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [],
+          "function": "show_original"
+        }
+      },
+      "Last Contact Date": {
+        "id": "MFbL",
+        "type": "date",
+        "date": null
+      },
+      "Contact Person": {
+        "id": "MHY_",
+        "type": "relation",
+        "relation": [
+          {
+            "id": "243ebcf9-81cf-817c-a80b-c9750a569d80"
+          }
+        ],
+        "has_more": false
+      },
+      "Last Funding Date": {
+        "id": "Mbtd",
+        "type": "date",
+        "date": null
+      },
+      "Next Project Milestone": {
+        "id": "PSt%3F",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [
+            {
+              "type": "title",
+              "title": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "Contained",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Contained",
+                  "href": null
+                }
+              ]
+            }
+          ],
+          "function": "show_original"
+        }
+      },
+      "Video link": {
+        "id": "RHO%5B",
+        "type": "url",
+        "url": "https://www.linkedin.com/posts/benjamin-knight-53854061_theres-a-particular-sound-a-detention-centre-activity-7373930568411127808-azes?utm_source=share&utm_medium=member_desktop&rcm=ACoAAA0SUvwB0Lqpp9upzOqeUcZ4VRAhNJ1X2Rg"
+      },
+      "Notes": {
+        "id": "SGI%5C",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Project": {
+        "id": "UsNc",
+        "type": "relation",
+        "relation": [
+          {
+            "id": "228ebcf9-81cf-809e-8368-f9dae2a41129"
+          }
+        ],
+        "has_more": false
+      },
+      "Fun Element": {
+        "id": "%5EiYJ",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Funding Potential": {
+        "id": "_N%40G",
+        "type": "number",
+        "number": null
+      },
+      "Justice Hub Relevance": {
+        "id": "bGJw",
+        "type": "checkbox",
+        "checkbox": true
+      },
+      "Sent date": {
+        "id": "bg%5E%40",
+        "type": "date",
+        "date": {
+          "start": "2025-09-17",
+          "end": null,
+          "time_zone": null
+        }
+      },
+      "Organisation": {
+        "id": "d%40U%3F",
+        "type": "relation",
+        "relation": [],
+        "has_more": false
+      },
+      "Communication Type": {
+        "id": "d~%5BX",
+        "type": "select",
+        "select": {
+          "id": "L]dF",
+          "name": "LinkedIn Post",
+          "color": "blue"
+        }
+      },
+      "Status": {
+        "id": "gZqg",
+        "type": "status",
+        "status": {
+          "id": "rPa<",
+          "name": "Connected & Delighted",
+          "color": "default"
+        }
+      },
+      "Engagement ROI Score": {
+        "id": "gZve",
+        "type": "select",
+        "select": null
+      },
+      "Contact Method": {
+        "id": "j%5D%5C%3D",
+        "type": "select",
+        "select": null
+      },
+      "Impact Opportunity Level": {
+        "id": "oUf%3B",
+        "type": "select",
+        "select": null
+      },
+      "Current Mood/Energy": {
+        "id": "soB%3F",
+        "type": "select",
+        "select": {
+          "id": "H=qC",
+          "name": "🔥 Excited",
+          "color": "default"
+        }
+      },
+      "Empathy Ledger Connection": {
+        "id": "uID%3A",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Image": {
+        "id": "ySTr",
+        "type": "files",
+        "files": []
+      },
+      "Current Funding Value": {
+        "id": "z%40SP",
+        "type": "number",
+        "number": null
+      },
+      "Key Message/Story": {
+        "id": "%7CQLD",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Content/Communication Name": {
+        "id": "title",
+        "type": "title",
+        "title": [
+          {
+            "type": "text",
+            "text": {
+              "content": "Sound a detention centre makes at 3am",
+              "link": null
+            },
+            "annotations": {
+              "bold": false,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "Sound a detention centre makes at 3am",
+            "href": null
+          }
+        ]
+      }
+    },
+    "url": "https://www.notion.so/Sound-a-detention-centre-makes-at-3am-271ebcf981cf80b8a6c1f9c272721e67",
+    "public_url": null
+  },
+  {
+    "object": "page",
+    "id": "271ebcf9-81cf-802b-a560-efd1fc509109",
+    "created_time": "2025-09-17T00:42:00.000Z",
+    "last_edited_time": "2025-09-17T02:49:00.000Z",
+    "created_by": {
+      "object": "user",
+      "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+    },
+    "last_edited_by": {
+      "object": "user",
+      "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+    },
+    "cover": null,
+    "icon": null,
+    "parent": {
+      "type": "database_id",
+      "database_id": "7005d0d1-41d3-436c-9f86-526d275c2f10"
+    },
+    "archived": false,
+    "in_trash": false,
+    "is_locked": false,
+    "properties": {
+      "Delight Factor": {
+        "id": "%3CT%7DK",
+        "type": "select",
+        "select": null
+      },
+      "Organisation Contacts": {
+        "id": "%3Dl%3Fk",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [],
+          "function": "show_original"
+        }
+      },
+      "Next Funding Opportunity": {
+        "id": "%40_yL",
+        "type": "date",
+        "date": null
+      },
+      "Next Contact Due": {
+        "id": "EuNX",
+        "type": "date",
+        "date": null
+      },
+      "Active Actions Count": {
+        "id": "HGXM",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [],
+          "function": "show_original"
+        }
+      },
+      "Project Status Summary": {
+        "id": "L%7BK~",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [],
+          "function": "show_original"
+        }
+      },
+      "Last Contact Date": {
+        "id": "MFbL",
+        "type": "date",
+        "date": null
+      },
+      "Contact Person": {
+        "id": "MHY_",
+        "type": "relation",
+        "relation": [],
+        "has_more": false
+      },
+      "Last Funding Date": {
+        "id": "Mbtd",
+        "type": "date",
+        "date": null
+      },
+      "Next Project Milestone": {
+        "id": "PSt%3F",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [],
+          "function": "show_original"
+        }
+      },
+      "Video link": {
+        "id": "RHO%5B",
+        "type": "url",
+        "url": null
+      },
+      "Notes": {
+        "id": "SGI%5C",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Project": {
+        "id": "UsNc",
+        "type": "relation",
+        "relation": [],
+        "has_more": false
+      },
+      "Fun Element": {
+        "id": "%5EiYJ",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Funding Potential": {
+        "id": "_N%40G",
+        "type": "number",
+        "number": null
+      },
+      "Justice Hub Relevance": {
+        "id": "bGJw",
+        "type": "checkbox",
+        "checkbox": false
+      },
+      "Sent date": {
+        "id": "bg%5E%40",
+        "type": "date",
+        "date": {
+          "start": "2025-09-16",
+          "end": null,
+          "time_zone": null
+        }
+      },
+      "Organisation": {
+        "id": "d%40U%3F",
+        "type": "relation",
+        "relation": [],
+        "has_more": false
+      },
+      "Communication Type": {
+        "id": "d~%5BX",
+        "type": "select",
+        "select": {
+          "id": "L]dF",
+          "name": "LinkedIn Post",
+          "color": "blue"
+        }
+      },
+      "Status": {
+        "id": "gZqg",
+        "type": "status",
+        "status": {
+          "id": "rPa<",
+          "name": "Connected & Delighted",
+          "color": "default"
+        }
+      },
+      "Engagement ROI Score": {
+        "id": "gZve",
+        "type": "select",
+        "select": null
+      },
+      "Contact Method": {
+        "id": "j%5D%5C%3D",
+        "type": "select",
+        "select": null
+      },
+      "Impact Opportunity Level": {
+        "id": "oUf%3B",
+        "type": "select",
+        "select": null
+      },
+      "Current Mood/Energy": {
+        "id": "soB%3F",
+        "type": "select",
+        "select": null
+      },
+      "Empathy Ledger Connection": {
+        "id": "uID%3A",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Image": {
+        "id": "ySTr",
+        "type": "files",
+        "files": [
+          {
+            "name": "6575909fbaffc440d2916793_IMG_8339-p-800.jpg",
+            "type": "file",
+            "file": {
+              "url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/5496da29-0ded-443b-9f03-cf928ea15566/0485952c-2239-45e0-b833-c73fee0c29be/6575909fbaffc440d2916793_IMG_8339-p-800.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466SEAWL7EI%2F20251004%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20251004T041951Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELz%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQCBeQPfKfjNMRekSKk7mLpSTF8Encb21ONRIzkFj5dFZwIgdJGt9M3eZvL%2B%2BWuzfzk8llNJtcsk5Jn7n0PRefa07e0q%2FwMIVRAAGgw2Mzc0MjMxODM4MDUiDKW5kZHUrvxKEMToiSrcA9WYLB3cQzOVoyFUz3et%2FbZ7cSgq%2FupFq5EyKZ3FDSS%2F0ZhLW0yG4eMaNWsWURYe9VYjAckdL2jvP9wfiIyoxviTNntOA%2BHbWQXc4MDtOFomWn2WP4q8yHp4GAmYb3CcPq52Sv%2By3Y%2FT%2BIhKqmZ0kzY%2BgenF5ZkyOBMS5S%2FQAEJI2Hu2TyxLTpv8jdLxR7AjJmFpT1NDi13LG5goRi9SsnYpXakIrAsb69bjAIsB%2Fq%2BU2VWQogqv%2B67809VRVR8L%2B4hQXqybJkfQweqcSlKFh8%2BKahhB1dVSL%2F%2F8AA%2FR1NkqKL18PgH5ndYAIJpXjlWTNeVMKuQ6BZE4JXMT%2BzmI5T6NZj5IWUSZ%2BQaXhZ%2Fy27GaO%2BYn9OrC7CCjZJfHb%2BQsEF0IBMd4LCdtnpQ0iwuWuT3i8XcBp2jD7T8MXAiypeowtf1wwMqfUW1JPU%2F5eTD%2FAN1AyMyytHed5VcWFPpar4bfTNOmALEsdehVmKbH395mLMwbunFzMGaZfsU%2BYHqmRMyUXDVVW%2B9%2B7U%2B8L%2B1zwF4CWDty1UeFD6YscsoHIEHEmU0bQ0Xfv6D%2BV9JFFp8f7v9oYluBHU%2Bb4LlsHHwxdyFsx5c0Utj7nK0kcCD5BGJxbGQi%2BjFbYK9ZvVieMMK%2BgscGOqUB9B91acH%2FR3cD%2Be%2B67vsN%2FlrPriRC8D%2B6WvvPIY8JsMC3wfrahnm6Avvy43%2FRVuMVY9LtkM8BAvcSbIyI%2FVlesuKpZayqpz9kHz7%2FWzST6jTfDa1UW4WR%2FwneQwMPwRPvID2zzoCW3S2St4zjp9NTjkiQddwTdh4IYZrJOKltyexTOWg5%2FrximWjegpiZi%2B3iaHeUU%2BcpN%2F4qAmQRd8vdPNw7Ijvv&X-Amz-Signature=3df0ec836c48c9201d1c4bc618132215a0cc84b75772107d2a0a57d27da39a16&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+              "expiry_time": "2025-10-04T05:19:51.709Z"
+            }
+          }
+        ]
+      },
+      "Current Funding Value": {
+        "id": "z%40SP",
+        "type": "number",
+        "number": null
+      },
+      "Key Message/Story": {
+        "id": "%7CQLD",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Content/Communication Name": {
+        "id": "title",
+        "type": "title",
+        "title": [
+          {
+            "type": "text",
+            "text": {
+              "content": "I've been quiet lately.",
+              "link": null
+            },
+            "annotations": {
+              "bold": false,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "I've been quiet lately.",
+            "href": null
+          }
+        ]
+      }
+    },
+    "url": "https://www.notion.so/I-ve-been-quiet-lately-271ebcf981cf802ba560efd1fc509109",
+    "public_url": null
+  },
+  {
+    "object": "page",
+    "id": "271ebcf9-81cf-809f-87de-f7c76f3c73ed",
+    "created_time": "2025-09-17T00:37:00.000Z",
+    "last_edited_time": "2025-09-17T00:47:00.000Z",
+    "created_by": {
+      "object": "user",
+      "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+    },
+    "last_edited_by": {
+      "object": "user",
+      "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+    },
+    "cover": null,
+    "icon": null,
+    "parent": {
+      "type": "database_id",
+      "database_id": "7005d0d1-41d3-436c-9f86-526d275c2f10"
+    },
+    "archived": false,
+    "in_trash": false,
+    "is_locked": false,
+    "properties": {
+      "Delight Factor": {
+        "id": "%3CT%7DK",
+        "type": "select",
+        "select": null
+      },
+      "Organisation Contacts": {
+        "id": "%3Dl%3Fk",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [],
+          "function": "show_original"
+        }
+      },
+      "Next Funding Opportunity": {
+        "id": "%40_yL",
+        "type": "date",
+        "date": {
+          "start": "2025-09-17",
+          "end": null,
+          "time_zone": null
+        }
+      },
+      "Next Contact Due": {
+        "id": "EuNX",
+        "type": "date",
+        "date": null
+      },
+      "Active Actions Count": {
+        "id": "HGXM",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [],
+          "function": "show_original"
+        }
+      },
+      "Project Status Summary": {
+        "id": "L%7BK~",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [],
+          "function": "show_original"
+        }
+      },
+      "Last Contact Date": {
+        "id": "MFbL",
+        "type": "date",
+        "date": null
+      },
+      "Contact Person": {
+        "id": "MHY_",
+        "type": "relation",
+        "relation": [],
+        "has_more": false
+      },
+      "Last Funding Date": {
+        "id": "Mbtd",
+        "type": "date",
+        "date": null
+      },
+      "Next Project Milestone": {
+        "id": "PSt%3F",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [],
+          "function": "show_original"
+        }
+      },
+      "Video link": {
+        "id": "RHO%5B",
+        "type": "url",
+        "url": null
+      },
+      "Notes": {
+        "id": "SGI%5C",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Project": {
+        "id": "UsNc",
+        "type": "relation",
+        "relation": [],
+        "has_more": false
+      },
+      "Fun Element": {
+        "id": "%5EiYJ",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Funding Potential": {
+        "id": "_N%40G",
+        "type": "number",
+        "number": null
+      },
+      "Justice Hub Relevance": {
+        "id": "bGJw",
+        "type": "checkbox",
+        "checkbox": false
+      },
+      "Sent date": {
+        "id": "bg%5E%40",
+        "type": "date",
+        "date": {
+          "start": "2025-09-17",
+          "end": null,
+          "time_zone": null
+        }
+      },
+      "Organisation": {
+        "id": "d%40U%3F",
+        "type": "relation",
+        "relation": [],
+        "has_more": false
+      },
+      "Communication Type": {
+        "id": "d~%5BX",
+        "type": "select",
+        "select": {
+          "id": "L]dF",
+          "name": "LinkedIn Post",
+          "color": "blue"
+        }
+      },
+      "Status": {
+        "id": "gZqg",
+        "type": "status",
+        "status": {
+          "id": "rPa<",
+          "name": "Connected & Delighted",
+          "color": "default"
+        }
+      },
+      "Engagement ROI Score": {
+        "id": "gZve",
+        "type": "select",
+        "select": null
+      },
+      "Contact Method": {
+        "id": "j%5D%5C%3D",
+        "type": "select",
+        "select": null
+      },
+      "Impact Opportunity Level": {
+        "id": "oUf%3B",
+        "type": "select",
+        "select": null
+      },
+      "Current Mood/Energy": {
+        "id": "soB%3F",
+        "type": "select",
+        "select": null
+      },
+      "Empathy Ledger Connection": {
+        "id": "uID%3A",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Image": {
+        "id": "ySTr",
+        "type": "files",
+        "files": [
+          {
+            "name": "1757981639008.jpeg",
+            "type": "file",
+            "file": {
+              "url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/5496da29-0ded-443b-9f03-cf928ea15566/cd46049a-7291-4974-84a3-99fe6b52fb89/1757981639008.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466SEAWL7EI%2F20251004%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20251004T041951Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELz%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQCBeQPfKfjNMRekSKk7mLpSTF8Encb21ONRIzkFj5dFZwIgdJGt9M3eZvL%2B%2BWuzfzk8llNJtcsk5Jn7n0PRefa07e0q%2FwMIVRAAGgw2Mzc0MjMxODM4MDUiDKW5kZHUrvxKEMToiSrcA9WYLB3cQzOVoyFUz3et%2FbZ7cSgq%2FupFq5EyKZ3FDSS%2F0ZhLW0yG4eMaNWsWURYe9VYjAckdL2jvP9wfiIyoxviTNntOA%2BHbWQXc4MDtOFomWn2WP4q8yHp4GAmYb3CcPq52Sv%2By3Y%2FT%2BIhKqmZ0kzY%2BgenF5ZkyOBMS5S%2FQAEJI2Hu2TyxLTpv8jdLxR7AjJmFpT1NDi13LG5goRi9SsnYpXakIrAsb69bjAIsB%2Fq%2BU2VWQogqv%2B67809VRVR8L%2B4hQXqybJkfQweqcSlKFh8%2BKahhB1dVSL%2F%2F8AA%2FR1NkqKL18PgH5ndYAIJpXjlWTNeVMKuQ6BZE4JXMT%2BzmI5T6NZj5IWUSZ%2BQaXhZ%2Fy27GaO%2BYn9OrC7CCjZJfHb%2BQsEF0IBMd4LCdtnpQ0iwuWuT3i8XcBp2jD7T8MXAiypeowtf1wwMqfUW1JPU%2F5eTD%2FAN1AyMyytHed5VcWFPpar4bfTNOmALEsdehVmKbH395mLMwbunFzMGaZfsU%2BYHqmRMyUXDVVW%2B9%2B7U%2B8L%2B1zwF4CWDty1UeFD6YscsoHIEHEmU0bQ0Xfv6D%2BV9JFFp8f7v9oYluBHU%2Bb4LlsHHwxdyFsx5c0Utj7nK0kcCD5BGJxbGQi%2BjFbYK9ZvVieMMK%2BgscGOqUB9B91acH%2FR3cD%2Be%2B67vsN%2FlrPriRC8D%2B6WvvPIY8JsMC3wfrahnm6Avvy43%2FRVuMVY9LtkM8BAvcSbIyI%2FVlesuKpZayqpz9kHz7%2FWzST6jTfDa1UW4WR%2FwneQwMPwRPvID2zzoCW3S2St4zjp9NTjkiQddwTdh4IYZrJOKltyexTOWg5%2FrximWjegpiZi%2B3iaHeUU%2BcpN%2F4qAmQRd8vdPNw7Ijvv&X-Amz-Signature=2ca6f4eaf9e0c919335b26b369f341abaf2f11bdfb19d4bd319b16c611367732&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+              "expiry_time": "2025-10-04T05:19:51.709Z"
+            }
+          }
+        ]
+      },
+      "Current Funding Value": {
+        "id": "z%40SP",
+        "type": "number",
+        "number": null
+      },
+      "Key Message/Story": {
+        "id": "%7CQLD",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Content/Communication Name": {
+        "id": "title",
+        "type": "title",
+        "title": [
+          {
+            "type": "text",
+            "text": {
+              "content": "We spend $859,589 per year to destroy a child's life.",
+              "link": null
+            },
+            "annotations": {
+              "bold": false,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "We spend $859,589 per year to destroy a child's life.",
+            "href": null
+          }
+        ]
+      }
+    },
+    "url": "https://www.notion.so/We-spend-859-589-per-year-to-destroy-a-child-s-life-271ebcf981cf809f87def7c76f3c73ed",
+    "public_url": null
+  },
+  {
+    "object": "page",
+    "id": "271ebcf9-81cf-80ed-a5c4-ef83e4beb061",
+    "created_time": "2025-09-17T00:33:00.000Z",
+    "last_edited_time": "2025-09-29T08:57:00.000Z",
+    "created_by": {
+      "object": "user",
+      "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+    },
+    "last_edited_by": {
+      "object": "user",
+      "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+    },
+    "cover": null,
+    "icon": null,
+    "parent": {
+      "type": "database_id",
+      "database_id": "7005d0d1-41d3-436c-9f86-526d275c2f10"
+    },
+    "archived": false,
+    "in_trash": false,
+    "is_locked": false,
+    "properties": {
+      "Delight Factor": {
+        "id": "%3CT%7DK",
+        "type": "select",
+        "select": {
+          "id": "Pq_i",
+          "name": "📈 Building",
+          "color": "gray"
+        }
+      },
+      "Organisation Contacts": {
+        "id": "%3Dl%3Fk",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [],
+          "function": "show_original"
+        }
+      },
+      "Next Funding Opportunity": {
+        "id": "%40_yL",
+        "type": "date",
+        "date": null
+      },
+      "Next Contact Due": {
+        "id": "EuNX",
+        "type": "date",
+        "date": null
+      },
+      "Active Actions Count": {
+        "id": "HGXM",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [],
+          "function": "show_original"
+        }
+      },
+      "Project Status Summary": {
+        "id": "L%7BK~",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [],
+          "function": "show_original"
+        }
+      },
+      "Last Contact Date": {
+        "id": "MFbL",
+        "type": "date",
+        "date": null
+      },
+      "Contact Person": {
+        "id": "MHY_",
+        "type": "relation",
+        "relation": [],
+        "has_more": false
+      },
+      "Last Funding Date": {
+        "id": "Mbtd",
+        "type": "date",
+        "date": null
+      },
+      "Next Project Milestone": {
+        "id": "PSt%3F",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [],
+          "function": "show_original"
+        }
+      },
+      "Video link": {
+        "id": "RHO%5B",
+        "type": "url",
+        "url": null
+      },
+      "Notes": {
+        "id": "SGI%5C",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Project": {
+        "id": "UsNc",
+        "type": "relation",
+        "relation": [],
+        "has_more": false
+      },
+      "Fun Element": {
+        "id": "%5EiYJ",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Funding Potential": {
+        "id": "_N%40G",
+        "type": "number",
+        "number": null
+      },
+      "Justice Hub Relevance": {
+        "id": "bGJw",
+        "type": "checkbox",
+        "checkbox": false
+      },
+      "Sent date": {
+        "id": "bg%5E%40",
+        "type": "date",
+        "date": null
+      },
+      "Organisation": {
+        "id": "d%40U%3F",
+        "type": "relation",
+        "relation": [],
+        "has_more": false
+      },
+      "Communication Type": {
+        "id": "d~%5BX",
+        "type": "select",
+        "select": {
+          "id": "Tf|X",
+          "name": "Newsletter",
+          "color": "blue"
+        }
+      },
+      "Status": {
+        "id": "gZqg",
+        "type": "status",
+        "status": {
+          "id": "Z{;S",
+          "name": "Story Prep Needed",
+          "color": "default"
+        }
+      },
+      "Engagement ROI Score": {
+        "id": "gZve",
+        "type": "select",
+        "select": {
+          "id": "U?FI",
+          "name": "🌱 Building",
+          "color": "pink"
+        }
+      },
+      "Contact Method": {
+        "id": "j%5D%5C%3D",
+        "type": "select",
+        "select": {
+          "id": "Pq_i",
+          "name": "Email",
+          "color": "yellow"
+        }
+      },
+      "Impact Opportunity Level": {
+        "id": "oUf%3B",
+        "type": "select",
+        "select": {
+          "id": "U?FI",
+          "name": "🔍 Exploring",
+          "color": "purple"
+        }
+      },
+      "Current Mood/Energy": {
+        "id": "soB%3F",
+        "type": "select",
+        "select": {
+          "id": "<QqS",
+          "name": "💪 Engaged",
+          "color": "yellow"
+        }
+      },
+      "Empathy Ledger Connection": {
+        "id": "uID%3A",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Image": {
+        "id": "ySTr",
+        "type": "files",
+        "files": []
+      },
+      "Current Funding Value": {
+        "id": "z%40SP",
+        "type": "number",
+        "number": null
+      },
+      "Key Message/Story": {
+        "id": "%7CQLD",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Content/Communication Name": {
+        "id": "title",
+        "type": "title",
+        "title": [
+          {
+            "type": "text",
+            "text": {
+              "content": "ACT news - Refresh",
+              "link": null
+            },
+            "annotations": {
+              "bold": false,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "ACT news - Refresh",
+            "href": null
+          }
+        ]
+      }
+    },
+    "url": "https://www.notion.so/ACT-news-Refresh-271ebcf981cf80eda5c4ef83e4beb061",
+    "public_url": null
+  },
+  {
+    "object": "page",
+    "id": "270ebcf9-81cf-80a8-b746-cb39d82375e5",
+    "created_time": "2025-09-16T22:48:00.000Z",
+    "last_edited_time": "2025-09-16T22:50:00.000Z",
+    "created_by": {
+      "object": "user",
+      "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+    },
+    "last_edited_by": {
+      "object": "user",
+      "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+    },
+    "cover": null,
+    "icon": null,
+    "parent": {
+      "type": "database_id",
+      "database_id": "7005d0d1-41d3-436c-9f86-526d275c2f10"
+    },
+    "archived": false,
+    "in_trash": false,
+    "is_locked": false,
+    "properties": {
+      "Delight Factor": {
+        "id": "%3CT%7DK",
+        "type": "select",
+        "select": {
+          "id": "Pq_i",
+          "name": "📈 Building",
+          "color": "gray"
+        }
+      },
+      "Organisation Contacts": {
+        "id": "%3Dl%3Fk",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [
+            {
+              "type": "title",
+              "title": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "Rachel Atkinson",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Rachel Atkinson",
+                  "href": null
+                }
+              ]
+            }
+          ],
+          "function": "show_original"
+        }
+      },
+      "Next Funding Opportunity": {
+        "id": "%40_yL",
+        "type": "date",
+        "date": {
+          "start": "2025-10-16",
+          "end": null,
+          "time_zone": null
+        }
+      },
+      "Next Contact Due": {
+        "id": "EuNX",
+        "type": "date",
+        "date": {
+          "start": "2025-09-17",
+          "end": null,
+          "time_zone": null
+        }
+      },
+      "Active Actions Count": {
+        "id": "HGXM",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [
+            {
+              "type": "title",
+              "title": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "PICC",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "PICC",
+                  "href": null
+                }
+              ]
+            }
+          ],
+          "function": "show_original"
+        }
+      },
+      "Project Status Summary": {
+        "id": "L%7BK~",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [],
+          "function": "show_original"
+        }
+      },
+      "Last Contact Date": {
+        "id": "MFbL",
+        "type": "date",
+        "date": {
+          "start": "2025-09-16",
+          "end": null,
+          "time_zone": null
+        }
+      },
+      "Contact Person": {
+        "id": "MHY_",
+        "type": "relation",
+        "relation": [
+          {
+            "id": "26bebcf9-81cf-8054-9f5c-fe1fbbb2493f"
+          }
+        ],
+        "has_more": false
+      },
+      "Last Funding Date": {
+        "id": "Mbtd",
+        "type": "date",
+        "date": {
+          "start": "2025-09-03",
+          "end": null,
+          "time_zone": null
+        }
+      },
+      "Next Project Milestone": {
+        "id": "PSt%3F",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [
+            {
+              "type": "title",
+              "title": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "PICC Photo Kiosk / Server",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "PICC Photo Kiosk / Server",
+                  "href": null
+                }
+              ]
+            },
+            {
+              "type": "title",
+              "title": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "PICC - Storm Stories",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "PICC - Storm Stories",
+                  "href": null
+                }
+              ]
+            },
+            {
+              "type": "title",
+              "title": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "PICC Townsville Precinct",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "PICC Townsville Precinct",
+                  "href": null
+                }
+              ]
+            },
+            {
+              "type": "title",
+              "title": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "PICC Annual Report",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "PICC Annual Report",
+                  "href": null
+                }
+              ]
+            },
+            {
+              "type": "title",
+              "title": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "PICC Elders' trip to Hull River in October",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "PICC Elders' trip to Hull River in October",
+                  "href": null
+                }
+              ]
+            }
+          ],
+          "function": "show_original"
+        }
+      },
+      "Video link": {
+        "id": "RHO%5B",
+        "type": "url",
+        "url": null
+      },
+      "Notes": {
+        "id": "SGI%5C",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Project": {
+        "id": "UsNc",
+        "type": "relation",
+        "relation": [
+          {
+            "id": "22eebcf9-81cf-8002-abe6-d81960ea19da"
+          },
+          {
+            "id": "178ebcf9-81cf-801c-8815-fb32a9259a1c"
+          },
+          {
+            "id": "253ebcf9-81cf-80e8-a8a8-d5dc42530cc5"
+          },
+          {
+            "id": "22eebcf9-81cf-808f-bad4-f9e0a6640252"
+          },
+          {
+            "id": "261ebcf9-81cf-8009-b935-d0224f7ae130"
+          }
+        ],
+        "has_more": false
+      },
+      "Fun Element": {
+        "id": "%5EiYJ",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Funding Potential": {
+        "id": "_N%40G",
+        "type": "number",
+        "number": null
+      },
+      "Justice Hub Relevance": {
+        "id": "bGJw",
+        "type": "checkbox",
+        "checkbox": false
+      },
+      "Sent date": {
+        "id": "bg%5E%40",
+        "type": "date",
+        "date": null
+      },
+      "Organisation": {
+        "id": "d%40U%3F",
+        "type": "relation",
+        "relation": [
+          {
+            "id": "234ebcf9-81cf-807d-8ff7-fc94ac7f4d39"
+          }
+        ],
+        "has_more": false
+      },
+      "Communication Type": {
+        "id": "d~%5BX",
+        "type": "select",
+        "select": {
+          "id": "<QqS",
+          "name": "Delight & Excitement",
+          "color": "purple"
+        }
+      },
+      "Status": {
+        "id": "gZqg",
+        "type": "status",
+        "status": {
+          "id": "Z{;S",
+          "name": "Story Prep Needed",
+          "color": "default"
+        }
+      },
+      "Engagement ROI Score": {
+        "id": "gZve",
+        "type": "select",
+        "select": {
+          "id": "`o`D",
+          "name": "🔥 Exceptional Value",
+          "color": "default"
+        }
+      },
+      "Contact Method": {
+        "id": "j%5D%5C%3D",
+        "type": "select",
+        "select": {
+          "id": "Pq_i",
+          "name": "Email",
+          "color": "yellow"
+        }
+      },
+      "Impact Opportunity Level": {
+        "id": "oUf%3B",
+        "type": "select",
+        "select": {
+          "id": "~TBA",
+          "name": "📈 Significant Growth",
+          "color": "default"
+        }
+      },
+      "Current Mood/Energy": {
+        "id": "soB%3F",
+        "type": "select",
+        "select": {
+          "id": "<QqS",
+          "name": "💪 Engaged",
+          "color": "yellow"
+        }
+      },
+      "Empathy Ledger Connection": {
+        "id": "uID%3A",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Image": {
+        "id": "ySTr",
+        "type": "files",
+        "files": []
+      },
+      "Current Funding Value": {
+        "id": "z%40SP",
+        "type": "number",
+        "number": 200000
+      },
+      "Key Message/Story": {
+        "id": "%7CQLD",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Content/Communication Name": {
+        "id": "title",
+        "type": "title",
+        "title": [
+          {
+            "type": "text",
+            "text": {
+              "content": "Email to Rachel and Narelle",
+              "link": null
+            },
+            "annotations": {
+              "bold": false,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "Email to Rachel and Narelle",
+            "href": null
+          }
+        ]
+      }
+    },
+    "url": "https://www.notion.so/Email-to-Rachel-and-Narelle-270ebcf981cf80a8b746cb39d82375e5",
+    "public_url": null
+  },
+  {
+    "object": "page",
+    "id": "26bebcf9-81cf-802a-a442-f36625e10205",
+    "created_time": "2025-09-11T23:20:00.000Z",
+    "last_edited_time": "2025-09-12T01:18:00.000Z",
+    "created_by": {
+      "object": "user",
+      "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+    },
+    "last_edited_by": {
+      "object": "user",
+      "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+    },
+    "cover": null,
+    "icon": null,
+    "parent": {
+      "type": "database_id",
+      "database_id": "7005d0d1-41d3-436c-9f86-526d275c2f10"
+    },
+    "archived": false,
+    "in_trash": false,
+    "is_locked": false,
+    "properties": {
+      "Delight Factor": {
+        "id": "%3CT%7DK",
+        "type": "select",
+        "select": {
+          "id": "`dJz",
+          "name": "🌱 Seed Stage",
+          "color": "red"
+        }
+      },
+      "Organisation Contacts": {
+        "id": "%3Dl%3Fk",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [
+            {
+              "type": "title",
+              "title": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "Sally Grimsley-Ballard",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": true,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Sally Grimsley-Ballard",
+                  "href": null
+                }
+              ]
+            }
+          ],
+          "function": "show_original"
+        }
+      },
+      "Next Funding Opportunity": {
+        "id": "%40_yL",
+        "type": "date",
+        "date": null
+      },
+      "Next Contact Due": {
+        "id": "EuNX",
+        "type": "date",
+        "date": {
+          "start": "2025-09-12",
+          "end": null,
+          "time_zone": null
+        }
+      },
+      "Active Actions Count": {
+        "id": "HGXM",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [
+            {
+              "type": "title",
+              "title": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "Snow Foundation",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Snow Foundation",
+                  "href": null
+                }
+              ]
+            }
+          ],
+          "function": "show_original"
+        }
+      },
+      "Project Status Summary": {
+        "id": "L%7BK~",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [],
+          "function": "show_original"
+        }
+      },
+      "Last Contact Date": {
+        "id": "MFbL",
+        "type": "date",
+        "date": null
+      },
+      "Contact Person": {
+        "id": "MHY_",
+        "type": "relation",
+        "relation": [
+          {
+            "id": "26bebcf9-81cf-80c7-904a-e27ca1afbc13"
+          }
+        ],
+        "has_more": false
+      },
+      "Last Funding Date": {
+        "id": "Mbtd",
+        "type": "date",
+        "date": null
+      },
+      "Next Project Milestone": {
+        "id": "PSt%3F",
+        "type": "rollup",
+        "rollup": {
+          "type": "array",
+          "array": [
+            {
+              "type": "title",
+              "title": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "Goods.",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Goods.",
+                  "href": null
+                }
+              ]
+            }
+          ],
+          "function": "show_original"
+        }
+      },
+      "Video link": {
+        "id": "RHO%5B",
+        "type": "url",
+        "url": null
+      },
+      "Notes": {
+        "id": "SGI%5C",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Project": {
+        "id": "UsNc",
+        "type": "relation",
+        "relation": [
+          {
+            "id": "177ebcf9-81cf-805f-b111-f407079f9794"
+          }
+        ],
+        "has_more": false
+      },
+      "Fun Element": {
+        "id": "%5EiYJ",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Funding Potential": {
+        "id": "_N%40G",
+        "type": "number",
+        "number": null
+      },
+      "Justice Hub Relevance": {
+        "id": "bGJw",
+        "type": "checkbox",
+        "checkbox": false
+      },
+      "Sent date": {
+        "id": "bg%5E%40",
+        "type": "date",
+        "date": null
+      },
+      "Organisation": {
+        "id": "d%40U%3F",
+        "type": "relation",
+        "relation": [
+          {
+            "id": "31dedb9c-7208-421d-94a1-aab00d810c56"
+          }
+        ],
+        "has_more": false
+      },
+      "Communication Type": {
+        "id": "d~%5BX",
+        "type": "select",
+        "select": {
+          "id": "<QqS",
+          "name": "Delight & Excitement",
+          "color": "purple"
+        }
+      },
+      "Status": {
+        "id": "gZqg",
+        "type": "status",
+        "status": {
+          "id": "Z{;S",
+          "name": "Story Prep Needed",
+          "color": "default"
+        }
+      },
+      "Engagement ROI Score": {
+        "id": "gZve",
+        "type": "select",
+        "select": null
+      },
+      "Contact Method": {
+        "id": "j%5D%5C%3D",
+        "type": "select",
+        "select": {
+          "id": "Pq_i",
+          "name": "Email",
+          "color": "yellow"
+        }
+      },
+      "Impact Opportunity Level": {
+        "id": "oUf%3B",
+        "type": "select",
+        "select": null
+      },
+      "Current Mood/Energy": {
+        "id": "soB%3F",
+        "type": "select",
+        "select": {
+          "id": "LDwV",
+          "name": "😴 Needs Spark",
+          "color": "orange"
+        }
+      },
+      "Empathy Ledger Connection": {
+        "id": "uID%3A",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Image": {
+        "id": "ySTr",
+        "type": "files",
+        "files": []
+      },
+      "Current Funding Value": {
+        "id": "z%40SP",
+        "type": "number",
+        "number": null
+      },
+      "Key Message/Story": {
+        "id": "%7CQLD",
+        "type": "rich_text",
+        "rich_text": []
+      },
+      "Content/Communication Name": {
+        "id": "title",
+        "type": "title",
+        "title": [
+          {
+            "type": "text",
+            "text": {
+              "content": "Goods update",
+              "link": null
+            },
+            "annotations": {
+              "bold": false,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "Goods update",
+            "href": null
+          }
+        ]
+      }
+    },
+    "url": "https://www.notion.so/Goods-update-26bebcf981cf802aa442f36625e10205",
+    "public_url": null
+  }
+]

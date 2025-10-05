@@ -10,13 +10,14 @@ import { parse } from 'csv-parse';
 import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
+import { loadEnv } from '../tools/env/load-env.js';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load environment variables
-dotenv.config({ path: path.join(__dirname, '../.env') });
+// Load environment variables (centralized)
+loadEnv({ silent: true });
 
 // Initialize Supabase client
 const supabase = createClient(
@@ -33,7 +34,8 @@ const stats = {
   duplicates: 0,
   messages: 0,
   skills: 0,
-  positions: 0
+  positions: 0,
+  identityLinked: 0
 };
 
 /**
@@ -172,6 +174,24 @@ async function importConnections(connections, source) {
           if (!error) stats.updated++;
         }
         stats.duplicates += updateConnections.length;
+      }
+
+      // Link or create identity map records for any contacts with emails
+      const emailConnections = batch.filter(c => c.email_address);
+      for (const c of emailConnections) {
+        try {
+          const person = await upsertPersonForContact(c);
+          if (person?.person_id && c.linkedin_url) {
+            // Update linkedin_contacts to set person_id where email matches or by URL
+            const { error: linkErr } = await supabase
+              .from('linkedin_contacts')
+              .update({ person_id: person.person_id })
+              .or(`email_address.eq.${c.email_address},linkedin_url.eq.${c.linkedin_url}`);
+            if (!linkErr) stats.identityLinked++;
+          }
+        } catch (e) {
+          // non-fatal; continue
+        }
       }
       
     } catch (error) {
@@ -315,14 +335,38 @@ async function crossReferenceData() {
       
       for (const gmail of gmailContacts) {
         if (gmail.gmail_email) {
-          const { error } = await supabase
+          // Update LinkedIn contact by email if exists
+          await supabase
             .from('linkedin_contacts')
             .update({
               email_address: gmail.gmail_email,
               notion_person_id: gmail.notion_person_id,
-              strategic_value: 'medium' // Has email = more valuable
+              strategic_value: 'medium'
             })
             .eq('email_address', gmail.gmail_email);
+
+          // Ensure identity map exists and is linked
+          const { data: maybeContact } = await supabase
+            .from('linkedin_contacts')
+            .select('id, full_name, email_address')
+            .eq('email_address', gmail.gmail_email)
+            .limit(1)
+            .maybeSingle();
+
+          if (maybeContact) {
+            const pim = await upsertPersonForContact({
+              full_name: maybeContact.full_name,
+              email_address: maybeContact.email_address,
+              id: maybeContact.id
+            });
+            if (pim?.person_id) {
+              await supabase
+                .from('linkedin_contacts')
+                .update({ person_id: pim.person_id })
+                .eq('id', maybeContact.id);
+              stats.identityLinked++;
+            }
+          }
         }
       }
     }
@@ -337,6 +381,40 @@ async function crossReferenceData() {
     
   } catch (error) {
     console.error('❌ Cross-reference error:', error.message);
+  }
+}
+
+/**
+ * Upsert a person identity record for a given contact and return the record
+ */
+async function upsertPersonForContact(contact) {
+  try {
+    const payload = {
+      full_name: contact.full_name || `${contact.first_name || ''} ${contact.last_name || ''}`.trim() || null,
+      email: contact.email_address || null,
+      linkedin_contact_id: contact.id || null,
+    };
+
+    if (!payload.email && !payload.full_name) return null;
+
+    const { data: upserted, error } = await supabase
+      .from('person_identity_map')
+      .upsert(payload, { onConflict: 'email' })
+      .select()
+      .limit(1);
+    if (error) {
+      // If conflict on null email, try insert without onConflict
+      const { data: inserted, error: err2 } = await supabase
+        .from('person_identity_map')
+        .insert(payload)
+        .select()
+        .limit(1);
+      if (err2) return null;
+      return inserted?.[0] || null;
+    }
+    return upserted?.[0] || null;
+  } catch {
+    return null;
   }
 }
 

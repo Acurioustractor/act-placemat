@@ -1,0 +1,175 @@
+version: 1
+
+entities:
+  - code: ACT_PTY_LTD
+    xero_tenant_id: "${XERO_TENANT_ID}"
+    bank_accounts:
+      - name: "Thriday Main"
+      - name: "Thriday GST"
+      - name: "Thriday Tax"
+      - name: "Thriday Profit"
+      - name: "Thriday Opex"
+    tracking:
+      project_property:
+        - "Seed House Witta"
+        - "JusticeHub"
+        - "ACT Core"
+        - "Property SPV 1"
+      line_of_business:
+        - "Consulting"
+        - "Grants_Programs"
+        - "Property_Ops"
+        - "Digital_Products"
+
+thresholds:
+  auto_post_bill_confidence: 0.85
+  auto_match_bank_confidence: 0.90
+  variance_alert_pct: 0.20
+  payment_duedays_warning: 5
+  large_transaction_threshold: 2000
+
+approvals:
+  auto:
+    - rule: "bill.amount < 250 and vendor in known"
+    - rule: "bank.transfer and description contains 'Allocation'"
+    - rule: "bank.transfer and description contains 'Thriday'"
+  propose_only:
+    - rule: "bill.amount >= 250"
+    - rule: "new_bank_rule"
+    - rule: "payment.amount >= 2000"
+    - rule: "bas.variance > 20%"
+  human_signoff:
+    - "BAS_lodgement"
+    - "RDTI_registration"
+    - "payroll_finalisation"
+    - "annual_return"
+
+vendor_rules:
+  - vendor: "Telstra"
+    account: "Telephone & Internet"
+    tax_code: "GST on Expenses"
+    tracking:
+      line_of_business: "ACT Core"
+  - vendor: "Amazon Web Services"
+    account: "Computer Expenses"
+    tax_code: "GST on Expenses"
+    tracking:
+      line_of_business: "Digital_Products"
+  - vendor: "Google"
+    account: "Computer Expenses"
+    tax_code: "GST on Expenses"
+    tracking:
+      line_of_business: "Digital_Products"
+  - vendor: "Uber"
+    account: "Motor Vehicle Expenses"
+    tax_code: "GST on Expenses"
+    tracking:
+      project_property: "ACT Core"
+  - vendor: "Woolworths"
+    account: "General Expenses"
+    tax_code: "GST on Expenses"
+  - vendor: "Bunnings"
+    account: "Repairs and Maintenance"
+    tax_code: "GST on Expenses"
+    tracking:
+      project_property: "Seed House Witta"
+
+privacy:
+  data_minimisation: true
+  retention_months: 84  # 7 years for financial records
+  pii_access_roles:
+    - "FinanceAdmin"
+    - "Director"
+  audit_log_retention_months: 120  # 10 years for audit trails
+
+bas:
+  lodgement_path: "via_registered_agent"  # or "thriday" if switching later
+  frequency: "quarterly"
+  variance_threshold_pct: 15
+  early_prep_days: 14
+
+rdti:
+  year_end: "2025-06-30"
+  registration_deadline: "2026-04-30"
+  advisor_required: true
+  eligible_expense_codes:
+    - "Professional Fees"
+    - "Computer Expenses"
+    - "Research & Development"
+    - "Consulting & Accounting"
+  evidence_retention_years: 5
+
+notifications:
+  slack_channel: "#finance"
+  digest_times:
+    - "09:00"
+  alert_thresholds:
+    large_transaction: 2000
+    variance_alert: 0.20
+    overdue_days: 7
+
+allocations:
+  gst_pct: 10
+  tax_pct: 25
+  profit_pct: 5
+  opex_pct: 60
+
+payroll:
+  directors:
+    - name: "Director A"
+      annual_gross: 50000
+    - name: "Director B"
+      annual_gross: 50000
+  superannuation_rate: 0.115  # 11.5%
+  payg_withholding_table: "weekly"
+
+# Automation vs Human decision rubric
+automation_rubric:
+  criteria:
+    - name: "mission_culture"
+      weight: 5
+      description: "Does this align with ACT's mission and cultural protocols"
+    - name: "safety_compliance"
+      weight: 5
+      description: "Financial compliance and statutory requirements"
+    - name: "community_impact"
+      weight: 4
+      description: "Impact on community and stakeholder relationships"
+    - name: "distinctive_value"
+      weight: 3
+      description: "Preserves what makes ACT unique"
+    - name: "hours_saved"
+      weight: 2
+      description: "Time efficiency gains"
+    - name: "data_quality"
+      weight: 1
+      description: "Accuracy and completeness of data"
+  threshold: 18  # Out of 30 points
+
+# Financial year settings
+financial_year:
+  end_month: 6  # June
+  end_day: 30
+
+# Cash flow forecasting
+forecasting:
+  horizon_weeks: 13
+  confidence_intervals:
+    - 30_day: 0.90  # ±10%
+    - 60_day: 0.80  # ±20%
+    - 90_day: 0.70  # ±30%
+  update_frequency: "daily"
+
+# Banking integration settings
+banking:
+  primary_provider: "Regional Australia Bank"
+  allocation_service: "Thriday"
+  auto_allocation_patterns:
+    - pattern: "GST Transfer"
+      classification: "allocation"
+    - pattern: "Tax Allocation"
+      classification: "allocation"
+    - pattern: "Profit Distribution"
+      classification: "allocation"
+    - pattern: "Auto Allocation"
+      classification: "allocation"

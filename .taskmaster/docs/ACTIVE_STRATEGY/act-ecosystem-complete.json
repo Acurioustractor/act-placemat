@@ -1,0 +1,2810 @@
+{
+  "startTime": 1759530303386,
+  "people": [
+    {
+      "id": "274ebcf9-81cf-813d-aefc-d6b93892576c",
+      "name": "Kenia Miranda Verdugo",
+      "organization": null,
+      "role": "Program Manager",
+      "tags": [],
+      "email": null,
+      "created": "2025-09-20T23:09:00.000Z",
+      "url": "https://www.notion.so/Kenia-Miranda-Verdugo-274ebcf981cf813daefcd6b93892576c"
+    },
+    {
+      "id": "270ebcf9-81cf-80bd-9fbe-e7f398e73458",
+      "name": "Nicholas Marchesi",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-09-16T02:49:00.000Z",
+      "url": "https://www.notion.so/Nicholas-Marchesi-270ebcf981cf80bd9fbee7f398e73458"
+    },
+    {
+      "id": "270ebcf9-81cf-8090-a62f-fe7985b45ac3",
+      "name": "Benjamin Knight",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-09-16T02:49:00.000Z",
+      "url": "https://www.notion.so/Benjamin-Knight-270ebcf981cf8090a62ffe7985b45ac3"
+    },
+    {
+      "id": "270ebcf9-81cf-8077-81cd-dfb0ac62e3f3",
+      "name": "Pollyanna Knight",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-09-16T02:42:00.000Z",
+      "url": "https://www.notion.so/Pollyanna-Knight-270ebcf981cf807781cddfb0ac62e3f3"
+    },
+    {
+      "id": "270ebcf9-81cf-8025-a2c2-ce0eaf0f04a5",
+      "name": "Georgia Falzon",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-09-16T02:42:00.000Z",
+      "url": "https://www.notion.so/Georgia-Falzon-270ebcf981cf8025a2c2ce0eaf0f04a5"
+    },
+    {
+      "id": "270ebcf9-81cf-801e-a554-cc97aaee5ebf",
+      "name": "Micheal",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-09-16T02:41:00.000Z",
+      "url": "https://www.notion.so/Micheal-270ebcf981cf801ea554cc97aaee5ebf"
+    },
+    {
+      "id": "26debcf9-81cf-813d-b9de-f05202015f2f",
+      "name": "Michael Chen",
+      "organization": null,
+      "role": "Senior Officer",
+      "tags": [],
+      "email": "michael.chen@government.act.gov.au",
+      "created": "2025-09-13T23:02:00.000Z",
+      "url": "https://www.notion.so/Michael-Chen-26debcf981cf813db9def05202015f2f"
+    },
+    {
+      "id": "26debcf9-81cf-8111-be0f-cf73654bf457",
+      "name": "Jane Doe",
+      "organization": null,
+      "role": "Director",
+      "tags": [],
+      "email": "jane.doe@justicefoundation.org",
+      "created": "2025-09-13T23:02:00.000Z",
+      "url": "https://www.notion.so/Jane-Doe-26debcf981cf8111be0fcf73654bf457"
+    },
+    {
+      "id": "26debcf9-81cf-81de-ae9b-e2e93002a8bc",
+      "name": "Sarah Williams",
+      "organization": null,
+      "role": "Executive Director",
+      "tags": [],
+      "email": "sarah.williams@philanthropynetwork.org",
+      "created": "2025-09-13T23:02:00.000Z",
+      "url": "https://www.notion.so/Sarah-Williams-26debcf981cf81deae9be2e93002a8bc"
+    },
+    {
+      "id": "26bebcf9-81cf-802b-844c-d391e2b744cb",
+      "name": "Susy Wenitong",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-09-11T22:54:00.000Z",
+      "url": "https://www.notion.so/Susy-Wenitong-26bebcf981cf802b844cd391e2b744cb"
+    },
+    {
+      "id": "26bebcf9-81cf-80c9-b89c-fc94ab43c2ed",
+      "name": "Madeline Alderuccio",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-09-11T22:28:00.000Z",
+      "url": "https://www.notion.so/Madeline-Alderuccio-26bebcf981cf80c9b89cfc94ab43c2ed"
+    },
+    {
+      "id": "26bebcf9-81cf-805f-a435-ed7d0425dae2",
+      "name": "Seide",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-09-11T22:25:00.000Z",
+      "url": "https://www.notion.so/Seide-26bebcf981cf805fa435ed7d0425dae2"
+    },
+    {
+      "id": "26bebcf9-81cf-80d9-9f93-fc3856f9a43a",
+      "name": "Tarik Dallinger-Dimizio",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-09-11T22:21:00.000Z",
+      "url": "https://www.notion.so/Tarik-Dallinger-Dimizio-26bebcf981cf80d99f93fc3856f9a43a"
+    },
+    {
+      "id": "26bebcf9-81cf-8047-871d-e8a78fd7551b",
+      "name": "Carolyn Ludovici",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-09-11T21:34:00.000Z",
+      "url": "https://www.notion.so/Carolyn-Ludovici-26bebcf981cf8047871de8a78fd7551b"
+    },
+    {
+      "id": "26bebcf9-81cf-80c7-904a-e27ca1afbc13",
+      "name": "Sally Grimsley-Ballard",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-09-11T21:11:00.000Z",
+      "url": "https://www.notion.so/Sally-Grimsley-Ballard-26bebcf981cf80c7904ae27ca1afbc13"
+    },
+    {
+      "id": "26bebcf9-81cf-80e2-994d-ce09a4803d73",
+      "name": "Tanya Turner",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-09-11T21:01:00.000Z",
+      "url": "https://www.notion.so/Tanya-Turner-26bebcf981cf80e2994dce09a4803d73"
+    },
+    {
+      "id": "26bebcf9-81cf-8022-a651-d0161ba48aab",
+      "name": "Narelle Gleeson-Henaway",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-09-11T20:48:00.000Z",
+      "url": "https://www.notion.so/Narelle-Gleeson-Henaway-26bebcf981cf8022a651d0161ba48aab"
+    },
+    {
+      "id": "26bebcf9-81cf-800a-a728-fcc05aab833e",
+      "name": "Milsam Sam",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-09-11T20:47:00.000Z",
+      "url": "https://www.notion.so/Milsam-Sam-26bebcf981cf800aa728fcc05aab833e"
+    },
+    {
+      "id": "26bebcf9-81cf-8054-9f5c-fe1fbbb2493f",
+      "name": "Rachel Atkinson",
+      "organization": null,
+      "role": "CEO",
+      "tags": [],
+      "email": null,
+      "created": "2025-09-11T20:45:00.000Z",
+      "url": "https://www.notion.so/Rachel-Atkinson-26bebcf981cf80549f5cfe1fbbb2493f"
+    },
+    {
+      "id": "266ebcf9-81cf-8163-aef8-f48085285b17",
+      "name": "Karen B.",
+      "organization": null,
+      "role": "SEO Account Manager",
+      "tags": [],
+      "email": "outreachseo56@gmail.com",
+      "created": "2025-09-06T23:01:00.000Z",
+      "url": "https://www.notion.so/Karen-B-266ebcf981cf8163aef8f48085285b17"
+    },
+    {
+      "id": "266ebcf9-81cf-81d1-b303-e578a125c965",
+      "name": "Shellee Strickland",
+      "organization": null,
+      "role": "CEO",
+      "tags": [],
+      "email": "shellee.strickland@murrup.org.au",
+      "created": "2025-09-06T23:01:00.000Z",
+      "url": "https://www.notion.so/Shellee-Strickland-266ebcf981cf81d1b303e578a125c965"
+    },
+    {
+      "id": "25febcf9-81cf-818c-86c0-de276f4d0918",
+      "name": "Adam Robinson",
+      "organization": null,
+      "role": "Chief Executive Officer",
+      "tags": [],
+      "email": "adam@streetsmartaustralia.org",
+      "created": "2025-08-30T23:03:00.000Z",
+      "url": "https://www.notion.so/Adam-Robinson-25febcf981cf818c86c0de276f4d0918"
+    },
+    {
+      "id": "25febcf9-81cf-8162-9a96-c8cb1c8a3a98",
+      "name": "Adam Robinson",
+      "organization": null,
+      "role": "Chief Executive Officer",
+      "tags": [],
+      "email": "adam@streetsmartaustralia.org",
+      "created": "2025-08-30T23:02:00.000Z",
+      "url": "https://www.notion.so/Adam-Robinson-25febcf981cf81629a96c8cb1c8a3a98"
+    },
+    {
+      "id": "25debcf9-81cf-802c-8eb1-d83db13ff181",
+      "name": "Uncle Allan Palm Island",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-08-28T22:54:00.000Z",
+      "url": "https://www.notion.so/Uncle-Allan-Palm-Island-25debcf981cf802c8eb1d83db13ff181"
+    },
+    {
+      "id": "25debcf9-81cf-80df-b3b1-c8cec76c1215",
+      "name": "Richard Cassidy",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-08-28T22:54:00.000Z",
+      "url": "https://www.notion.so/Richard-Cassidy-25debcf981cf80dfb3b1c8cec76c1215"
+    },
+    {
+      "id": "25cebcf9-81cf-8067-b7d6-ceb92be1e0e0",
+      "name": "Fiona McLeay (she/her)",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": "fmcleay@gmail.com",
+      "created": "2025-08-27T22:29:00.000Z",
+      "url": "https://www.notion.so/Fiona-McLeay-she-her-25cebcf981cf8067b7d6ceb92be1e0e0"
+    },
+    {
+      "id": "252ebcf9-81cf-81e6-bb85-ef8506922913",
+      "name": "Hannah Tonkin",
+      "organization": null,
+      "role": "Commissioner",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:19:00.000Z",
+      "url": "https://www.notion.so/Hannah-Tonkin-252ebcf981cf81e6bb85ef8506922913"
+    },
+    {
+      "id": "252ebcf9-81cf-816c-aaaa-ffeb800cfdb8",
+      "name": "Professor Eileen Baldry",
+      "organization": null,
+      "role": "Criminologist; Disability & justice",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:16:00.000Z",
+      "url": "https://www.notion.so/Professor-Eileen-Baldry-252ebcf981cf816caaaaffeb800cfdb8"
+    },
+    {
+      "id": "252ebcf9-81cf-81b9-b881-ed8e3f08114e",
+      "name": "Professor Kelly Richards",
+      "organization": null,
+      "role": "Criminologist; Youth justice",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:16:00.000Z",
+      "url": "https://www.notion.so/Professor-Kelly-Richards-252ebcf981cf81b9b881ed8e3f08114e"
+    },
+    {
+      "id": "252ebcf9-81cf-8126-93b1-e915e58e1f06",
+      "name": "Professor Chris Cunneen",
+      "organization": null,
+      "role": "Criminologist; Youth justice",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:16:00.000Z",
+      "url": "https://www.notion.so/Professor-Chris-Cunneen-252ebcf981cf812693b1e915e58e1f06"
+    },
+    {
+      "id": "252ebcf9-81cf-81e0-b0ab-d7f45740efe7",
+      "name": "Fiona Patten",
+      "organization": null,
+      "role": "Justice reform advocate",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:16:00.000Z",
+      "url": "https://www.notion.so/Fiona-Patten-252ebcf981cf81e0b0abd7f45740efe7"
+    },
+    {
+      "id": "252ebcf9-81cf-8129-8fee-f9fc313882ec",
+      "name": "Anne Hollonds",
+      "organization": null,
+      "role": "National Children’s Commissioner",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:16:00.000Z",
+      "url": "https://www.notion.so/Anne-Hollonds-252ebcf981cf81298feef9fc313882ec"
+    },
+    {
+      "id": "252ebcf9-81cf-8198-bc0b-edb525d898ab",
+      "name": "Brodie Germaine",
+      "organization": null,
+      "role": "Founder; Youth mentor",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Brodie-Germaine-252ebcf981cf8198bc0bedb525d898ab"
+    },
+    {
+      "id": "252ebcf9-81cf-8181-9a44-c4db30aa8ba0",
+      "name": "Zita Whalley",
+      "organization": null,
+      "role": "Communications / Partnerships",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Zita-Whalley-252ebcf981cf81819a44c4db30aa8ba0"
+    },
+    {
+      "id": "252ebcf9-81cf-81ba-9279-d14bae92acf2",
+      "name": "Tina Morris",
+      "organization": null,
+      "role": "Head of Communications",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Tina-Morris-252ebcf981cf81ba9279d14bae92acf2"
+    },
+    {
+      "id": "252ebcf9-81cf-81db-88e7-e202c51f81f9",
+      "name": "David McGuire",
+      "organization": null,
+      "role": "CEO",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/David-McGuire-252ebcf981cf81db88e7e202c51f81f9"
+    },
+    {
+      "id": "252ebcf9-81cf-8181-9cdf-caf0b539104c",
+      "name": "Megan Krakouer",
+      "organization": null,
+      "role": "Director; Advocate",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Megan-Krakouer-252ebcf981cf81819cdfcaf0b539104c"
+    },
+    {
+      "id": "252ebcf9-81cf-81f4-b4cc-c93ac45f1122",
+      "name": "Gerry Georgatos",
+      "organization": null,
+      "role": "National Coordinator; Advocate",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Gerry-Georgatos-252ebcf981cf81f4b4ccc93ac45f1122"
+    },
+    {
+      "id": "252ebcf9-81cf-813d-a8d1-cb8794f64570",
+      "name": "Maggie Munn",
+      "organization": null,
+      "role": "First Nations Justice Director",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Maggie-Munn-252ebcf981cf813da8d1cb8794f64570"
+    },
+    {
+      "id": "252ebcf9-81cf-81f5-a25c-e639d839f9eb",
+      "name": "Dr Hannah McGlade",
+      "organization": null,
+      "role": "Academic; UN expert",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Dr-Hannah-McGlade-252ebcf981cf81f5a25ce639d839f9eb"
+    },
+    {
+      "id": "252ebcf9-81cf-818f-9e26-d9f4c33cb5bf",
+      "name": "Shahleena Musk",
+      "organization": null,
+      "role": "Children’s Commissioner",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Shahleena-Musk-252ebcf981cf818f9e26d9f4c33cb5bf"
+    },
+    {
+      "id": "252ebcf9-81cf-81fd-be26-f03caaeeba68",
+      "name": "Brendan Murray",
+      "organization": null,
+      "role": "Former Executive Principal",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Brendan-Murray-252ebcf981cf81fdbe26f03caaeeba68"
+    },
+    {
+      "id": "252ebcf9-81cf-81de-a9ad-e0adc6fb8d6e",
+      "name": "Julie Edwards",
+      "organization": null,
+      "role": "CEO",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Julie-Edwards-252ebcf981cf81dea9ade0adc6fb8d6e"
+    },
+    {
+      "id": "252ebcf9-81cf-816e-b757-d9d54a55bcf5",
+      "name": "Dr Mindy Sotiri",
+      "organization": null,
+      "role": "Executive Director",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Dr-Mindy-Sotiri-252ebcf981cf816eb757d9d54a55bcf5"
+    },
+    {
+      "id": "252ebcf9-81cf-8114-8ae7-d6bcb630553b",
+      "name": "Nicola Forrest",
+      "organization": null,
+      "role": "Co‑founder & Co‑Chair",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Nicola-Forrest-252ebcf981cf81148ae7d6bcb630553b"
+    },
+    {
+      "id": "252ebcf9-81cf-81f1-aa6d-f77b37e3bfc2",
+      "name": "Dylan Voller",
+      "organization": null,
+      "role": "Youth justice advocate; lived experience",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Dylan-Voller-252ebcf981cf81f1aa6df77b37e3bfc2"
+    },
+    {
+      "id": "252ebcf9-81cf-8120-8743-f857cd87c8e5",
+      "name": "Keenan Mundine",
+      "organization": null,
+      "role": "Co‑founder; Lived‑experience advocate",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Keenan-Mundine-252ebcf981cf81208743f857cd87c8e5"
+    },
+    {
+      "id": "252ebcf9-81cf-811f-a561-dd2875dbbe69",
+      "name": "Judge Peter Johnstone",
+      "organization": null,
+      "role": "President",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Judge-Peter-Johnstone-252ebcf981cf811fa561dd2875dbbe69"
+    },
+    {
+      "id": "252ebcf9-81cf-8168-8ca1-dea06aa1636d",
+      "name": "Judge John Robertson (Ret.)",
+      "organization": null,
+      "role": "Former President; Chair (Qld Sentencing Advisory Council)",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Judge-John-Robertson-Ret-252ebcf981cf81688ca1dea06aa1636d"
+    },
+    {
+      "id": "252ebcf9-81cf-8123-88fa-f249f51bd628",
+      "name": "Judge Denis Reynolds (Ret.)",
+      "organization": null,
+      "role": "Former President",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Judge-Denis-Reynolds-Ret-252ebcf981cf812388faf249f51bd628"
+    },
+    {
+      "id": "252ebcf9-81cf-817c-942b-f7bdbedc4d61",
+      "name": "Judge Hylton Quail",
+      "organization": null,
+      "role": "President",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Judge-Hylton-Quail-252ebcf981cf817c942bf7bdbedc4d61"
+    },
+    {
+      "id": "252ebcf9-81cf-8139-97ae-f20bbdffd462",
+      "name": "Michael Berkman",
+      "organization": null,
+      "role": "MP; Justice Reform Advocate",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Michael-Berkman-252ebcf981cf813997aef20bbdffd462"
+    },
+    {
+      "id": "252ebcf9-81cf-8131-b500-df3a94f2e945",
+      "name": "Karly Warner",
+      "organization": null,
+      "role": "CEO",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Karly-Warner-252ebcf981cf8131b500df3a94f2e945"
+    },
+    {
+      "id": "252ebcf9-81cf-818a-a653-e8f007527c42",
+      "name": "Dujuan Hoosan",
+      "organization": null,
+      "role": "Youth advocate & speaker",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Dujuan-Hoosan-252ebcf981cf818aa653e8f007527c42"
+    },
+    {
+      "id": "252ebcf9-81cf-81e1-b1a1-de8da87b132a",
+      "name": "Toby Finlayson",
+      "organization": null,
+      "role": "Co‑founder & Creative Director",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Toby-Finlayson-252ebcf981cf81e1b1a1de8da87b132a"
+    },
+    {
+      "id": "252ebcf9-81cf-8106-ae66-cb5a340dbff3",
+      "name": "Muriel Bamblett",
+      "organization": null,
+      "role": "CEO",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T08:11:00.000Z",
+      "url": "https://www.notion.so/Muriel-Bamblett-252ebcf981cf8106ae66cb5a340dbff3"
+    },
+    {
+      "id": "252ebcf9-81cf-80b5-a47f-e6bf41585e95",
+      "name": "Muriel BamblettMuriel Bamblett",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T07:17:00.000Z",
+      "url": "https://www.notion.so/Muriel-BamblettMuriel-Bamblett-252ebcf981cf80b5a47fe6bf41585e95"
+    },
+    {
+      "id": "252ebcf9-81cf-8038-969d-fe1e3d8a36eb",
+      "name": "Alistair Ferguson",
+      "organization": null,
+      "role": "Founder & Executive Director",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T07:11:00.000Z",
+      "url": "https://www.notion.so/Alistair-Ferguson-252ebcf981cf8038969dfe1e3d8a36eb"
+    },
+    {
+      "id": "252ebcf9-81cf-806d-920d-e050203fdb00",
+      "name": "Sarah Hopkins",
+      "organization": null,
+      "role": "Chairperson",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T07:05:00.000Z",
+      "url": "https://www.notion.so/Sarah-Hopkins-252ebcf981cf806d920de050203fdb00"
+    },
+    {
+      "id": "252ebcf9-81cf-80e5-9f61-e55f4729a5de",
+      "name": "Cheryl Axleby",
+      "organization": null,
+      "role": "Co-chair",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T06:55:00.000Z",
+      "url": "https://www.notion.so/Cheryl-Axleby-252ebcf981cf80e59f61e55f4729a5de"
+    },
+    {
+      "id": "252ebcf9-81cf-80d1-92c2-cd00344f4c53",
+      "name": "Mick Gooda",
+      "organization": null,
+      "role": "Co-Commissioner",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T06:54:00.000Z",
+      "url": "https://www.notion.so/Mick-Gooda-252ebcf981cf80d192c2cd00344f4c53"
+    },
+    {
+      "id": "252ebcf9-81cf-8082-a619-cb6cacffca3b",
+      "name": "Bernie Shakeshaft",
+      "organization": null,
+      "role": "Founder & CEO",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T06:40:00.000Z",
+      "url": "https://www.notion.so/Bernie-Shakeshaft-252ebcf981cf8082a619cb6cacffca3b"
+    },
+    {
+      "id": "252ebcf9-81cf-8036-bdd9-c411ccee9290",
+      "name": "Dr Judy Atkinson",
+      "organization": null,
+      "role": "Emeritus Professor",
+      "tags": [],
+      "email": null,
+      "created": "2025-08-17T06:39:00.000Z",
+      "url": "https://www.notion.so/Dr-Judy-Atkinson-252ebcf981cf8036bdd9c411ccee9290"
+    },
+    {
+      "id": "251ebcf9-81cf-8197-82f8-fc76ca7e75c7",
+      "name": "Kate Bjur",
+      "organization": null,
+      "role": "Chief Executive Officer",
+      "tags": [],
+      "email": "kate@interlaceadvisory.com",
+      "created": "2025-08-16T23:02:00.000Z",
+      "url": "https://www.notion.so/Kate-Bjur-251ebcf981cf819782f8fc76ca7e75c7"
+    },
+    {
+      "id": "251ebcf9-81cf-8174-bbdb-eee8b2e9e870",
+      "name": "G Rangiawha",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": "grangiawha@hotmail.com",
+      "created": "2025-08-16T23:02:00.000Z",
+      "url": "https://www.notion.so/G-Rangiawha-251ebcf981cf8174bbdbeee8b2e9e870"
+    },
+    {
+      "id": "251ebcf9-81cf-8100-927d-c4e7d3aac80a",
+      "name": "Hailey Wetzel",
+      "organization": null,
+      "role": "Coordinator",
+      "tags": [],
+      "email": "HWetzel@picc.com.au",
+      "created": "2025-08-16T23:02:00.000Z",
+      "url": "https://www.notion.so/Hailey-Wetzel-251ebcf981cf8100927dc4e7d3aac80a"
+    },
+    {
+      "id": "251ebcf9-81cf-812b-8aea-e1b3514dfb84",
+      "name": "Matt",
+      "organization": null,
+      "role": "Coordinator",
+      "tags": [],
+      "email": "matt@gcys.org.au",
+      "created": "2025-08-16T23:02:00.000Z",
+      "url": "https://www.notion.so/Matt-251ebcf981cf812b8aeae1b3514dfb84"
+    },
+    {
+      "id": "24aebcf9-81cf-8158-8ce0-e67c0439f2e9",
+      "name": "Jordan Meehan",
+      "organization": null,
+      "role": "Co-founder",
+      "tags": [],
+      "email": "jordan@walkntalkcollective.org.au",
+      "created": "2025-08-09T23:04:00.000Z",
+      "url": "https://www.notion.so/Jordan-Meehan-24aebcf981cf81588ce0e67c0439f2e9"
+    },
+    {
+      "id": "24aebcf9-81cf-81d8-885b-f247b7de7045",
+      "name": "Chris Bennett",
+      "organization": null,
+      "role": "Co-founder",
+      "tags": [],
+      "email": "chris@walkntalkcollective.org.au",
+      "created": "2025-08-09T23:04:00.000Z",
+      "url": "https://www.notion.so/Chris-Bennett-24aebcf981cf81d8885bf247b7de7045"
+    },
+    {
+      "id": "246ebcf9-81cf-815f-81a9-f56d7106844f",
+      "name": "Test Contact from Gmail Intelligence",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": "test@gmainintelligence.com",
+      "created": "2025-08-05T20:13:00.000Z",
+      "url": "https://www.notion.so/Test-Contact-from-Gmail-Intelligence-246ebcf981cf815f81a9f56d7106844f"
+    },
+    {
+      "id": "243ebcf9-81cf-81b9-9ee9-c86af714c709",
+      "name": "David Cant",
+      "organization": null,
+      "role": "Executive Director",
+      "tags": [],
+      "email": "david@teaf.org.au",
+      "created": "2025-08-02T23:08:00.000Z",
+      "url": "https://www.notion.so/David-Cant-243ebcf981cf81b99ee9c86af714c709"
+    },
+    {
+      "id": "243ebcf9-81cf-8159-af8d-e1495b0cda4d",
+      "name": "Anthony Chesler",
+      "organization": null,
+      "role": "CEO",
+      "tags": [],
+      "email": "anthonyc@threadtogether.org",
+      "created": "2025-08-02T23:07:00.000Z",
+      "url": "https://www.notion.so/Anthony-Chesler-243ebcf981cf8159af8de1495b0cda4d"
+    },
+    {
+      "id": "243ebcf9-81cf-8139-a50a-d4e4beb9a9ab",
+      "name": "Larry Fingleson",
+      "organization": null,
+      "role": "Executive Director",
+      "tags": [],
+      "email": "larry@teaf.org.au",
+      "created": "2025-08-02T23:06:00.000Z",
+      "url": "https://www.notion.so/Larry-Fingleson-243ebcf981cf8139a50ad4e4beb9a9ab"
+    },
+    {
+      "id": "243ebcf9-81cf-817c-a80b-c9750a569d80",
+      "name": "Joe Kwon",
+      "organization": null,
+      "role": "CEO",
+      "tags": [],
+      "email": "joe.k@confitpathways.org",
+      "created": "2025-08-02T23:05:00.000Z",
+      "url": "https://www.notion.so/Joe-Kwon-243ebcf981cf817ca80bc9750a569d80"
+    },
+    {
+      "id": "23eebcf9-81cf-8032-b84f-eeb9305ca6de",
+      "name": "Benjamin Croft",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-07-28T20:02:00.000Z",
+      "url": "https://www.notion.so/Benjamin-Croft-23eebcf981cf8032b84feeb9305ca6de"
+    },
+    {
+      "id": "23eebcf9-81cf-80f4-8979-ddd64bdf8895",
+      "name": " Sharon Williams",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-07-28T00:13:00.000Z",
+      "url": "https://www.notion.so/Sharon-Williams-23eebcf981cf80f48979ddd64bdf8895"
+    },
+    {
+      "id": "23eebcf9-81cf-8064-a077-e6b6da0e0535",
+      "name": "Georgia Boe",
+      "organization": null,
+      "role": "Creative Director",
+      "tags": [],
+      "email": "georgia@sharingstoriesfoundation.org",
+      "created": "2025-07-28T00:10:00.000Z",
+      "url": "https://www.notion.so/Georgia-Boe-23eebcf981cf8064a077e6b6da0e0535"
+    },
+    {
+      "id": "23eebcf9-81cf-803e-9ae4-d28a47aa22b0",
+      "name": "Thea Snow",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-07-28T00:09:00.000Z",
+      "url": "https://www.notion.so/Thea-Snow-23eebcf981cf803e9ae4d28a47aa22b0"
+    },
+    {
+      "id": "23cebcf9-81cf-8184-9131-f0a9f8347a4c",
+      "name": "Joseph Friedman",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-07-26T23:03:00.000Z",
+      "url": "https://www.notion.so/Joseph-Friedman-23cebcf981cf81849131f0a9f8347a4c"
+    },
+    {
+      "id": "23cebcf9-81cf-81ba-9c4a-df59dc443687",
+      "name": "Ben Schokman",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-07-26T23:02:00.000Z",
+      "url": "https://www.notion.so/Ben-Schokman-23cebcf981cf81ba9c4adf59dc443687"
+    },
+    {
+      "id": "23aebcf9-81cf-8059-9649-f2701b24329a",
+      "name": "Randell",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-07-24T08:23:00.000Z",
+      "url": "https://www.notion.so/Randell-23aebcf981cf80599649f2701b24329a"
+    },
+    {
+      "id": "234ebcf9-81cf-80a7-9adb-ccabf8066626",
+      "name": "Keiron Lander",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-07-18T09:40:00.000Z",
+      "url": "https://www.notion.so/Keiron-Lander-234ebcf981cf80a79adbccabf8066626"
+    },
+    {
+      "id": "234ebcf9-81cf-80d5-b0d0-e4fa979947da",
+      "name": "Katie Norman",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-07-18T02:50:00.000Z",
+      "url": "https://www.notion.so/Katie-Norman-234ebcf981cf80d5b0d0e4fa979947da"
+    },
+    {
+      "id": "231ebcf9-81cf-80cf-8fa4-edf27b9e4057",
+      "name": "Natalie Lewis",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-07-15T22:03:00.000Z",
+      "url": "https://www.notion.so/Natalie-Lewis-231ebcf981cf80cf8fa4edf27b9e4057"
+    },
+    {
+      "id": "22eebcf9-81cf-81e6-ab40-fe4d920e084f",
+      "name": "Michelle Scott",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": "Michelle.Scott@sport.qld.gov.au",
+      "created": "2025-07-12T23:02:00.000Z",
+      "url": "https://www.notion.so/Michelle-Scott-22eebcf981cf81e6ab40fe4d920e084f"
+    },
+    {
+      "id": "22eebcf9-81cf-8122-b7fc-e8f175bb5088",
+      "name": "Ardi Muckan",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": "Ardi.Muckan@sport.qld.gov.au",
+      "created": "2025-07-12T23:02:00.000Z",
+      "url": "https://www.notion.so/Ardi-Muckan-22eebcf981cf8122b7fce8f175bb5088"
+    },
+    {
+      "id": "22eebcf9-81cf-81e5-8cff-dee7b1443767",
+      "name": "Tahlia Isaac",
+      "organization": null,
+      "role": "Chief Executive Officer",
+      "tags": [],
+      "email": "Tahlia@projectherself.org.au",
+      "created": "2025-07-12T23:02:00.000Z",
+      "url": "https://www.notion.so/Tahlia-Isaac-22eebcf981cf81e58cffdee7b1443767"
+    },
+    {
+      "id": "228ebcf9-81cf-811d-8662-d20103038807",
+      "name": "Justin Welfare",
+      "organization": null,
+      "role": "Project Manager",
+      "tags": [],
+      "email": "jwelfare@qic.com",
+      "created": "2025-07-06T00:47:00.000Z",
+      "url": "https://www.notion.so/Justin-Welfare-228ebcf981cf811d8662d20103038807"
+    },
+    {
+      "id": "228ebcf9-81cf-81a2-941d-f0078f67d2ad",
+      "name": "Julia Payne",
+      "organization": null,
+      "role": "Program Manager",
+      "tags": [],
+      "email": "jpayne@paulramsayfoundation.org.au",
+      "created": "2025-07-06T00:47:00.000Z",
+      "url": "https://www.notion.so/Julia-Payne-228ebcf981cf81a2941df0078f67d2ad"
+    },
+    {
+      "id": "228ebcf9-81cf-8130-930d-eef6b3e58b1d",
+      "name": "Michael Taylor",
+      "organization": null,
+      "role": "Managing Director",
+      "tags": [],
+      "email": "mtaylor@bryanfamilygroup.com.au",
+      "created": "2025-07-06T00:14:00.000Z",
+      "url": "https://www.notion.so/Michael-Taylor-228ebcf981cf8130930deef6b3e58b1d"
+    },
+    {
+      "id": "228ebcf9-81cf-8160-8139-f12cb510a5c6",
+      "name": "Chris Titley",
+      "organization": null,
+      "role": "Director",
+      "tags": [],
+      "email": "chris@sub11.com.au",
+      "created": "2025-07-06T00:13:00.000Z",
+      "url": "https://www.notion.so/Chris-Titley-228ebcf981cf81608139f12cb510a5c6"
+    },
+    {
+      "id": "228ebcf9-81cf-815c-8ae3-e8a91a2e3659",
+      "name": "Matthew Cox",
+      "organization": null,
+      "role": "Executive Director",
+      "tags": [],
+      "email": "mcox@thebryanfoundation.org.au",
+      "created": "2025-07-06T00:13:00.000Z",
+      "url": "https://www.notion.so/Matthew-Cox-228ebcf981cf815c8ae3e8a91a2e3659"
+    },
+    {
+      "id": "227ebcf9-81cf-8159-86a8-c412328d7809",
+      "name": "Sal Biggins",
+      "organization": null,
+      "role": "Partnership Manager",
+      "tags": [],
+      "email": "sbiggins@srau.org.au",
+      "created": "2025-07-05T23:44:00.000Z",
+      "url": "https://www.notion.so/Sal-Biggins-227ebcf981cf815986a8c412328d7809"
+    },
+    {
+      "id": "227ebcf9-81cf-812e-bd19-fb69e218900c",
+      "name": "D'Anne Cowie",
+      "organization": null,
+      "role": "Executive Director",
+      "tags": [],
+      "email": "dcowie@srau.org.au",
+      "created": "2025-07-05T23:44:00.000Z",
+      "url": "https://www.notion.so/D-Anne-Cowie-227ebcf981cf812ebd19fb69e218900c"
+    },
+    {
+      "id": "227ebcf9-81cf-81c9-85ac-e26e12c9f8f7",
+      "name": "Jake Reid",
+      "organization": null,
+      "role": "Co-founder",
+      "tags": [],
+      "email": "jake@endlessparks.com",
+      "created": "2025-07-05T12:13:00.000Z",
+      "url": "https://www.notion.so/Jake-Reid-227ebcf981cf81c985ace26e12c9f8f7"
+    },
+    {
+      "id": "227ebcf9-81cf-8153-9941-ef59f528d883",
+      "name": "April Long",
+      "organization": null,
+      "role": "Chief Executive Officer",
+      "tags": [],
+      "email": "along@srau.org.au",
+      "created": "2025-07-05T12:12:00.000Z",
+      "url": "https://www.notion.so/April-Long-227ebcf981cf81539941ef59f528d883"
+    },
+    {
+      "id": "227ebcf9-81cf-8199-a892-cd9fffda084a",
+      "name": "Cat Sullivan",
+      "organization": null,
+      "role": "First Nations Program and Engagement Specialist",
+      "tags": [],
+      "email": "C.Sullivan@qic.com",
+      "created": "2025-07-05T12:04:00.000Z",
+      "url": "https://www.notion.so/Cat-Sullivan-227ebcf981cf8199a892cd9fffda084a"
+    },
+    {
+      "id": "227ebcf9-81cf-8160-84b9-feb1cf30d888",
+      "name": "Talia Liddle",
+      "organization": null,
+      "role": "Artist",
+      "tags": [],
+      "email": "talialiddle@gmail.com",
+      "created": "2025-07-05T12:01:00.000Z",
+      "url": "https://www.notion.so/Talia-Liddle-227ebcf981cf816084b9feb1cf30d888"
+    },
+    {
+      "id": "227ebcf9-81cf-8106-bad0-f55cfff1557b",
+      "name": "Adam Wenitong",
+      "organization": null,
+      "role": null,
+      "tags": [],
+      "email": null,
+      "created": "2025-07-05T11:46:00.000Z",
+      "url": "https://www.notion.so/Adam-Wenitong-227ebcf981cf8106bad0f55cfff1557b"
+    },
+    {
+      "id": "227ebcf9-81cf-8126-8197-d3b12907b55c",
+      "name": "Lucy McGarry",
+      "organization": null,
+      "role": "Project Manager",
+      "tags": [],
+      "email": "lucy.mcgarry@barklybackbone.com.au",
+      "created": "2025-07-05T11:25:00.000Z",
+      "url": "https://www.notion.so/Lucy-McGarry-227ebcf981cf81268197d3b12907b55c"
+    }
+  ],
+  "orgs": [
+    {
+      "id": "270ebcf9-81cf-8020-99cf-fa5f637f94a5",
+      "name": "ACT",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-09-16T02:46:00.000Z",
+      "url": "https://www.notion.so/ACT-270ebcf981cf802099cffa5f637f94a5"
+    },
+    {
+      "id": "26bebcf9-81cf-80eb-b821-c0568cfc04ab",
+      "name": "Adapt Mentoring",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-09-11T22:53:00.000Z",
+      "url": "https://www.notion.so/Adapt-Mentoring-26bebcf981cf80ebb821c0568cfc04ab"
+    },
+    {
+      "id": "26bebcf9-81cf-808c-a508-ca068e2341e2",
+      "name": "Artist",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-09-11T22:22:00.000Z",
+      "url": "https://www.notion.so/Artist-26bebcf981cf808ca508ca068e2341e2"
+    },
+    {
+      "id": "26bebcf9-81cf-80b6-a4e8-f9a05e7e8964",
+      "name": "Uncle Allan Art",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-09-11T21:58:00.000Z",
+      "url": "https://www.notion.so/Uncle-Allan-Art-26bebcf981cf80b6a4e8f9a05e7e8964"
+    },
+    {
+      "id": "26bebcf9-81cf-80e9-8dd4-da6984308718",
+      "name": "Justice Reform Initiative",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-09-11T21:57:00.000Z",
+      "url": "https://www.notion.so/Justice-Reform-Initiative-26bebcf981cf80e98dd4da6984308718"
+    },
+    {
+      "id": "26bebcf9-81cf-8038-a8df-d6645324082c",
+      "name": "Dusseldorp Forum",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-09-11T21:56:00.000Z",
+      "url": "https://www.notion.so/Dusseldorp-Forum-26bebcf981cf8038a8dfd6645324082c"
+    },
+    {
+      "id": "26bebcf9-81cf-80a9-8615-cd59dd36ca6d",
+      "name": "Fishers Oysters",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-09-11T21:54:00.000Z",
+      "url": "https://www.notion.so/Fishers-Oysters-26bebcf981cf80a98615cd59dd36ca6d"
+    },
+    {
+      "id": "26bebcf9-81cf-80ce-acbb-edfaa9b0e05e",
+      "name": "Plate it Forward",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-09-11T21:54:00.000Z",
+      "url": "https://www.notion.so/Plate-it-Forward-26bebcf981cf80ceacbbedfaa9b0e05e"
+    },
+    {
+      "id": "26bebcf9-81cf-8073-af3f-c328f13214f9",
+      "name": "QLD Office of the Indigenous Commissioner",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-09-11T21:53:00.000Z",
+      "url": "https://www.notion.so/QLD-Office-of-the-Indigenous-Commissioner-26bebcf981cf8073af3fc328f13214f9"
+    },
+    {
+      "id": "26bebcf9-81cf-80ce-afa0-df99f90211d7",
+      "name": "Qld Dept of Disabilities",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-09-11T21:52:00.000Z",
+      "url": "https://www.notion.so/Qld-Dept-of-Disabilities-26bebcf981cf80ceafa0df99f90211d7"
+    },
+    {
+      "id": "26bebcf9-81cf-804a-bebc-d64b2a87f4f8",
+      "name": "Gold Coast Youth Foyer",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-09-11T21:51:00.000Z",
+      "url": "https://www.notion.so/Gold-Coast-Youth-Foyer-26bebcf981cf804abebcd64b2a87f4f8"
+    },
+    {
+      "id": "26bebcf9-81cf-8081-9d87-d047a5cc7181",
+      "name": "Fairfax Foundation",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-09-11T21:49:00.000Z",
+      "url": "https://www.notion.so/Fairfax-Foundation-26bebcf981cf80819d87d047a5cc7181"
+    },
+    {
+      "id": "26bebcf9-81cf-8028-b5fc-f86fb6a77256",
+      "name": "Interlace Advisory",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-09-11T21:46:00.000Z",
+      "url": "https://www.notion.so/Interlace-Advisory-26bebcf981cf8028b5fcf86fb6a77256"
+    },
+    {
+      "id": "26bebcf9-81cf-8041-bf57-ff77bb3d5722",
+      "name": "The Food Connect Shed",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-09-11T21:43:00.000Z",
+      "url": "https://www.notion.so/The-Food-Connect-Shed-26bebcf981cf8041bf57ff77bb3d5722"
+    },
+    {
+      "id": "26bebcf9-81cf-80c8-80d0-d51065d91d9d",
+      "name": "BG Fit",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-09-11T21:42:00.000Z",
+      "url": "https://www.notion.so/BG-Fit-26bebcf981cf80c880d0d51065d91d9d"
+    },
+    {
+      "id": "26bebcf9-81cf-8014-9b14-cc354ebd1b20",
+      "name": "Maningrida Justice Group",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-09-11T21:09:00.000Z",
+      "url": "https://www.notion.so/Maningrida-Justice-Group-26bebcf981cf80149b14cc354ebd1b20"
+    },
+    {
+      "id": "26bebcf9-81cf-8061-84cf-fee60dcef69b",
+      "name": "Bond University",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-09-11T21:08:00.000Z",
+      "url": "https://www.notion.so/Bond-University-26bebcf981cf806184cffee60dcef69b"
+    },
+    {
+      "id": "26bebcf9-81cf-8011-992a-c8bc677eac83",
+      "name": "ConX",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-09-11T21:05:00.000Z",
+      "url": "https://www.notion.so/ConX-26bebcf981cf8011992ac8bc677eac83"
+    },
+    {
+      "id": "252ebcf9-81cf-808a-9edd-ea88025aa10d",
+      "name": "Maranguka Justice Reinvestment",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-08-17T07:15:00.000Z",
+      "url": "https://www.notion.so/Maranguka-Justice-Reinvestment-252ebcf981cf808a9eddea88025aa10d"
+    },
+    {
+      "id": "252ebcf9-81cf-80b3-9d0e-c1659e5f10a8",
+      "name": "Just Reinvest NSW",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-08-17T07:06:00.000Z",
+      "url": "https://www.notion.so/Just-Reinvest-NSW-252ebcf981cf80b39d0ec1659e5f10a8"
+    },
+    {
+      "id": "252ebcf9-81cf-804a-87cd-cfc030416620",
+      "name": "Change the Record",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-08-17T07:04:00.000Z",
+      "url": "https://www.notion.so/Change-the-Record-252ebcf981cf804a87cdcfc030416620"
+    },
+    {
+      "id": "252ebcf9-81cf-80a0-b7ec-e8e9085d780d",
+      "name": "NT Royal Commission into Youth Detention",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-08-17T06:58:00.000Z",
+      "url": "https://www.notion.so/NT-Royal-Commission-into-Youth-Detention-252ebcf981cf80a0b7ece8e9085d780d"
+    },
+    {
+      "id": "252ebcf9-81cf-80af-9e0f-cf2a942c3685",
+      "name": "We Al-li",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-08-17T06:50:00.000Z",
+      "url": "https://www.notion.so/We-Al-li-252ebcf981cf80af9e0fcf2a942c3685"
+    },
+    {
+      "id": "252ebcf9-81cf-8016-9e6e-eb1059be131e",
+      "name": "BackTrack Youth Works",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-08-17T06:44:00.000Z",
+      "url": "https://www.notion.so/BackTrack-Youth-Works-252ebcf981cf80169e6eeb1059be131e"
+    },
+    {
+      "id": "23aebcf9-81cf-8025-9ebe-dc4d23fb2627",
+      "name": "Oonchiumpa",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-07-24T08:23:00.000Z",
+      "url": "https://www.notion.so/Oonchiumpa-23aebcf981cf80259ebedc4d23fb2627"
+    },
+    {
+      "id": "23aebcf9-81cf-80b0-b6de-d61a623b431c",
+      "name": "The Funding Network",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-07-24T08:23:00.000Z",
+      "url": "https://www.notion.so/The-Funding-Network-23aebcf981cf80b0b6ded61a623b431c"
+    },
+    {
+      "id": "23aebcf9-81cf-8081-ad01-fb12a73cbc0b",
+      "name": "Centrecorp",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-07-24T08:23:00.000Z",
+      "url": "https://www.notion.so/Centrecorp-23aebcf981cf8081ad01fb12a73cbc0b"
+    },
+    {
+      "id": "23aebcf9-81cf-80f5-b550-ff6c50d6944f",
+      "name": "MMEIC",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-07-24T08:22:00.000Z",
+      "url": "https://www.notion.so/MMEIC-23aebcf981cf80f5b550ff6c50d6944f"
+    },
+    {
+      "id": "23aebcf9-81cf-8084-9015-e4b3b8f51d38",
+      "name": "MELT",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-07-24T08:22:00.000Z",
+      "url": "https://www.notion.so/MELT-23aebcf981cf80849015e4b3b8f51d38"
+    },
+    {
+      "id": "23aebcf9-81cf-8065-943f-e485c514349c",
+      "name": "Sharing Stories Foundation",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-07-24T08:22:00.000Z",
+      "url": "https://www.notion.so/Sharing-Stories-Foundation-23aebcf981cf8065943fe485c514349c"
+    },
+    {
+      "id": "23aebcf9-81cf-80c6-9e6d-f95ebcc8f898",
+      "name": "Centre for Public Impact",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-07-24T08:21:00.000Z",
+      "url": "https://www.notion.so/Centre-for-Public-Impact-23aebcf981cf80c69e6df95ebcc8f898"
+    },
+    {
+      "id": "23aebcf9-81cf-8058-96e9-db710341e04b",
+      "name": "FRRR",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-07-24T01:05:00.000Z",
+      "url": "https://www.notion.so/FRRR-23aebcf981cf805896e9db710341e04b"
+    },
+    {
+      "id": "238ebcf9-81cf-8018-b64c-f9f4c59cf89e",
+      "name": "Red Dust",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-07-22T00:31:00.000Z",
+      "url": "https://www.notion.so/Red-Dust-238ebcf981cf8018b64cf9f4c59cf89e"
+    },
+    {
+      "id": "237ebcf9-81cf-8057-aabe-f76f79348e26",
+      "name": "QFCC",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-07-21T23:29:00.000Z",
+      "url": "https://www.notion.so/QFCC-237ebcf981cf8057aabef76f79348e26"
+    },
+    {
+      "id": "237ebcf9-81cf-80b4-8a50-e4572d3a588f",
+      "name": "ANAT",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-07-21T23:23:00.000Z",
+      "url": "https://www.notion.so/ANAT-237ebcf981cf80b48a50e4572d3a588f"
+    },
+    {
+      "id": "237ebcf9-81cf-80c6-8344-ce0db56e21b8",
+      "name": "Barkly Backbone",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-07-21T22:59:00.000Z",
+      "url": "https://www.notion.so/Barkly-Backbone-237ebcf981cf80c68344ce0db56e21b8"
+    },
+    {
+      "id": "237ebcf9-81cf-80b7-aaf2-db7c3ba6fcfe",
+      "name": "Wilya Janta",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-07-21T22:58:00.000Z",
+      "url": "https://www.notion.so/Wilya-Janta-237ebcf981cf80b7aaf2db7c3ba6fcfe"
+    },
+    {
+      "id": "234ebcf9-81cf-800f-a913-ce2b0d397423",
+      "name": "Young Guns",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-07-18T09:40:00.000Z",
+      "url": "https://www.notion.so/Young-Guns-234ebcf981cf800fa913ce2b0d397423"
+    },
+    {
+      "id": "234ebcf9-81cf-807d-8ff7-fc94ac7f4d39",
+      "name": "PICC",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2025-07-18T07:10:00.000Z",
+      "url": "https://www.notion.so/PICC-234ebcf981cf807d8ff7fc94ac7f4d39"
+    },
+    {
+      "id": "143ebcf9-81cf-808a-b82d-f4dc4e4edb0d",
+      "name": "Diagrama",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2024-11-19T19:46:00.000Z",
+      "url": "https://www.notion.so/Diagrama-143ebcf981cf808ab82df4dc4e4edb0d"
+    },
+    {
+      "id": "143ebcf9-81cf-801c-bfd5-f44456087f37",
+      "name": "SMART Recovery",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2024-11-19T01:04:00.000Z",
+      "url": "https://www.notion.so/SMART-Recovery-143ebcf981cf801cbfd5f44456087f37"
+    },
+    {
+      "id": "8012579d-233d-4b98-8f69-5060866fa2ad",
+      "name": "Greenfox",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2024-05-12T08:56:00.000Z",
+      "url": "https://www.notion.so/Greenfox-8012579d233d4b988f695060866fa2ad"
+    },
+    {
+      "id": "e63ad21e-77fd-401c-8876-9140b0c441df",
+      "name": "Sunshine Coast Grant",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2024-04-12T00:57:00.000Z",
+      "url": "https://www.notion.so/Sunshine-Coast-Grant-e63ad21e77fd401c88769140b0c441df"
+    },
+    {
+      "id": "0a393800-cc8f-4386-9ca5-096a3a9c1460",
+      "name": "Orange Sky",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2024-03-10T20:38:00.000Z",
+      "url": "https://www.notion.so/Orange-Sky-0a393800cc8f43869ca5096a3a9c1460"
+    },
+    {
+      "id": "9b526617-bfd5-43de-af46-456f65fb9aac",
+      "name": "Youth Justice",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2024-01-22T22:48:00.000Z",
+      "url": "https://www.notion.so/Youth-Justice-9b526617bfd543deaf46456f65fb9aac"
+    },
+    {
+      "id": "5d4260ae-3011-4d3c-ae60-8099606d9c13",
+      "name": "Tourism QLD",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2024-01-22T22:46:00.000Z",
+      "url": "https://www.notion.so/Tourism-QLD-5d4260ae30114d3cae608099606d9c13"
+    },
+    {
+      "id": "2bfbf1b4-bb32-43ee-9d74-651cdd72786f",
+      "name": "June Canavan Foundation",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2024-01-22T22:45:00.000Z",
+      "url": "https://www.notion.so/June-Canavan-Foundation-2bfbf1b4bb3243ee9d74651cdd72786f"
+    },
+    {
+      "id": "799d85fe-bed3-4bea-85b8-09ec43e7abc2",
+      "name": "QLD gives",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2024-01-22T22:25:00.000Z",
+      "url": "https://www.notion.so/QLD-gives-799d85febed34bea85b809ec43e7abc2"
+    },
+    {
+      "id": "2ba0d198-998d-46f5-a640-73302b6978fc",
+      "name": "Worldview",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2024-01-18T20:23:00.000Z",
+      "url": "https://www.notion.so/Worldview-2ba0d198998d46f5a64073302b6978fc"
+    },
+    {
+      "id": "6f6580fa-6bf0-4b25-a306-c4035c7e417f",
+      "name": "QLD Gambling Grant",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2023-10-04T20:38:00.000Z",
+      "url": "https://www.notion.so/QLD-Gambling-Grant-6f6580fa6bf04b25a306c4035c7e417f"
+    },
+    {
+      "id": "6e8a70b2-382c-4de0-a450-6a35d68adda2",
+      "name": "Griffiths Uni",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2023-07-18T20:34:00.000Z",
+      "url": "https://www.notion.so/Griffiths-Uni-6e8a70b2382c4de0a4506a35d68adda2"
+    },
+    {
+      "id": "4c2a01c5-bfb0-4e5e-8dc0-16ceca4d4b38",
+      "name": "Paul Ramsey",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2023-05-22T23:44:00.000Z",
+      "url": "https://www.notion.so/Paul-Ramsey-4c2a01c5bfb04e5e8dc016ceca4d4b38"
+    },
+    {
+      "id": "543a4a68-60bc-438e-bd37-8bb75447302e",
+      "name": "Going North & Goods.",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2022-12-30T03:52:00.000Z",
+      "url": "https://www.notion.so/Going-North-Goods-543a4a6860bc438ebd378bb75447302e"
+    },
+    {
+      "id": "174f01dc-1179-455d-a967-fa2eeb3b4383",
+      "name": "Outback Futures",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2022-12-30T03:47:00.000Z",
+      "url": "https://www.notion.so/Outback-Futures-174f01dc1179455da967fa2eeb3b4383"
+    },
+    {
+      "id": "31654bbe-3046-4b0a-8796-4d316e2471d1",
+      "name": "Make Shift",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2022-12-30T03:37:00.000Z",
+      "url": "https://www.notion.so/Make-Shift-31654bbe30464b0a87964d316e2471d1"
+    },
+    {
+      "id": "9666cd11-9ee4-438e-a391-348517af6fc4",
+      "name": "Move and Groove",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2022-12-30T03:29:00.000Z",
+      "url": "https://www.notion.so/Move-and-Groove-9666cd119ee4438ea391348517af6fc4"
+    },
+    {
+      "id": "7fd17cf1-2dd8-40e0-9f45-c784dbf7a967",
+      "name": "Going North Agency NT",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2022-12-30T03:26:00.000Z",
+      "url": "https://www.notion.so/Going-North-Agency-NT-7fd17cf12dd840e09f45c784dbf7a967"
+    },
+    {
+      "id": "a6ec782e-1316-4c28-8ef8-8d87a5480020",
+      "name": "University Sunshine Coast",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2022-12-30T02:11:00.000Z",
+      "url": "https://www.notion.so/University-Sunshine-Coast-a6ec782e13164c288ef88d87a5480020"
+    },
+    {
+      "id": "ed9fb44d-4049-49f7-933c-66ffd211136c",
+      "name": "Hutchinson Builders",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2022-12-11T21:09:00.000Z",
+      "url": "https://www.notion.so/Hutchinson-Builders-ed9fb44d404949f7933c66ffd211136c"
+    },
+    {
+      "id": "6510eb82-cd43-479d-b858-d4c95d9ba221",
+      "name": "Love Honey",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2022-12-11T21:02:00.000Z",
+      "url": "https://www.notion.so/Love-Honey-6510eb82cd43479db858d4c95d9ba221"
+    },
+    {
+      "id": "67503d0c-eade-40e6-9d8c-b5ee00f3440c",
+      "name": "Winnings",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2022-12-11T20:58:00.000Z",
+      "url": "https://www.notion.so/Winnings-67503d0ceade40e69d8cb5ee00f3440c"
+    },
+    {
+      "id": "f8f63672-e4d2-414f-893b-e20be4458d81",
+      "name": "Class",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2022-10-22T05:06:00.000Z",
+      "url": "https://www.notion.so/Class-f8f63672e4d2414f893be20be4458d81"
+    },
+    {
+      "id": "31dedb9c-7208-421d-94a1-aab00d810c56",
+      "name": "Snow Foundation",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2022-10-22T01:17:00.000Z",
+      "url": "https://www.notion.so/Snow-Foundation-31dedb9c7208421d94a1aab00d810c56"
+    },
+    {
+      "id": "18db479e-1682-4655-a067-eeadbc6c8e3b",
+      "name": "VinoMofo",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2022-10-21T22:12:00.000Z",
+      "url": "https://www.notion.so/VinoMofo-18db479e16824655a067eeadbc6c8e3b"
+    },
+    {
+      "id": "3446d71e-3c3f-414c-81dd-b65140a7fb2a",
+      "name": "PwC",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2022-10-21T22:12:00.000Z",
+      "url": "https://www.notion.so/PwC-3446d71e3c3f414c81ddb65140a7fb2a"
+    },
+    {
+      "id": "8c034e14-51b2-4323-9e7d-40b663f007cb",
+      "name": "Deadly Science",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2022-10-21T22:12:00.000Z",
+      "url": "https://www.notion.so/Deadly-Science-8c034e1451b243239e7d40b663f007cb"
+    },
+    {
+      "id": "221df255-d2fb-4d29-8bb4-7ee98ce5e00e",
+      "name": "JosephMark",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2022-10-21T22:11:00.000Z",
+      "url": "https://www.notion.so/JosephMark-221df255d2fb4d298bb47ee98ce5e00e"
+    },
+    {
+      "id": "8a7fe18f-02f4-433c-aeba-f98cb5b8cd18",
+      "name": "Canva",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2022-10-21T22:11:00.000Z",
+      "url": "https://www.notion.so/Canva-8a7fe18f02f4433caebaf98cb5b8cd18"
+    },
+    {
+      "id": "b4888f9d-fe20-47ef-a3d9-9e2ac3311d43",
+      "name": "Salesforce",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2022-10-21T22:11:00.000Z",
+      "url": "https://www.notion.so/Salesforce-b4888f9dfe2047efa3d99e2ac3311d43"
+    },
+    {
+      "id": "4d1672f6-508e-4fa8-9f1f-1112805bdd57",
+      "name": "AIME",
+      "type": null,
+      "sector": null,
+      "tags": [],
+      "created": "2022-10-21T21:56:00.000Z",
+      "url": "https://www.notion.so/AIME-4d1672f6508e4fa89f1f1112805bdd57"
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "273ebcf9-81cf-8092-af75-f86d566368ca",
+      "name": "Regional Arts Fellowship",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-09-19T20:46:00.000Z",
+      "url": "https://www.notion.so/Regional-Arts-Fellowship-273ebcf981cf8092af75f86d566368ca"
+    },
+    {
+      "id": "273ebcf9-81cf-8091-92e9-df8e69632f6f",
+      "name": "Snow Fellowship",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-09-19T20:46:00.000Z",
+      "url": "https://www.notion.so/Snow-Fellowship-273ebcf981cf809192e9df8e69632f6f"
+    },
+    {
+      "id": "26bebcf9-81cf-80fe-b7f2-fa1a6add4bb1",
+      "name": "Uncle Allan Website",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-09-11T21:58:00.000Z",
+      "url": "https://www.notion.so/Uncle-Allan-Website-26bebcf981cf80feb7f2fa1a6add4bb1"
+    },
+    {
+      "id": "26bebcf9-81cf-8074-a0a7-c5b1acc76770",
+      "name": "Fishers Oysters Tours",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-09-11T21:54:00.000Z",
+      "url": "https://www.notion.so/Fishers-Oysters-Tours-26bebcf981cf8074a0a7c5b1acc76770"
+    },
+    {
+      "id": "26bebcf9-81cf-80c9-a5ee-feaff8ab9852",
+      "name": "Justice Mapping FRRR",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-09-11T21:46:00.000Z",
+      "url": "https://www.notion.so/Justice-Mapping-FRRR-26bebcf981cf80c9a5eefeaff8ab9852"
+    },
+    {
+      "id": "26bebcf9-81cf-807e-9b41-c4dfadf89864",
+      "name": "Bali Founders Retreat",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-09-11T21:41:00.000Z",
+      "url": "https://www.notion.so/Bali-Founders-Retreat-26bebcf981cf807e9b41c4dfadf89864"
+    },
+    {
+      "id": "26bebcf9-81cf-8097-a066-e61db20645be",
+      "name": "For those who care",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-09-11T21:09:00.000Z",
+      "url": "https://www.notion.so/For-those-who-care-26bebcf981cf8097a066e61db20645be"
+    },
+    {
+      "id": "26bebcf9-81cf-8035-954f-f84979aeef2f",
+      "name": "June's Patch",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-09-11T21:08:00.000Z",
+      "url": "https://www.notion.so/June-s-Patch-26bebcf981cf8035954ff84979aeef2f"
+    },
+    {
+      "id": "26bebcf9-81cf-8014-9849-d653b3181f88",
+      "name": "Contained",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-09-11T21:07:00.000Z",
+      "url": "https://www.notion.so/Contained-26bebcf981cf80149849d653b3181f88"
+    },
+    {
+      "id": "26bebcf9-81cf-80a8-8bec-c70abecb792f",
+      "name": "PICC Hull River Trip",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-09-11T20:46:00.000Z",
+      "url": "https://www.notion.so/PICC-Hull-River-Trip-26bebcf981cf80a88becc70abecb792f"
+    },
+    {
+      "id": "23aebcf9-81cf-80c4-80ca-d6fa622baeb1",
+      "name": "Backing the Future - FRRR",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-24T01:05:00.000Z",
+      "url": "https://www.notion.so/Backing-the-Future-FRRR-23aebcf981cf80c480cad6fa622baeb1"
+    },
+    {
+      "id": "239ebcf9-81cf-8033-8e54-d467814128d5",
+      "name": "MingaMinga Rangers Support",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-23T23:19:00.000Z",
+      "url": "https://www.notion.so/MingaMinga-Rangers-Support-239ebcf981cf80338e54d467814128d5"
+    },
+    {
+      "id": "239ebcf9-81cf-801a-a197-d77d4ad9c8c2",
+      "name": "Oonchiumpa Design and Strategy",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-23T23:18:00.000Z",
+      "url": "https://www.notion.so/Oonchiumpa-Design-and-Strategy-239ebcf981cf801aa197d77d4ad9c8c2"
+    },
+    {
+      "id": "239ebcf9-81cf-8025-8033-ea563384819e",
+      "name": "JusticeHub Pitch",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-23T23:02:00.000Z",
+      "url": "https://www.notion.so/JusticeHub-Pitch-239ebcf981cf80258033ea563384819e"
+    },
+    {
+      "id": "239ebcf9-81cf-80b2-9fc6-f51e9510c3d3",
+      "name": "The Harvest Support",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-23T22:55:00.000Z",
+      "url": "https://www.notion.so/The-Harvest-Support-239ebcf981cf80b29fc6f51e9510c3d3"
+    },
+    {
+      "id": "238ebcf9-81cf-80c9-8a97-e99cc645a6c0",
+      "name": "Centre for Public Impact",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-22T03:11:00.000Z",
+      "url": "https://www.notion.so/Centre-for-Public-Impact-238ebcf981cf80c98a97e99cc645a6c0"
+    },
+    {
+      "id": "238ebcf9-81cf-8045-b1e8-e078c49ff894",
+      "name": "Centrecorp Washers and beds",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-22T00:34:00.000Z",
+      "url": "https://www.notion.so/Centrecorp-Washers-and-beds-238ebcf981cf8045b1e8e078c49ff894"
+    },
+    {
+      "id": "238ebcf9-81cf-8092-8442-ee973f0f9fbc",
+      "name": "MELT",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-22T00:33:00.000Z",
+      "url": "https://www.notion.so/MELT-238ebcf981cf80928442ee973f0f9fbc"
+    },
+    {
+      "id": "238ebcf9-81cf-80e9-9153-c12d48160916",
+      "name": "TFN Goods.",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-22T00:32:00.000Z",
+      "url": "https://www.notion.so/TFN-Goods-238ebcf981cf80e99153c12d48160916"
+    },
+    {
+      "id": "238ebcf9-81cf-802f-87c1-d39e42af47ae",
+      "name": "RED DUST Beds",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-22T00:20:00.000Z",
+      "url": "https://www.notion.so/RED-DUST-Beds-238ebcf981cf802f87c1d39e42af47ae"
+    },
+    {
+      "id": "238ebcf9-81cf-805d-9c25-eb1581ce4151",
+      "name": "Climate Justice Innovation Lab Research / website",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-22T00:05:00.000Z",
+      "url": "https://www.notion.so/Climate-Justice-Innovation-Lab-Research-website-238ebcf981cf805d9c25eb1581ce4151"
+    },
+    {
+      "id": "238ebcf9-81cf-80ec-992c-c22e7a642f54",
+      "name": "NAIDOC Filming ",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-22T00:02:00.000Z",
+      "url": "https://www.notion.so/NAIDOC-Filming-238ebcf981cf80ec992cc22e7a642f54"
+    },
+    {
+      "id": "238ebcf9-81cf-8042-8aed-c11be68d20ed",
+      "name": "Maningrida Impact Measurement and Story",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-22T00:02:00.000Z",
+      "url": "https://www.notion.so/Maningrida-Impact-Measurement-and-Story-238ebcf981cf80428aedc11be68d20ed"
+    },
+    {
+      "id": "238ebcf9-81cf-80a8-88bb-c321b300f0cc",
+      "name": "Oonchiumpa Station Build",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-22T00:01:00.000Z",
+      "url": "https://www.notion.so/Oonchiumpa-Station-Build-238ebcf981cf80a888bbc321b300f0cc"
+    },
+    {
+      "id": "237ebcf9-81cf-809d-858d-fb3f04c20ab6",
+      "name": "BG Fit - Kickstarter",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-21T23:59:00.000Z",
+      "url": "https://www.notion.so/BG-Fit-Kickstarter-237ebcf981cf809d858dfb3f04c20ab6"
+    },
+    {
+      "id": "237ebcf9-81cf-8084-a968-d705bbea8103",
+      "name": "BG Fit - Police",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-21T23:59:00.000Z",
+      "url": "https://www.notion.so/BG-Fit-Police-237ebcf981cf8084a968d705bbea8103"
+    },
+    {
+      "id": "237ebcf9-81cf-8062-b2c1-e3f105ac02de",
+      "name": "BG Fit - Qld Gives",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-21T23:58:00.000Z",
+      "url": "https://www.notion.so/BG-Fit-Qld-Gives-237ebcf981cf8062b2c1e3f105ac02de"
+    },
+    {
+      "id": "237ebcf9-81cf-80ed-a099-fe8c8167e169",
+      "name": "SMART Connect",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-21T23:58:00.000Z",
+      "url": "https://www.notion.so/SMART-Connect-237ebcf981cf80eda099fe8c8167e169"
+    },
+    {
+      "id": "237ebcf9-81cf-8053-8589-edbc0dbc511a",
+      "name": "Goods. Snow Foundation 2025 Wages",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-21T23:57:00.000Z",
+      "url": "https://www.notion.so/Goods-Snow-Foundation-2025-Wages-237ebcf981cf80538589edbc0dbc511a"
+    },
+    {
+      "id": "237ebcf9-81cf-806d-97d9-cbdc9bbccb8f",
+      "name": "Sharing Stories Foundation Website",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-21T23:36:00.000Z",
+      "url": "https://www.notion.so/Sharing-Stories-Foundation-Website-237ebcf981cf806d97d9cbdc9bbccb8f"
+    },
+    {
+      "id": "237ebcf9-81cf-8041-8792-f16ce415a1be",
+      "name": "Diagrama role",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-21T23:35:00.000Z",
+      "url": "https://www.notion.so/Diagrama-role-237ebcf981cf80418792f16ce415a1be"
+    },
+    {
+      "id": "237ebcf9-81cf-807f-8629-c527a664663f",
+      "name": "QFCC Empathy Ledger Build and Support",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-21T23:28:00.000Z",
+      "url": "https://www.notion.so/QFCC-Empathy-Ledger-Build-and-Support-237ebcf981cf807f8629c527a664663f"
+    },
+    {
+      "id": "237ebcf9-81cf-8058-9619-decb5923c09c",
+      "name": "PICC Photo Kiosk",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-21T23:23:00.000Z",
+      "url": "https://www.notion.so/PICC-Photo-Kiosk-237ebcf981cf80589619decb5923c09c"
+    },
+    {
+      "id": "237ebcf9-81cf-802b-981a-daf147c94c90",
+      "name": "ANAT Confessional and support",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-21T23:23:00.000Z",
+      "url": "https://www.notion.so/ANAT-Confessional-and-support-237ebcf981cf802b981adaf147c94c90"
+    },
+    {
+      "id": "237ebcf9-81cf-8035-ba7c-ccbeb58a5ecd",
+      "name": "PICC Storm Stories",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-21T23:00:00.000Z",
+      "url": "https://www.notion.so/PICC-Storm-Stories-237ebcf981cf8035ba7cccbeb58a5ecd"
+    },
+    {
+      "id": "234ebcf9-81cf-80a6-9fc3-f04fd192ed7c",
+      "name": "Digital Communications Contract",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-18T09:42:00.000Z",
+      "url": "https://www.notion.so/Digital-Communications-Contract-234ebcf981cf80a69fc3f04fd192ed7c"
+    },
+    {
+      "id": "234ebcf9-81cf-8040-9e34-c78245988e2b",
+      "name": "Backbone Mapping",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-18T09:41:00.000Z",
+      "url": "https://www.notion.so/Backbone-Mapping-234ebcf981cf80409e34c78245988e2b"
+    },
+    {
+      "id": "234ebcf9-81cf-8042-b364-f7d86c5602f2",
+      "name": "PICC Annual Report Contract",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-18T09:41:00.000Z",
+      "url": "https://www.notion.so/PICC-Annual-Report-Contract-234ebcf981cf8042b364f7d86c5602f2"
+    },
+    {
+      "id": "234ebcf9-81cf-80fe-9dc6-e14895bea8dc",
+      "name": "Custodial Pathways Partnership",
+      "status": null,
+      "type": null,
+      "organizations": [],
+      "created": "2025-07-18T09:39:00.000Z",
+      "url": "https://www.notion.so/Custodial-Pathways-Partnership-234ebcf981cf80fe9dc6e14895bea8dc"
+    }
+  ],
+  "projects": [
+    {
+      "id": "99448c88-f314-4ee8-a493-03b4d51e1e48",
+      "title": "Active Projects Overview 🌱",
+      "status": "Unknown",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-09-28T07:18:00.000Z",
+      "lastEdited": "2025-09-28T07:31:00.000Z",
+      "url": "https://www.notion.so/Active-Projects-Overview-99448c88f3144ee8a49303b4d51e1e48"
+    },
+    {
+      "id": "279ebcf9-81cf-8040-9e15-ee19c87d04d9",
+      "title": "Fairfax & PLACE tech ",
+      "status": "Unknown",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-09-25T20:27:00.000Z",
+      "lastEdited": "2025-09-30T22:49:00.000Z",
+      "url": "https://www.notion.so/Fairfax-PLACE-tech-279ebcf981cf80409e15ee19c87d04d9"
+    },
+    {
+      "id": "279ebcf9-81cf-8063-b171-d0f90e416ebb",
+      "title": "Travelling women’s car | Cultural preservation - draft",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-09-25T09:43:00.000Z",
+      "lastEdited": "2025-09-25T09:43:00.000Z",
+      "url": "https://www.notion.so/Travelling-women-s-car-Cultural-preservation-draft-279ebcf981cf8063b171d0f90e416ebb"
+    },
+    {
+      "id": "278ebcf9-81cf-8065-a0e5-cbbd65d3e8d1",
+      "title": "Murrup + ACT",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-09-24T22:46:00.000Z",
+      "lastEdited": "2025-09-25T20:38:00.000Z",
+      "url": "https://www.notion.so/Murrup-ACT-278ebcf981cf8065a0e5cbbd65d3e8d1"
+    },
+    {
+      "id": "272ebcf9-81cf-80e4-94ed-f3d030aa1c44",
+      "title": "Travelling women’s car | Cultural preservation + connection \n",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-09-18T08:57:00.000Z",
+      "lastEdited": "2025-09-25T20:39:00.000Z",
+      "url": "https://www.notion.so/Travelling-women-s-car-Cultural-preservation-connection-272ebcf981cf80e494edf3d030aa1c44"
+    },
+    {
+      "id": "267ebcf9-81cf-80b8-ad56-d7c0ee509fcf",
+      "title": "10x10 Community Capital Leadership Retreat",
+      "status": "Unknown",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-09-07T23:01:00.000Z",
+      "lastEdited": "2025-09-24T02:53:00.000Z",
+      "url": "https://www.notion.so/10x10-Community-Capital-Leadership-Retreat-267ebcf981cf80b8ad56d7c0ee509fcf"
+    },
+    {
+      "id": "265ebcf9-81cf-802b-bb31-fe479e378f01",
+      "title": "Regional Arts Fellowship",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-09-05T10:47:00.000Z",
+      "lastEdited": "2025-09-10T03:00:00.000Z",
+      "url": "https://www.notion.so/Regional-Arts-Fellowship-265ebcf981cf802bbb31fe479e378f01"
+    },
+    {
+      "id": "261ebcf9-81cf-8009-b935-d0224f7ae130",
+      "title": "PICC Elders' trip to Hull River in October",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-09-01T21:02:00.000Z",
+      "lastEdited": "2025-09-10T02:59:00.000Z",
+      "url": "https://www.notion.so/PICC-Elders-trip-to-Hull-River-in-October-261ebcf981cf8009b935d0224f7ae130"
+    },
+    {
+      "id": "261ebcf9-81cf-807c-a602-c1fb446853ff",
+      "title": "Uncle Allan Palm Island Art",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-09-01T07:46:00.000Z",
+      "lastEdited": "2025-09-03T02:42:00.000Z",
+      "url": "https://www.notion.so/Uncle-Allan-Palm-Island-Art-261ebcf981cf807ca602c1fb446853ff"
+    },
+    {
+      "id": "260ebcf9-81cf-8023-9896-d136e5084773",
+      "title": "SMART Connect",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-08-31T09:47:00.000Z",
+      "lastEdited": "2025-10-03T20:42:00.000Z",
+      "url": "https://www.notion.so/SMART-Connect-260ebcf981cf80239896d136e5084773"
+    },
+    {
+      "id": "254ebcf9-81cf-805a-a2a6-ed1903eb67ad",
+      "title": "Go big // Funding ACT",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-08-19T21:06:00.000Z",
+      "lastEdited": "2025-09-10T02:59:00.000Z",
+      "url": "https://www.notion.so/Go-big-Funding-ACT-254ebcf981cf805aa2a6ed1903eb67ad"
+    },
+    {
+      "id": "253ebcf9-81cf-80e8-a8a8-d5dc42530cc5",
+      "title": "PICC Townsville Precinct",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-08-18T08:20:00.000Z",
+      "lastEdited": "2025-09-10T02:59:00.000Z",
+      "url": "https://www.notion.so/PICC-Townsville-Precinct-253ebcf981cf80e8a8a8d5dc42530cc5"
+    },
+    {
+      "id": "252ebcf9-81cf-80c9-9d3f-cc1d2d507982",
+      "title": "RPPP Stream Two: Precinct delivery",
+      "status": "Ideation 🌀",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-08-17T01:04:00.000Z",
+      "lastEdited": "2025-08-25T07:45:00.000Z",
+      "url": "https://www.notion.so/RPPP-Stream-Two-Precinct-delivery-252ebcf981cf80c99d3fcc1d2d507982"
+    },
+    {
+      "id": "23cebcf9-81cf-8007-bcd2-ca49d1256719",
+      "title": "MingaMinga Rangers",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-07-26T02:09:00.000Z",
+      "lastEdited": "2025-09-10T02:58:00.000Z",
+      "url": "https://www.notion.so/MingaMinga-Rangers-23cebcf981cf8007bcd2ca49d1256719"
+    },
+    {
+      "id": "235ebcf9-81cf-8172-b0ee-ccf0ebb01fd3",
+      "title": "NFP leaders interview project",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [
+        "Collaboration",
+        "Research",
+        "Strategy"
+      ],
+      "description": "",
+      "created": "2025-07-19T02:22:00.000Z",
+      "lastEdited": "2025-09-10T02:58:00.000Z",
+      "url": "https://www.notion.so/NFP-leaders-interview-project-235ebcf981cf8172b0eeccf0ebb01fd3"
+    },
+    {
+      "id": "22febcf9-81cf-800a-b4a5-ce2fa870a03d",
+      "title": "Designing for Obsolescence",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-07-13T20:34:00.000Z",
+      "lastEdited": "2025-09-10T02:52:00.000Z",
+      "url": "https://www.notion.so/Designing-for-Obsolescence-22febcf981cf800ab4a5ce2fa870a03d"
+    },
+    {
+      "id": "22eebcf9-81cf-808f-bad4-f9e0a6640252",
+      "title": "PICC Annual Report",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-07-12T02:11:00.000Z",
+      "lastEdited": "2025-09-03T02:41:00.000Z",
+      "url": "https://www.notion.so/PICC-Annual-Report-22eebcf981cf808fbad4f9e0a6640252"
+    },
+    {
+      "id": "22eebcf9-81cf-8002-abe6-d81960ea19da",
+      "title": "PICC Photo Kiosk / Server",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-07-12T02:11:00.000Z",
+      "lastEdited": "2025-09-03T02:41:00.000Z",
+      "url": "https://www.notion.so/PICC-Photo-Kiosk-Server-22eebcf981cf8002abe6d81960ea19da"
+    },
+    {
+      "id": "229ebcf9-81cf-8004-b7ee-fe9a9683c75a",
+      "title": "The Confessional",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-07-07T03:48:00.000Z",
+      "lastEdited": "2025-09-10T02:58:00.000Z",
+      "url": "https://www.notion.so/The-Confessional-229ebcf981cf8004b7eefe9a9683c75a"
+    },
+    {
+      "id": "229ebcf9-81cf-80f1-a053-e6b8cd3b0362",
+      "title": "Barkly Backbone",
+      "status": "Ideation 🌀",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-07-07T03:33:00.000Z",
+      "lastEdited": "2025-09-10T02:53:00.000Z",
+      "url": "https://www.notion.so/Barkly-Backbone-229ebcf981cf80f1a053e6b8cd3b0362"
+    },
+    {
+      "id": "228ebcf9-81cf-809e-8368-f9dae2a41129",
+      "title": "Contained",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-07-06T23:34:00.000Z",
+      "lastEdited": "2025-09-18T01:54:00.000Z",
+      "url": "https://www.notion.so/Contained-228ebcf981cf809e8368f9dae2a41129"
+    },
+    {
+      "id": "228ebcf9-81cf-8041-9b47-ff1845d97e43",
+      "title": "June's Patch",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-07-06T20:25:00.000Z",
+      "lastEdited": "2025-09-10T02:55:00.000Z",
+      "url": "https://www.notion.so/June-s-Patch-228ebcf981cf80419b47ff1845d97e43"
+    },
+    {
+      "id": "219ebcf9-81cf-8049-9bff-e17b58792c96",
+      "title": "Orange Sky Empathy Ledger Project Repository - review",
+      "status": "Transferred ✅",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-06-21T21:10:00.000Z",
+      "lastEdited": "2025-09-10T02:57:00.000Z",
+      "url": "https://www.notion.so/Orange-Sky-Empathy-Ledger-Project-Repository-review-219ebcf981cf80499bffe17b58792c96"
+    },
+    {
+      "id": "215ebcf9-81cf-8086-a781-fa9df2559a13",
+      "title": "The Shed",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-06-17T05:11:00.000Z",
+      "lastEdited": "2025-09-10T02:58:00.000Z",
+      "url": "https://www.notion.so/The-Shed-215ebcf981cf8086a781fa9df2559a13"
+    },
+    {
+      "id": "211ebcf9-81cf-807b-a02f-cc3ea9711c05",
+      "title": "ACT Notion / Tool Audit {Farm Plan} ",
+      "status": "Ideation 🌀",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-06-13T21:51:00.000Z",
+      "lastEdited": "2025-09-10T02:53:00.000Z",
+      "url": "https://www.notion.so/ACT-Notion-Tool-Audit-Farm-Plan-211ebcf981cf807ba02fcc3ea9711c05"
+    },
+    {
+      "id": "205ebcf9-81cf-80af-b1e6-e00d58785606",
+      "title": "Dad.Lab.25",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-06-01T02:32:00.000Z",
+      "lastEdited": "2025-09-29T21:51:00.000Z",
+      "url": "https://www.notion.so/Dad-Lab-25-205ebcf981cf80afb1e6e00d58785606"
+    },
+    {
+      "id": "204ebcf9-81cf-80f4-a3c9-fb18b904b2cb",
+      "title": "ACT business set up",
+      "status": "Internal",
+      "type": "Unknown",
+      "tags": [
+        "Collaboration",
+        "Storytelling"
+      ],
+      "description": "",
+      "created": "2025-05-31T00:50:00.000Z",
+      "lastEdited": "2025-09-10T02:53:00.000Z",
+      "url": "https://www.notion.so/ACT-business-set-up-204ebcf981cf80f4a3c9fb18b904b2cb"
+    },
+    {
+      "id": "202ebcf9-81cf-8063-8125-f6c0b23e22ed",
+      "title": "Project Her Self design",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [
+        "Storytelling",
+        "Experience",
+        "Design"
+      ],
+      "description": "",
+      "created": "2025-05-29T04:44:00.000Z",
+      "lastEdited": "2025-09-10T02:57:00.000Z",
+      "url": "https://www.notion.so/Project-Her-Self-design-202ebcf981cf80638125f6c0b23e22ed"
+    },
+    {
+      "id": "1f8ebcf9-81cf-8070-a502-c5e9059a3c67",
+      "title": "The Double Disadvantage: Supporting Young People with Disabilities in Queensland's Justice System",
+      "status": "Ideation 🌀",
+      "type": "Unknown",
+      "tags": [
+        "Health",
+        "Empathy Ledger",
+        "justice"
+      ],
+      "description": "",
+      "created": "2025-05-19T21:25:00.000Z",
+      "lastEdited": "2025-09-10T02:58:00.000Z",
+      "url": "https://www.notion.so/The-Double-Disadvantage-Supporting-Young-People-with-Disabilities-in-Queensland-s-Justice-System-1f8ebcf981cf8070a502c5e9059a3c67"
+    },
+    {
+      "id": "1f5ebcf9-81cf-8096-a353-fd4d60bfd3d9",
+      "title": "A Curious Tractor Conservation Collective (ACT-CC)",
+      "status": "Internal",
+      "type": "Unknown",
+      "tags": [
+        "Storytelling",
+        "Health",
+        "Living"
+      ],
+      "description": "",
+      "created": "2025-05-16T05:28:00.000Z",
+      "lastEdited": "2025-09-10T02:53:00.000Z",
+      "url": "https://www.notion.so/A-Curious-Tractor-Conservation-Collective-ACT-CC-1f5ebcf981cf8096a353fd4d60bfd3d9"
+    },
+    {
+      "id": "1f4ebcf9-81cf-80c5-9b67-de30812aeee4",
+      "title": "Wilya Janta Communications",
+      "status": "Ideation 🌀",
+      "type": "Unknown",
+      "tags": [
+        "Storytelling"
+      ],
+      "description": "",
+      "created": "2025-05-15T00:33:00.000Z",
+      "lastEdited": "2025-09-10T02:58:00.000Z",
+      "url": "https://www.notion.so/Wilya-Janta-Communications-1f4ebcf981cf80c59b67de30812aeee4"
+    },
+    {
+      "id": "1efebcf9-81cf-8095-b838-ffb37e5ae474",
+      "title": "BCV: Regenerative Conservation",
+      "status": "Ideation 🌀",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-05-10T10:12:00.000Z",
+      "lastEdited": "2025-09-10T02:54:00.000Z",
+      "url": "https://www.notion.so/BCV-Regenerative-Conservation-1efebcf981cf8095b838ffb37e5ae474"
+    },
+    {
+      "id": "1e7ebcf9-81cf-8038-9969-ccc7fb897b43",
+      "title": "Maningrida - Justice Reinvestment",
+      "status": "Ideation 🌀",
+      "type": "Unknown",
+      "tags": [
+        "Storytelling"
+      ],
+      "description": "",
+      "created": "2025-05-02T21:27:00.000Z",
+      "lastEdited": "2025-09-10T02:57:00.000Z",
+      "url": "https://www.notion.so/Maningrida-Justice-Reinvestment-1e7ebcf981cf80389969ccc7fb897b43"
+    },
+    {
+      "id": "1daebcf9-81cf-809f-b0fa-f297c464e192",
+      "title": "AIME",
+      "status": "Transferred ✅",
+      "type": "Unknown",
+      "tags": [
+        "Collaboration",
+        "Storytelling"
+      ],
+      "description": "",
+      "created": "2025-04-19T01:28:00.000Z",
+      "lastEdited": "2025-09-10T02:53:00.000Z",
+      "url": "https://www.notion.so/AIME-1daebcf981cf809fb0faf297c464e192"
+    },
+    {
+      "id": "1d8ebcf9-81cf-8048-b850-c088451f2aed",
+      "title": "YAC story and action",
+      "status": "Sunsetting 🌅",
+      "type": "Unknown",
+      "tags": [
+        "Storytelling",
+        "Empathy Ledger",
+        "Digital Experience"
+      ],
+      "description": "",
+      "created": "2025-04-17T06:53:00.000Z",
+      "lastEdited": "2025-07-12T04:46:00.000Z",
+      "url": "https://www.notion.so/YAC-story-and-action-1d8ebcf981cf8048b850c088451f2aed"
+    },
+    {
+      "id": "1d7ebcf9-81cf-8075-8112-d0809ea7b64c",
+      "title": "QFCC Empathy Ledger",
+      "status": "Ideation 🌀",
+      "type": "Unknown",
+      "tags": [
+        "Storytelling",
+        "Collaboration"
+      ],
+      "description": "",
+      "created": "2025-04-16T07:20:00.000Z",
+      "lastEdited": "2025-09-10T02:57:00.000Z",
+      "url": "https://www.notion.so/QFCC-Empathy-Ledger-1d7ebcf981cf80758112d0809ea7b64c"
+    },
+    {
+      "id": "1d7ebcf9-81cf-808b-a394-f2e547d6ee6c",
+      "title": "Custodian Economy",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [
+        "Health",
+        "Experience",
+        "Strategy"
+      ],
+      "description": "",
+      "created": "2025-04-16T07:08:00.000Z",
+      "lastEdited": "2025-09-10T02:55:00.000Z",
+      "url": "https://www.notion.so/Custodian-Economy-1d7ebcf981cf808ba394f2e547d6ee6c"
+    },
+    {
+      "id": "1d4ebcf9-81cf-80a2-8c12-e5c56d78de10",
+      "title": "Oonchiumpa",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [
+        "justice"
+      ],
+      "description": "",
+      "created": "2025-04-13T22:46:00.000Z",
+      "lastEdited": "2025-09-03T02:44:00.000Z",
+      "url": "https://www.notion.so/Oonchiumpa-1d4ebcf981cf80a28c12e5c56d78de10"
+    },
+    {
+      "id": "1c0ebcf9-81cf-809c-bb26-de8700c2e190",
+      "title": "Westpac Summit 2025 ",
+      "status": "Sunsetting 🌅",
+      "type": "Unknown",
+      "tags": [
+        "Storytelling",
+        "Design",
+        "Event"
+      ],
+      "description": "",
+      "created": "2025-03-24T15:11:00.000Z",
+      "lastEdited": "2025-07-12T04:46:00.000Z",
+      "url": "https://www.notion.so/Westpac-Summit-2025-1c0ebcf981cf809cbb26de8700c2e190"
+    },
+    {
+      "id": "1beebcf9-81cf-8084-a98b-f35cd859f20b",
+      "title": " Global Laundry Alliance (GLA)",
+      "status": "Transferred ✅",
+      "type": "Unknown",
+      "tags": [
+        "Empathy Ledger",
+        "Collaboration"
+      ],
+      "description": "",
+      "created": "2025-03-22T07:32:00.000Z",
+      "lastEdited": "2025-08-07T11:59:00.000Z",
+      "url": "https://www.notion.so/Global-Laundry-Alliance-GLA-1beebcf981cf8084a98bf35cd859f20b"
+    },
+    {
+      "id": "1b1ebcf9-81cf-80f6-88a4-d4f3e22d5d79",
+      "title": "OS Playground ",
+      "status": "Ideation 🌀",
+      "type": "Unknown",
+      "tags": [
+        "Health",
+        "Digital Experience",
+        "Research"
+      ],
+      "description": "",
+      "created": "2025-03-09T22:26:00.000Z",
+      "lastEdited": "2025-09-10T02:57:00.000Z",
+      "url": "https://www.notion.so/OS-Playground-1b1ebcf981cf80f688a4d4f3e22d5d79"
+    },
+    {
+      "id": "1afebcf9-81cf-80fd-9595-f8b28698e128",
+      "title": "SXSW 2025",
+      "status": "Ideation 🌀",
+      "type": "Unknown",
+      "tags": [
+        "Storytelling",
+        "Experience"
+      ],
+      "description": "",
+      "created": "2025-03-07T10:12:00.000Z",
+      "lastEdited": "2025-09-10T02:57:00.000Z",
+      "url": "https://www.notion.so/SXSW-2025-1afebcf981cf80fd9595f8b28698e128"
+    },
+    {
+      "id": "1a7ebcf9-81cf-80a5-ad5b-e18bc94cd918",
+      "title": "DGR Community category application",
+      "status": "Sunsetting 🌅",
+      "type": "Unknown",
+      "tags": [
+        "justice",
+        "Collaboration"
+      ],
+      "description": "",
+      "created": "2025-02-27T20:20:00.000Z",
+      "lastEdited": "2025-09-10T02:55:00.000Z",
+      "url": "https://www.notion.so/DGR-Community-category-application-1a7ebcf981cf80a5ad5be18bc94cd918"
+    },
+    {
+      "id": "1a0ebcf9-81cf-8016-859c-dc3443aed8d5",
+      "title": "JusticeHub - Centre of Excellence",
+      "status": "Ideation 🌀",
+      "type": "Unknown",
+      "tags": [
+        "justice"
+      ],
+      "description": "",
+      "created": "2025-02-20T10:07:00.000Z",
+      "lastEdited": "2025-09-10T02:55:00.000Z",
+      "url": "https://www.notion.so/JusticeHub-Centre-of-Excellence-1a0ebcf981cf8016859cdc3443aed8d5"
+    },
+    {
+      "id": "19eebcf9-81cf-8036-b172-e07c944f438b",
+      "title": "BCV Reforest ",
+      "status": "Ideation 🌀",
+      "type": "Unknown",
+      "tags": [
+        "Health",
+        "Living",
+        "Connected"
+      ],
+      "description": "",
+      "created": "2025-02-18T10:27:00.000Z",
+      "lastEdited": "2025-09-10T02:53:00.000Z",
+      "url": "https://www.notion.so/BCV-Reforest-19eebcf981cf8036b172e07c944f438b"
+    },
+    {
+      "id": "193ebcf9-81cf-803b-9654-d30f06ef0c63",
+      "title": "SAF Foundation Master ",
+      "status": "Transferred ✅",
+      "type": "Unknown",
+      "tags": [
+        "Strategy",
+        "Client Led",
+        "Collaboration"
+      ],
+      "description": "",
+      "created": "2025-02-07T21:13:00.000Z",
+      "lastEdited": "2025-08-11T03:07:00.000Z",
+      "url": "https://www.notion.so/SAF-Foundation-Master-193ebcf981cf803b9654d30f06ef0c63"
+    },
+    {
+      "id": "18febcf9-81cf-80fe-a738-fe374e01cd08",
+      "title": "BG Fit",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [
+        "Empathy Ledger",
+        "Health",
+        "justice"
+      ],
+      "description": "",
+      "created": "2025-02-03T21:54:00.000Z",
+      "lastEdited": "2025-09-10T02:53:00.000Z",
+      "url": "https://www.notion.so/BG-Fit-18febcf981cf80fea738fe374e01cd08"
+    },
+    {
+      "id": "18febcf9-81cf-80f5-bb14-dc8229b66f4e",
+      "title": "Bimberi - Holiday Programs",
+      "status": "Ideation 🌀",
+      "type": "Unknown",
+      "tags": [
+        "Collaboration",
+        "Storytelling"
+      ],
+      "description": "",
+      "created": "2025-02-03T21:53:00.000Z",
+      "lastEdited": "2025-09-10T02:54:00.000Z",
+      "url": "https://www.notion.so/Bimberi-Holiday-Programs-18febcf981cf80f5bb14dc8229b66f4e"
+    },
+    {
+      "id": "18febcf9-81cf-807c-b66c-c16f0a000a93",
+      "title": "TOMNET",
+      "status": "Sunsetting 🌅",
+      "type": "Unknown",
+      "tags": [
+        "Storytelling",
+        "Health"
+      ],
+      "description": "",
+      "created": "2025-02-03T21:47:00.000Z",
+      "lastEdited": "2025-07-12T04:46:00.000Z",
+      "url": "https://www.notion.so/TOMNET-18febcf981cf807cb66cc16f0a000a93"
+    },
+    {
+      "id": "18febcf9-81cf-800c-9f79-e44c2e9728ba",
+      "title": "SMART Recovery",
+      "status": "Ideation 🌀",
+      "type": "Unknown",
+      "tags": [
+        "Health",
+        "Storytelling"
+      ],
+      "description": "",
+      "created": "2025-02-03T11:48:00.000Z",
+      "lastEdited": "2025-09-10T02:57:00.000Z",
+      "url": "https://www.notion.so/SMART-Recovery-18febcf981cf800c9f79e44c2e9728ba"
+    },
+    {
+      "id": "bb7eeeca-72aa-43c9-adc5-e29cec34d9b7",
+      "title": "SMART HCP GP Uplift Project ",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2025-01-30T23:23:00.000Z",
+      "lastEdited": "2025-09-10T02:57:00.000Z",
+      "url": "https://www.notion.so/SMART-HCP-GP-Uplift-Project-bb7eeeca72aa43c9adc5e29cec34d9b7"
+    },
+    {
+      "id": "187ebcf9-81cf-8032-a28f-db8b76442ecd",
+      "title": "Empathy Ledger",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [
+        "Storytelling"
+      ],
+      "description": "",
+      "created": "2025-01-26T05:48:00.000Z",
+      "lastEdited": "2025-09-10T02:55:00.000Z",
+      "url": "https://www.notion.so/Empathy-Ledger-187ebcf981cf8032a28fdb8b76442ecd"
+    },
+    {
+      "id": "186ebcf9-81cf-8013-acae-d006836d094c",
+      "title": "SEFA Partnership",
+      "status": "Ideation 🌀",
+      "type": "Unknown",
+      "tags": [
+        "Business",
+        "Strategy"
+      ],
+      "description": "",
+      "created": "2025-01-25T08:55:00.000Z",
+      "lastEdited": "2025-07-12T00:50:00.000Z",
+      "url": "https://www.notion.so/SEFA-Partnership-186ebcf981cf8013acaed006836d094c"
+    },
+    {
+      "id": "17bebcf9-81cf-8099-bd1b-e0a57351a5b7",
+      "title": "Deadly Homes and Gardens ",
+      "status": "Ideation 🌀",
+      "type": "Unknown",
+      "tags": [
+        "Health",
+        "Concept",
+        "Strategy"
+      ],
+      "description": "",
+      "created": "2025-01-14T02:21:00.000Z",
+      "lastEdited": "2025-09-10T02:55:00.000Z",
+      "url": "https://www.notion.so/Deadly-Homes-and-Gardens-17bebcf981cf8099bd1be0a57351a5b7"
+    },
+    {
+      "id": "17bebcf9-81cf-801b-9a06-edf3f35bf7f4",
+      "title": "Fishers Oysters ",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [
+        "Empathy Ledger",
+        "Concept"
+      ],
+      "description": "",
+      "created": "2025-01-14T02:20:00.000Z",
+      "lastEdited": "2025-09-10T02:55:00.000Z",
+      "url": "https://www.notion.so/Fishers-Oysters-17bebcf981cf801b9a06edf3f35bf7f4"
+    },
+    {
+      "id": "179ebcf9-81cf-8076-95f2-e39db7b980a5",
+      "title": "Diagrama",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [
+        "Storytelling",
+        "Collaboration"
+      ],
+      "description": "",
+      "created": "2025-01-12T23:16:00.000Z",
+      "lastEdited": "2025-09-03T02:39:00.000Z",
+      "url": "https://www.notion.so/Diagrama-179ebcf981cf807695f2e39db7b980a5"
+    },
+    {
+      "id": "179ebcf9-81cf-8005-ad63-d2a736280011",
+      "title": "JusticeHub",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [
+        "Collaboration",
+        "Storytelling"
+      ],
+      "description": "",
+      "created": "2025-01-12T10:30:00.000Z",
+      "lastEdited": "2025-09-10T02:55:00.000Z",
+      "url": "https://www.notion.so/JusticeHub-179ebcf981cf8005ad63d2a736280011"
+    },
+    {
+      "id": "179ebcf9-81cf-80be-a071-d6a6d13c821a",
+      "title": "MMEIC - Justice Projects",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [
+        "Storytelling",
+        "Collaboration"
+      ],
+      "description": "",
+      "created": "2025-01-12T06:47:00.000Z",
+      "lastEdited": "2025-09-10T02:57:00.000Z",
+      "url": "https://www.notion.so/MMEIC-Justice-Projects-179ebcf981cf80bea071d6a6d13c821a"
+    },
+    {
+      "id": "178ebcf9-81cf-801c-8815-fb32a9259a1c",
+      "title": "PICC - Storm Stories",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [
+        "Health",
+        "Storytelling"
+      ],
+      "description": "",
+      "created": "2025-01-11T05:31:00.000Z",
+      "lastEdited": "2025-09-03T02:41:00.000Z",
+      "url": "https://www.notion.so/PICC-Storm-Stories-178ebcf981cf801c8815fb32a9259a1c"
+    },
+    {
+      "id": "177ebcf9-81cf-805f-b111-f407079f9794",
+      "title": "Goods.",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [
+        "Health",
+        "Product"
+      ],
+      "description": "",
+      "created": "2025-01-10T12:22:00.000Z",
+      "lastEdited": "2025-09-03T02:40:00.000Z",
+      "url": "https://www.notion.so/Goods-177ebcf981cf805fb111f407079f9794"
+    },
+    {
+      "id": "11debcf9-81cf-8082-8fd0-d6031a9709f2",
+      "title": "Witta Harvest HQ ",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2024-10-12T11:44:00.000Z",
+      "lastEdited": "2025-09-10T02:58:00.000Z",
+      "url": "https://www.notion.so/Witta-Harvest-HQ-11debcf981cf80828fd0d6031a9709f2"
+    },
+    {
+      "id": "4084d267-0c66-409e-8b7b-51b043be0036",
+      "title": "Olive Express ",
+      "status": "Transferred ✅",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2024-03-22T07:43:00.000Z",
+      "lastEdited": "2025-09-10T02:57:00.000Z",
+      "url": "https://www.notion.so/Olive-Express-4084d2670c66409e8b7b51b043be0036"
+    },
+    {
+      "id": "c55b578a-e7d9-42d3-a31c-79d791ebe16b",
+      "title": "Treacher",
+      "status": "Ideation 🌀",
+      "type": "Unknown",
+      "tags": [],
+      "description": "",
+      "created": "2024-03-11T10:27:00.000Z",
+      "lastEdited": "2025-09-10T02:58:00.000Z",
+      "url": "https://www.notion.so/Treacher-c55b578ae7d942d3a31c79d791ebe16b"
+    },
+    {
+      "id": "41aea25e-f717-48d0-8338-1e7c42d9e797",
+      "title": "Gold.Phone",
+      "status": "Active 🔥",
+      "type": "Unknown",
+      "tags": [
+        "Technology",
+        "Concept"
+      ],
+      "description": "",
+      "created": "2023-10-02T03:31:00.000Z",
+      "lastEdited": "2025-09-10T02:55:00.000Z",
+      "url": "https://www.notion.so/Gold-Phone-41aea25ef71748d083381e7c42d9e797"
+    }
+  ],
+  "networkAnalysis": "Based on the provided ecosystem analysis, here are some answers to the questions:\n\n1. **Key leaders/connectors in this network:**\n\t* PICC (various projects) appears to be a central hub with multiple projects and initiatives.\n\t* Uncle Allan is mentioned as part of the Palm Island Art project.\n\t* ACT itself may also play a connector role, given its purpose is to support organizations.\n2. **Organizations working toward similar outcomes:**\n\t* Multiple projects under PICC share similar goals related to community-led impact.\n\t* Organizations like SMART Connect and Go big // Funding ACT seem to be focused on funding or financial support for community initiatives.\n3. **Potential collaborations between leaders/orgs:**\n\t* The RPPP Stream Two: Precinct delivery project could benefit from collaboration with organizations like SMART Connect or Go big // Funding ACT, which may offer resources or expertise in funding and financial management.\n\t* The MingaMinga Rangers project and the NFP leaders interview project share similar goals related to community development; a potential collaboration between these projects could lead to more effective outcomes.\n4. **Patterns of communication/connection:**\n\t* Many projects under PICC seem to be connected through shared leadership or initiative, indicating an internal network within PICC.\n\t* ACT's involvement in various projects suggests a connection between the organization and its supported initiatives.\n5. **How can ACT bring people together on shared outcomes?**\n\t* Hosting regular meetings or forums for leaders and representatives of connected organizations (e.g., PICC, SMART Connect, Go big // Funding ACT) could facilitate collaboration and information sharing.\n6. **Habitual check-ins:**\n\t* Regular progress updates from supported initiatives to ACT would help maintain connection and ensure the organization is aware of ongoing work.\n7. **Where can ACT automate support and step back?**\n\t* Automating administrative tasks or streamlining communication through project management tools could free up resources for more hands-on support, allowing ACT to focus on high-impact activities.\n\nSome specific examples from the data:\n\n* The SMART Connect project lists several goals related to community engagement, which aligns with PICC's broader mission. A collaboration between these projects could strengthen community impact.\n* The NFP leaders interview project explores strategies for effective governance within non-profit organizations. ACT could facilitate connections between this project and other initiatives under PICC or supported by the organization.\n\nBy identifying key connectors, shared outcomes, potential collaborations, communication patterns, and opportunities to automate support, ACT can optimize its role as a supportive network and amplify community-led impact.",
+  "outcomesAnalysis": "Based on the provided data, I will analyze the projects to identify common outcomes, potential collaborations, connections between leaders/organizations, logical pathways from philanthropy to community impact, and sense-making processes.\n\n**1. What OUTCOMES are multiple projects working toward?**\n\nUpon reviewing the projects, several outcomes emerge:\n\n* **Justice outcomes:** Oonchiumpa (id: 1d4ebcf9-81cf-80a2-8c12-e5c56d78de10), Maningrida - Justice Reinvestment (id: 1e7ebcf9-81cf-8038-9969-ccc7fb897b43)\n* **Health/wellness outcomes:** Custodian Economy (id: 1d7ebcf9-81cf-808b-a394-f2e547d6ee6c), AIME (id: 1daebcf9-81cf-809f-b0fa-f297c464e192)\n* **Cultural preservation outcomes:** None explicitly mentioned, but projects like Wilya Janta Communications (id: 1f4ebcf9-81cf-80c5-9b67-de30812aeee4) and A Curious Tractor Conservation Collective (ACT-CC) (id: 1f5ebcf9-81cf-8096-a353-fd4d60bfd3d9) may have indirect connections\n* **Storytelling/narrative outcomes:** Empathy Ledger projects, such as QFCC Empathy Ledger (id: 1d7ebcf9-81cf-8075-8112-d0809ea7b64c), AIME (id: 1daebcf9-81cf-809f-b0fa-f297c464e192), and YAC story and action (id: 1d8ebcf9-81cf-8048-b850-c088451f2aed)\n\n**2. Which projects could collaborate on shared outcomes?**\n\n* **Justice:** Oonchiumpa, Maningrida - Justice Reinvestment, QFCC Empathy Ledger\n* **Health/wellness:** Custodian Economy, AIME\n* **Storytelling/narrative:** Empathy Ledger projects (QFCC, AIME, YAC), Wilya Janta Communications\n\n**3. What leaders/organizations should be connected?**\n\nBased on the outcomes and potential collaborations:\n\n* Justice: Connect Oonchiumpa with Maningrida - Justice Reinvestment, QFCC Empathy Ledger\n* Health/wellness: Bring together Custodian Economy, AIME\n* Storytelling/narrative: Facilitate connections between Empathy Ledger projects (QFCC, AIME, YAC) and Wilya Janta Communications\n\n**4. What are logical pathways from philanthropy → community impact?**\n\nBased on the analysis:\n\n* **Justice pathway:** Philanthropic support for Oonchiumpa or Maningrida - Justice Reinvestment could lead to improved justice outcomes in communities.\n* **Health/wellness pathway:** Funding Custodian Economy or AIME could result in enhanced health and wellness outcomes, particularly for vulnerable populations.\n* **Storytelling/narrative pathway:** Supporting Empathy Ledger projects (QFCC, AIME, YAC) or Wilya Janta Communications can lead to increased storytelling and narrative-driven community impact.\n\n**5. How can outcomes be measured collectively vs individually?**\n\nTo measure collective outcomes:\n\n* Develop a shared framework for measuring justice, health/wellness, and cultural preservation outcomes across projects.\n* Establish regular reporting mechanisms for tracking progress toward these outcomes.\n\nFor individual project measurement:\n\n* Use existing metrics and benchmarks for each project (e.g., number of people reached, amount of funding secured).\n* Regularly review and adjust measurement approaches as needed.\n\n**6. What sense-making processes would help?**\n\nTo facilitate sense-making:\n\n* Conduct regular meetings between leaders/organizations working on shared outcomes.\n* Develop a shared understanding of the community impact desired through these projects.\n* Establish clear communication channels for sharing progress, challenges, and lessons learned.\n\nSome specific collaboration opportunities and pathway recommendations are:\n\n1. **Oonchiumpa** and **Maningrida - Justice Reinvestment**: Collaborate on justice-focused initiatives, with a shared goal of improving outcomes in Indigenous communities.\n2. **Custodian Economy** and **AIME**: Combine resources to enhance health/wellness outcomes for vulnerable populations, using storytelling/narrative approaches.\n3. **Empathy Ledger projects (QFCC, AIME, YAC)**: Facilitate connections between these projects to amplify storytelling/narrative impact across multiple platforms.\n\nThese recommendations aim to address the challenges identified by ACT's principle and provide a starting point for collaborative efforts toward shared outcomes.",
+  "checkinSystems": "Based on ACT's ecosystem of projects and relationships, I've designed habitual check-in systems for each of the specified areas. Here are the designs:\n\n**1. Project Health Monitoring**\n\n* **Frequency:** Weekly (automated report) + Bi-Weekly (human conversation)\n* **Format:** Automated weekly project health emails with key metrics and KPIs\n* **Data Sources:**\n\t+ Project management tools (e.g., Asana, Trello)\n\t+ Time tracking software (e.g., Harvest, Clockify)\n\t+ Customer support tickets (e.g., Zendesk, Freshdesk)\n* **Automation Potential:** Automated report generation using APIs and data connectors\n* **Human Touch Points:**\n\t+ Bi-weekly check-in calls with project leads to discuss challenges and successes\n\t+ Quarterly in-person workshops for team members to share best practices and learn from each other\n* **Obsolescence Pathway:** As projects mature, ACT will:\n\t+ Gradually hand over data analysis and reporting to the project teams themselves\n\t+ Provide training and resources to help teams develop their own monitoring and evaluation capabilities\n\n**2. Relationship Nurturing**\n\n* **Frequency:** Monthly (human conversation) + Quarterly (leader roundtable invites)\n* **Format:**\n\t+ Regular monthly check-in calls with leaders to discuss progress, challenges, and areas for growth\n\t+ Quarterly leader roundtables based on shared outcomes and goals\n* **Data Sources:**\n\t+ CRM tools (e.g., Salesforce, HubSpot) for relationship history and engagement metrics\n\t+ Email communication platforms (e.g., Gmail, Outlook) for tracking interactions\n* **Automation Potential:** AI-assisted relationship suggestion tool to identify potential partnership opportunities based on shared goals and outcomes\n* **Human Touch Points:**\n\t+ Monthly check-in calls with leaders to build relationships and trust\n\t+ Quarterly leader roundtables to foster collaboration and knowledge sharing\n* **Obsolescence Pathway:** As relationships mature, ACT will:\n\t+ Gradually hand over relationship management to the partner organizations themselves\n\t+ Provide training and resources to help partners develop their own networking and partnership-building capabilities\n\n**3. Collaboration Opportunities**\n\n* **Frequency:** Quarterly (human conversation) + Bi-Annually (collaboration workshop)\n* **Format:**\n\t+ Quarterly collaboration opportunity calls with project leads to discuss potential partnerships and collaborations\n\t+ Bi-annual workshops for team members to share best practices, learn from each other, and develop new skills\n* **Data Sources:**\n\t+ Project management tools (e.g., Asana, Trello) for tracking collaboration efforts\n\t+ CRM tools (e.g., Salesforce, HubSpot) for relationship history and engagement metrics\n* **Automation Potential:** AI-assisted collaboration suggestion tool to identify potential partnership opportunities based on shared goals and outcomes\n* **Human Touch Points:**\n\t+ Quarterly calls with project leads to discuss collaboration opportunities\n\t+ Bi-annual workshops to foster collaboration and knowledge sharing\n* **Obsolescence Pathway:** As collaborations mature, ACT will:\n\t+ Gradually hand over collaboration management to the partner organizations themselves\n\t+ Provide training and resources to help partners develop their own networking and partnership-building capabilities\n\n**4. Outcome Tracking**\n\n* **Frequency:** Quarterly (collective impact report)\n* **Format:**\n\t+ Quarterly collective impact reports highlighting key outcomes, successes, and challenges across projects\n* **Data Sources:**\n\t+ Project management tools (e.g., Asana, Trello) for tracking progress against goals\n\t+ Outcome measurement tools (e.g., SurveyMonkey, Google Forms) for collecting data on project impacts\n* **Automation Potential:** Automated report generation using APIs and data connectors\n* **Human Touch Points:**\n\t+ Quarterly calls with project leads to discuss challenges and successes\n\t+ Annual in-person gatherings to celebrate collective impact and share best practices\n* **Obsolescence Pathway:** As outcomes are consistently tracked and reported, ACT will:\n\t+ Gradually hand over outcome measurement and reporting to the project teams themselves\n\t+ Provide training and resources to help teams develop their own monitoring and evaluation capabilities\n\n**5. Learning/Sense-Making**\n\n* **Frequency:** Quarterly (human conversation) + Bi-Annually (learning workshop)\n* **Format:**\n\t+ Quarterly learning calls with project leads to discuss insights, challenges, and areas for growth\n\t+ Bi-annual workshops for team members to share best practices, learn from each other, and develop new skills\n* **Data Sources:**\n\t+ Project management tools (e.g., Asana, Trello) for tracking progress against goals\n\t+ Outcome measurement tools (e.g., SurveyMonkey, Google Forms) for collecting data on project impacts\n* **Automation Potential:** AI-assisted insight generation tool to identify key trends and areas for improvement\n* **Human Touch Points:**\n\t+ Quarterly calls with project leads to discuss challenges and successes\n\t+ Bi-annual workshops to foster collaboration and knowledge sharing\n* **Obsolescence Pathway:** As learning and sense-making become a core part of the organization's culture, ACT will:\n\t+ Gradually hand over learning and development management to the team members themselves\n\t+ Provide training and resources to help teams develop their own continuous learning capabilities",
+  "automationMap": "Here are the answers to the questions based on the ecosystem data:\n\n**1. What repetitive tasks across projects can be automated?**\n\n* Automated project health checks: scrape Notion, send summaries\n\t+ Problem: Manual effort in tracking and summarizing project progress\n\t+ Tools/Tech needed: Web scraping tools (e.g., Cheerio), email sending tools (e.g., Mailgun)\n\t+ Implementation effort: Medium (requires development of a web scraper and email sender)\n\t+ Obsolescence support: As projects become self-sufficient, automated health checks ensure ACT's role is reduced to advisory\n* AI-powered relationship suggestions: Gmail + CRM data\n\t+ Problem: Manual effort in identifying connections between projects\n\t+ Tools/Tech needed: Email API (e.g., Gmail), CRM integration tools (e.g., Zapier)\n\t+ Implementation effort: Low (requires configuration of APIs and integrations)\n\t+ Obsolescence support: As organizations become self-sufficient, AI-powered suggestions help them identify new connections independently\n\n**2. What data/insights can be automatically collected and shared?**\n\n* Collective impact dashboards: automated metric aggregation\n\t+ Problem: Manual effort in tracking and aggregating metrics across projects\n\t+ Tools/Tech needed: Data aggregation tools (e.g., Google Data Studio), dashboard creation tools (e.g., Tableau)\n\t+ Implementation effort: High (requires development of data pipelines and dashboard design)\n\t+ Obsolescence support: As organizations become self-sufficient, collective impact dashboards provide a single source of truth for their metrics\n* Knowledge base automation: capture learnings from emails/meetings\n\t+ Problem: Manual effort in documenting lessons learned from projects\n\t+ Tools/Tech needed: Email analysis tools (e.g., Mailchimp), meeting note-taking tools (e.g., Otter)\n\t+ Implementation effort: Medium (requires configuration of email and meeting note-taking integrations)\n\t+ Obsolescence support: As organizations become self-sufficient, knowledge base automation helps them capture and apply learnings independently\n\n**3. What connections/introductions can be systematically suggested?**\n\n* Collaborative opportunity detection: match projects on outcomes\n\t+ Problem: Manual effort in identifying potential collaborations between projects\n\t+ Tools/Tech needed: Matching algorithm tools (e.g., GitHub Copilot), project outcome tracking tools (e.g., Notion)\n\t+ Implementation effort: High (requires development of a matching algorithm and integration with project outcome tracking)\n\t+ Obsolescence support: As organizations become self-sufficient, collaborative opportunity detection helps them identify new partners independently\n\n**4. What reporting/tracking can be automated?**\n\n* Automated project status updates: send regular summaries to stakeholders\n\t+ Problem: Manual effort in updating stakeholders on project progress\n\t+ Tools/Tech needed: Email sending tools (e.g., Mailgun), project tracking tools (e.g., Trello)\n\t+ Implementation effort: Medium (requires configuration of email sender and integration with project tracking tool)\n\t+ Obsolescence support: As organizations become self-sufficient, automated project status updates ensure stakeholders are informed independently\n\n**5. How can AI assist in relationship management at scale?**\n\n* AI-powered relationship suggestions: analyze CRM data and suggest connections\n\t+ Problem: Manual effort in identifying new relationships between projects\n\t+ Tools/Tech needed: AI/ML tools (e.g., Google Cloud AI Platform), CRM integration tools (e.g., Zapier)\n\t+ Implementation effort: High (requires development of an AI-powered recommendation engine and integration with CRM data)\n\t+ Obsolescence support: As organizations become self-sufficient, AI-powered relationship suggestions help them identify new connections independently",
+  "philanthropyPathways": "Based on the project data and shared outcomes analysis, I'll design a pathway to address the challenges faced by ACT. Here's a comprehensive plan with specific designs:\n\n**1. OUTCOME-BASED FUNDING PATHWAYS**\n\nTo create clear pathways from funding to outcomes, group projects by shared outcomes and show how funding one outcome supports multiple community initiatives.\n\n* **Outcome Groupings:**\n\t+ Justice (e.g., advocacy, policy reform)\n\t+ Health (e.g., access to healthcare, mental health support)\n\t+ Culture (e.g., arts, cultural preservation)\n\t+ Economic Empowerment (e.g., job training, entrepreneurship)\n\t+ Education (e.g., literacy, vocational training)\n* **Outcome Portfolios:**\n\t+ Create a portfolio for each outcome grouping with multiple community initiatives\n\t+ Show how funding one initiative contributes to the overall outcome (e.g., funding advocacy work supports policy reform and access to healthcare)\n\t+ Develop case studies demonstrating collective impact across projects\n\n**Example Outcome Portfolio: Justice**\n\n* Project 1: Advocacy Coalition - $100,000\n* Project 2: Policy Reform Initiative - $150,000\n* Project 3: Community Mediation Program - $50,000\nTotal: $300,000 (Portfolio Value)\n\nFunding this portfolio supports the overall outcome of achieving justice. Each project contributes to the broader impact:\n\n* Advocacy Coalition secures policy wins for marginalized communities.\n* Policy Reform Initiative informs and advocates for systemic changes.\n* Community Mediation Program resolves conflicts and builds community relationships.\n\n**2. COLLABORATIVE FUNDING MODELS**\n\nTo facilitate collaborative funding, design models that pool resources for shared outcomes while maintaining community leadership and governance.\n\n* **Funding Models:**\n\t+ Philanthropic partnerships (e.g., foundation grants)\n\t+ Government contracts (e.g., block grants, program funding)\n\t+ Earned income streams (e.g., social enterprises, events)\n\t+ Hybrid models combining multiple sources\n* **Governance Structures:**\n\t+ Community-led decision-making committees with representation from ACT and funders\n\t+ Regular check-ins and evaluations to ensure alignment with community goals\n* **ACT's Role:**\n\t+ Facilitate collaboration and coordination among funders and community initiatives\n\t+ Provide technical assistance and capacity building support for community partners\n\n**Example Collaborative Funding Model:**\n\n* **Justice Portfolio Partnership:** ACT, Foundation A, Government Agency B, and Community C form a partnership to fund the Justice Outcome Portfolio.\n* Each partner contributes $100,000 (total $400,000)\n* Community-led decision-making committee ensures alignment with community goals\n* Regular evaluations and check-ins ensure collective impact\n\n**3. TRANSPARENCY & ACCOUNTABILITY**\n\nTo demonstrate collective impact across projects and share learnings, establish transparent metrics that matter to communities.\n\n* **Metrics:**\n\t+ Number of community members reached or served\n\t+ Percent change in desired outcomes (e.g., access to healthcare)\n\t+ Community engagement and participation levels\n\t+ Economic benefits for local businesses and residents\n* **Measurement Frameworks:**\n\t+ Establish a common set of metrics across projects\n\t+ Use participatory budgeting and community-led decision-making to prioritize funding allocations\n* **Learnings and Failures:** Share open lessons learned, successes, and setbacks through regular reports and community forums\n\n**Example Measurement Framework:**\n\n* **Justice Portfolio Dashboard:**\n\t+ Number of advocacy wins secured (30)\n\t+ Percent increase in access to healthcare for marginalized communities (25%)\n\t+ Community engagement levels (75% attendance at community events)\n\n**4. OBSOLESCENCE PATHWAY**\n\nTo support community capacity building and step back as communities lead, establish an exit strategy that acknowledges collective success.\n\n* **Capacity Building:**\n\t+ Provide training and technical assistance to build community capacity\n\t+ Support community-led decision-making and governance structures\n* **Exit Strategy:**\n\t+ Establish a clear plan for ACT's role in the project (e.g., 2-year transition period)\n\t+ Transfer ownership and leadership to the community, with ongoing support from ACT\n\t+ Celebrate collective success and acknowledge ACT's contribution\n\n**Example Exit Strategy:**\n\n* **Justice Portfolio Success:**\n\t+ After 3 years of collaborative funding and capacity building, ACT transfers ownership to Community C.\n\t+ Community C takes on decision-making roles, with ACT providing ongoing technical assistance and support.\n\t+ ACT celebrates the success of the Justice Outcome Portfolio, acknowledging its role in supporting community leadership."
+}

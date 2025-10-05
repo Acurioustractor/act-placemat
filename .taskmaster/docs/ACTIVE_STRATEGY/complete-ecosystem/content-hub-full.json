@@ -1,0 +1,4027 @@
+{
+  "pageId": "77a651bf-99c5-4a20-8123-4f3bbbd46168",
+  "fetchedAt": "2025-10-04T04:19:51.588Z",
+  "blocks": [
+    {
+      "type": "unsupported",
+      "id": "271ebcf9-81cf-80d0-a961-fd1e2e478401",
+      "block": {
+        "object": "block",
+        "id": "271ebcf9-81cf-80d0-a961-fd1e2e478401",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:48:00.000Z",
+        "last_edited_time": "2025-09-17T00:49:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "unsupported",
+        "unsupported": {}
+      }
+    },
+    {
+      "type": "unsupported",
+      "id": "271ebcf9-81cf-8063-8c3d-d2738bbc2de6",
+      "block": {
+        "object": "block",
+        "id": "271ebcf9-81cf-8063-8c3d-d2738bbc2de6",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:48:00.000Z",
+        "last_edited_time": "2025-09-17T00:49:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "unsupported",
+        "unsupported": {}
+      }
+    },
+    {
+      "type": "paragraph",
+      "id": "271ebcf9-81cf-806e-a61e-e93d1496e796",
+      "block": {
+        "object": "block",
+        "id": "271ebcf9-81cf-806e-a61e-e93d1496e796",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:48:00.000Z",
+        "last_edited_time": "2025-09-17T00:49:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "paragraph",
+        "paragraph": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Page links",
+                "link": null
+              },
+              "annotations": {
+                "bold": true,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Page links",
+              "href": null
+            }
+          ],
+          "color": "default"
+        }
+      }
+    },
+    {
+      "type": "table_of_contents",
+      "id": "271ebcf9-81cf-8033-b45a-d19e885b91df",
+      "block": {
+        "object": "block",
+        "id": "271ebcf9-81cf-8033-b45a-d19e885b91df",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:46:00.000Z",
+        "last_edited_time": "2025-09-17T00:46:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "table_of_contents",
+        "table_of_contents": {
+          "color": "gray"
+        }
+      }
+    },
+    {
+      "type": "paragraph",
+      "id": "42265fda-d600-4254-a523-8e005b3e1264",
+      "block": {
+        "object": "block",
+        "id": "42265fda-d600-4254-a523-8e005b3e1264",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "paragraph",
+        "paragraph": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Your central workspace for managing all ACT communications, from newsletters to LinkedIn posts to partner stories.",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": true,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Your central workspace for managing all ACT communications, from newsletters to LinkedIn posts to partner stories.",
+              "href": null
+            }
+          ],
+          "color": "default"
+        }
+      }
+    },
+    {
+      "type": "divider",
+      "id": "29146352-5646-4c64-9608-4019703bae38",
+      "block": {
+        "object": "block",
+        "id": "29146352-5646-4c64-9608-4019703bae38",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "divider",
+        "divider": {}
+      }
+    },
+    {
+      "type": "heading_2",
+      "id": "399f1eb3-e92e-4fb2-9267-dd5fb7e966b8",
+      "block": {
+        "object": "block",
+        "id": "399f1eb3-e92e-4fb2-9267-dd5fb7e966b8",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:46:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "heading_2",
+        "heading_2": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "📊 ",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "📊 ",
+              "href": null
+            },
+            {
+              "type": "text",
+              "text": {
+                "content": "Master Mood Dashboard",
+                "link": null
+              },
+              "annotations": {
+                "bold": true,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Master Mood Dashboard",
+              "href": null
+            }
+          ],
+          "is_toggleable": false,
+          "color": "default"
+        }
+      }
+    },
+    {
+      "type": "divider",
+      "id": "21d064ae-c38d-4450-ba79-3283adb3dbf5",
+      "block": {
+        "object": "block",
+        "id": "21d064ae-c38d-4450-ba79-3283adb3dbf5",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "divider",
+        "divider": {}
+      }
+    },
+    {
+      "type": "heading_2",
+      "id": "e8c67169-3f3e-4aa7-941a-bbc7b574e279",
+      "block": {
+        "object": "block",
+        "id": "e8c67169-3f3e-4aa7-941a-bbc7b574e279",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "heading_2",
+        "heading_2": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "📧 ",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "📧 ",
+              "href": null
+            },
+            {
+              "type": "text",
+              "text": {
+                "content": "Newsletter Development",
+                "link": null
+              },
+              "annotations": {
+                "bold": true,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Newsletter Development",
+              "href": null
+            }
+          ],
+          "is_toggleable": false,
+          "color": "default"
+        }
+      }
+    },
+    {
+      "type": "paragraph",
+      "id": "4929c713-dc5d-40a6-8f60-a1a8347ceec2",
+      "block": {
+        "object": "block",
+        "id": "4929c713-dc5d-40a6-8f60-a1a8347ceec2",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "paragraph",
+        "paragraph": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Focus on ACT newsletter content creation and planning",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": true,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Focus on ACT newsletter content creation and planning",
+              "href": null
+            }
+          ],
+          "color": "default"
+        }
+      }
+    },
+    {
+      "type": "callout",
+      "id": "0b26c1a3-faf6-4d1c-8f7b-2e389c1627c2",
+      "block": {
+        "object": "block",
+        "id": "0b26c1a3-faf6-4d1c-8f7b-2e389c1627c2",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": true,
+        "archived": false,
+        "in_trash": false,
+        "type": "callout",
+        "callout": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Newsletter Focus Area",
+                "link": null
+              },
+              "annotations": {
+                "bold": true,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Newsletter Focus Area",
+              "href": null
+            },
+            {
+              "type": "text",
+              "text": {
+                "content": "\n",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "\n",
+              "href": null
+            }
+          ],
+          "icon": {
+            "type": "emoji",
+            "emoji": "✍️"
+          },
+          "color": "blue"
+        }
+      },
+      "children": [
+        {
+          "type": "paragraph",
+          "id": "f7190f48-cc79-4c8d-937e-d5ee89d38bf9",
+          "block": {
+            "object": "block",
+            "id": "f7190f48-cc79-4c8d-937e-d5ee89d38bf9",
+            "parent": {
+              "type": "block_id",
+              "block_id": "0b26c1a3-faf6-4d1c-8f7b-2e389c1627c2"
+            },
+            "created_time": "2025-09-17T00:26:00.000Z",
+            "last_edited_time": "2025-09-17T00:31:00.000Z",
+            "created_by": {
+              "object": "user",
+              "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+            },
+            "last_edited_by": {
+              "object": "user",
+              "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+            },
+            "has_children": false,
+            "archived": false,
+            "in_trash": false,
+            "type": "paragraph",
+            "paragraph": {
+              "rich_text": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "Develop engaging newsletter content that connects with your community. Track key messages, fun elements, and delight factors.",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Develop engaging newsletter content that connects with your community. Track key messages, fun elements, and delight factors.",
+                  "href": null
+                }
+              ],
+              "color": "default"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "divider",
+      "id": "9372972d-ccf3-4ae1-8bc1-c79acbadcd2d",
+      "block": {
+        "object": "block",
+        "id": "9372972d-ccf3-4ae1-8bc1-c79acbadcd2d",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "divider",
+        "divider": {}
+      }
+    },
+    {
+      "type": "heading_2",
+      "id": "8139179a-5a1a-422d-b028-82e2fab883ab",
+      "block": {
+        "object": "block",
+        "id": "8139179a-5a1a-422d-b028-82e2fab883ab",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "heading_2",
+        "heading_2": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "💼 ",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "💼 ",
+              "href": null
+            },
+            {
+              "type": "text",
+              "text": {
+                "content": "LinkedIn Content Pipeline",
+                "link": null
+              },
+              "annotations": {
+                "bold": true,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "LinkedIn Content Pipeline",
+              "href": null
+            }
+          ],
+          "is_toggleable": false,
+          "color": "default"
+        }
+      }
+    },
+    {
+      "type": "paragraph",
+      "id": "d5d1917b-5ff4-44f8-8014-6bcb506adcc4",
+      "block": {
+        "object": "block",
+        "id": "d5d1917b-5ff4-44f8-8014-6bcb506adcc4",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "paragraph",
+        "paragraph": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Social media content development and storytelling",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": true,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Social media content development and storytelling",
+              "href": null
+            }
+          ],
+          "color": "default"
+        }
+      }
+    },
+    {
+      "type": "callout",
+      "id": "d0acc0e7-d154-41ec-a3e0-49d55bd60e4a",
+      "block": {
+        "object": "block",
+        "id": "d0acc0e7-d154-41ec-a3e0-49d55bd60e4a",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": true,
+        "archived": false,
+        "in_trash": false,
+        "type": "callout",
+        "callout": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "LinkedIn Strategy",
+                "link": null
+              },
+              "annotations": {
+                "bold": true,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "LinkedIn Strategy",
+              "href": null
+            },
+            {
+              "type": "text",
+              "text": {
+                "content": "\n",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "\n",
+              "href": null
+            }
+          ],
+          "icon": {
+            "type": "emoji",
+            "emoji": "📱"
+          },
+          "color": "green"
+        }
+      },
+      "children": [
+        {
+          "type": "paragraph",
+          "id": "33142b0c-93b1-4c9c-ab32-5f6129db3fa6",
+          "block": {
+            "object": "block",
+            "id": "33142b0c-93b1-4c9c-ab32-5f6129db3fa6",
+            "parent": {
+              "type": "block_id",
+              "block_id": "d0acc0e7-d154-41ec-a3e0-49d55bd60e4a"
+            },
+            "created_time": "2025-09-17T00:26:00.000Z",
+            "last_edited_time": "2025-09-17T00:31:00.000Z",
+            "created_by": {
+              "object": "user",
+              "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+            },
+            "last_edited_by": {
+              "object": "user",
+              "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+            },
+            "has_children": false,
+            "archived": false,
+            "in_trash": false,
+            "type": "paragraph",
+            "paragraph": {
+              "rich_text": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "Create impactful LinkedIn posts that showcase your work. Connect posts to your Empathy Ledger stories and project updates.",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Create impactful LinkedIn posts that showcase your work. Connect posts to your Empathy Ledger stories and project updates.",
+                  "href": null
+                }
+              ],
+              "color": "default"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "divider",
+      "id": "65f3522b-a16c-41fc-b342-4ae015ae6561",
+      "block": {
+        "object": "block",
+        "id": "65f3522b-a16c-41fc-b342-4ae015ae6561",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "divider",
+        "divider": {}
+      }
+    },
+    {
+      "type": "heading_2",
+      "id": "104c9123-0b9d-400a-8db2-722dca6539d1",
+      "block": {
+        "object": "block",
+        "id": "104c9123-0b9d-400a-8db2-722dca6539d1",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "heading_2",
+        "heading_2": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "📝 ",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "📝 ",
+              "href": null
+            },
+            {
+              "type": "text",
+              "text": {
+                "content": "Story Updates Workshop",
+                "link": null
+              },
+              "annotations": {
+                "bold": true,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Story Updates Workshop",
+              "href": null
+            }
+          ],
+          "is_toggleable": false,
+          "color": "default"
+        }
+      }
+    },
+    {
+      "type": "paragraph",
+      "id": "1f591a9b-d0ef-460f-9501-896309f628fa",
+      "block": {
+        "object": "block",
+        "id": "1f591a9b-d0ef-460f-9501-896309f628fa",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "paragraph",
+        "paragraph": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Partner stories and impact narratives",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": true,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Partner stories and impact narratives",
+              "href": null
+            }
+          ],
+          "color": "default"
+        }
+      }
+    },
+    {
+      "type": "callout",
+      "id": "5588779f-d033-4641-a8b0-f8940c5feb64",
+      "block": {
+        "object": "block",
+        "id": "5588779f-d033-4641-a8b0-f8940c5feb64",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": true,
+        "archived": false,
+        "in_trash": false,
+        "type": "callout",
+        "callout": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Story Development",
+                "link": null
+              },
+              "annotations": {
+                "bold": true,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Story Development",
+              "href": null
+            },
+            {
+              "type": "text",
+              "text": {
+                "content": "\n",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "\n",
+              "href": null
+            }
+          ],
+          "icon": {
+            "type": "emoji",
+            "emoji": "📚"
+          },
+          "color": "orange"
+        }
+      },
+      "children": [
+        {
+          "type": "paragraph",
+          "id": "2567d45e-7865-4f3a-b7fa-860409dd2144",
+          "block": {
+            "object": "block",
+            "id": "2567d45e-7865-4f3a-b7fa-860409dd2144",
+            "parent": {
+              "type": "block_id",
+              "block_id": "5588779f-d033-4641-a8b0-f8940c5feb64"
+            },
+            "created_time": "2025-09-17T00:26:00.000Z",
+            "last_edited_time": "2025-09-17T00:31:00.000Z",
+            "created_by": {
+              "object": "user",
+              "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+            },
+            "last_edited_by": {
+              "object": "user",
+              "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+            },
+            "has_children": false,
+            "archived": false,
+            "in_trash": false,
+            "type": "paragraph",
+            "paragraph": {
+              "rich_text": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "Craft compelling stories about your partnerships and impact. Perfect for sharing progress and building connections.",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Craft compelling stories about your partnerships and impact. Perfect for sharing progress and building connections.",
+                  "href": null
+                }
+              ],
+              "color": "default"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "divider",
+      "id": "b9e7c70c-58a3-4c3f-b218-ff04e0e679cf",
+      "block": {
+        "object": "block",
+        "id": "b9e7c70c-58a3-4c3f-b218-ff04e0e679cf",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "divider",
+        "divider": {}
+      }
+    },
+    {
+      "type": "heading_2",
+      "id": "58d7b204-bfe3-4cc8-9b76-f7d5ea198be6",
+      "block": {
+        "object": "block",
+        "id": "58d7b204-bfe3-4cc8-9b76-f7d5ea198be6",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "heading_2",
+        "heading_2": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "✉️ ",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "✉️ ",
+              "href": null
+            },
+            {
+              "type": "text",
+              "text": {
+                "content": "Email Communications",
+                "link": null
+              },
+              "annotations": {
+                "bold": true,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Email Communications",
+              "href": null
+            }
+          ],
+          "is_toggleable": false,
+          "color": "default"
+        }
+      }
+    },
+    {
+      "type": "paragraph",
+      "id": "0c7d039c-d84d-4915-aa81-5831eb33d10e",
+      "block": {
+        "object": "block",
+        "id": "0c7d039c-d84d-4915-aa81-5831eb33d10e",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "paragraph",
+        "paragraph": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Direct partner and stakeholder emails",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": true,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Direct partner and stakeholder emails",
+              "href": null
+            }
+          ],
+          "color": "default"
+        }
+      }
+    },
+    {
+      "type": "callout",
+      "id": "48eca339-0131-4996-9671-29121370d449",
+      "block": {
+        "object": "block",
+        "id": "48eca339-0131-4996-9671-29121370d449",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": true,
+        "archived": false,
+        "in_trash": false,
+        "type": "callout",
+        "callout": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Email Strategy",
+                "link": null
+              },
+              "annotations": {
+                "bold": true,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Email Strategy",
+              "href": null
+            },
+            {
+              "type": "text",
+              "text": {
+                "content": "\n",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "\n",
+              "href": null
+            }
+          ],
+          "icon": {
+            "type": "emoji",
+            "emoji": "📮"
+          },
+          "color": "purple"
+        }
+      },
+      "children": [
+        {
+          "type": "paragraph",
+          "id": "c1ffa42b-63a9-4adc-a500-585b1bdd21aa",
+          "block": {
+            "object": "block",
+            "id": "c1ffa42b-63a9-4adc-a500-585b1bdd21aa",
+            "parent": {
+              "type": "block_id",
+              "block_id": "48eca339-0131-4996-9671-29121370d449"
+            },
+            "created_time": "2025-09-17T00:26:00.000Z",
+            "last_edited_time": "2025-09-17T00:31:00.000Z",
+            "created_by": {
+              "object": "user",
+              "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+            },
+            "last_edited_by": {
+              "object": "user",
+              "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+            },
+            "has_children": false,
+            "archived": false,
+            "in_trash": false,
+            "type": "paragraph",
+            "paragraph": {
+              "rich_text": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "Develop targeted emails for different partners and contexts. Track mood, energy, and relationship building.",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Develop targeted emails for different partners and contexts. Track mood, energy, and relationship building.",
+                  "href": null
+                }
+              ],
+              "color": "default"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "divider",
+      "id": "a11c5d26-f81e-481b-b298-d2a2c84705e8",
+      "block": {
+        "object": "block",
+        "id": "a11c5d26-f81e-481b-b298-d2a2c84705e8",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "divider",
+        "divider": {}
+      }
+    },
+    {
+      "type": "heading_2",
+      "id": "bec47899-d76b-49a2-92b4-7d342311214b",
+      "block": {
+        "object": "block",
+        "id": "bec47899-d76b-49a2-92b4-7d342311214b",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "heading_2",
+        "heading_2": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "🚀 ",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "🚀 ",
+              "href": null
+            },
+            {
+              "type": "text",
+              "text": {
+                "content": "Innovation Showcases",
+                "link": null
+              },
+              "annotations": {
+                "bold": true,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Innovation Showcases",
+              "href": null
+            }
+          ],
+          "is_toggleable": false,
+          "color": "default"
+        }
+      }
+    },
+    {
+      "type": "paragraph",
+      "id": "12f06645-b621-4a40-b088-c9f654788e91",
+      "block": {
+        "object": "block",
+        "id": "12f06645-b621-4a40-b088-c9f654788e91",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "paragraph",
+        "paragraph": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Highlighting ACT's innovative approaches",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": true,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Highlighting ACT's innovative approaches",
+              "href": null
+            }
+          ],
+          "color": "default"
+        }
+      }
+    },
+    {
+      "type": "callout",
+      "id": "cc85b9e4-2f47-4ec3-bc81-fa4ff9604e75",
+      "block": {
+        "object": "block",
+        "id": "cc85b9e4-2f47-4ec3-bc81-fa4ff9604e75",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": true,
+        "archived": false,
+        "in_trash": false,
+        "type": "callout",
+        "callout": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Innovation Focus",
+                "link": null
+              },
+              "annotations": {
+                "bold": true,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Innovation Focus",
+              "href": null
+            },
+            {
+              "type": "text",
+              "text": {
+                "content": "\n",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "\n",
+              "href": null
+            }
+          ],
+          "icon": {
+            "type": "emoji",
+            "emoji": "💡"
+          },
+          "color": "red"
+        }
+      },
+      "children": [
+        {
+          "type": "paragraph",
+          "id": "9093709e-b86b-45b1-9b8c-e633454f7abf",
+          "block": {
+            "object": "block",
+            "id": "9093709e-b86b-45b1-9b8c-e633454f7abf",
+            "parent": {
+              "type": "block_id",
+              "block_id": "cc85b9e4-2f47-4ec3-bc81-fa4ff9604e75"
+            },
+            "created_time": "2025-09-17T00:26:00.000Z",
+            "last_edited_time": "2025-09-17T00:31:00.000Z",
+            "created_by": {
+              "object": "user",
+              "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+            },
+            "last_edited_by": {
+              "object": "user",
+              "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+            },
+            "has_children": false,
+            "archived": false,
+            "in_trash": false,
+            "type": "paragraph",
+            "paragraph": {
+              "rich_text": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "Showcase your co-build approach and community-led innovations. Perfect for funding applications and partnership development.",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Showcase your co-build approach and community-led innovations. Perfect for funding applications and partnership development.",
+                  "href": null
+                }
+              ],
+              "color": "default"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "divider",
+      "id": "e5e1c109-42dd-43de-b417-435ed094da9c",
+      "block": {
+        "object": "block",
+        "id": "e5e1c109-42dd-43de-b417-435ed094da9c",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "divider",
+        "divider": {}
+      }
+    },
+    {
+      "type": "heading_2",
+      "id": "fc92d709-b0ec-4e4d-830b-e0974d8aa1cf",
+      "block": {
+        "object": "block",
+        "id": "fc92d709-b0ec-4e4d-830b-e0974d8aa1cf",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:43:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "heading_2",
+        "heading_2": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "📅 Shipping Date ",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "📅 Shipping Date ",
+              "href": null
+            },
+            {
+              "type": "text",
+              "text": {
+                "content": "Content Calendar Overview",
+                "link": null
+              },
+              "annotations": {
+                "bold": true,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Content Calendar Overview",
+              "href": null
+            }
+          ],
+          "is_toggleable": false,
+          "color": "default"
+        }
+      }
+    },
+    {
+      "type": "paragraph",
+      "id": "eb0a8912-080b-4bd7-a716-b715a3be7722",
+      "block": {
+        "object": "block",
+        "id": "eb0a8912-080b-4bd7-a716-b715a3be7722",
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "created_time": "2025-09-17T00:26:00.000Z",
+        "last_edited_time": "2025-09-17T00:31:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "has_children": false,
+        "archived": false,
+        "in_trash": false,
+        "type": "paragraph",
+        "paragraph": {
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Timeline view of all upcoming communications",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": true,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Timeline view of all upcoming communications",
+              "href": null
+            }
+          ],
+          "color": "default"
+        }
+      }
+    },
+    {
+      "type": "database",
+      "id": "7005d0d1-41d3-436c-9f86-526d275c2f10",
+      "database": {
+        "object": "database",
+        "id": "7005d0d1-41d3-436c-9f86-526d275c2f10",
+        "cover": null,
+        "icon": null,
+        "created_time": "2025-09-11T23:12:00.000Z",
+        "created_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_by": {
+          "object": "user",
+          "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+        },
+        "last_edited_time": "2025-09-17T00:47:00.000Z",
+        "title": [
+          {
+            "type": "text",
+            "text": {
+              "content": "ACT Communications Dashboard",
+              "link": null
+            },
+            "annotations": {
+              "bold": false,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "ACT Communications Dashboard",
+            "href": null
+          }
+        ],
+        "description": [],
+        "is_inline": false,
+        "properties": {
+          "Delight Factor": {
+            "id": "%3CT%7DK",
+            "name": "Delight Factor",
+            "description": "Level and nature of delight we aim to create",
+            "type": "select",
+            "select": {
+              "options": [
+                {
+                  "id": "H=qC",
+                  "name": "✨ High Impact",
+                  "color": "brown",
+                  "description": null
+                },
+                {
+                  "id": "<QqS",
+                  "name": "🎯 Targeted",
+                  "color": "green",
+                  "description": null
+                },
+                {
+                  "id": "Pq_i",
+                  "name": "📈 Building",
+                  "color": "gray",
+                  "description": null
+                },
+                {
+                  "id": "`dJz",
+                  "name": "🌱 Seed Stage",
+                  "color": "red",
+                  "description": null
+                }
+              ]
+            }
+          },
+          "Organisation Contacts": {
+            "id": "%3Dl%3Fk",
+            "name": "Organisation Contacts",
+            "description": "Shows Primary Contacts from the related Organisation via the Organisation relation",
+            "type": "rollup",
+            "rollup": {
+              "rollup_property_name": "Name",
+              "relation_property_name": "Contact Person",
+              "rollup_property_id": "title",
+              "relation_property_id": "MHY_",
+              "function": "show_original"
+            }
+          },
+          "Next Funding Opportunity": {
+            "id": "%40_yL",
+            "name": "Next Funding Opportunity",
+            "description": "The next anticipated funding opportunity date",
+            "type": "date",
+            "date": {}
+          },
+          "Next Contact Due": {
+            "id": "EuNX",
+            "name": "Next Contact Due",
+            "description": "The next date we should contact this partner",
+            "type": "date",
+            "date": {}
+          },
+          "Active Actions Count": {
+            "id": "HGXM",
+            "name": "Active Actions Count",
+            "description": "Count of related Actions from the Project relation where Status is not Done",
+            "type": "rollup",
+            "rollup": {
+              "rollup_property_name": "Name",
+              "relation_property_name": "Organisation",
+              "rollup_property_id": "title",
+              "relation_property_id": "d@U?",
+              "function": "show_original"
+            }
+          },
+          "Last Contact Date": {
+            "id": "MFbL",
+            "name": "Last Contact Date",
+            "description": "The most recent date we connected with this partner",
+            "type": "date",
+            "date": {}
+          },
+          "Contact Person": {
+            "id": "MHY_",
+            "name": "Contact Person",
+            "description": "Primary person for this communication",
+            "type": "relation",
+            "relation": {
+              "database_id": "47bdc1c4-df99-4ddc-81c4-a0214c919d69",
+              "data_source_id": "44139ffe-2a35-4561-8bfb-dc5d660e8078",
+              "type": "single_property",
+              "single_property": {}
+            }
+          },
+          "Last Funding Date": {
+            "id": "Mbtd",
+            "name": "Last Funding Date",
+            "description": "The most recent date funding was received",
+            "type": "date",
+            "date": {}
+          },
+          "Next Project Milestone": {
+            "id": "PSt%3F",
+            "name": "Next Project Milestone",
+            "description": "Earliest Next Milestone Date from related Projects",
+            "type": "rollup",
+            "rollup": {
+              "rollup_property_name": "Name",
+              "relation_property_name": "Project",
+              "rollup_property_id": "title",
+              "relation_property_id": "UsNc",
+              "function": "show_original"
+            }
+          },
+          "Video link": {
+            "id": "RHO%5B",
+            "name": "Video link",
+            "description": null,
+            "type": "url",
+            "url": {}
+          },
+          "Notes": {
+            "id": "SGI%5C",
+            "name": "Notes",
+            "description": "Additional notes",
+            "type": "rich_text",
+            "rich_text": {}
+          },
+          "Project": {
+            "id": "UsNc",
+            "name": "Project",
+            "description": "The project this communication relates to",
+            "type": "relation",
+            "relation": {
+              "database_id": "177ebcf9-81cf-80dd-9514-f1ec32f3314c",
+              "data_source_id": "0786139b-85d6-4699-b2bc-5b2effd52457",
+              "type": "single_property",
+              "single_property": {}
+            }
+          },
+          "Fun Element": {
+            "id": "%5EiYJ",
+            "name": "Fun Element",
+            "description": "Creative communication ideas to add delight",
+            "type": "rich_text",
+            "rich_text": {}
+          },
+          "Funding Potential": {
+            "id": "_N%40G",
+            "name": "Funding Potential",
+            "description": "Estimated future funding opportunity",
+            "type": "number",
+            "number": {
+              "format": "number"
+            }
+          },
+          "Justice Hub Relevance": {
+            "id": "bGJw",
+            "name": "Justice Hub Relevance",
+            "description": "Check if this is relevant to youth justice communications",
+            "type": "checkbox",
+            "checkbox": {}
+          },
+          "Sent date": {
+            "id": "bg%5E%40",
+            "name": "Sent date",
+            "description": null,
+            "type": "date",
+            "date": {}
+          },
+          "Organisation": {
+            "id": "d%40U%3F",
+            "name": "Organisation",
+            "description": "The organisation this partner communication is associated with",
+            "type": "relation",
+            "relation": {
+              "database_id": "948f3946-7d1c-42f2-bd7e-1317a755e67b",
+              "data_source_id": "9ce23468-1583-4abd-8138-187b2bd9f54a",
+              "type": "single_property",
+              "single_property": {}
+            }
+          },
+          "Communication Type": {
+            "id": "d~%5BX",
+            "name": "Communication Type",
+            "description": "Type or purpose of the communication",
+            "type": "select",
+            "select": {
+              "options": [
+                {
+                  "id": "H=qC",
+                  "name": "Story Update",
+                  "color": "red",
+                  "description": ""
+                },
+                {
+                  "id": "<QqS",
+                  "name": "Delight & Excitement",
+                  "color": "purple",
+                  "description": ""
+                },
+                {
+                  "id": "Pq_i",
+                  "name": "Innovation Showcase",
+                  "color": "gray",
+                  "description": ""
+                },
+                {
+                  "id": "`dJz",
+                  "name": "Regular Check-in",
+                  "color": "orange",
+                  "description": ""
+                },
+                {
+                  "id": "LDwV",
+                  "name": "Justice Hub Connection",
+                  "color": "green",
+                  "description": ""
+                },
+                {
+                  "id": "zIy}",
+                  "name": "Empathy Ledger Story",
+                  "color": "pink",
+                  "description": ""
+                },
+                {
+                  "id": "Tf|X",
+                  "name": "Newsletter",
+                  "color": "blue",
+                  "description": ""
+                },
+                {
+                  "id": "L]dF",
+                  "name": "LinkedIn Post",
+                  "color": "blue",
+                  "description": ""
+                }
+              ]
+            }
+          },
+          "Status": {
+            "id": "gZqg",
+            "name": "Status",
+            "description": "Progress of this communication",
+            "type": "status",
+            "status": {
+              "options": [
+                {
+                  "id": ">qL;",
+                  "name": "Ready to Connect",
+                  "color": "default",
+                  "description": null
+                },
+                {
+                  "id": "Z{;S",
+                  "name": "Story Prep Needed",
+                  "color": "default",
+                  "description": null
+                },
+                {
+                  "id": "=uP>",
+                  "name": "Conversation Scheduled",
+                  "color": "default",
+                  "description": null
+                },
+                {
+                  "id": "nJAz",
+                  "name": "Story in Development",
+                  "color": "default",
+                  "description": null
+                },
+                {
+                  "id": "rPa<",
+                  "name": "Connected & Delighted",
+                  "color": "default",
+                  "description": null
+                }
+              ],
+              "groups": [
+                {
+                  "id": "OvC>",
+                  "name": "To-do",
+                  "color": "default",
+                  "option_ids": [
+                    ">qL;",
+                    "Z{;S"
+                  ]
+                },
+                {
+                  "id": "OK`i",
+                  "name": "In progress",
+                  "color": "default",
+                  "option_ids": [
+                    "=uP>",
+                    "nJAz"
+                  ]
+                },
+                {
+                  "id": "io[^",
+                  "name": "Complete",
+                  "color": "default",
+                  "option_ids": [
+                    "rPa<"
+                  ]
+                }
+              ]
+            }
+          },
+          "Engagement ROI Score": {
+            "id": "gZve",
+            "name": "Engagement ROI Score",
+            "description": "Return on engagement value assessment",
+            "type": "select",
+            "select": {
+              "options": [
+                {
+                  "id": "`o`D",
+                  "name": "🔥 Exceptional Value",
+                  "color": "default",
+                  "description": null
+                },
+                {
+                  "id": "~TBA",
+                  "name": "💰 Good Return",
+                  "color": "gray",
+                  "description": null
+                },
+                {
+                  "id": "?;cR",
+                  "name": "⚖️ Balanced",
+                  "color": "blue",
+                  "description": null
+                },
+                {
+                  "id": "U?FI",
+                  "name": "🌱 Building",
+                  "color": "pink",
+                  "description": null
+                },
+                {
+                  "id": "c@Uh",
+                  "name": "❓ Needs Review",
+                  "color": "orange",
+                  "description": null
+                }
+              ]
+            }
+          },
+          "Contact Method": {
+            "id": "j%5D%5C%3D",
+            "name": "Contact Method",
+            "description": "Primary channel used or planned for the next contact",
+            "type": "select",
+            "select": {
+              "options": [
+                {
+                  "id": "H=qC",
+                  "name": "Video Call",
+                  "color": "green",
+                  "description": ""
+                },
+                {
+                  "id": "<QqS",
+                  "name": "Phone",
+                  "color": "gray",
+                  "description": ""
+                },
+                {
+                  "id": "Pq_i",
+                  "name": "Email",
+                  "color": "yellow",
+                  "description": ""
+                },
+                {
+                  "id": "`dJz",
+                  "name": "In Person",
+                  "color": "purple",
+                  "description": ""
+                },
+                {
+                  "id": "LDwV",
+                  "name": "Story Share",
+                  "color": "orange",
+                  "description": ""
+                },
+                {
+                  "id": "zIy}",
+                  "name": "Creative Package",
+                  "color": "default",
+                  "description": ""
+                },
+                {
+                  "id": "Tf|X",
+                  "name": "LinkedIn",
+                  "color": "blue",
+                  "description": ""
+                }
+              ]
+            }
+          },
+          "Impact Opportunity Level": {
+            "id": "oUf%3B",
+            "name": "Impact Opportunity Level",
+            "description": "Potential impact scale from this relationship",
+            "type": "select",
+            "select": {
+              "options": [
+                {
+                  "id": "`o`D",
+                  "name": "🚀 Massive Scale",
+                  "color": "red",
+                  "description": null
+                },
+                {
+                  "id": "~TBA",
+                  "name": "📈 Significant Growth",
+                  "color": "default",
+                  "description": null
+                },
+                {
+                  "id": "?;cR",
+                  "name": "🎯 Targeted Impact",
+                  "color": "blue",
+                  "description": null
+                },
+                {
+                  "id": "U?FI",
+                  "name": "🔍 Exploring",
+                  "color": "purple",
+                  "description": null
+                },
+                {
+                  "id": "c@Uh",
+                  "name": "💤 Limited",
+                  "color": "pink",
+                  "description": null
+                }
+              ]
+            }
+          },
+          "Current Mood/Energy": {
+            "id": "soB%3F",
+            "name": "Current Mood/Energy",
+            "description": "How the partner currently feels about the collaboration",
+            "type": "select",
+            "select": {
+              "options": [
+                {
+                  "id": "H=qC",
+                  "name": "🔥 Excited",
+                  "color": "default",
+                  "description": null
+                },
+                {
+                  "id": "<QqS",
+                  "name": "💪 Engaged",
+                  "color": "yellow",
+                  "description": null
+                },
+                {
+                  "id": "Pq_i",
+                  "name": "😊 Content",
+                  "color": "green",
+                  "description": null
+                },
+                {
+                  "id": "`dJz",
+                  "name": "🤔 Curious",
+                  "color": "blue",
+                  "description": null
+                },
+                {
+                  "id": "LDwV",
+                  "name": "😴 Needs Spark",
+                  "color": "orange",
+                  "description": null
+                },
+                {
+                  "id": "zIy}",
+                  "name": "❓ Unknown",
+                  "color": "red",
+                  "description": null
+                }
+              ]
+            }
+          },
+          "Empathy Ledger Connection": {
+            "id": "uID%3A",
+            "name": "Empathy Ledger Connection",
+            "description": "How this communication connects to Empathy Ledger stories or themes",
+            "type": "rich_text",
+            "rich_text": {}
+          },
+          "Image": {
+            "id": "ySTr",
+            "name": "Image",
+            "description": null,
+            "type": "files",
+            "files": {}
+          },
+          "Current Funding Value": {
+            "id": "z%40SP",
+            "name": "Current Funding Value",
+            "description": "Money received or expected from this organisation",
+            "type": "number",
+            "number": {
+              "format": "number"
+            }
+          },
+          "Key Message/Story": {
+            "id": "%7CQLD",
+            "name": "Key Message/Story",
+            "description": "Main communication focus or story to convey",
+            "type": "rich_text",
+            "rich_text": {}
+          },
+          "Content/Communication Name": {
+            "id": "title",
+            "name": "Content/Communication Name",
+            "description": "The name of the specific content piece or communication task (not the partner name)",
+            "type": "title",
+            "title": {}
+          }
+        },
+        "parent": {
+          "type": "page_id",
+          "page_id": "77a651bf-99c5-4a20-8123-4f3bbbd46168"
+        },
+        "url": "https://www.notion.so/7005d0d141d3436c9f86526d275c2f10",
+        "public_url": null,
+        "archived": false,
+        "in_trash": false,
+        "request_id": "3ce09f70-e18e-47b4-94e0-a4766e580e13"
+      },
+      "records": [
+        {
+          "object": "page",
+          "id": "271ebcf9-81cf-80b8-a6c1-f9c272721e67",
+          "created_time": "2025-09-17T04:19:00.000Z",
+          "last_edited_time": "2025-09-17T04:21:00.000Z",
+          "created_by": {
+            "object": "user",
+            "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+          },
+          "last_edited_by": {
+            "object": "user",
+            "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+          },
+          "cover": null,
+          "icon": null,
+          "parent": {
+            "type": "database_id",
+            "database_id": "7005d0d1-41d3-436c-9f86-526d275c2f10"
+          },
+          "archived": false,
+          "in_trash": false,
+          "is_locked": false,
+          "properties": {
+            "Delight Factor": {
+              "id": "%3CT%7DK",
+              "type": "select",
+              "select": {
+                "id": "<QqS",
+                "name": "🎯 Targeted",
+                "color": "green"
+              }
+            },
+            "Organisation Contacts": {
+              "id": "%3Dl%3Fk",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [
+                  {
+                    "type": "title",
+                    "title": [
+                      {
+                        "type": "text",
+                        "text": {
+                          "content": "Joe Kwon",
+                          "link": null
+                        },
+                        "annotations": {
+                          "bold": false,
+                          "italic": false,
+                          "strikethrough": false,
+                          "underline": false,
+                          "code": false,
+                          "color": "default"
+                        },
+                        "plain_text": "Joe Kwon",
+                        "href": null
+                      }
+                    ]
+                  }
+                ],
+                "function": "show_original"
+              }
+            },
+            "Next Funding Opportunity": {
+              "id": "%40_yL",
+              "type": "date",
+              "date": null
+            },
+            "Next Contact Due": {
+              "id": "EuNX",
+              "type": "date",
+              "date": null
+            },
+            "Active Actions Count": {
+              "id": "HGXM",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [],
+                "function": "show_original"
+              }
+            },
+            "Project Status Summary": {
+              "id": "L%7BK~",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [],
+                "function": "show_original"
+              }
+            },
+            "Last Contact Date": {
+              "id": "MFbL",
+              "type": "date",
+              "date": null
+            },
+            "Contact Person": {
+              "id": "MHY_",
+              "type": "relation",
+              "relation": [
+                {
+                  "id": "243ebcf9-81cf-817c-a80b-c9750a569d80"
+                }
+              ],
+              "has_more": false
+            },
+            "Last Funding Date": {
+              "id": "Mbtd",
+              "type": "date",
+              "date": null
+            },
+            "Next Project Milestone": {
+              "id": "PSt%3F",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [
+                  {
+                    "type": "title",
+                    "title": [
+                      {
+                        "type": "text",
+                        "text": {
+                          "content": "Contained",
+                          "link": null
+                        },
+                        "annotations": {
+                          "bold": false,
+                          "italic": false,
+                          "strikethrough": false,
+                          "underline": false,
+                          "code": false,
+                          "color": "default"
+                        },
+                        "plain_text": "Contained",
+                        "href": null
+                      }
+                    ]
+                  }
+                ],
+                "function": "show_original"
+              }
+            },
+            "Video link": {
+              "id": "RHO%5B",
+              "type": "url",
+              "url": "https://www.linkedin.com/posts/benjamin-knight-53854061_theres-a-particular-sound-a-detention-centre-activity-7373930568411127808-azes?utm_source=share&utm_medium=member_desktop&rcm=ACoAAA0SUvwB0Lqpp9upzOqeUcZ4VRAhNJ1X2Rg"
+            },
+            "Notes": {
+              "id": "SGI%5C",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Project": {
+              "id": "UsNc",
+              "type": "relation",
+              "relation": [
+                {
+                  "id": "228ebcf9-81cf-809e-8368-f9dae2a41129"
+                }
+              ],
+              "has_more": false
+            },
+            "Fun Element": {
+              "id": "%5EiYJ",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Funding Potential": {
+              "id": "_N%40G",
+              "type": "number",
+              "number": null
+            },
+            "Justice Hub Relevance": {
+              "id": "bGJw",
+              "type": "checkbox",
+              "checkbox": true
+            },
+            "Sent date": {
+              "id": "bg%5E%40",
+              "type": "date",
+              "date": {
+                "start": "2025-09-17",
+                "end": null,
+                "time_zone": null
+              }
+            },
+            "Organisation": {
+              "id": "d%40U%3F",
+              "type": "relation",
+              "relation": [],
+              "has_more": false
+            },
+            "Communication Type": {
+              "id": "d~%5BX",
+              "type": "select",
+              "select": {
+                "id": "L]dF",
+                "name": "LinkedIn Post",
+                "color": "blue"
+              }
+            },
+            "Status": {
+              "id": "gZqg",
+              "type": "status",
+              "status": {
+                "id": "rPa<",
+                "name": "Connected & Delighted",
+                "color": "default"
+              }
+            },
+            "Engagement ROI Score": {
+              "id": "gZve",
+              "type": "select",
+              "select": null
+            },
+            "Contact Method": {
+              "id": "j%5D%5C%3D",
+              "type": "select",
+              "select": null
+            },
+            "Impact Opportunity Level": {
+              "id": "oUf%3B",
+              "type": "select",
+              "select": null
+            },
+            "Current Mood/Energy": {
+              "id": "soB%3F",
+              "type": "select",
+              "select": {
+                "id": "H=qC",
+                "name": "🔥 Excited",
+                "color": "default"
+              }
+            },
+            "Empathy Ledger Connection": {
+              "id": "uID%3A",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Image": {
+              "id": "ySTr",
+              "type": "files",
+              "files": []
+            },
+            "Current Funding Value": {
+              "id": "z%40SP",
+              "type": "number",
+              "number": null
+            },
+            "Key Message/Story": {
+              "id": "%7CQLD",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Content/Communication Name": {
+              "id": "title",
+              "type": "title",
+              "title": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "Sound a detention centre makes at 3am",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Sound a detention centre makes at 3am",
+                  "href": null
+                }
+              ]
+            }
+          },
+          "url": "https://www.notion.so/Sound-a-detention-centre-makes-at-3am-271ebcf981cf80b8a6c1f9c272721e67",
+          "public_url": null
+        },
+        {
+          "object": "page",
+          "id": "271ebcf9-81cf-802b-a560-efd1fc509109",
+          "created_time": "2025-09-17T00:42:00.000Z",
+          "last_edited_time": "2025-09-17T02:49:00.000Z",
+          "created_by": {
+            "object": "user",
+            "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+          },
+          "last_edited_by": {
+            "object": "user",
+            "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+          },
+          "cover": null,
+          "icon": null,
+          "parent": {
+            "type": "database_id",
+            "database_id": "7005d0d1-41d3-436c-9f86-526d275c2f10"
+          },
+          "archived": false,
+          "in_trash": false,
+          "is_locked": false,
+          "properties": {
+            "Delight Factor": {
+              "id": "%3CT%7DK",
+              "type": "select",
+              "select": null
+            },
+            "Organisation Contacts": {
+              "id": "%3Dl%3Fk",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [],
+                "function": "show_original"
+              }
+            },
+            "Next Funding Opportunity": {
+              "id": "%40_yL",
+              "type": "date",
+              "date": null
+            },
+            "Next Contact Due": {
+              "id": "EuNX",
+              "type": "date",
+              "date": null
+            },
+            "Active Actions Count": {
+              "id": "HGXM",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [],
+                "function": "show_original"
+              }
+            },
+            "Project Status Summary": {
+              "id": "L%7BK~",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [],
+                "function": "show_original"
+              }
+            },
+            "Last Contact Date": {
+              "id": "MFbL",
+              "type": "date",
+              "date": null
+            },
+            "Contact Person": {
+              "id": "MHY_",
+              "type": "relation",
+              "relation": [],
+              "has_more": false
+            },
+            "Last Funding Date": {
+              "id": "Mbtd",
+              "type": "date",
+              "date": null
+            },
+            "Next Project Milestone": {
+              "id": "PSt%3F",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [],
+                "function": "show_original"
+              }
+            },
+            "Video link": {
+              "id": "RHO%5B",
+              "type": "url",
+              "url": null
+            },
+            "Notes": {
+              "id": "SGI%5C",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Project": {
+              "id": "UsNc",
+              "type": "relation",
+              "relation": [],
+              "has_more": false
+            },
+            "Fun Element": {
+              "id": "%5EiYJ",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Funding Potential": {
+              "id": "_N%40G",
+              "type": "number",
+              "number": null
+            },
+            "Justice Hub Relevance": {
+              "id": "bGJw",
+              "type": "checkbox",
+              "checkbox": false
+            },
+            "Sent date": {
+              "id": "bg%5E%40",
+              "type": "date",
+              "date": {
+                "start": "2025-09-16",
+                "end": null,
+                "time_zone": null
+              }
+            },
+            "Organisation": {
+              "id": "d%40U%3F",
+              "type": "relation",
+              "relation": [],
+              "has_more": false
+            },
+            "Communication Type": {
+              "id": "d~%5BX",
+              "type": "select",
+              "select": {
+                "id": "L]dF",
+                "name": "LinkedIn Post",
+                "color": "blue"
+              }
+            },
+            "Status": {
+              "id": "gZqg",
+              "type": "status",
+              "status": {
+                "id": "rPa<",
+                "name": "Connected & Delighted",
+                "color": "default"
+              }
+            },
+            "Engagement ROI Score": {
+              "id": "gZve",
+              "type": "select",
+              "select": null
+            },
+            "Contact Method": {
+              "id": "j%5D%5C%3D",
+              "type": "select",
+              "select": null
+            },
+            "Impact Opportunity Level": {
+              "id": "oUf%3B",
+              "type": "select",
+              "select": null
+            },
+            "Current Mood/Energy": {
+              "id": "soB%3F",
+              "type": "select",
+              "select": null
+            },
+            "Empathy Ledger Connection": {
+              "id": "uID%3A",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Image": {
+              "id": "ySTr",
+              "type": "files",
+              "files": [
+                {
+                  "name": "6575909fbaffc440d2916793_IMG_8339-p-800.jpg",
+                  "type": "file",
+                  "file": {
+                    "url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/5496da29-0ded-443b-9f03-cf928ea15566/0485952c-2239-45e0-b833-c73fee0c29be/6575909fbaffc440d2916793_IMG_8339-p-800.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466SEAWL7EI%2F20251004%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20251004T041951Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELz%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQCBeQPfKfjNMRekSKk7mLpSTF8Encb21ONRIzkFj5dFZwIgdJGt9M3eZvL%2B%2BWuzfzk8llNJtcsk5Jn7n0PRefa07e0q%2FwMIVRAAGgw2Mzc0MjMxODM4MDUiDKW5kZHUrvxKEMToiSrcA9WYLB3cQzOVoyFUz3et%2FbZ7cSgq%2FupFq5EyKZ3FDSS%2F0ZhLW0yG4eMaNWsWURYe9VYjAckdL2jvP9wfiIyoxviTNntOA%2BHbWQXc4MDtOFomWn2WP4q8yHp4GAmYb3CcPq52Sv%2By3Y%2FT%2BIhKqmZ0kzY%2BgenF5ZkyOBMS5S%2FQAEJI2Hu2TyxLTpv8jdLxR7AjJmFpT1NDi13LG5goRi9SsnYpXakIrAsb69bjAIsB%2Fq%2BU2VWQogqv%2B67809VRVR8L%2B4hQXqybJkfQweqcSlKFh8%2BKahhB1dVSL%2F%2F8AA%2FR1NkqKL18PgH5ndYAIJpXjlWTNeVMKuQ6BZE4JXMT%2BzmI5T6NZj5IWUSZ%2BQaXhZ%2Fy27GaO%2BYn9OrC7CCjZJfHb%2BQsEF0IBMd4LCdtnpQ0iwuWuT3i8XcBp2jD7T8MXAiypeowtf1wwMqfUW1JPU%2F5eTD%2FAN1AyMyytHed5VcWFPpar4bfTNOmALEsdehVmKbH395mLMwbunFzMGaZfsU%2BYHqmRMyUXDVVW%2B9%2B7U%2B8L%2B1zwF4CWDty1UeFD6YscsoHIEHEmU0bQ0Xfv6D%2BV9JFFp8f7v9oYluBHU%2Bb4LlsHHwxdyFsx5c0Utj7nK0kcCD5BGJxbGQi%2BjFbYK9ZvVieMMK%2BgscGOqUB9B91acH%2FR3cD%2Be%2B67vsN%2FlrPriRC8D%2B6WvvPIY8JsMC3wfrahnm6Avvy43%2FRVuMVY9LtkM8BAvcSbIyI%2FVlesuKpZayqpz9kHz7%2FWzST6jTfDa1UW4WR%2FwneQwMPwRPvID2zzoCW3S2St4zjp9NTjkiQddwTdh4IYZrJOKltyexTOWg5%2FrximWjegpiZi%2B3iaHeUU%2BcpN%2F4qAmQRd8vdPNw7Ijvv&X-Amz-Signature=3df0ec836c48c9201d1c4bc618132215a0cc84b75772107d2a0a57d27da39a16&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+                    "expiry_time": "2025-10-04T05:19:51.709Z"
+                  }
+                }
+              ]
+            },
+            "Current Funding Value": {
+              "id": "z%40SP",
+              "type": "number",
+              "number": null
+            },
+            "Key Message/Story": {
+              "id": "%7CQLD",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Content/Communication Name": {
+              "id": "title",
+              "type": "title",
+              "title": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "I've been quiet lately.",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "I've been quiet lately.",
+                  "href": null
+                }
+              ]
+            }
+          },
+          "url": "https://www.notion.so/I-ve-been-quiet-lately-271ebcf981cf802ba560efd1fc509109",
+          "public_url": null
+        },
+        {
+          "object": "page",
+          "id": "271ebcf9-81cf-809f-87de-f7c76f3c73ed",
+          "created_time": "2025-09-17T00:37:00.000Z",
+          "last_edited_time": "2025-09-17T00:47:00.000Z",
+          "created_by": {
+            "object": "user",
+            "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+          },
+          "last_edited_by": {
+            "object": "user",
+            "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+          },
+          "cover": null,
+          "icon": null,
+          "parent": {
+            "type": "database_id",
+            "database_id": "7005d0d1-41d3-436c-9f86-526d275c2f10"
+          },
+          "archived": false,
+          "in_trash": false,
+          "is_locked": false,
+          "properties": {
+            "Delight Factor": {
+              "id": "%3CT%7DK",
+              "type": "select",
+              "select": null
+            },
+            "Organisation Contacts": {
+              "id": "%3Dl%3Fk",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [],
+                "function": "show_original"
+              }
+            },
+            "Next Funding Opportunity": {
+              "id": "%40_yL",
+              "type": "date",
+              "date": {
+                "start": "2025-09-17",
+                "end": null,
+                "time_zone": null
+              }
+            },
+            "Next Contact Due": {
+              "id": "EuNX",
+              "type": "date",
+              "date": null
+            },
+            "Active Actions Count": {
+              "id": "HGXM",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [],
+                "function": "show_original"
+              }
+            },
+            "Project Status Summary": {
+              "id": "L%7BK~",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [],
+                "function": "show_original"
+              }
+            },
+            "Last Contact Date": {
+              "id": "MFbL",
+              "type": "date",
+              "date": null
+            },
+            "Contact Person": {
+              "id": "MHY_",
+              "type": "relation",
+              "relation": [],
+              "has_more": false
+            },
+            "Last Funding Date": {
+              "id": "Mbtd",
+              "type": "date",
+              "date": null
+            },
+            "Next Project Milestone": {
+              "id": "PSt%3F",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [],
+                "function": "show_original"
+              }
+            },
+            "Video link": {
+              "id": "RHO%5B",
+              "type": "url",
+              "url": null
+            },
+            "Notes": {
+              "id": "SGI%5C",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Project": {
+              "id": "UsNc",
+              "type": "relation",
+              "relation": [],
+              "has_more": false
+            },
+            "Fun Element": {
+              "id": "%5EiYJ",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Funding Potential": {
+              "id": "_N%40G",
+              "type": "number",
+              "number": null
+            },
+            "Justice Hub Relevance": {
+              "id": "bGJw",
+              "type": "checkbox",
+              "checkbox": false
+            },
+            "Sent date": {
+              "id": "bg%5E%40",
+              "type": "date",
+              "date": {
+                "start": "2025-09-17",
+                "end": null,
+                "time_zone": null
+              }
+            },
+            "Organisation": {
+              "id": "d%40U%3F",
+              "type": "relation",
+              "relation": [],
+              "has_more": false
+            },
+            "Communication Type": {
+              "id": "d~%5BX",
+              "type": "select",
+              "select": {
+                "id": "L]dF",
+                "name": "LinkedIn Post",
+                "color": "blue"
+              }
+            },
+            "Status": {
+              "id": "gZqg",
+              "type": "status",
+              "status": {
+                "id": "rPa<",
+                "name": "Connected & Delighted",
+                "color": "default"
+              }
+            },
+            "Engagement ROI Score": {
+              "id": "gZve",
+              "type": "select",
+              "select": null
+            },
+            "Contact Method": {
+              "id": "j%5D%5C%3D",
+              "type": "select",
+              "select": null
+            },
+            "Impact Opportunity Level": {
+              "id": "oUf%3B",
+              "type": "select",
+              "select": null
+            },
+            "Current Mood/Energy": {
+              "id": "soB%3F",
+              "type": "select",
+              "select": null
+            },
+            "Empathy Ledger Connection": {
+              "id": "uID%3A",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Image": {
+              "id": "ySTr",
+              "type": "files",
+              "files": [
+                {
+                  "name": "1757981639008.jpeg",
+                  "type": "file",
+                  "file": {
+                    "url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/5496da29-0ded-443b-9f03-cf928ea15566/cd46049a-7291-4974-84a3-99fe6b52fb89/1757981639008.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466SEAWL7EI%2F20251004%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20251004T041951Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELz%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQCBeQPfKfjNMRekSKk7mLpSTF8Encb21ONRIzkFj5dFZwIgdJGt9M3eZvL%2B%2BWuzfzk8llNJtcsk5Jn7n0PRefa07e0q%2FwMIVRAAGgw2Mzc0MjMxODM4MDUiDKW5kZHUrvxKEMToiSrcA9WYLB3cQzOVoyFUz3et%2FbZ7cSgq%2FupFq5EyKZ3FDSS%2F0ZhLW0yG4eMaNWsWURYe9VYjAckdL2jvP9wfiIyoxviTNntOA%2BHbWQXc4MDtOFomWn2WP4q8yHp4GAmYb3CcPq52Sv%2By3Y%2FT%2BIhKqmZ0kzY%2BgenF5ZkyOBMS5S%2FQAEJI2Hu2TyxLTpv8jdLxR7AjJmFpT1NDi13LG5goRi9SsnYpXakIrAsb69bjAIsB%2Fq%2BU2VWQogqv%2B67809VRVR8L%2B4hQXqybJkfQweqcSlKFh8%2BKahhB1dVSL%2F%2F8AA%2FR1NkqKL18PgH5ndYAIJpXjlWTNeVMKuQ6BZE4JXMT%2BzmI5T6NZj5IWUSZ%2BQaXhZ%2Fy27GaO%2BYn9OrC7CCjZJfHb%2BQsEF0IBMd4LCdtnpQ0iwuWuT3i8XcBp2jD7T8MXAiypeowtf1wwMqfUW1JPU%2F5eTD%2FAN1AyMyytHed5VcWFPpar4bfTNOmALEsdehVmKbH395mLMwbunFzMGaZfsU%2BYHqmRMyUXDVVW%2B9%2B7U%2B8L%2B1zwF4CWDty1UeFD6YscsoHIEHEmU0bQ0Xfv6D%2BV9JFFp8f7v9oYluBHU%2Bb4LlsHHwxdyFsx5c0Utj7nK0kcCD5BGJxbGQi%2BjFbYK9ZvVieMMK%2BgscGOqUB9B91acH%2FR3cD%2Be%2B67vsN%2FlrPriRC8D%2B6WvvPIY8JsMC3wfrahnm6Avvy43%2FRVuMVY9LtkM8BAvcSbIyI%2FVlesuKpZayqpz9kHz7%2FWzST6jTfDa1UW4WR%2FwneQwMPwRPvID2zzoCW3S2St4zjp9NTjkiQddwTdh4IYZrJOKltyexTOWg5%2FrximWjegpiZi%2B3iaHeUU%2BcpN%2F4qAmQRd8vdPNw7Ijvv&X-Amz-Signature=2ca6f4eaf9e0c919335b26b369f341abaf2f11bdfb19d4bd319b16c611367732&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+                    "expiry_time": "2025-10-04T05:19:51.709Z"
+                  }
+                }
+              ]
+            },
+            "Current Funding Value": {
+              "id": "z%40SP",
+              "type": "number",
+              "number": null
+            },
+            "Key Message/Story": {
+              "id": "%7CQLD",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Content/Communication Name": {
+              "id": "title",
+              "type": "title",
+              "title": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "We spend $859,589 per year to destroy a child's life.",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "We spend $859,589 per year to destroy a child's life.",
+                  "href": null
+                }
+              ]
+            }
+          },
+          "url": "https://www.notion.so/We-spend-859-589-per-year-to-destroy-a-child-s-life-271ebcf981cf809f87def7c76f3c73ed",
+          "public_url": null
+        },
+        {
+          "object": "page",
+          "id": "271ebcf9-81cf-80ed-a5c4-ef83e4beb061",
+          "created_time": "2025-09-17T00:33:00.000Z",
+          "last_edited_time": "2025-09-29T08:57:00.000Z",
+          "created_by": {
+            "object": "user",
+            "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+          },
+          "last_edited_by": {
+            "object": "user",
+            "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+          },
+          "cover": null,
+          "icon": null,
+          "parent": {
+            "type": "database_id",
+            "database_id": "7005d0d1-41d3-436c-9f86-526d275c2f10"
+          },
+          "archived": false,
+          "in_trash": false,
+          "is_locked": false,
+          "properties": {
+            "Delight Factor": {
+              "id": "%3CT%7DK",
+              "type": "select",
+              "select": {
+                "id": "Pq_i",
+                "name": "📈 Building",
+                "color": "gray"
+              }
+            },
+            "Organisation Contacts": {
+              "id": "%3Dl%3Fk",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [],
+                "function": "show_original"
+              }
+            },
+            "Next Funding Opportunity": {
+              "id": "%40_yL",
+              "type": "date",
+              "date": null
+            },
+            "Next Contact Due": {
+              "id": "EuNX",
+              "type": "date",
+              "date": null
+            },
+            "Active Actions Count": {
+              "id": "HGXM",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [],
+                "function": "show_original"
+              }
+            },
+            "Project Status Summary": {
+              "id": "L%7BK~",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [],
+                "function": "show_original"
+              }
+            },
+            "Last Contact Date": {
+              "id": "MFbL",
+              "type": "date",
+              "date": null
+            },
+            "Contact Person": {
+              "id": "MHY_",
+              "type": "relation",
+              "relation": [],
+              "has_more": false
+            },
+            "Last Funding Date": {
+              "id": "Mbtd",
+              "type": "date",
+              "date": null
+            },
+            "Next Project Milestone": {
+              "id": "PSt%3F",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [],
+                "function": "show_original"
+              }
+            },
+            "Video link": {
+              "id": "RHO%5B",
+              "type": "url",
+              "url": null
+            },
+            "Notes": {
+              "id": "SGI%5C",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Project": {
+              "id": "UsNc",
+              "type": "relation",
+              "relation": [],
+              "has_more": false
+            },
+            "Fun Element": {
+              "id": "%5EiYJ",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Funding Potential": {
+              "id": "_N%40G",
+              "type": "number",
+              "number": null
+            },
+            "Justice Hub Relevance": {
+              "id": "bGJw",
+              "type": "checkbox",
+              "checkbox": false
+            },
+            "Sent date": {
+              "id": "bg%5E%40",
+              "type": "date",
+              "date": null
+            },
+            "Organisation": {
+              "id": "d%40U%3F",
+              "type": "relation",
+              "relation": [],
+              "has_more": false
+            },
+            "Communication Type": {
+              "id": "d~%5BX",
+              "type": "select",
+              "select": {
+                "id": "Tf|X",
+                "name": "Newsletter",
+                "color": "blue"
+              }
+            },
+            "Status": {
+              "id": "gZqg",
+              "type": "status",
+              "status": {
+                "id": "Z{;S",
+                "name": "Story Prep Needed",
+                "color": "default"
+              }
+            },
+            "Engagement ROI Score": {
+              "id": "gZve",
+              "type": "select",
+              "select": {
+                "id": "U?FI",
+                "name": "🌱 Building",
+                "color": "pink"
+              }
+            },
+            "Contact Method": {
+              "id": "j%5D%5C%3D",
+              "type": "select",
+              "select": {
+                "id": "Pq_i",
+                "name": "Email",
+                "color": "yellow"
+              }
+            },
+            "Impact Opportunity Level": {
+              "id": "oUf%3B",
+              "type": "select",
+              "select": {
+                "id": "U?FI",
+                "name": "🔍 Exploring",
+                "color": "purple"
+              }
+            },
+            "Current Mood/Energy": {
+              "id": "soB%3F",
+              "type": "select",
+              "select": {
+                "id": "<QqS",
+                "name": "💪 Engaged",
+                "color": "yellow"
+              }
+            },
+            "Empathy Ledger Connection": {
+              "id": "uID%3A",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Image": {
+              "id": "ySTr",
+              "type": "files",
+              "files": []
+            },
+            "Current Funding Value": {
+              "id": "z%40SP",
+              "type": "number",
+              "number": null
+            },
+            "Key Message/Story": {
+              "id": "%7CQLD",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Content/Communication Name": {
+              "id": "title",
+              "type": "title",
+              "title": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "ACT news - Refresh",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "ACT news - Refresh",
+                  "href": null
+                }
+              ]
+            }
+          },
+          "url": "https://www.notion.so/ACT-news-Refresh-271ebcf981cf80eda5c4ef83e4beb061",
+          "public_url": null
+        },
+        {
+          "object": "page",
+          "id": "270ebcf9-81cf-80a8-b746-cb39d82375e5",
+          "created_time": "2025-09-16T22:48:00.000Z",
+          "last_edited_time": "2025-09-16T22:50:00.000Z",
+          "created_by": {
+            "object": "user",
+            "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+          },
+          "last_edited_by": {
+            "object": "user",
+            "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+          },
+          "cover": null,
+          "icon": null,
+          "parent": {
+            "type": "database_id",
+            "database_id": "7005d0d1-41d3-436c-9f86-526d275c2f10"
+          },
+          "archived": false,
+          "in_trash": false,
+          "is_locked": false,
+          "properties": {
+            "Delight Factor": {
+              "id": "%3CT%7DK",
+              "type": "select",
+              "select": {
+                "id": "Pq_i",
+                "name": "📈 Building",
+                "color": "gray"
+              }
+            },
+            "Organisation Contacts": {
+              "id": "%3Dl%3Fk",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [
+                  {
+                    "type": "title",
+                    "title": [
+                      {
+                        "type": "text",
+                        "text": {
+                          "content": "Rachel Atkinson",
+                          "link": null
+                        },
+                        "annotations": {
+                          "bold": false,
+                          "italic": false,
+                          "strikethrough": false,
+                          "underline": false,
+                          "code": false,
+                          "color": "default"
+                        },
+                        "plain_text": "Rachel Atkinson",
+                        "href": null
+                      }
+                    ]
+                  }
+                ],
+                "function": "show_original"
+              }
+            },
+            "Next Funding Opportunity": {
+              "id": "%40_yL",
+              "type": "date",
+              "date": {
+                "start": "2025-10-16",
+                "end": null,
+                "time_zone": null
+              }
+            },
+            "Next Contact Due": {
+              "id": "EuNX",
+              "type": "date",
+              "date": {
+                "start": "2025-09-17",
+                "end": null,
+                "time_zone": null
+              }
+            },
+            "Active Actions Count": {
+              "id": "HGXM",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [
+                  {
+                    "type": "title",
+                    "title": [
+                      {
+                        "type": "text",
+                        "text": {
+                          "content": "PICC",
+                          "link": null
+                        },
+                        "annotations": {
+                          "bold": false,
+                          "italic": false,
+                          "strikethrough": false,
+                          "underline": false,
+                          "code": false,
+                          "color": "default"
+                        },
+                        "plain_text": "PICC",
+                        "href": null
+                      }
+                    ]
+                  }
+                ],
+                "function": "show_original"
+              }
+            },
+            "Project Status Summary": {
+              "id": "L%7BK~",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [],
+                "function": "show_original"
+              }
+            },
+            "Last Contact Date": {
+              "id": "MFbL",
+              "type": "date",
+              "date": {
+                "start": "2025-09-16",
+                "end": null,
+                "time_zone": null
+              }
+            },
+            "Contact Person": {
+              "id": "MHY_",
+              "type": "relation",
+              "relation": [
+                {
+                  "id": "26bebcf9-81cf-8054-9f5c-fe1fbbb2493f"
+                }
+              ],
+              "has_more": false
+            },
+            "Last Funding Date": {
+              "id": "Mbtd",
+              "type": "date",
+              "date": {
+                "start": "2025-09-03",
+                "end": null,
+                "time_zone": null
+              }
+            },
+            "Next Project Milestone": {
+              "id": "PSt%3F",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [
+                  {
+                    "type": "title",
+                    "title": [
+                      {
+                        "type": "text",
+                        "text": {
+                          "content": "PICC Photo Kiosk / Server",
+                          "link": null
+                        },
+                        "annotations": {
+                          "bold": false,
+                          "italic": false,
+                          "strikethrough": false,
+                          "underline": false,
+                          "code": false,
+                          "color": "default"
+                        },
+                        "plain_text": "PICC Photo Kiosk / Server",
+                        "href": null
+                      }
+                    ]
+                  },
+                  {
+                    "type": "title",
+                    "title": [
+                      {
+                        "type": "text",
+                        "text": {
+                          "content": "PICC - Storm Stories",
+                          "link": null
+                        },
+                        "annotations": {
+                          "bold": false,
+                          "italic": false,
+                          "strikethrough": false,
+                          "underline": false,
+                          "code": false,
+                          "color": "default"
+                        },
+                        "plain_text": "PICC - Storm Stories",
+                        "href": null
+                      }
+                    ]
+                  },
+                  {
+                    "type": "title",
+                    "title": [
+                      {
+                        "type": "text",
+                        "text": {
+                          "content": "PICC Townsville Precinct",
+                          "link": null
+                        },
+                        "annotations": {
+                          "bold": false,
+                          "italic": false,
+                          "strikethrough": false,
+                          "underline": false,
+                          "code": false,
+                          "color": "default"
+                        },
+                        "plain_text": "PICC Townsville Precinct",
+                        "href": null
+                      }
+                    ]
+                  },
+                  {
+                    "type": "title",
+                    "title": [
+                      {
+                        "type": "text",
+                        "text": {
+                          "content": "PICC Annual Report",
+                          "link": null
+                        },
+                        "annotations": {
+                          "bold": false,
+                          "italic": false,
+                          "strikethrough": false,
+                          "underline": false,
+                          "code": false,
+                          "color": "default"
+                        },
+                        "plain_text": "PICC Annual Report",
+                        "href": null
+                      }
+                    ]
+                  },
+                  {
+                    "type": "title",
+                    "title": [
+                      {
+                        "type": "text",
+                        "text": {
+                          "content": "PICC Elders' trip to Hull River in October",
+                          "link": null
+                        },
+                        "annotations": {
+                          "bold": false,
+                          "italic": false,
+                          "strikethrough": false,
+                          "underline": false,
+                          "code": false,
+                          "color": "default"
+                        },
+                        "plain_text": "PICC Elders' trip to Hull River in October",
+                        "href": null
+                      }
+                    ]
+                  }
+                ],
+                "function": "show_original"
+              }
+            },
+            "Video link": {
+              "id": "RHO%5B",
+              "type": "url",
+              "url": null
+            },
+            "Notes": {
+              "id": "SGI%5C",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Project": {
+              "id": "UsNc",
+              "type": "relation",
+              "relation": [
+                {
+                  "id": "22eebcf9-81cf-8002-abe6-d81960ea19da"
+                },
+                {
+                  "id": "178ebcf9-81cf-801c-8815-fb32a9259a1c"
+                },
+                {
+                  "id": "253ebcf9-81cf-80e8-a8a8-d5dc42530cc5"
+                },
+                {
+                  "id": "22eebcf9-81cf-808f-bad4-f9e0a6640252"
+                },
+                {
+                  "id": "261ebcf9-81cf-8009-b935-d0224f7ae130"
+                }
+              ],
+              "has_more": false
+            },
+            "Fun Element": {
+              "id": "%5EiYJ",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Funding Potential": {
+              "id": "_N%40G",
+              "type": "number",
+              "number": null
+            },
+            "Justice Hub Relevance": {
+              "id": "bGJw",
+              "type": "checkbox",
+              "checkbox": false
+            },
+            "Sent date": {
+              "id": "bg%5E%40",
+              "type": "date",
+              "date": null
+            },
+            "Organisation": {
+              "id": "d%40U%3F",
+              "type": "relation",
+              "relation": [
+                {
+                  "id": "234ebcf9-81cf-807d-8ff7-fc94ac7f4d39"
+                }
+              ],
+              "has_more": false
+            },
+            "Communication Type": {
+              "id": "d~%5BX",
+              "type": "select",
+              "select": {
+                "id": "<QqS",
+                "name": "Delight & Excitement",
+                "color": "purple"
+              }
+            },
+            "Status": {
+              "id": "gZqg",
+              "type": "status",
+              "status": {
+                "id": "Z{;S",
+                "name": "Story Prep Needed",
+                "color": "default"
+              }
+            },
+            "Engagement ROI Score": {
+              "id": "gZve",
+              "type": "select",
+              "select": {
+                "id": "`o`D",
+                "name": "🔥 Exceptional Value",
+                "color": "default"
+              }
+            },
+            "Contact Method": {
+              "id": "j%5D%5C%3D",
+              "type": "select",
+              "select": {
+                "id": "Pq_i",
+                "name": "Email",
+                "color": "yellow"
+              }
+            },
+            "Impact Opportunity Level": {
+              "id": "oUf%3B",
+              "type": "select",
+              "select": {
+                "id": "~TBA",
+                "name": "📈 Significant Growth",
+                "color": "default"
+              }
+            },
+            "Current Mood/Energy": {
+              "id": "soB%3F",
+              "type": "select",
+              "select": {
+                "id": "<QqS",
+                "name": "💪 Engaged",
+                "color": "yellow"
+              }
+            },
+            "Empathy Ledger Connection": {
+              "id": "uID%3A",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Image": {
+              "id": "ySTr",
+              "type": "files",
+              "files": []
+            },
+            "Current Funding Value": {
+              "id": "z%40SP",
+              "type": "number",
+              "number": 200000
+            },
+            "Key Message/Story": {
+              "id": "%7CQLD",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Content/Communication Name": {
+              "id": "title",
+              "type": "title",
+              "title": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "Email to Rachel and Narelle",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Email to Rachel and Narelle",
+                  "href": null
+                }
+              ]
+            }
+          },
+          "url": "https://www.notion.so/Email-to-Rachel-and-Narelle-270ebcf981cf80a8b746cb39d82375e5",
+          "public_url": null
+        },
+        {
+          "object": "page",
+          "id": "26bebcf9-81cf-802a-a442-f36625e10205",
+          "created_time": "2025-09-11T23:20:00.000Z",
+          "last_edited_time": "2025-09-12T01:18:00.000Z",
+          "created_by": {
+            "object": "user",
+            "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+          },
+          "last_edited_by": {
+            "object": "user",
+            "id": "08c7478b-1bfc-42c3-97e4-294975af3996"
+          },
+          "cover": null,
+          "icon": null,
+          "parent": {
+            "type": "database_id",
+            "database_id": "7005d0d1-41d3-436c-9f86-526d275c2f10"
+          },
+          "archived": false,
+          "in_trash": false,
+          "is_locked": false,
+          "properties": {
+            "Delight Factor": {
+              "id": "%3CT%7DK",
+              "type": "select",
+              "select": {
+                "id": "`dJz",
+                "name": "🌱 Seed Stage",
+                "color": "red"
+              }
+            },
+            "Organisation Contacts": {
+              "id": "%3Dl%3Fk",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [
+                  {
+                    "type": "title",
+                    "title": [
+                      {
+                        "type": "text",
+                        "text": {
+                          "content": "Sally Grimsley-Ballard",
+                          "link": null
+                        },
+                        "annotations": {
+                          "bold": true,
+                          "italic": false,
+                          "strikethrough": false,
+                          "underline": false,
+                          "code": false,
+                          "color": "default"
+                        },
+                        "plain_text": "Sally Grimsley-Ballard",
+                        "href": null
+                      }
+                    ]
+                  }
+                ],
+                "function": "show_original"
+              }
+            },
+            "Next Funding Opportunity": {
+              "id": "%40_yL",
+              "type": "date",
+              "date": null
+            },
+            "Next Contact Due": {
+              "id": "EuNX",
+              "type": "date",
+              "date": {
+                "start": "2025-09-12",
+                "end": null,
+                "time_zone": null
+              }
+            },
+            "Active Actions Count": {
+              "id": "HGXM",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [
+                  {
+                    "type": "title",
+                    "title": [
+                      {
+                        "type": "text",
+                        "text": {
+                          "content": "Snow Foundation",
+                          "link": null
+                        },
+                        "annotations": {
+                          "bold": false,
+                          "italic": false,
+                          "strikethrough": false,
+                          "underline": false,
+                          "code": false,
+                          "color": "default"
+                        },
+                        "plain_text": "Snow Foundation",
+                        "href": null
+                      }
+                    ]
+                  }
+                ],
+                "function": "show_original"
+              }
+            },
+            "Project Status Summary": {
+              "id": "L%7BK~",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [],
+                "function": "show_original"
+              }
+            },
+            "Last Contact Date": {
+              "id": "MFbL",
+              "type": "date",
+              "date": null
+            },
+            "Contact Person": {
+              "id": "MHY_",
+              "type": "relation",
+              "relation": [
+                {
+                  "id": "26bebcf9-81cf-80c7-904a-e27ca1afbc13"
+                }
+              ],
+              "has_more": false
+            },
+            "Last Funding Date": {
+              "id": "Mbtd",
+              "type": "date",
+              "date": null
+            },
+            "Next Project Milestone": {
+              "id": "PSt%3F",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [
+                  {
+                    "type": "title",
+                    "title": [
+                      {
+                        "type": "text",
+                        "text": {
+                          "content": "Goods.",
+                          "link": null
+                        },
+                        "annotations": {
+                          "bold": false,
+                          "italic": false,
+                          "strikethrough": false,
+                          "underline": false,
+                          "code": false,
+                          "color": "default"
+                        },
+                        "plain_text": "Goods.",
+                        "href": null
+                      }
+                    ]
+                  }
+                ],
+                "function": "show_original"
+              }
+            },
+            "Video link": {
+              "id": "RHO%5B",
+              "type": "url",
+              "url": null
+            },
+            "Notes": {
+              "id": "SGI%5C",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Project": {
+              "id": "UsNc",
+              "type": "relation",
+              "relation": [
+                {
+                  "id": "177ebcf9-81cf-805f-b111-f407079f9794"
+                }
+              ],
+              "has_more": false
+            },
+            "Fun Element": {
+              "id": "%5EiYJ",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Funding Potential": {
+              "id": "_N%40G",
+              "type": "number",
+              "number": null
+            },
+            "Justice Hub Relevance": {
+              "id": "bGJw",
+              "type": "checkbox",
+              "checkbox": false
+            },
+            "Sent date": {
+              "id": "bg%5E%40",
+              "type": "date",
+              "date": null
+            },
+            "Organisation": {
+              "id": "d%40U%3F",
+              "type": "relation",
+              "relation": [
+                {
+                  "id": "31dedb9c-7208-421d-94a1-aab00d810c56"
+                }
+              ],
+              "has_more": false
+            },
+            "Communication Type": {
+              "id": "d~%5BX",
+              "type": "select",
+              "select": {
+                "id": "<QqS",
+                "name": "Delight & Excitement",
+                "color": "purple"
+              }
+            },
+            "Status": {
+              "id": "gZqg",
+              "type": "status",
+              "status": {
+                "id": "Z{;S",
+                "name": "Story Prep Needed",
+                "color": "default"
+              }
+            },
+            "Engagement ROI Score": {
+              "id": "gZve",
+              "type": "select",
+              "select": null
+            },
+            "Contact Method": {
+              "id": "j%5D%5C%3D",
+              "type": "select",
+              "select": {
+                "id": "Pq_i",
+                "name": "Email",
+                "color": "yellow"
+              }
+            },
+            "Impact Opportunity Level": {
+              "id": "oUf%3B",
+              "type": "select",
+              "select": null
+            },
+            "Current Mood/Energy": {
+              "id": "soB%3F",
+              "type": "select",
+              "select": {
+                "id": "LDwV",
+                "name": "😴 Needs Spark",
+                "color": "orange"
+              }
+            },
+            "Empathy Ledger Connection": {
+              "id": "uID%3A",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Image": {
+              "id": "ySTr",
+              "type": "files",
+              "files": []
+            },
+            "Current Funding Value": {
+              "id": "z%40SP",
+              "type": "number",
+              "number": null
+            },
+            "Key Message/Story": {
+              "id": "%7CQLD",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Content/Communication Name": {
+              "id": "title",
+              "type": "title",
+              "title": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "Goods update",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Goods update",
+                  "href": null
+                }
+              ]
+            }
+          },
+          "url": "https://www.notion.so/Goods-update-26bebcf981cf802aa442f36625e10205",
+          "public_url": null
+        }
+      ]
+    }
+  ]
+}
