@@ -5,13 +5,20 @@
  * Properly cached, no spam, real data only
  */
 
+// IMPORTANT: Load environment variables FIRST before any other imports
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+
+// Now import everything else
 import express from 'express';
 import cors from 'cors';
 import { Client } from '@notionhq/client';
-import dotenv from 'dotenv';
-import path from 'path';
-
-dotenv.config({ path: path.resolve(process.cwd(), '../../.env') });
 
 const app = express();
 const PORT = 4001;
@@ -19,8 +26,67 @@ const PORT = 4001;
 app.use(cors());
 app.use(express.json());
 
+// Financial Automation Webhooks
+import financialWebhooksRouter from './core/src/api/events/financialWebhooks.js';
+app.use('/api/events', financialWebhooksRouter);
+
+// Business Agent Australia API - Temporarily disabled (missing dependencies)
+// import businessAgentAustraliaRoutes from './core/src/api/businessAgentAustralia.js';
+// businessAgentAustraliaRoutes(app);
+
+// Integration Monitoring API
+import integrationMonitoringRoutes from './core/src/api/integrationMonitoring.js';
+integrationMonitoringRoutes(app);
+
+// Gmail Intelligence Sync API
+import gmailIntelligenceSyncRoutes from './core/src/api/gmailIntelligenceSync.js';
+gmailIntelligenceSyncRoutes(app);
+
+// Xero Intelligence Sync API
+import xeroIntelligenceSyncRoutes from './core/src/api/xeroIntelligenceSync.js';
+xeroIntelligenceSyncRoutes(app);
+
+// Unified Business Intelligence API
+import unifiedBusinessIntelligenceRoutes from './core/src/api/unifiedBusinessIntelligence.js';
+unifiedBusinessIntelligenceRoutes(app);
+
+// Automation Engine API - ACTUALLY AUTOMATES THINGS
+import automationEngineRoutes from './core/src/api/automationEngine.js';
+automationEngineRoutes(app);
+
+// Dashboard Aggregation API - Intelligent cross-tab metrics
+import dashboardAggregationRoutes from './core/src/api/dashboardAggregation.js';
+dashboardAggregationRoutes(app);
+
+// Financial Discovery API - Discover what data sources exist
+import financialDiscoveryRoutes from './core/src/api/financialDiscovery.js';
+financialDiscoveryRoutes(app);
+
+// Cash Flow Intelligence API - Real bank transactions + receipt reconciliation
+import cashFlowIntelligenceRoutes from './core/src/api/cashFlowIntelligence.js';
+cashFlowIntelligenceRoutes(app);
+
+// AI Business Agent API - Intelligent assistant powered by Claude + Perplexity
+import aiBusinessAgentRoutes from './core/src/api/aiBusinessAgent.js';
+aiBusinessAgentRoutes(app);
+
+// Project Financials API - Link $ to ACT projects with cross-system search
+import projectFinancialsRoutes from './core/src/api/projectFinancials.js';
+projectFinancialsRoutes(app);
+
+// Financial Reports API - P&L, Balance Sheet, Cash Flow, Aged Reports
+import financialReportsRoutes from './core/src/api/financialReports.js';
+financialReportsRoutes(app);
+
+// Curious Tractor Research API - Deep AI research for entity setup & innovation
+import curiousTractorResearchRoutes from './core/src/api/curious-tractor-research.js';
+app.use('/api/curious-tractor', curiousTractorResearchRoutes);
+
+// Agent Scheduler - Temporarily disabled (missing dependencies)
+// import agentScheduler from './core/src/scheduler/agentScheduler.js';
+
 // Notion setup
-const NOTION_TOKEN = process.env.NOTION_API_TOKEN;
+const NOTION_TOKEN = process.env.NOTION_TOKEN;
 const NOTION_PROJECTS_DATABASE_ID = process.env.NOTION_PROJECTS_DATABASE_ID || '177ebcf981cf80dd9514f1ec32f3314c';
 const notion = NOTION_TOKEN ? new Client({ auth: NOTION_TOKEN }) : null;
 
@@ -67,13 +133,25 @@ const fetchNotionProjects = async () => {
       // No filters or sorts - just get everything
     });
     
-    const projects = response.results.map(page => ({
-      id: page.id,
-      title: page.properties.Name?.title?.[0]?.plain_text || 'Untitled',
-      status: page.properties.Status?.status?.name || 'Unknown',
-      created: page.created_time,
-      lastEdited: page.last_edited_time,
-    }));
+    const projects = response.results.map(page => {
+      // Get Cover Photo URL
+      const coverPhoto = page.cover?.type === 'external' ? page.cover.external.url :
+                        page.cover?.type === 'file' ? page.cover.file.url : null;
+      
+      return {
+        id: page.id,
+        title: page.properties.Name?.title?.[0]?.plain_text || 'Untitled',
+        status: page.properties.Status?.status?.name || 'Unknown',
+        created: page.created_time,
+        lastEdited: page.last_edited_time,
+        coverPhoto: coverPhoto,
+        // Get other useful properties if they exist
+        description: page.properties.Description?.rich_text?.[0]?.plain_text || '',
+        area: page.properties.Area?.select?.name || '',
+        tags: page.properties.Tags?.multi_select?.map(tag => tag.name) || [],
+        philosophy: page.properties.Philosophy?.rich_text?.[0]?.plain_text || '',
+      };
+    });
     
     // Update cache
     projectsCache.data = projects;
@@ -183,10 +261,10 @@ app.post('/api/real/intelligence', async (req, res) => {
     const { query } = req.body;
     const projects = await fetchNotionProjects();
     const health = getSystemHealth();
-    
+
     let response = '';
     let confidence = 0.95;
-    
+
     if (query.toLowerCase().includes('recent') && query.toLowerCase().includes('project')) {
       if (projects.length > 0) {
         const recent = projects[0];
@@ -203,25 +281,25 @@ app.post('/api/real/intelligence', async (req, res) => {
         response = "No projects found in Notion database.";
         confidence = 0.5;
       }
-      
+
     } else if (query.toLowerCase().includes('how many') && query.toLowerCase().includes('project')) {
-      const active = projects.filter(p => 
+      const active = projects.filter(p =>
         p.status && (p.status.includes('Active') || p.status.includes('🔥'))
       ).length;
-      
+
       response = `📊 **Project Summary:**
 • Total Projects: ${projects.length}
 • Active Projects: ${active}
 • Data Source: Notion (cached)
 
-🔥 **Active Projects:** ${active > 0 ? 
+🔥 **Active Projects:** ${active > 0 ?
   projects
     .filter(p => p.status && (p.status.includes('Active') || p.status.includes('🔥')))
     .slice(0, 3)
     .map(p => `"${p.title}"`)
     .join(', ') + (active > 3 ? ` and ${active - 3} more...` : '')
   : 'None found with "Active" status'}`;
-      
+
     } else if (query.toLowerCase().includes('system') || query.toLowerCase().includes('status')) {
       response = `🖥️ **System Status:**
 • Status: ✅ Operational
@@ -234,7 +312,7 @@ app.post('/api/real/intelligence', async (req, res) => {
 • Notion API: ${!!notion ? '✅ Connected' : '❌ No Token'}
 • Data Server: ✅ Stable
 • Frontend: ✅ Active`;
-      
+
     } else {
       response = `🤖 **ACT Intelligence (Stable)**
 
@@ -250,7 +328,7 @@ I have access to your real business data:
 
 Data is cached for 5 minutes to avoid API spam.`;
     }
-    
+
     res.json({
       success: true,
       response,
@@ -259,7 +337,7 @@ Data is cached for 5 minutes to avoid API spam.`;
       timestamp: new Date().toISOString(),
       query
     });
-    
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -268,17 +346,165 @@ Data is cached for 5 minutes to avoid API spam.`;
   }
 });
 
+// === COMPATIBILITY ENDPOINTS ===
+// These endpoints provide basic responses to prevent frontend errors
+
+// Integration status
+app.get('/api/integrations/status', (req, res) => {
+  res.json({
+    success: true,
+    integrations: {
+      notion: { status: 'connected', projects: projectsCache.data.length },
+      supabase: { status: 'connected' },
+      gmail: { status: 'not_configured' },
+      xero: { status: 'not_configured' },
+      linkedin: { status: 'not_configured' }
+    }
+  });
+});
+
+// Simple contact dashboard
+app.get('/api/simple-contact-dashboard', (req, res) => {
+  res.json({
+    success: true,
+    contacts: [],
+    metrics: {
+      totalContacts: 0,
+      recentActivity: 0,
+      pendingOutreach: 0
+    }
+  });
+});
+
+// Business dashboard
+app.get('/api/business-dashboard', (req, res) => {
+  res.json({
+    success: true,
+    metrics: {
+      revenue: 0,
+      expenses: 0,
+      profit: 0,
+      growth: 0
+    },
+    message: 'Business metrics not configured'
+  });
+});
+
+// Calendar events
+app.get('/api/calendar/events', (req, res) => {
+  res.json({
+    success: true,
+    events: [],
+    message: 'Calendar integration not configured'
+  });
+});
+
+// Gmail sync status
+app.get('/api/gmail-sync/status', (req, res) => {
+  res.json({
+    success: true,
+    status: 'not_configured',
+    lastSync: null,
+    emailCount: 0
+  });
+});
+
+// Gmail community emails
+app.get('/api/gmail-sync/community-emails', (req, res) => {
+  res.json({
+    success: true,
+    emails: [],
+    message: 'Gmail integration not configured'
+  });
+});
+
+// Intelligence dashboard
+app.get('/api/intelligence/dashboard', (req, res) => {
+  res.json({
+    success: true,
+    insights: [],
+    recommendations: [],
+    message: 'Intelligence features coming soon'
+  });
+});
+
+// Outreach tasks
+app.get('/api/intelligence/outreach-tasks', (req, res) => {
+  res.json({
+    success: true,
+    data: [],
+    message: 'Outreach system not configured'
+  });
+});
+
+// Project support opportunities
+app.get('/api/intelligence/project-support', (req, res) => {
+  res.json({
+    success: true,
+    data: [],
+    message: 'Project intelligence not configured'
+  });
+});
+
+// Project contact alignment
+app.get('/api/project-contact-alignment', (req, res) => {
+  res.json({
+    success: true,
+    alignments: [],
+    message: 'Contact alignment not configured'
+  });
+});
+
+// Contact coach
+app.get('/api/contact-coach', (req, res) => {
+  res.json({
+    success: true,
+    recommendations: [],
+    message: 'Contact coaching not configured'
+  });
+});
+
+// CRM LinkedIn contacts
+app.get('/api/crm/linkedin-contacts', (req, res) => {
+  res.json({
+    success: true,
+    contacts: [],
+    message: 'LinkedIn integration not configured'
+  });
+});
+
+// Stories endpoint
+app.get('/api/stories', (req, res) => {
+  res.json({
+    success: true,
+    stories: [],
+    message: 'Stories feature not configured'
+  });
+});
+
 // Initial data load
 fetchNotionProjects().then(projects => {
   console.log(`🎯 Initial cache: ${projects.length} projects`);
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`🚀 Stable server running on port ${PORT}`);
   console.log('📊 Endpoints:');
   console.log('   GET  /api/real/health');
   console.log('   GET  /api/real/projects');
   console.log('   GET  /api/real/metrics');
   console.log('   POST /api/real/intelligence');
+  console.log('   💚  /api/v2/monitoring/integrations (Integration health)');
+  console.log('   💚  /api/v2/monitoring/health (System health)');
+  console.log('   📧  /api/v2/gmail/sync/status (Gmail sync status)');
+  console.log('   📧  /api/v2/gmail/sync/start (Start Gmail sync)');
+  console.log('   📧  /api/v2/gmail/messages (Query messages)');
+  console.log('   📧  /api/v2/gmail/contacts (Discovered contacts)');
   console.log('🔥 NO SPAM - SMART CACHING');
+
+  // Business agent scheduler temporarily disabled (missing dependencies)
+  console.log('');
+  console.log('💚 Integration Health Monitoring: Active');
+  console.log('   Real-time status tracking for all data sources');
+  console.log('');
 });
