@@ -82,6 +82,10 @@ financialReportsRoutes(app);
 import curiousTractorResearchRoutes from './core/src/api/curious-tractor-research.js';
 app.use('/api/curious-tractor', curiousTractorResearchRoutes);
 
+// Opportunities API - Grant discovery & application tracking
+import opportunitiesRoutes from './core/src/api/opportunities.js';
+opportunitiesRoutes(app);
+
 // Agent Scheduler - Temporarily disabled (missing dependencies)
 // import agentScheduler from './core/src/scheduler/agentScheduler.js';
 
