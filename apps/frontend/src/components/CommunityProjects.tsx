@@ -1,13 +1,30 @@
 import { useState, useEffect, useMemo } from 'react'
+import type { FormEvent } from 'react'
 import { api } from '../services/api'
 import { Card } from './ui/Card'
 import { SectionHeader } from './ui/SectionHeader'
 import { EmptyState } from './ui/EmptyState'
 import { USE_MOCK_DATA } from '../config/env'
+import { ProjectDetail } from './ProjectDetail'
+import ProjectsMap from './ProjectsMap'
+import { ImpactFlow } from './ImpactFlow'
+
+interface Storyteller {
+  id: string | number
+  project_id?: string | number | null
+  full_name: string
+  bio?: string | null
+  expertise_areas?: string[] | null
+  profile_image_url?: string | null
+  media_type?: string | null
+  created_at?: string | null
+  consent_given?: boolean
+}
 
 interface Project {
   id: string
   name: string
+  title?: string
   description?: string
   aiSummary?: string
   status?: string
@@ -54,26 +71,14 @@ interface Project {
   notionIdShort?: string | null
   notionCreatedAt?: string | null
   notionLastEditedAt?: string | null
+  storytellers?: Storyteller[]
+  storytellerCount?: number
+  supabaseProjectId?: string | null
+  supabaseProject?: Record<string, unknown> | null
+  source?: string
 }
 
 type ProjectListResponse = Project[] | { projects?: Project[] }
-
-const STATUS_COLOR_MAP: Record<string, string> = {
-  'active 🔥': 'bg-brand-100 text-brand-800',
-  active: 'bg-brand-100 text-brand-800',
-  'in progress': 'bg-brand-100 text-brand-800',
-  'in-progress': 'bg-brand-100 text-brand-800',
-  delivery: 'bg-brand-100 text-brand-800',
-  planning: 'bg-ocean-100 text-ocean-800',
-  exploring: 'bg-ocean-100 text-ocean-800',
-  'preparation 📋': 'bg-ocean-100 text-ocean-800',
-  preparation: 'bg-ocean-100 text-ocean-800',
-  paused: 'bg-clay-100 text-clay-600',
-  completed: 'bg-clay-100 text-clay-700'
-}
-
-const getStatusBadgeClass = (status?: string) =>
-  STATUS_COLOR_MAP[(status || '').toLowerCase()] || 'bg-clay-100 text-clay-700'
 
 const isActiveStatus = (status?: string) => {
   if (!status) return false
@@ -118,7 +123,13 @@ const STUB_PROJECTS: Project[] = [
     themes: ['Storytelling', 'Health and wellbeing'],
     coreValues: ['Decentralised Power'],
     nextMilestoneDate: new Date().toISOString(),
-    relatedPlaces: ['Palm Island'],
+    relatedPlaces: [{
+      indigenousName: 'Bwgcolman',
+      westernName: 'Palm Island',
+      displayName: 'Bwgcolman (Palm Island)',
+      map: '-18.7544,146.5811',
+      state: 'Qld'
+    }],
     aiSummary:
       'Community-owned storytelling and resilience documentation following the Palm Island storms. Needs additional funding for infrastructure upgrades before the next wet season.',
     relatedOrganisations: ['Palm Island Community Company'],
@@ -144,7 +155,13 @@ const STUB_PROJECTS: Project[] = [
     themes: ['Operations', 'Health and wellbeing'],
     coreValues: ['Decentralised Power'],
     nextMilestoneDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 14).toISOString(),
-    relatedPlaces: ['Witta, QLD'],
+    relatedPlaces: [{
+      indigenousName: 'Gubbi Gubbi',
+      westernName: 'Witta',
+      displayName: 'Gubbi Gubbi (Witta)',
+      map: '-26.5833,152.7833',
+      state: 'Qld'
+    }],
     aiSummary:
       'Regenerative community production site building food security and cultural exchange. Planning residency for Sunshine Coast council water team.',
     relatedOrganisations: ['Seed House Witta'],
@@ -170,7 +187,13 @@ const STUB_PROJECTS: Project[] = [
     themes: ['Youth Justice', 'Health and wellbeing'],
     coreValues: ['Decentralised Power'],
     nextMilestoneDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString(),
-    relatedPlaces: ['Mount Isa'],
+    relatedPlaces: [{
+      indigenousName: 'Kalkadoon',
+      westernName: 'Mount Isa',
+      displayName: 'Kalkadoon (Mount Isa)',
+      map: '-20.7256,139.4927',
+      state: 'Qld'
+    }],
     aiSummary:
       'On-country fitness and cultural healing camps disrupting the youth justice pipeline. Preparing new funding proposals and story artefacts.',
     relatedOrganisations: ['BG Collective'],
@@ -200,6 +223,21 @@ export function CommunityProjects() {
     return false
   }
 
+  const handleStorytellerAdded = (projectId: string, storyteller: Storyteller) => {
+    setProjects((prev) =>
+      prev.map((project) => {
+        if (project.id !== projectId) return project
+        const existing = project.storytellers || []
+        const updatedStorytellers = [...existing, storyteller]
+        return {
+          ...project,
+          storytellers: updatedStorytellers,
+          storytellerCount: (project.storytellerCount ?? existing.length) + 1,
+        }
+      })
+    )
+  }
+
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -208,13 +246,40 @@ export function CommunityProjects() {
   const [calendarError, setCalendarError] = useState<string | null>(null)
   const [useMocks, setUseMocks] = useState<boolean>(initialMock)
 
+  // Filter and view state
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedStatus, setSelectedStatus] = useState<string>('all')
+  const [selectedTheme, setSelectedTheme] = useState<string>('all')
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [sortBy, setSortBy] = useState<'date' | 'name' | 'funding'>('date')
+
+  // Project detail navigation
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
+
   useEffect(() => {
     loadProjects()
     loadInsights()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const { activeProjects, otherProjects } = useMemo(() => {
+  // Extract unique statuses and themes for filter dropdowns
+  const { uniqueStatuses, uniqueThemes } = useMemo(() => {
+    const statuses = new Set<string>()
+    const themes = new Set<string>()
+
+    projects.forEach((project) => {
+      if (project.status) statuses.add(project.status)
+      const projectThemes = project.themes || project.tags || []
+      projectThemes.forEach((theme) => themes.add(theme))
+    })
+
+    return {
+      uniqueStatuses: Array.from(statuses).sort(),
+      uniqueThemes: Array.from(themes).sort(),
+    }
+  }, [projects])
+
+  const { activeProjects, otherProjects, filteredActiveProjects, filteredOtherProjects } = useMemo(() => {
     const active: Project[] = []
     const other: Project[] = []
 
@@ -224,6 +289,11 @@ export function CommunityProjects() {
       return Number.isNaN(timestamp) ? Number.POSITIVE_INFINITY : timestamp
     }
 
+    const getFundingValue = (project: Project) => {
+      return (project.actualIncoming || 0) + (project.potentialIncoming || 0)
+    }
+
+    // First, split into active and other
     projects.forEach((project) => {
       if (isActiveStatus(project.status)) {
         active.push(project)
@@ -232,10 +302,60 @@ export function CommunityProjects() {
       }
     })
 
-    active.sort((a, b) => getMilestoneValue(a.nextMilestoneDate) - getMilestoneValue(b.nextMilestoneDate))
+    // Apply filters
+    const applyFilters = (projectList: Project[]) => {
+      return projectList.filter((project) => {
+        // Search filter
+        if (searchQuery) {
+          const query = searchQuery.toLowerCase()
+          const matchesSearch =
+            project.name?.toLowerCase().includes(query) ||
+            project.description?.toLowerCase().includes(query) ||
+            project.aiSummary?.toLowerCase().includes(query) ||
+            project.organization?.toLowerCase().includes(query)
+          if (!matchesSearch) return false
+        }
 
-    return { activeProjects: active, otherProjects: other }
-  }, [projects])
+        // Status filter
+        if (selectedStatus !== 'all' && project.status !== selectedStatus) {
+          return false
+        }
+
+        // Theme filter
+        if (selectedTheme !== 'all') {
+          const projectThemes = project.themes || project.tags || []
+          if (!projectThemes.includes(selectedTheme)) return false
+        }
+
+        return true
+      })
+    }
+
+    // Apply sorting
+    const applySorting = (projectList: Project[]) => {
+      const sorted = [...projectList]
+
+      if (sortBy === 'date') {
+        sorted.sort((a, b) => getMilestoneValue(a.nextMilestoneDate) - getMilestoneValue(b.nextMilestoneDate))
+      } else if (sortBy === 'name') {
+        sorted.sort((a, b) => (a.name || '').localeCompare(b.name || ''))
+      } else if (sortBy === 'funding') {
+        sorted.sort((a, b) => getFundingValue(b) - getFundingValue(a))
+      }
+
+      return sorted
+    }
+
+    const filteredActive = applySorting(applyFilters(active))
+    const filteredOther = applySorting(applyFilters(other))
+
+    return {
+      activeProjects: active,
+      otherProjects: other,
+      filteredActiveProjects: filteredActive,
+      filteredOtherProjects: filteredOther,
+    }
+  }, [projects, searchQuery, selectedStatus, selectedTheme, sortBy])
 
   const parseCalendarError = (errorObj?: Error) => {
     if (!errorObj) return 'Connect Google Calendar to see shared milestones.'
@@ -305,8 +425,8 @@ export function CommunityProjects() {
 
     try {
       setLoading(true)
-      // Using real dashboard projects API that connects to your 55+ Notion projects
-      const payload = (await api.getDashboardProjects(30)) as ProjectListResponse
+      // Using real dashboard projects API that connects to your 64 Notion projects
+      const payload = (await api.getDashboardProjects()) as ProjectListResponse
       let normalized: Project[] = []
       if (Array.isArray(payload)) {
         normalized = payload
@@ -348,13 +468,24 @@ export function CommunityProjects() {
     )
   }
 
-  return (
-    <div className="space-y-8">
-      <SectionHeader
-        eyebrow="Project Engine"
-        title="Community Projects"
-        description="Real initiatives from community partners, synced live from Supabase and Notion so everyone can see progress and impact."
+  // Show project detail page if a project is selected
+  if (selectedProjectId) {
+    return (
+      <ProjectDetail
+        projectId={selectedProjectId}
+        onBack={() => setSelectedProjectId(null)}
       />
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
+        <SectionHeader
+          eyebrow="Project Engine"
+          title="Community Projects"
+          description="Real initiatives from community partners, synced live from Supabase and Notion so everyone can see progress and impact."
+        />
 
       {error && (
         <Card className="border-red-100 bg-red-50 text-red-700" padding="sm">
@@ -388,33 +519,194 @@ export function CommunityProjects() {
         </Card>
       </div>
 
+      {/* Filter and View Controls */}
+      <Card padding="md">
+        <div className="space-y-4">
+          {/* Search Bar */}
+          <div>
+            <input
+              type="text"
+              placeholder="Search projects by name, description, or organization..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full rounded-lg border border-clay-200 bg-white px-4 py-2 text-sm text-clay-900 placeholder-clay-400 transition focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-100"
+            />
+          </div>
+
+          {/* Filters and View Controls */}
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Status Filter */}
+            <div className="flex items-center gap-2">
+              <label htmlFor="status-filter" className="text-xs font-medium text-clay-600">
+                Status:
+              </label>
+              <select
+                id="status-filter"
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="rounded-lg border border-clay-200 bg-white px-3 py-1.5 text-sm text-clay-900 transition focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-100"
+              >
+                <option value="all">All</option>
+                {uniqueStatuses.map((status) => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Theme Filter */}
+            <div className="flex items-center gap-2">
+              <label htmlFor="theme-filter" className="text-xs font-medium text-clay-600">
+                Theme:
+              </label>
+              <select
+                id="theme-filter"
+                value={selectedTheme}
+                onChange={(e) => setSelectedTheme(e.target.value)}
+                className="rounded-lg border border-clay-200 bg-white px-3 py-1.5 text-sm text-clay-900 transition focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-100"
+              >
+                <option value="all">All</option>
+                {uniqueThemes.map((theme) => (
+                  <option key={theme} value={theme}>
+                    {theme}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Sort By */}
+            <div className="flex items-center gap-2">
+              <label htmlFor="sort-by" className="text-xs font-medium text-clay-600">
+                Sort by:
+              </label>
+              <select
+                id="sort-by"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as 'date' | 'name' | 'funding')}
+                className="rounded-lg border border-clay-200 bg-white px-3 py-1.5 text-sm text-clay-900 transition focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-100"
+              >
+                <option value="date">Next Milestone</option>
+                <option value="name">Name</option>
+                <option value="funding">Funding</option>
+              </select>
+            </div>
+
+            {/* View Mode Toggle */}
+            <div className="ml-auto flex items-center gap-2">
+              <span className="text-xs font-medium text-clay-600">View:</span>
+              <div className="flex rounded-lg border border-clay-200 bg-white">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`px-3 py-1.5 text-xs font-medium transition ${
+                    viewMode === 'grid'
+                      ? 'bg-brand-100 text-brand-800'
+                      : 'text-clay-600 hover:bg-clay-50'
+                  } rounded-l-lg`}
+                >
+                  Grid
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`px-3 py-1.5 text-xs font-medium transition ${
+                    viewMode === 'list'
+                      ? 'bg-brand-100 text-brand-800'
+                      : 'text-clay-600 hover:bg-clay-50'
+                  } rounded-r-lg`}
+                >
+                  List
+                </button>
+              </div>
+            </div>
+
+            {/* Clear Filters */}
+            {(searchQuery || selectedStatus !== 'all' || selectedTheme !== 'all' || sortBy !== 'date') && (
+              <button
+                onClick={() => {
+                  setSearchQuery('')
+                  setSelectedStatus('all')
+                  setSelectedTheme('all')
+                  setSortBy('date')
+                }}
+                className="text-xs font-medium text-brand-700 transition hover:text-brand-800 hover:underline"
+              >
+                Clear filters
+              </button>
+            )}
+          </div>
+
+          {/* Results count */}
+          <div className="text-xs text-clay-500">
+            Showing {filteredActiveProjects.length + filteredOtherProjects.length} of {projects.length} projects
+          </div>
+        </div>
+      </Card>
+
+      {/* Projects Map */}
+      {projects.length > 0 && (
+        <div className="mb-8">
+          <ProjectsMap
+            projects={projects}
+            onProjectClick={(projectId) => setSelectedProjectId(projectId)}
+          />
+        </div>
+      )}
+
+      {/* Impact Flow Visualization */}
+      {projects.length > 0 && (
+        <div className="mb-8">
+          <ImpactFlow projects={projects} />
+        </div>
+      )}
+
       {projects.length === 0 ? (
         <EmptyState
           title="No projects yet"
           description="Community projects will appear here as soon as they're synced from Supabase."
         />
+      ) : filteredActiveProjects.length === 0 && filteredOtherProjects.length === 0 ? (
+        <EmptyState
+          title="No matching projects"
+          description="Try adjusting your filters or search terms to find projects."
+        />
       ) : (
         <div className="space-y-10">
-          {activeProjects.length > 0 && (
+          {filteredActiveProjects.length > 0 && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold uppercase tracking-widest text-brand-600">Active projects</h3>
-                <span className="text-xs font-medium text-brand-500">Showing {activeProjects.length} in delivery</span>
+                <span className="text-xs font-medium text-brand-500">Showing {filteredActiveProjects.length} in delivery</span>
               </div>
-              <div className="space-y-6">
-                {activeProjects.map((project) => (
-                  <ActiveProjectCard key={project.id} project={project} />
-                ))}
+              <div className={viewMode === 'list' ? 'space-y-6' : 'grid grid-cols-1 gap-6 lg:grid-cols-3'}>
+                {filteredActiveProjects.map((project) =>
+                  viewMode === 'list' ? (
+                    <ActiveProjectCard
+                      key={project.id}
+                      project={project}
+                      onClick={setSelectedProjectId}
+                    />
+                  ) : (
+                    <ProjectCard
+                      key={project.id}
+                      project={project}
+                      onClick={setSelectedProjectId}
+                    />
+                  )
+                )}
               </div>
             </div>
           )}
 
-          {otherProjects.length > 0 && (
+          {filteredOtherProjects.length > 0 && (
             <div className="space-y-4">
               <h3 className="text-sm font-semibold uppercase tracking-widest text-clay-500">Also in motion</h3>
-              <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-                {otherProjects.map((project) => (
-                  <ProjectCard key={project.id} project={project} />
+              <div className={viewMode === 'list' ? 'space-y-6' : 'grid grid-cols-1 gap-6 lg:grid-cols-3'}>
+                {filteredOtherProjects.map((project) => (
+                  <ProjectCard
+                    key={project.id}
+                    project={project}
+                    onClick={setSelectedProjectId}
+                  />
                 ))}
               </div>
             </div>
@@ -441,9 +733,9 @@ export function CommunityProjects() {
                     {event.project?.name && (
                       <p className="text-xs text-brand-700">Project: {event.project.name}</p>
                     )}
-                    {event.attendees?.length > 0 && (
+                    {event.attendees && event.attendees.length > 0 && (
                       <p className="text-xs text-clay-500 mt-1">
-                        Participants: {event.attendees.slice(0, 3).join(', ')}{event.attendees.length > 3 && '…'}
+                        Participants: {event.attendees.slice(0, 3).join(', ')}{event.attendees.length > 3 ? '…' : ''}
                       </p>
                     )}
                   </li>
@@ -484,178 +776,148 @@ export function CommunityProjects() {
           )}
         </Card>
       )}
+      </div>
     </div>
   )
 }
 
-function ActiveProjectCard({ project }: { project: Project }) {
+function ActiveProjectCard({
+  project,
+  onClick,
+}: {
+  project: Project
+  onClick?: (projectId: string) => void
+}) {
   const coverImage = project.coverImage || null
   const lastUpdated = project.notionLastEditedAt || project.updatedAt || project.lastUpdated || project.last_updated || null
-
-  const actual = typeof project.actualIncoming === 'number' ? project.actualIncoming : null
-  const potential = typeof project.potentialIncoming === 'number' ? project.potentialIncoming : null
-  const fundingGap = potential !== null && actual !== null ? Math.max(potential - actual, 0) : null
-  const opportunityCount = project.relatedOpportunities?.length ?? 0
-
-  const formatCurrency = (value: number) =>
-    new Intl.NumberFormat('en-AU', {
-      style: 'currency',
-      currency: 'AUD',
-      maximumFractionDigits: 0
-    }).format(value)
-
-  const formatCount = (value: number) => value.toLocaleString('en-AU')
-
-  const needs: Array<{ label: string; detail: string }> = []
-
-  if (fundingGap && fundingGap > 0) {
-    needs.push({ label: 'Funding gap', detail: formatCurrency(fundingGap) })
-  } else if (project.funding && project.funding.toLowerCase().includes('seeking')) {
-    needs.push({ label: 'Funding', detail: project.funding })
-  }
-
-  if (opportunityCount > 0) {
-    needs.push({ label: 'Opportunities', detail: `${opportunityCount} ready for follow-up` })
-  }
-
-  if (project.nextMilestoneDate) {
-    const milestoneLabel = new Date(project.nextMilestoneDate).toLocaleDateString(undefined, {
-      month: 'short',
-      day: 'numeric'
-    })
-    needs.push({ label: 'Next milestone', detail: milestoneLabel })
-  }
-
-  if (needs.length === 0) {
-    needs.push({ label: 'Momentum', detail: 'Ready for community backing' })
-  }
-
-  const available: Array<{ label: string; detail: string }> = []
-
-  if (project.partnerCount !== null && project.partnerCount !== undefined) {
-    available.push({ label: 'Partners committed', detail: formatCount(project.partnerCount) })
-  }
-
-  if (project.supporters !== null && project.supporters !== undefined) {
-    available.push({ label: 'Supporters on board', detail: formatCount(project.supporters) })
-  }
-
-  const resourceCount = project.relatedResources?.length ?? 0
-  if (resourceCount > 0) {
-    available.push({ label: 'Resources linked', detail: formatCount(resourceCount) })
-  }
-
-  const artifactCount = project.relatedArtifacts?.length ?? 0
-  if (artifactCount > 0) {
-    available.push({ label: 'Artifacts', detail: formatCount(artifactCount) })
-  }
-
-  const placeCount = project.relatedPlaces?.length ?? 0
-  if (placeCount > 0) {
-    available.push({ label: 'Communities & places', detail: formatCount(placeCount) })
-  }
 
   const relationshipPillars = Array.isArray(project.relationshipPillars)
     ? project.relationshipPillars.slice(0, 4)
     : []
 
-  const tagOverflow = (project.tags?.length ?? 0) > 4 ? (project.tags?.length ?? 0) - 4 : 0
+  const coreValues = Array.isArray(project.coreValues)
+    ? project.coreValues
+    : project.coreValues
+    ? [project.coreValues]
+    : []
+
+  const themes = project.themes || project.tags || []
+
+  // Partners and places for context - filter out any invalid values
+  const partners = (project.relatedOrganisations || []).filter(p => p && p !== '0' && p !== 0)
+  const rawPlaces = (project.relatedPlaces || []).filter(p => p && p !== '0' && p !== 0)
+  const people = (project.relatedPeople || []).filter(p => p && p !== '0' && p !== 0)
+
+  // Handle places - they can be objects or strings (for backwards compatibility)
+  const places = rawPlaces.map(p => {
+    if (typeof p === 'string') {
+      return { indigenousName: p, westernName: null, displayName: p }
+    }
+    return p
+  })
+
+  // Use location as fallback for places if we don't have place names
+  const displayPlaces = places.length > 0 ? places : (project.location ? [{ indigenousName: project.location, westernName: null, displayName: project.location }] : [])
 
   return (
-    <Card className="flex flex-col gap-6 border border-brand-100 bg-white shadow-sm md:flex-row" padding="lg">
-      <div className="md:w-72">
-        <div className="aspect-video overflow-hidden rounded-xl bg-brand-50">
+    <div
+      className="flex flex-col gap-6 border border-brand-100 bg-white shadow-sm md:flex-row cursor-pointer hover:shadow-lg transition-shadow rounded-lg p-6"
+      onClick={() => onClick?.(project.id)}
+    >
+      <div className="md:w-80 flex-shrink-0">
+        <div className="aspect-[4/3] overflow-hidden rounded-xl bg-gradient-to-br from-brand-100 to-ocean-100 shadow-md">
           {coverImage ? (
-            <img src={coverImage} alt={project.name} className="h-full w-full object-cover" loading="lazy" />
+            <img src={coverImage} alt={project.name} className="h-full w-full object-cover transition hover:scale-105" loading="lazy" />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-sm font-medium text-brand-600">
-              Image coming soon
+            <div className="flex h-full w-full items-center justify-center text-sm font-medium text-brand-600 bg-gradient-to-br from-brand-50 to-ocean-50">
+              <div className="text-center space-y-2 p-4">
+                <div className="text-5xl">📍</div>
+                <div className="text-xs text-clay-500">Sense of place</div>
+              </div>
             </div>
           )}
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col gap-6">
-        <div className="space-y-4">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusBadgeClass(project.status)}`}>
-              {project.status || 'Active'}
-            </span>
-            {(project.organization || project.area) && (
-              <span className="text-xs font-medium uppercase tracking-wide text-clay-400">
-                {project.organization || project.area}
-              </span>
+      <div className="flex flex-1 flex-col gap-5">
+        {/* Header with location and partners */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-sm text-clay-500">
+            {displayPlaces.length > 0 && (
+              <>
+                <span>📍</span>
+                <span className="font-medium">{displayPlaces.slice(0, 2).map(p => p.displayName).join(', ')}</span>
+              </>
+            )}
+            {displayPlaces.length > 0 && partners.length > 0 && <span>•</span>}
+            {partners.length > 0 && (
+              <span>{partners.length} {partners.length === 1 ? 'partner' : 'partners'}</span>
             )}
           </div>
 
+          <h3 className="text-2xl font-semibold text-clay-900 leading-tight">{project.name}</h3>
+        </div>
+
+        {/* What it is */}
+        <div>
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-clay-500 mb-2">What it is</h4>
+          <p className="text-base text-clay-700 leading-relaxed">
+            {project.aiSummary || project.description || 'Community-defined initiative'}
+          </p>
+        </div>
+
+        {/* Why it matters - derive from themes and values */}
+        {(coreValues.length > 0 || themes.length > 0) && (
           <div>
-            <h3 className="text-xl font-semibold text-clay-900">{project.name}</h3>
-            <p className="mt-2 text-sm text-clay-600">
-              {project.aiSummary || project.description || 'Community-defined initiative'}
-            </p>
-          </div>
-
-          {project.projectLead?.name && (
-            <p className="text-sm text-clay-500">
-              Lead: <span className="font-medium text-clay-900">{project.projectLead.name}</span>
-            </p>
-          )}
-
-          {project.location && <p className="text-xs text-clay-400">Location: {project.location}</p>}
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-lg border border-brand-100 bg-brand-50/70 p-4">
-            <h4 className="text-xs font-semibold uppercase tracking-widest text-brand-700">What we need</h4>
-            <ul className="mt-3 space-y-2 text-sm text-brand-900">
-              {needs.map((item) => (
-                <li key={`${item.label}-${item.detail}`} className="flex items-center justify-between gap-3">
-                  <span className="text-brand-600">{item.label}</span>
-                  <span className="font-medium text-brand-900">{item.detail}</span>
-                </li>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-clay-500 mb-2">Why it matters</h4>
+            <div className="flex flex-wrap gap-2">
+              {coreValues.map((value) => (
+                <span
+                  key={`value-${value}`}
+                  className="rounded-full bg-brand-100 px-3 py-1 text-sm font-medium text-brand-800"
+                >
+                  {value}
+                </span>
               ))}
-            </ul>
-          </div>
-
-          <div className="rounded-lg border border-clay-100 bg-white p-4">
-            <h4 className="text-xs font-semibold uppercase tracking-widest text-clay-600">What we have ready</h4>
-            <ul className="mt-3 space-y-2 text-sm text-clay-700">
-              {available.length === 0 ? (
-                <li className="text-clay-400">Linking real resources now</li>
-              ) : (
-                available.map((item) => (
-                  <li key={`${item.label}-${item.detail}`} className="flex items-center justify-between gap-3">
-                    <span>{item.label}</span>
-                    <span className="font-medium text-clay-900">{item.detail}</span>
-                  </li>
-                ))
-              )}
-            </ul>
-          </div>
-        </div>
-
-        {(relationshipPillars.length > 0 || (project.tags?.length ?? 0) > 0) && (
-          <div className="flex flex-wrap gap-2">
-            {relationshipPillars.map((pillar) => (
-              <span
-                key={`pillar-${pillar}`}
-                className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700"
-              >
-                {pillar}
-              </span>
-            ))}
-            {(project.tags || []).slice(0, 4).map((tag) => (
-              <span key={`tag-${tag}`} className="rounded-full bg-clay-100 px-3 py-1 text-xs text-clay-600">
-                {tag}
-              </span>
-            ))}
-            {tagOverflow > 0 && (
-              <span className="rounded-full bg-clay-100 px-3 py-1 text-xs text-clay-500">+{tagOverflow}</span>
-            )}
+              {themes.slice(0, 3).map((theme) => (
+                <span key={`theme-${theme}`} className="rounded-full bg-ocean-100 px-3 py-1 text-sm text-ocean-800">
+                  {theme}
+                </span>
+              ))}
+            </div>
           </div>
         )}
 
-        <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-clay-400">
+        {/* How it's happening - relationship pillars */}
+        {relationshipPillars.length > 0 && (
+          <div>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-clay-500 mb-2">How it's happening</h4>
+            <div className="flex flex-wrap gap-2">
+              {relationshipPillars.map((pillar) => (
+                <span
+                  key={`pillar-${pillar}`}
+                  className="rounded-full border border-brand-200 bg-white px-3 py-1 text-sm text-brand-700"
+                >
+                  {pillar}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* People involved */}
+        {people.length > 0 && (
+          <div>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-clay-500 mb-2">People involved</h4>
+            <p className="text-sm text-clay-600">
+              {people.slice(0, 5).join(', ')}
+              {people.length > 5 && ` and ${people.length - 5} others`}
+            </p>
+          </div>
+        )}
+
+        {/* Footer */}
+        <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-clay-400 pt-3 border-t border-clay-100">
           {lastUpdated && <span>Updated {new Date(lastUpdated).toLocaleDateString()}</span>}
           {project.notionUrl && (
             <a
@@ -663,113 +925,145 @@ function ActiveProjectCard({ project }: { project: Project }) {
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-1 text-brand-700 transition hover:text-brand-800"
+              onClick={(e) => e.stopPropagation()}
             >
-              <span>Open in Notion</span>
+              <span>View full story</span>
               <span aria-hidden>↗</span>
             </a>
           )}
         </div>
       </div>
-    </Card>
+    </div>
   )
 }
 
-function ProjectCard({ project }: { project: Project }) {
-  const statusBadgeClass = getStatusBadgeClass(project.status)
-  const tags = project.tags || project.themes || []
+function ProjectCard({
+  project,
+  onClick,
+}: {
+  project: Project
+  onClick?: (projectId: string) => void
+}) {
+  const themes = project.themes || project.tags || []
   const lastUpdated =
     project.notionLastEditedAt ||
     project.updatedAt ||
     project.lastUpdated ||
     project.last_updated
 
-  return (
-    <Card className="flex h-full flex-col justify-between" padding="md">
-      <div className="flex items-start justify-between gap-3">
-        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusBadgeClass}`}>
-          {project.status || 'Active'}
-        </span>
-        {(project.organization || project.area) && (
-          <span className="text-xs font-medium uppercase tracking-wide text-clay-400">
-            {project.organization || project.area}
-          </span>
-        )}
-      </div>
+  const coverImage = project.coverImage || (project as any).cover_photo || (project as any).image
 
-      <div className="mt-4 space-y-3">
-        <div>
-          <h3 className="text-lg font-semibold text-clay-900">{project.name}</h3>
-          <p className="mt-2 text-sm text-clay-600 line-clamp-4">
+  const coreValues = Array.isArray(project.coreValues)
+    ? project.coreValues
+    : project.coreValues
+    ? [project.coreValues]
+    : []
+
+  const partners = (project.relatedOrganisations || []).filter(p => p && p !== '0' && p !== 0)
+  const rawPlaces = (project.relatedPlaces || []).filter(p => p && p !== '0' && p !== 0)
+  const people = (project.relatedPeople || []).filter(p => p && p !== '0' && p !== 0)
+  const relationshipPillars = Array.isArray(project.relationshipPillars)
+    ? project.relationshipPillars.slice(0, 3)
+    : []
+
+  // Handle places - they can be objects or strings (for backwards compatibility)
+  const places = rawPlaces.map(p => {
+    if (typeof p === 'string') {
+      return { indigenousName: p, westernName: null, displayName: p }
+    }
+    return p
+  })
+
+  // Use location as fallback for places if we don't have place names
+  const displayPlaces = places.length > 0 ? places : (project.location ? [{ indigenousName: project.location, westernName: null, displayName: project.location }] : [])
+
+  return (
+    <div
+      className="flex h-full flex-col justify-between overflow-hidden cursor-pointer hover:shadow-lg transition-shadow bg-white rounded-lg border border-clay-200"
+      onClick={() => onClick?.(project.id)}
+    >
+      {coverImage && (
+        <div className="relative h-48 w-full overflow-hidden bg-clay-100">
+          <img
+            src={coverImage}
+            alt={`${project.name} cover`}
+            className="h-full w-full object-cover"
+            onError={(e) => {
+              // Hide image if it fails to load
+              e.currentTarget.style.display = 'none'
+            }}
+          />
+        </div>
+      )}
+
+      <div className="p-6 flex flex-col flex-1 gap-4">
+        {/* Location and partners context */}
+        <div className="flex items-center gap-2 text-xs text-clay-500">
+          {displayPlaces.length > 0 && (
+            <>
+              <span>📍</span>
+              <span className="font-medium">{displayPlaces[0].displayName}</span>
+            </>
+          )}
+          {displayPlaces.length > 0 && partners.length > 0 && <span>•</span>}
+          {partners.length > 0 && (
+            <span>{partners.length} {partners.length === 1 ? 'partner' : 'partners'}</span>
+          )}
+        </div>
+
+        {/* Project name */}
+        <h3 className="text-lg font-semibold text-clay-900 leading-tight">{project.name}</h3>
+
+        {/* What it is */}
+        <div className="flex-1 space-y-3">
+          <p className="text-sm text-clay-600 line-clamp-3">
             {project.aiSummary || project.description || 'Community-defined initiative'}
           </p>
+
+          {/* Why it matters */}
+          {(coreValues.length > 0 || themes.length > 0) && (
+            <div className="flex flex-wrap gap-1.5">
+              {coreValues.slice(0, 2).map((value) => (
+                <span
+                  key={`value-${value}`}
+                  className="rounded-full bg-brand-100 px-2.5 py-0.5 text-xs font-medium text-brand-800"
+                >
+                  {value}
+                </span>
+              ))}
+              {themes.slice(0, 3).map((theme) => (
+                <span key={`theme-${theme}`} className="rounded-full bg-ocean-100 px-2.5 py-0.5 text-xs text-ocean-800">
+                  {theme}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* How it's happening */}
+          {relationshipPillars.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {relationshipPillars.map((pillar) => (
+                <span
+                  key={`pillar-${pillar}`}
+                  className="rounded-full border border-brand-200 bg-white px-2.5 py-0.5 text-xs text-brand-700"
+                >
+                  {pillar}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* People involved */}
+          {people.length > 0 && (
+            <p className="text-xs text-clay-500">
+              With {people.slice(0, 3).join(', ')}
+              {people.length > 3 && ` and ${people.length - 3} others`}
+            </p>
+          )}
         </div>
 
-        {project.projectLead?.name && (
-          <p className="text-sm text-clay-500">Lead: <span className="font-medium text-clay-900">{project.projectLead.name}</span></p>
-        )}
-
-        <div className="grid gap-2 text-xs text-clay-500">
-          {project.nextMilestoneDate && (
-            <div className="flex justify-between">
-              <span>Next milestone</span>
-              <span className="font-medium text-clay-900">
-                {new Date(project.nextMilestoneDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-              </span>
-            </div>
-          )}
-          {(project.funding || project.actualIncoming || project.potentialIncoming) && (
-            <div className="flex justify-between">
-              <span>Funding</span>
-              <span className="font-medium text-brand-700">
-                {project.funding || `Actual $${project.actualIncoming?.toLocaleString()} / Potential $${project.potentialIncoming?.toLocaleString()}`}
-              </span>
-            </div>
-          )}
-          {project.partnerCount !== null && project.partnerCount !== undefined && (
-            <div className="flex justify-between">
-              <span>Partners</span>
-              <span className="font-medium text-clay-900">{project.partnerCount}</span>
-            </div>
-          )}
-        </div>
-
-        {tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {tags.slice(0, 6).map((tag) => (
-              <span key={tag} className="rounded-full bg-clay-100 px-2 py-0.5 text-xs text-clay-600">
-                {tag}
-              </span>
-            ))}
-            {tags.length > 6 && (
-              <span className="rounded-full bg-clay-100 px-2 py-0.5 text-xs text-clay-500">+{tags.length - 6}</span>
-            )}
-          </div>
-        )}
-
-        {Array.isArray(project.relationshipPillars) && project.relationshipPillars.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {project.relationshipPillars.slice(0, 4).map((pillar) => (
-              <span key={pillar} className="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700">
-                {pillar}
-              </span>
-            ))}
-            {project.relationshipPillars.length > 4 && (
-              <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs text-brand-600">
-                +{project.relationshipPillars.length - 4}
-              </span>
-            )}
-          </div>
-        )}
-
-        {(project.relatedOpportunities?.length || 0) > 0 && (
-          <p className="text-xs text-brand-700">
-            {project.relatedOpportunities!.length} linked opportunities ready for follow-up
-          </p>
-        )}
-      </div>
-
-      {(lastUpdated || project.notionUrl) && (
-        <div className="mt-5 flex items-center justify-between text-xs text-clay-400">
+        {/* Footer */}
+        <div className="flex items-center justify-between text-xs text-clay-400 pt-3 border-t border-clay-100">
           <span>
             {lastUpdated ? `Updated ${new Date(lastUpdated).toLocaleDateString()}` : ''}
           </span>
@@ -779,12 +1073,246 @@ function ProjectCard({ project }: { project: Project }) {
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-1 text-brand-700 transition hover:text-brand-800"
+              onClick={(e) => e.stopPropagation()}
             >
-              <span>Open in Notion</span>
+              <span>View story</span>
               <span aria-hidden>↗</span>
             </a>
           )}
         </div>
+      </div>
+    </div>
+  )
+}
+
+function StorytellerPanel({
+  project,
+  canAddStorytellers,
+  onStorytellerAdded,
+  compact = false,
+}: {
+  project: Project
+  canAddStorytellers: boolean
+  onStorytellerAdded: (projectId: string, storyteller: Storyteller) => void
+  compact?: boolean
+}) {
+  const storytellers = project.storytellers || []
+  const [isAdding, setIsAdding] = useState(false)
+  const [fullName, setFullName] = useState('')
+  const [bio, setBio] = useState('')
+  const [expertise, setExpertise] = useState('')
+  const [profileImageUrl, setProfileImageUrl] = useState('')
+  const [consentGranted, setConsentGranted] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
+
+  if (!canAddStorytellers && storytellers.length === 0) {
+    return null
+  }
+
+  const panelClasses = compact
+    ? 'rounded-lg border border-clay-100 bg-clay-50/70 p-3 space-y-3'
+    : 'rounded-xl border border-clay-100 bg-clay-50/70 p-4 space-y-4'
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (!fullName.trim()) {
+      setError('Please enter a storyteller name.')
+      return
+    }
+
+    setSubmitting(true)
+    setError(null)
+    setSuccess(null)
+
+    try {
+      const payload = {
+        fullName: fullName.trim(),
+        bio: bio.trim() ? bio.trim() : null,
+        consentGranted,
+        expertiseAreas: expertise
+          ? expertise.split(',').map((item) => item.trim()).filter(Boolean)
+          : [],
+        profileImageUrl: profileImageUrl.trim() || null,
+        mediaType: null,
+      }
+
+      const response = await api.addProjectStoryteller(project.id, payload)
+      const storytellerData: any = (response as any).storyteller ?? response
+
+      const normalizedStoryteller: Storyteller = {
+        id: storytellerData.id ?? `${project.id}-storyteller-${Date.now()}`,
+        project_id: storytellerData.project_id ?? project.supabaseProjectId ?? project.id,
+        full_name: storytellerData.full_name ?? payload.fullName,
+        bio: storytellerData.bio ?? payload.bio ?? null,
+        expertise_areas: storytellerData.expertise_areas ?? payload.expertiseAreas ?? [],
+        profile_image_url: storytellerData.profile_image_url ?? payload.profileImageUrl ?? null,
+        media_type: storytellerData.media_type ?? null,
+        created_at: storytellerData.created_at ?? new Date().toISOString(),
+        consent_given: storytellerData.consent_given ?? payload.consentGranted ?? true,
+      }
+
+      onStorytellerAdded(project.id, normalizedStoryteller)
+      setSuccess('Storyteller added')
+      setIsAdding(false)
+      setFullName('')
+      setBio('')
+      setExpertise('')
+      setProfileImageUrl('')
+      setConsentGranted(true)
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Failed to add storyteller. Please try again.'
+      setError(message)
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <div className={panelClasses}>
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <h4 className={`${compact ? 'text-sm' : 'text-base'} font-semibold text-clay-900`}>
+            Community storytellers
+          </h4>
+          <p className={`${compact ? 'text-xs' : 'text-sm'} text-clay-500`}>
+            {storytellers.length > 0
+              ? `${storytellers.length} trusted voices linked to this project.`
+              : 'Invite storytellers to keep this project alive.'}
+          </p>
+        </div>
+        {canAddStorytellers && (
+          <button
+            type="button"
+            onClick={() => {
+              setIsAdding((prev) => !prev)
+              setError(null)
+              setSuccess(null)
+            }}
+            className="rounded-lg border border-brand-200 bg-white px-3 py-1 text-xs font-medium text-brand-700 transition hover:bg-brand-50"
+          >
+            {isAdding ? 'Cancel' : 'Add storyteller'}
+          </button>
+        )}
+      </div>
+
+      {storytellers.length > 0 && (
+        <ul className="space-y-2">
+          {storytellers.map((storyteller) => (
+            <li
+              key={storyteller.id ?? storyteller.full_name}
+              className="rounded-lg border border-white/60 bg-white/80 p-3 shadow-sm"
+            >
+              <div className="flex items-start gap-3">
+                {storyteller.profile_image_url ? (
+                  <img
+                    src={storyteller.profile_image_url}
+                    alt={storyteller.full_name}
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-100 text-sm">
+                    🎙️
+                  </div>
+                )}
+                <div className="flex-1 space-y-1">
+                  <p className="text-sm font-semibold text-clay-900">{storyteller.full_name}</p>
+                  {storyteller.bio && (
+                    <p className="text-xs text-clay-600 line-clamp-3">{storyteller.bio}</p>
+                  )}
+                  {Array.isArray(storyteller.expertise_areas) && storyteller.expertise_areas.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {storyteller.expertise_areas.slice(0, 4).map((area) => (
+                        <span
+                          key={`${storyteller.id}-${area}`}
+                          className="rounded-full bg-brand-50 px-2 py-0.5 text-xs text-brand-700"
+                        >
+                          {area}
+                        </span>
+                      ))}
+                      {storyteller.expertise_areas.length > 4 && (
+                        <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs text-brand-600">
+                          +{storyteller.expertise_areas.length - 4}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
       )}
-    </Card>
-  )}
+
+      {isAdding && canAddStorytellers && (
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-3 rounded-lg border border-brand-100 bg-white/95 p-3"
+        >
+          <div className="grid gap-3 md:grid-cols-2">
+            <label className="flex flex-col text-xs font-medium text-clay-600">
+              Full name
+              <input
+                value={fullName}
+                onChange={(event) => setFullName(event.target.value)}
+                className="mt-1 rounded-lg border border-clay-200 bg-white px-3 py-2 text-sm text-clay-900 focus:border-brand-400 focus:outline-none focus:ring-1 focus:ring-brand-200"
+                placeholder="Storyteller name"
+              />
+            </label>
+            <label className="flex flex-col text-xs font-medium text-clay-600">
+              Expertise areas
+              <input
+                value={expertise}
+                onChange={(event) => setExpertise(event.target.value)}
+                className="mt-1 rounded-lg border border-clay-200 bg-white px-3 py-2 text-sm text-clay-900 focus:border-brand-400 focus:outline-none focus:ring-1 focus:ring-brand-200"
+                placeholder="Culture, youth, justice…"
+              />
+            </label>
+            <label className="flex flex-col text-xs font-medium text-clay-600 md:col-span-2">
+              Profile image URL (optional)
+              <input
+                value={profileImageUrl}
+                onChange={(event) => setProfileImageUrl(event.target.value)}
+                className="mt-1 rounded-lg border border-clay-200 bg-white px-3 py-2 text-sm text-clay-900 focus:border-brand-400 focus:outline-none focus:ring-1 focus:ring-brand-200"
+                placeholder="https://"
+              />
+            </label>
+            <label className="flex flex-col text-xs font-medium text-clay-600 md:col-span-2">
+              Bio / introduction
+              <textarea
+                value={bio}
+                onChange={(event) => setBio(event.target.value)}
+                rows={compact ? 3 : 4}
+                className="mt-1 rounded-lg border border-clay-200 bg-white px-3 py-2 text-sm text-clay-900 focus:border-brand-400 focus:outline-none focus:ring-1 focus:ring-brand-200"
+                placeholder="Share why this voice matters for the project..."
+              />
+            </label>
+          </div>
+          <label className="flex items-center gap-2 text-xs text-clay-600">
+            <input
+              type="checkbox"
+              checked={consentGranted}
+              onChange={(event) => setConsentGranted(event.target.checked)}
+            />
+            Consent confirmed to share story updates publicly
+          </label>
+          <div className="flex items-center justify-between">
+            <div className="text-xs text-clay-400">
+              {error && <span className="text-red-600">{error}</span>}
+              {success && <span className="text-brand-700">{success}</span>}
+            </div>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="inline-flex items-center rounded-lg bg-brand-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {submitting ? 'Saving…' : 'Save storyteller'}
+            </button>
+          </div>
+        </form>
+      )}
+    </div>
+  )
+}

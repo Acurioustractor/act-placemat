@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:frontend": "cd apps/frontend && npm run dev",
-    "dev:backend": "cd apps/backend && node unified-intelligence-server.js",
+    "dev:backend": "cd apps/backend && node server.js",
     "nx:dev": "nx run-many --target=serve --projects=frontend,backend",
     "nx:build": "nx run-many --target=build --projects=frontend,backend,intelligence",
     "nx:test": "nx run-many --target=test --projects=frontend,backend,intelligence",

@@ -5,6 +5,7 @@ import { CommunityProjects } from './components/CommunityProjects'
 import { AIAgentChat, AIAgentButton } from './components/AIAgentChat'
 import CuriousTractorResearch from './components/CuriousTractorResearch'
 import { Opportunities } from './components/tabs/Opportunities'
+import { AboutACT } from './components/AboutACT'
 
 function App() {
   const [activeTab, setActiveTab] = useState('morning-brief')
@@ -12,6 +13,7 @@ function App() {
 
   // ✅ NEW INTELLIGENCE-FOCUSED TABS
   const tabs = [
+    { id: 'about', name: 'About ACT', icon: '🚜', description: 'What is A Curious Tractor?' },
     { id: 'morning-brief', name: 'Morning Brief', icon: '🌅', description: 'Daily intelligence digest' },
     { id: 'contacts', name: 'Contacts', icon: '🤝', description: '20K relationship network' },
     { id: 'projects', name: 'Projects', icon: '🏘️', description: 'Portfolio & Beautiful Obsolescence tracking' },
@@ -48,50 +50,58 @@ function App() {
   }, [activeTab])
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="border-b border-slate-200 bg-white shadow-sm">
-        <div className="mx-auto flex h-16 items-center justify-between px-6">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-blue-600">
-              Beautiful Obsolescence Platform
-            </p>
-            <h1 className="text-xl font-bold text-slate-900">ACT Intelligence Hub</h1>
-          </div>
-          <div className="text-sm font-medium text-slate-600">
-            🌱 Community-owned • Community-controlled
+    <div className="min-h-screen bg-clay-50">
+      {/* Modern Header */}
+      <header className="bg-white border-b border-clay-200 shadow-soft sticky top-0 z-50">
+        <div className="mx-auto max-w-7xl px-8 py-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="text-xs font-bold uppercase tracking-widest text-brand-600">
+                Beautiful Obsolescence Platform
+              </p>
+              <h1 className="text-2xl font-bold text-clay-900">ACT Intelligence Hub</h1>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-50 to-ocean-50 rounded-full border border-brand-200">
+              <span className="text-lg">🌱</span>
+              <span className="text-sm font-semibold text-clay-700">
+                Community-owned • Community-controlled
+              </span>
+            </div>
           </div>
         </div>
       </header>
 
-      <nav className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex overflow-x-auto px-6">
-          <div className="flex gap-8">
-            {tabs.map((tab) => {
-              const isActive = activeTab === tab.id
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`relative py-4 text-sm font-medium transition-colors whitespace-nowrap ${
-                    isActive ? 'text-blue-600' : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  <span className="mr-2 text-lg">{tab.icon}</span>
-                  {tab.name}
-                  {isActive && (
-                    <span
-                      className="absolute inset-x-0 -bottom-px h-0.5 bg-blue-600"
-                      aria-hidden="true"
-                    />
-                  )}
-                </button>
-              )
-            })}
+      {/* Modern Navigation */}
+      <nav className="bg-white border-b border-clay-200 shadow-soft sticky top-[88px] z-40">
+        <div className="mx-auto max-w-7xl px-8">
+          <div className="flex overflow-x-auto py-4">
+            <div className="flex gap-2">
+              {tabs.map((tab) => {
+                const isActive = activeTab === tab.id
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`group relative px-5 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 whitespace-nowrap ${
+                      isActive
+                        ? 'bg-gradient-to-r from-brand-600 to-ocean-600 text-white shadow-medium'
+                        : 'bg-clay-50 text-clay-700 hover:bg-clay-100 hover:shadow-soft hover:-translate-y-0.5'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">{tab.icon}</span>
+                      <span>{tab.name}</span>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
           </div>
         </div>
       </nav>
 
       <main>
+        {activeTab === 'about' && <AboutACT />}
         {activeTab === 'morning-brief' && <MorningBrief />}
         {activeTab === 'contacts' && <ContactIntelligenceHub />}
         {activeTab === 'projects' && <CommunityProjects />}

@@ -21,7 +21,7 @@ import cors from 'cors';
 import { Client } from '@notionhq/client';
 
 const app = express();
-const PORT = 4001;
+const PORT = 4000;
 
 app.use(cors());
 app.use(express.json());

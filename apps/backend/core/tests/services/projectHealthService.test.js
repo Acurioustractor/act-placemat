@@ -1,5 +1,31 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ProjectHealthService } from '../../src/services/projectHealthService.js';
+
+// Mock heavy dependencies before loading the service under test
+const mockNotionService = {
+  getProjects: vi.fn(),
+  getOpportunities: vi.fn(),
+  getOrganizations: vi.fn(),
+  getPeople: vi.fn(),
+};
+
+const mockLogger = {
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
+  debug: vi.fn(),
+};
+
+vi.mock('../../src/services/notionService.js', () => ({
+  notionService: mockNotionService,
+  default: mockNotionService,
+}));
+
+vi.mock('../../src/utils/logger.js', () => ({
+  logger: mockLogger,
+  default: mockLogger,
+}));
+
+const { ProjectHealthService } = await import('../../src/services/projectHealthService.js');
 
 describe('ProjectHealthService', () => {
   let service;
