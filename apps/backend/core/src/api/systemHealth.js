@@ -162,7 +162,11 @@ router.get('/system/health/notion', async (req, res) => {
     }
 
     // Try to fetch one project to test connection
-    const projects = await notionService.getProjects({ limit: 1 });
+    const projects = await notionService.getProjects({
+      useCache: false,
+      pageSize: 1,
+      getAllPages: false,
+    });
     const isRealData = projects.length > 0 && !projects[0].id.startsWith('fallback-');
 
     res.json({

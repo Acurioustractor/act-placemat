@@ -1,23 +1,58 @@
 {
   "version": 2,
-  "name": "factory-records-basquiat-placemat",
+  "name": "act-placemat",
+  "buildCommand": "npm run build",
+  "outputDirectory": "apps/frontend/dist",
+  "installCommand": "npm install && cd apps/frontend && npm install && cd ../backend/core && npm install",
+  "framework": "vite",
   "builds": [
     {
-      "src": "factory-records-placemat-vercel.html",
-      "use": "@vercel/static"
+      "src": "apps/frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    },
+    {
+      "src": "apps/backend/server.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/",
-      "dest": "/factory-records-placemat-vercel.html"
+      "src": "/api/(.*)",
+      "dest": "apps/backend/server.js"
     },
     {
-      "src": "/media/(.*)",
-      "dest": "/media/$1"
+      "src": "/(.*)",
+      "dest": "apps/frontend/dist/$1"
     }
   ],
+  "env": {
+    "NODE_ENV": "production"
+  },
   "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Credentials",
+          "value": "true"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
+        }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [

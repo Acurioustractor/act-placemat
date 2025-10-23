@@ -15,14 +15,13 @@ import { cacheService } from './cacheService.js';
 
 class NotionService {
   constructor() {
-    // Initialize Notion client with enhanced OAuth support
+    // Initialize Notion client with enhanced OAuth support (synchronously for immediate use)
     this.notion = null;
     this.isOAuthAuthenticated = false;
-    this.initializeClient();
+    this._initializeClientSync();
 
     // Enhanced database configuration with metadata
-    // NOTE: With API version 2025-09-03, we need to map database_id to data_source_id
-    this.databases = {
+    this.databaseConfigs = {
       partners: {
         id: process.env.NOTION_PARTNERS_DATABASE_ID,
         dataSourceId: null, // Will be populated when first accessed
@@ -106,6 +105,9 @@ class NotionService {
       errorCount: 0,
     };
 
+    // Cache for database property metadata fetched from Notion
+    this.databaseProperties = {};
+
     // Retry configuration
     this.retryConfig = {
       maxRetries: 3,
@@ -125,9 +127,9 @@ class NotionService {
   }
 
   /**
-   * Initialize Notion client with OAuth support
+   * Initialize Notion client synchronously (for immediate use in constructor)
    */
-  async initializeClient() {
+  _initializeClientSync() {
     try {
       // Try OAuth token first
       const oauthToken = process.env.NOTION_OAUTH_TOKEN;
@@ -136,25 +138,39 @@ class NotionService {
       if (oauthToken) {
         this.notion = new Client({
           auth: oauthToken,
-          notionVersion: '2025-09-03',  // MIGRATED: Updated to 2025-09-03 API version
+          // NOTE: Not specifying notionVersion to use the default API which includes databases.query
+          // The 2025-09-03 version deprecates databases.query in favor of dataSources.query
           timeoutMs: 60000,
           logLevel: process.env.NODE_ENV === 'development' ? 'debug' : 'warn',
         });
         this.isOAuthAuthenticated = true;
-        console.log('✅ Notion OAuth client initialized with correct API version');
+        console.log('✅ Notion OAuth client initialized (SDK v2)');
       } else if (regularToken) {
         this.notion = new Client({
           auth: regularToken,
-          notionVersion: '2025-09-03',  // MIGRATED: Updated to 2025-09-03 API version
+          // NOTE: Not specifying notionVersion to use the default API which includes databases.query
+          // The 2025-09-03 version deprecates databases.query in favor of dataSources.query
           timeoutMs: 60000,
           logLevel: process.env.NODE_ENV === 'development' ? 'debug' : 'warn',
         });
-        console.log('✅ Notion regular token client initialized with correct API version');
+        console.log('✅ Notion regular token client initialized (SDK v2)');
       } else {
         console.warn('⚠️ No Notion authentication token found');
         return;
       }
 
+      // Test connection and setup webhooks asynchronously (don't block constructor)
+      this._asyncInit();
+    } catch (error) {
+      console.error('❌ Failed to initialize Notion client:', error.message);
+    }
+  }
+
+  /**
+   * Async initialization tasks (connection test, webhooks)
+   */
+  async _asyncInit() {
+    try {
       // Test the connection
       await this.testConnection();
 
@@ -163,8 +179,16 @@ class NotionService {
         this.setupWebhookIntegration();
       }
     } catch (error) {
-      console.error('❌ Failed to initialize Notion client:', error.message);
+      console.error('❌ Async initialization failed:', error.message);
     }
+  }
+
+  /**
+   * Initialize Notion client with OAuth support (legacy async method)
+   */
+  async initializeClient() {
+    this._initializeClientSync();
+    await this._asyncInit();
   }
 
   /**
@@ -206,23 +230,22 @@ class NotionService {
     try {
       const { data } = event;
 
-      // Clear relevant caches - handle both old (database_id) and new (data_source_id) formats
+      // Clear relevant caches - handle both database_id events or fall back to global clear
       const relevantId = data.data_source_id || data.database_id;
       if (relevantId) {
         // For data_source_id, we need to reverse-lookup the database type
         let dbType;
         if (data.database_id) {
           dbType = this.getDatabaseTypeById(data.database_id);
-        } else if (data.data_source_id) {
-          // Find database type by data source ID
-          dbType = Object.keys(this.databases).find(type =>
-            this.databases[type].dataSourceId === data.data_source_id
-          );
         }
 
         if (dbType) {
           this.clearCache(dbType);
-          console.log(`🔄 Cleared cache for ${dbType} due to webhook event (API v2025-09-03)`);
+          console.log(`🔄 Cleared cache for ${dbType} due to webhook event`);
+        } else if (data.data_source_id) {
+          // Fallback: we do not currently map data_source_ids, so clear everything
+          this.clearCache();
+          console.log('🔄 Cleared all Notion caches due to webhook event (no database_id provided)');
         }
       }
 
@@ -239,7 +262,7 @@ class NotionService {
    * Get database type by ID
    */
   getDatabaseTypeById(databaseId) {
-    for (const [type, config] of Object.entries(this.databases)) {
+    for (const [type, config] of Object.entries(this.databaseConfigs)) {
       if (config.id === databaseId) {
         return type;
       }
@@ -252,64 +275,8 @@ class NotionService {
    */
   updateDatabaseTimestamp(databaseId) {
     const dbType = this.getDatabaseTypeById(databaseId);
-    if (dbType && this.databases[dbType]) {
-      this.databases[dbType].lastUpdated = new Date().toISOString();
-    }
-  }
-
-  /**
-   * Get data source ID for a database (API v2025-09-03 migration)
-   * This method handles the mapping from database_id to data_source_id
-   */
-  async getDataSourceId(databaseId, dbType = null) {
-    if (!databaseId) {
-      throw new Error('Database ID not provided');
-    }
-
-    if (!this.notion) {
-      throw new Error('Notion client not initialized');
-    }
-
-    // Try to find the database type if not provided
-    if (!dbType) {
-      dbType = this.getDatabaseTypeById(databaseId);
-    }
-
-    // If we have the data source ID cached, return it
-    if (dbType && this.databases[dbType]?.dataSourceId) {
-      return this.databases[dbType].dataSourceId;
-    }
-
-    try {
-      console.log(`🔍 Retrieving data source ID for database: ${databaseId}`);
-
-      // Use the new 2025-09-03 API to get database information
-      const response = await this.notion.request({
-        method: 'GET',
-        path: `databases/${databaseId}`,
-        headers: { 'Notion-Version': '2025-09-03' }
-      });
-
-      if (!response.data_sources || response.data_sources.length === 0) {
-        throw new Error(`No data sources found for database: ${databaseId}`);
-      }
-
-      // Get the first data source (typically there's only one)
-      const dataSource = response.data_sources[0];
-      const dataSourceId = dataSource.id;
-
-      console.log(`✅ Retrieved data source ID: ${dataSourceId} for database: ${databaseId}`);
-
-      // Cache the data source ID for future use
-      if (dbType && this.databases[dbType]) {
-        this.databases[dbType].dataSourceId = dataSourceId;
-        console.log(`💾 Cached data source ID for ${dbType}`);
-      }
-
-      return dataSourceId;
-    } catch (error) {
-      console.error(`❌ Failed to get data source ID for database ${databaseId}:`, error.message);
-      throw new Error(`Failed to retrieve data source ID: ${error.message}`);
+    if (dbType && this.databaseConfigs[dbType]) {
+      this.databaseConfigs[dbType].lastUpdated = new Date().toISOString();
     }
   }
 
@@ -878,7 +845,7 @@ class NotionService {
   }
 
   /**
-   * Enhanced Notion query method with v2025 features (migrated to dataSources API)
+   * Enhanced Notion query method that uses official databases.query with automatic pagination.
    */
   async queryNotion(databaseId, filter = {}, sorts = [], pageSize = 100, options = {}) {
     // Support both old format (string ID) and new format (config object)
@@ -895,64 +862,52 @@ class NotionService {
       );
     }
 
+    // Notion SDK v5 doesn't expose databases.query - we use notion.request() instead
+
+    const dbType = this.getDatabaseTypeById(actualDatabaseId);
+    let propertyTypes = {};
+
+    // Fetch and cache property metadata when we need to build filters
+    if (filter && Object.keys(filter).length > 0) {
+      propertyTypes = await this.getDatabaseProperties(dbType, actualDatabaseId);
+    }
+
     return await this.withRetry(async () => {
-      // MIGRATION: Get data source ID for the database (API v2025-09-03)
-      const dbType = this.getDatabaseTypeById(actualDatabaseId);
-      const dataSourceId = await this.getDataSourceId(actualDatabaseId, dbType);
-
-      const queryParams = {
-        data_source_id: dataSourceId, // MIGRATED: Use data_source_id instead of database_id
-        page_size: Math.min(pageSize, 100), // Notion API max is 100
-      };
-
-      // Enhanced filter support
-      if (filter && Object.keys(filter).length > 0) {
-        queryParams.filter = this.buildEnhancedFilter(filter);
-      }
-
-      // Enhanced sort support
-      if (sorts && sorts.length > 0) {
-        queryParams.sorts = sorts;
-      }
-
-      // Pagination support
-      if (options.startCursor) {
-        queryParams.start_cursor = options.startCursor;
-      }
-
       let allResults = [];
       let hasMore = true;
-      let nextCursor = null;
+      let nextCursor = options.startCursor || null;
 
-      // Handle pagination automatically if requested
       while (
         hasMore &&
         (!options.maxPages || allResults.length < options.maxPages * pageSize)
       ) {
+        const queryPayload = {
+          page_size: Math.min(pageSize, 100),
+        };
+
         if (nextCursor) {
-          queryParams.start_cursor = nextCursor;
+          queryPayload.start_cursor = nextCursor;
         }
 
-        // MIGRATION: Use dataSources.query instead of databases.query
-        // For now, use the request method since @notionhq/client v5 might not be fully available
-        let result;
-        try {
-          // Try the new dataSources.query method if available
-          if (this.notion.dataSources && this.notion.dataSources.query) {
-            result = await this.notion.dataSources.query(queryParams);
-          } else {
-            // Fallback to raw request method for compatibility
-            result = await this.notion.request({
-              method: 'POST',
-              path: `data_sources/${dataSourceId}/query`,
-              body: queryParams,
-              headers: { 'Notion-Version': '2025-09-03' }
-            });
-          }
-        } catch (error) {
-          console.error(`❌ Data source query failed for ${dataSourceId}:`, error.message);
-          throw error;
+        if (filter && Object.keys(filter).length > 0) {
+          queryPayload.filter = this.buildEnhancedFilter(
+            filter,
+            propertyTypes,
+            dbType
+          );
         }
+
+        if (sorts && sorts.length > 0) {
+          queryPayload.sorts = sorts;
+        }
+
+        // Using databases.query() which is available in SDK v2
+        console.log(`📤 Querying database ${actualDatabaseId}`);
+        const result = await this.notion.databases.query({
+          database_id: actualDatabaseId,
+          ...queryPayload
+        });
+        console.log(`📥 Got ${result?.results?.length || 0} results`);
 
         if (result?.results) {
           allResults = allResults.concat(result.results);
@@ -961,7 +916,6 @@ class NotionService {
         hasMore = result?.has_more || false;
         nextCursor = result?.next_cursor || null;
 
-        // Break if we don't want all pages
         if (!options.getAllPages) {
           break;
         }
@@ -972,9 +926,46 @@ class NotionService {
   }
 
   /**
+   * Retrieve and cache database property metadata from Notion.
+   */
+  async getDatabaseProperties(dbType, databaseId) {
+    const cacheKey = databaseId || dbType;
+
+    if (!cacheKey) {
+      return {};
+    }
+
+    if (!this.databaseProperties[cacheKey]) {
+      try {
+        // Using databases.retrieve() which is available in SDK v2
+        const response = await this.notion.databases.retrieve({
+          database_id: databaseId
+        });
+
+        const propertyTypes = {};
+        if (response && response.properties) {
+          Object.entries(response.properties).forEach(([name, info]) => {
+            propertyTypes[name] = info.type;
+          });
+        }
+
+        this.databaseProperties[cacheKey] = propertyTypes;
+      } catch (error) {
+        console.warn(
+          `⚠️ Failed to retrieve Notion database metadata for ${databaseId}:`,
+          error.message
+        );
+        this.databaseProperties[cacheKey] = {};
+      }
+    }
+
+    return this.databaseProperties[cacheKey];
+  }
+
+  /**
    * Build enhanced filter with v2025 capabilities
    */
-  buildEnhancedFilter(filter) {
+  buildEnhancedFilter(filter, propertyTypes = {}, dbType = null) {
     // If it's already a valid Notion filter, return as-is
     if (filter.and || filter.or || filter.property) {
       return filter;
@@ -986,27 +977,48 @@ class NotionService {
     for (const [property, value] of Object.entries(filter)) {
       if (value !== null && value !== undefined) {
         if (Array.isArray(value)) {
-          // Check if property is multi_select or select type
-          // For now, use select filter to avoid the mismatch error
-          conditions.push({
-            property,
-            select: { equals: value[0] },
-          });
+          const orConditions = value
+            .map(item =>
+              this.buildPropertyFilterCondition(
+                property,
+                item,
+                propertyTypes
+              )
+            )
+            .filter(Boolean);
+
+          if (orConditions.length === 1) {
+            conditions.push(orConditions[0]);
+          } else if (orConditions.length > 1) {
+            conditions.push({ or: orConditions });
+          }
         } else if (typeof value === 'string') {
-          conditions.push({
+          const condition = this.buildPropertyFilterCondition(
             property,
-            rich_text: { contains: value },
-          });
+            value,
+            propertyTypes
+          );
+          if (condition) {
+            conditions.push(condition);
+          }
         } else if (typeof value === 'boolean') {
-          conditions.push({
+          const condition = this.buildPropertyFilterCondition(
             property,
-            checkbox: { equals: value },
-          });
+            value,
+            propertyTypes
+          );
+          if (condition) {
+            conditions.push(condition);
+          }
         } else if (typeof value === 'number') {
-          conditions.push({
+          const condition = this.buildPropertyFilterCondition(
             property,
-            number: { equals: value },
-          });
+            value,
+            propertyTypes
+          );
+          if (condition) {
+            conditions.push(condition);
+          }
         } else if (value.type) {
           // Advanced filter condition
           conditions.push({
@@ -1026,11 +1038,211 @@ class NotionService {
     }
   }
 
+  buildPropertyFilterCondition(property, value, propertyTypes = {}) {
+    if (value === null || value === undefined) {
+      return null;
+    }
+
+    if (
+      typeof value === 'object' &&
+      (value.and || value.or || value.property || value.timestamp)
+    ) {
+      // Assume caller provided a raw Notion filter
+      return value;
+    }
+
+    if (typeof value === 'object' && value.type && value.condition) {
+      return {
+        property,
+        [value.type]: value.condition,
+      };
+    }
+
+    const propertyType =
+      propertyTypes[property] ||
+      this.inferPropertyType(property, value) ||
+      null;
+
+    if (propertyType === 'status') {
+      return {
+        property,
+        status: { equals: value },
+      };
+    }
+
+    if (propertyType === 'select') {
+      return {
+        property,
+        select: { equals: value },
+      };
+    }
+
+    if (propertyType === 'multi_select') {
+      return {
+        property,
+        multi_select: { contains: value },
+      };
+    }
+
+    if (propertyType === 'relation') {
+      return {
+        property,
+        relation: { contains: value },
+      };
+    }
+
+    if (propertyType === 'people' || propertyType === 'person') {
+      return {
+        property,
+        people: { contains: value },
+      };
+    }
+
+    if (propertyType === 'title') {
+      return {
+        property,
+        title: { contains: value },
+      };
+    }
+
+    if (propertyType === 'rich_text' || propertyType === 'text') {
+      return {
+        property,
+        rich_text: { contains: value },
+      };
+    }
+
+    if (propertyType === 'number') {
+      return {
+        property,
+        number: { equals: value },
+      };
+    }
+
+    if (propertyType === 'checkbox') {
+      return {
+        property,
+        checkbox: { equals: Boolean(value) },
+      };
+    }
+
+    if (propertyType === 'date') {
+      if (typeof value === 'string') {
+        return {
+          property,
+          date: { on_or_after: value },
+        };
+      }
+
+      if (typeof value === 'object') {
+        return {
+          property,
+          date: value,
+        };
+      }
+    }
+
+    // Fallback heuristics if property type is unknown
+    if (typeof value === 'boolean') {
+      return {
+        property,
+        checkbox: { equals: value },
+      };
+    }
+
+    if (typeof value === 'number') {
+      return {
+        property,
+        number: { equals: value },
+      };
+    }
+
+    if (Array.isArray(value)) {
+      return {
+        property,
+        multi_select: { contains: value[0] },
+      };
+    }
+
+    if (typeof value === 'string') {
+      return {
+        property,
+        rich_text: { contains: value },
+      };
+    }
+
+    return null;
+  }
+
+  inferPropertyType(property, value) {
+    const normalized = property.toLowerCase();
+
+    if (normalized.includes('status')) {
+      return 'status';
+    }
+
+    if (normalized.includes('tag') || normalized.includes('theme') || normalized.includes('focus')) {
+      return 'multi_select';
+    }
+
+    if (normalized.includes('pillar')) {
+      return 'multi_select';
+    }
+
+    if (
+      normalized.includes('category') ||
+      normalized.includes('type') ||
+      normalized.includes('priority') ||
+      normalized.includes('stage')
+    ) {
+      return 'select';
+    }
+
+    if (normalized.includes('date') || normalized.includes('deadline')) {
+      return 'date';
+    }
+
+    if (
+      normalized.includes('amount') ||
+      normalized.includes('budget') ||
+      normalized.includes('number') ||
+      normalized.includes('count') ||
+      normalized.includes('revenue')
+    ) {
+      return 'number';
+    }
+
+    if (
+      normalized.includes('active') ||
+      normalized.includes('featured') ||
+      normalized.includes('checkbox')
+    ) {
+      return 'checkbox';
+    }
+
+    if (
+      normalized.includes('related') ||
+      normalized.includes('relation') ||
+      normalized.includes('projects') ||
+      normalized.includes('people') ||
+      normalized.includes('organisations') ||
+      normalized.includes('organizations')
+    ) {
+      return 'relation';
+    }
+
+    if (normalized.includes('lead')) {
+      return 'people';
+    }
+
+    return null;
+  }
+
   /**
    * Enhanced aggregation queries for analytics
    */
   async getAggregatedData(databaseType, aggregationType, filters = {}) {
-    const dbConfig = this.databases[databaseType];
+    const dbConfig = this.databaseConfigs[databaseType];
     if (!dbConfig || !dbConfig.id) {
       throw new Error(`Database ${databaseType} not configured`);
     }
@@ -1176,7 +1388,7 @@ class NotionService {
     this.cacheStats.totalQueries++;
 
     try {
-      if (!this.databases.partners?.id) {
+      if (!this.databaseConfigs.partners?.id) {
         console.warn('⚠️ Notion partners database ID not configured – partner list disabled');
         return [];
       }
@@ -1191,7 +1403,7 @@ class NotionService {
       const sorts = [];
 
       const results = await this.queryNotion(
-        this.databases.partners.id,
+        this.databaseConfigs.partners.id,
         notionFilter,
         sorts
       );
@@ -1231,9 +1443,47 @@ class NotionService {
   }
 
   // Projects data service
-  async getProjects(useCache = true, filter = {}) {
-    // BYPASS ALL CACHING FOR NOW TO GET REAL NOTION DATA
-    console.log(`🚫 Cache bypassed - fetching fresh from Notion (useCache: ${useCache})`);
+  async getProjects(optionsOrUseCache = {}, maybeFilter = {}) {
+    let options = {};
+
+    if (typeof optionsOrUseCache === 'boolean') {
+      options = {
+        useCache: optionsOrUseCache,
+        filter: maybeFilter,
+      };
+    } else if (optionsOrUseCache && typeof optionsOrUseCache === 'object') {
+      options = { ...optionsOrUseCache };
+      if (
+        maybeFilter &&
+        typeof maybeFilter === 'object' &&
+        Object.keys(maybeFilter).length > 0
+      ) {
+        options.filter = maybeFilter;
+      }
+    }
+
+    const {
+      useCache = true,
+      filter = {},
+      sorts: customSorts,
+      pageSize = 100,
+      getAllPages = true,
+      startCursor = null,
+      maxPages = null,
+    } = options;
+
+    const sorts = Array.isArray(customSorts) && customSorts.length > 0
+      ? customSorts
+      : [
+          {
+            property: 'Name',
+            direction: 'ascending',
+          },
+        ];
+
+    console.log(
+      `🚜 Fetching projects from Notion (useCache: ${useCache}, getAllPages: ${getAllPages}, pageSize: ${pageSize})`
+    );
 
     // Use Life OS cache system first
     if (false && useCache) {
@@ -1250,130 +1500,133 @@ class NotionService {
     }
 
     try {
-      console.log('🔍 Fetching ALL projects directly from Notion...');
-
-      // Use simple, reliable Notion database query with pagination
-      const sorts = [
-        {
-          property: 'Name',
-          direction: 'ascending',
-        },
-      ];
+      console.log(`🔍 Querying projects`);
+      console.log(`  - database ID: ${this.databaseConfigs.projects?.id}`);
+      console.log(`  - filter:`, JSON.stringify(filter));
+      console.log(`  - sorts:`, JSON.stringify(sorts));
 
       const results = await this.queryNotion(
-        this.databases.projects.id,
+        this.databaseConfigs.projects.id,
         filter,
         sorts,
-        100,
-        { getAllPages: true }
+        pageSize,
+        {
+          getAllPages,
+          startCursor,
+          maxPages,
+        }
       );
+      console.log(`✅ Query succeeded, got ${results?.length || 0} results`);
 
       console.log(`✅ Total projects fetched: ${results.length}`);
 
-      const formattedProjects = results.map(page => {
+      const formattedProjects = results.map((page, index) => {
         const coverImage = (() => {
-          const cover = page.cover;
-          if (cover?.external?.url) return cover.external.url;
-          if (cover?.file?.url) return cover.file.url;
+          const projectName = page.properties?.Name?.title[0]?.plain_text || 'Unknown';
 
-          const propertyKeys = [
-            'Project Image',
-            'Cover Image',
-            'Thumbnail Image',
-            'Image',
-            'Photo'
-          ];
-
-          for (const key of propertyKeys) {
-            const property = page.properties?.[key];
-            if (!property) continue;
-
-            if (Array.isArray(property?.files) && property.files.length > 0) {
-              const fileUrl = this.extractFile(property.files[0]);
-              if (fileUrl) return fileUrl;
+          // Check the Cover Photo property FIRST
+          const coverPhotoProp = page.properties?.['Cover Photo'];
+          if (coverPhotoProp?.type === 'files' && coverPhotoProp.files && coverPhotoProp.files.length > 0) {
+            const fileUrl = this.extractFile(coverPhotoProp.files[0]);
+            if (fileUrl) {
+              console.log(`✅ ${projectName}: Using Cover Photo property`);
+              return fileUrl;
             }
-
-            if (property?.url) return property.url;
           }
 
-          if (page.icon?.type === 'external') {
-            return page.icon.external?.url || null;
+          // Fallback to page's native cover
+          const cover = page.cover;
+          if (cover?.external?.url) {
+            console.log(`⚠️  ${projectName}: Using page.cover (fallback) - Cover Photo property is empty`);
+            return cover.external.url;
+          }
+          if (cover?.file?.url) {
+            console.log(`⚠️  ${projectName}: Using page.cover (fallback) - Cover Photo property is empty`);
+            return cover.file.url;
           }
 
+          console.log(`❌ ${projectName}: No cover image found`);
           return null;
         })();
 
         return {
-        id: page.id,
-        name: this.extractTitle(page.properties.Name?.title || []),
+          id: page.id,
+          name: this.extractTitle(page.properties.Name?.title || []),
 
-        // AI Summary - EXACT field name from your Notion
-        aiSummary: this.extractPlainText(page.properties['AI summary']?.rich_text || []),
-        description: this.extractPlainText(page.properties['AI summary']?.rich_text || []),
-        
-        status: this.extractSelect(page.properties.Status?.select),
-        
-        // Project Lead - EXACT field name from your Notion  
-        projectLead: this.extractPerson(page.properties['Project Lead']?.people || []),
-        lead: this.extractPerson(page.properties['Project Lead']?.people || [])?.name || '',
-        
-        // Financial data - EXACT field names from your Notion
-        actualIncoming: this.extractNumber(page.properties['Actual Incoming']?.number),
-        potentialIncoming: this.extractNumber(page.properties['Potential Incoming']?.number),
-        revenueActual: this.extractNumber(page.properties['Revenue Actual']?.number),
-        revenuePotential: this.extractNumber(page.properties['Revenue Potential']?.number),
-        totalFunding: this.extractNumber(page.properties['Total Funding']?.rollup?.number),
-        partnerCount: this.extractNumber(page.properties['Partner Count']?.rollup?.number),
-        supporters: this.extractNumber(page.properties['Supporters']?.rollup?.number),
-        
-        // Categorization - EXACT field names from your Notion
-        coreValues: this.extractSelect(page.properties['Core Values']?.select),
-        theme: this.extractMultiSelect(page.properties.Theme?.multi_select || []),
-        themes: this.extractMultiSelect(page.properties.Theme?.multi_select || []), // Alias for compatibility
-        tags: this.extractMultiSelect(page.properties.Tags?.multi_select || []),
-        relationshipPillars: this.extractMultiSelect(page.properties['Relationship Pillars']?.multi_select || []),
-        
-        // Timeline & Location - EXACT field names from your Notion
-        nextMilestoneDate: this.extractDate(page.properties['Next Milestone Date']?.date),
-        location: this.extractRollup(page.properties['Western Name Location']),
-        
-        // Relations - EXACT field names from your Notion
-        relatedFields: this.extractRelation(page.properties['🪆 Fields']?.relation || []),
-        relatedActions: this.extractRelation(page.properties['Actions']?.relation || []),
-        relatedResources: this.extractRelation(page.properties['Resources']?.relation || []),
-        relatedArtifacts: this.extractRelation(page.properties['Artifacts']?.relation || []),
-        relatedConversations: this.extractRelation(page.properties['Conversations']?.relation || []),
-        relatedOpportunities: this.extractRelation(page.properties['Opportunities']?.relation || []),
-        relatedOrganisations: this.extractRelation(page.properties['Organisations']?.relation || []),
-        // Places relation - now with enhanced database access
-        relatedPlaces: (() => {
-          const placesData = this.extractRelation(page.properties['Places']?.relation || []);
-          if (page.properties.Name?.title[0]?.plain_text === 'Goods.' && placesData.length === 0) {
-            console.log('🏡 Places relation empty for Goods - testing direct database access...');
-            console.log('🏡 Places property details:', JSON.stringify(page.properties['Places'], null, 2));
-          }
-          return placesData;
-        })(),
-        
-        // Field Inbox - check if available
-        fieldInboxToBeSorted: this.extractNumber(page.properties['Field Inbox To Be Sorted']?.number) || 
-                              this.extractRelation(page.properties['Field Inbox To Be Sorted']?.relation || []).length ||
-                              null,
-        
-        // Legacy fields for compatibility with existing frontend
-        area: this.extractSelect(page.properties['Core Values']?.select),
-        featured: false,
-        startDate: null,
-        endDate: this.extractDate(page.properties['Next Milestone Date']?.date),
-        budget: this.extractNumber(page.properties['Actual Incoming']?.number) || this.extractNumber(page.properties['Total Funding']?.rollup?.number) || 0,
-        funding: `$${this.extractNumber(page.properties['Actual Incoming']?.number) || 0}K actual, $${this.extractNumber(page.properties['Potential Incoming']?.number) || 0}K potential`,
-        updatedAt: page.last_edited_time,
-        notionUrl: page.url,
-        notionId: page.id,
-        notionIdShort: page.id ? page.id.replace(/-/g, '') : null,
-        notionCreatedAt: page.created_time,
-        notionLastEditedAt: page.last_edited_time,
-        coverImage
+          // AI Summary - EXACT field name from your Notion
+          aiSummary: this.extractPlainText(page.properties['AI summary']?.rich_text || []),
+          description: this.extractPlainText(page.properties['AI summary']?.rich_text || []),
+
+          status: this.extractSelect(page.properties.Status?.select),
+
+          // Project Lead - EXACT field name from your Notion
+          projectLead: this.extractPerson(page.properties['Project Lead']?.people || []),
+          lead: this.extractPerson(page.properties['Project Lead']?.people || [])?.name || '',
+
+          // Financial data - EXACT field names from your Notion
+          actualIncoming: this.extractNumber(page.properties['Actual Incoming']?.number),
+          potentialIncoming: this.extractNumber(page.properties['Potential Incoming']?.number),
+          revenueActual: this.extractNumber(page.properties['Revenue Actual']?.number),
+          revenuePotential: this.extractNumber(page.properties['Revenue Potential']?.number),
+          totalFunding: this.extractNumber(page.properties['Total Funding']?.rollup?.number),
+          partnerCount: this.extractNumber(page.properties['Partner Count']?.rollup?.number),
+          supporters: this.extractNumber(page.properties['Supporters']?.rollup?.number),
+
+          // Categorization - EXACT field names from your Notion
+          coreValues: this.extractSelect(page.properties['Core Values']?.select),
+          theme: this.extractMultiSelect(page.properties.Theme?.multi_select || []),
+          themes: this.extractMultiSelect(page.properties.Theme?.multi_select || []), // Alias for compatibility
+          tags: this.extractMultiSelect(page.properties.Tags?.multi_select || []),
+          relationshipPillars: this.extractMultiSelect(page.properties['Relationship Pillars']?.multi_select || []),
+
+          // Timeline & Location - EXACT field names from your Notion
+          nextMilestoneDate: this.extractDate(page.properties['Next Milestone Date']?.date),
+          location: this.extractRollup(page.properties['Western Name Location']),
+
+          // Relations - EXACT field names from your Notion
+          relatedFields: this.extractRelation(page.properties['🪆 Fields']?.relation || []),
+          relatedActions: this.extractRelation(page.properties['Actions']?.relation || []),
+          relatedResources: this.extractRelation(page.properties['Resources']?.relation || []),
+          relatedArtifacts: this.extractRelation(page.properties['Artifacts']?.relation || []),
+          relatedConversations: this.extractRelation(page.properties['Conversations']?.relation || []),
+          relatedOpportunities: this.extractRelation(page.properties['Opportunities']?.relation || []),
+          relatedOrganisations: this.extractRelation(page.properties['Organisations']?.relation || []),
+          // Places relation - now with enhanced database access
+          relatedPlaces: (() => {
+            const placesData = this.extractRelation(page.properties['Places']?.relation || []);
+            if (page.properties.Name?.title[0]?.plain_text === 'Goods.' && placesData.length === 0) {
+              console.log('🏡 Places relation empty for Goods - testing direct database access...');
+              console.log('🏡 Places property details:', JSON.stringify(page.properties['Places'], null, 2));
+            }
+            return placesData;
+          })(),
+
+          // Field Inbox - check if available
+          fieldInboxToBeSorted:
+            this.extractNumber(page.properties['Field Inbox To Be Sorted']?.number) ||
+            this.extractRelation(page.properties['Field Inbox To Be Sorted']?.relation || []).length ||
+            null,
+
+          // Legacy fields for compatibility with existing frontend
+          area: this.extractSelect(page.properties['Core Values']?.select),
+          featured: false,
+          startDate: null,
+          endDate: this.extractDate(page.properties['Next Milestone Date']?.date),
+          budget:
+            this.extractNumber(page.properties['Actual Incoming']?.number) ||
+            this.extractNumber(page.properties['Total Funding']?.rollup?.number) ||
+            0,
+          funding: `$${this.extractNumber(page.properties['Actual Incoming']?.number) || 0}K actual, ${
+            this.extractNumber(page.properties['Potential Incoming']?.number) || 0
+          }K potential`,
+          updatedAt: page.last_edited_time,
+          notionUrl: page.url,
+          notionId: page.id,
+          notionIdShort: page.id ? page.id.replace(/-/g, '') : null,
+          notionCreatedAt: page.created_time,
+          notionLastEditedAt: page.last_edited_time,
+          coverImage,
+        };
       });
 
       const projectsToReturn = formattedProjects.length > 0 ? formattedProjects : (() => {
@@ -1391,7 +1644,8 @@ class NotionService {
       );
       return projectsToReturn;
     } catch (error) {
-      console.warn('Failed to fetch projects from Notion:', error.message);
+      console.error('❌ Failed to fetch projects from Notion:', error.message);
+      console.error('❌ Stack trace:', error.stack);
       return this.getFallbackProjects();
     }
   }
@@ -1421,7 +1675,7 @@ class NotionService {
       ];
 
       const results = await this.queryNotion(
-        this.databases.opportunities.id,
+        this.databaseConfigs.opportunities.id,
         filter,
         sorts
       );
@@ -1476,7 +1730,7 @@ class NotionService {
       ];
 
       const results = await this.queryNotion(
-        this.databases.organizations.id,
+        this.databaseConfigs.organizations.id,
         filter,
         sorts
       );
@@ -1522,7 +1776,7 @@ class NotionService {
       ];
 
       const results = await this.queryNotion(
-        this.databases.activities.id,
+        this.databaseConfigs.activities.id,
         {},
         sorts,
         limit
@@ -1564,13 +1818,13 @@ class NotionService {
       }
     }
 
-    if (!this.notion || !this.databases.people.id) {
+    if (!this.notion || !this.databaseConfigs.people.id) {
       console.warn('Notion client or people database not configured');
       return this.getFallbackPeople();
     }
 
     try {
-      const results = await this.queryNotion(this.databases.people.id);
+      const results = await this.queryNotion(this.databaseConfigs.people.id);
 
       const formattedPeople = results.map(page => ({
         id: page.id,
@@ -1625,13 +1879,13 @@ class NotionService {
       return this.getCache(cacheKey);
     }
 
-    if (!this.notion || !this.databases.artifacts.id) {
+    if (!this.notion || !this.databaseConfigs.artifacts.id) {
       console.warn('Notion client or artifacts database not configured');
       return this.getFallbackArtifacts();
     }
 
     try {
-      const results = await this.queryNotion(this.databases.artifacts.id);
+      const results = await this.queryNotion(this.databaseConfigs.artifacts.id);
 
       const formattedArtifacts = results.map(page => ({
         id: page.id,
@@ -1679,7 +1933,7 @@ class NotionService {
       return this.getCache(cacheKey);
     }
 
-    if (!this.notion || !this.databases.actions.id) {
+    if (!this.notion || !this.databaseConfigs.actions.id) {
       console.warn('Notion client or actions database not configured');
       return this.getFallbackActions();
     }
@@ -1687,7 +1941,7 @@ class NotionService {
     try {
       console.log(
         '🎯 Fetching actions from Notion database:',
-        this.databases.actions.id
+        this.databaseConfigs.actions.id
       );
       
       // Smart prioritization: get most recent actions first (Priority field removed as it doesn't exist in database)
@@ -1700,7 +1954,7 @@ class NotionService {
         // Re-enable when these fields exist in the actual Notion database
       ];
       
-      const results = await this.queryNotion(this.databases.actions.id, {}, smartSorts);
+      const results = await this.queryNotion(this.databaseConfigs.actions.id, {}, smartSorts);
 
       const formattedActions = results.map(page => ({
         id: page.id,
@@ -1758,7 +2012,7 @@ class NotionService {
       return this.getCache(cacheKey);
     }
 
-    if (!this.notion || !this.databases.places.id) {
+    if (!this.notion || !this.databaseConfigs.places.id) {
       console.warn('Notion client or places database not configured');
       return this.getFallbackPlaces();
     }
@@ -1766,7 +2020,7 @@ class NotionService {
     try {
       console.log(
         '🏡 Fetching places from Notion database:',
-        this.databases.places.id
+        this.databaseConfigs.places.id
       );
       
       const sorts = [
@@ -1776,7 +2030,7 @@ class NotionService {
         },
       ];
       
-      const results = await this.queryNotion(this.databases.places.id, {}, sorts);
+      const results = await this.queryNotion(this.databaseConfigs.places.id, {}, sorts);
 
       const formattedPlaces = results.map(page => ({
         id: page.id,
@@ -1786,7 +2040,10 @@ class NotionService {
           page.properties['Western Name']?.rich_text || []
         ),
         state: this.extractSelect(page.properties.State?.select),
-        map: this.extractPlainText(page.properties.Map?.rich_text || []),
+        // Try Coordinates property first (rich text), fallback to Map property
+        // Note: Map property type "place" returns null via API, so we need a text alternative
+        map: this.extractPlainText(page.properties.Coordinates?.rich_text || []) ||
+             this.extractPlainText(page.properties.Map?.rich_text || []),
         protocols: this.extractPlainText(
           page.properties.Protocols?.rich_text || []
         ),
@@ -1859,17 +2116,15 @@ class NotionService {
 
       if (results?.results) {
         results.results.forEach(page => {
-          // Categorize results based on parent data source ID or database ID (API migration compatibility)
-          const parentId = page.parent?.data_source_id || page.parent?.database_id;
+          const parentId = page.parent?.database_id || page.parent?.data_source_id;
 
-          // Check against our cached data source IDs or fallback to database IDs
-          if (parentId === this.databases.partners?.dataSourceId || parentId === this.databases.partners?.id) {
+          if (parentId === this.databaseConfigs.partners?.id) {
             searchResults.partners.push({
               id: page.id,
               name: this.extractTitle(page.properties.Name?.title || []),
               type: 'partner',
             });
-          } else if (parentId === this.databases.projects?.dataSourceId || parentId === this.databases.projects?.id) {
+          } else if (parentId === this.databaseConfigs.projects?.id) {
             searchResults.projects.push({
               id: page.id,
               name: this.extractTitle(page.properties.Name?.title || []),
@@ -1913,13 +2168,17 @@ class NotionService {
       cache: this.getCacheMetrics(),
     };
 
-    for (const [name, dbConfig] of Object.entries(this.databases)) {
+    for (const [name, dbConfig] of Object.entries(this.databaseConfigs)) {
       if (dbConfig.id) {
         health.configured++;
         try {
-          // Test the new data source ID mapping and query
-          const dataSourceId = await this.getDataSourceId(dbConfig.id, name);
-          const result = await this.queryNotion(dbConfig.id, {}, [], 1);
+          const result = await this.queryNotion(
+            dbConfig.id,
+            {},
+            [],
+            1,
+            { getAllPages: false }
+          );
           health.databases[name] = {
             status: 'healthy',
             configured: true,
@@ -1928,8 +2187,7 @@ class NotionService {
             version: dbConfig.version,
             lastUpdated: dbConfig.lastUpdated,
             databaseId: dbConfig.id,
-            dataSourceId: dataSourceId, // Include the new data source ID
-            apiVersion: '2025-09-03', // Show we're using the new API
+            apiVersion: '2022-06-28',
             schema: dbConfig.schema
               ? Object.keys(dbConfig.schema.properties).length
               : 0,
@@ -1943,8 +2201,7 @@ class NotionService {
             error: error.message,
             version: dbConfig.version,
             databaseId: dbConfig.id,
-            dataSourceId: dbConfig.dataSourceId,
-            apiVersion: '2025-09-03',
+            apiVersion: '2022-06-28',
           };
           health.overall = 'degraded';
         }
@@ -2539,7 +2796,7 @@ class NotionService {
       throw new Error('Notion client not initialized');
     }
 
-    if (!this.databases.projects?.id) {
+    if (!this.databaseConfigs.projects?.id) {
       throw new Error('Projects database ID not configured');
     }
 
@@ -2635,11 +2892,8 @@ class NotionService {
     try {
       console.log('🛍️ Creating project in Notion with properties:', JSON.stringify(projectProps, null, 2));
       
-      // MIGRATION: Get data source ID for page creation (API v2025-09-03)
-      const dataSourceId = await this.getDataSourceId(this.databases.projects.id, 'projects');
-
       const response = await this.notion.pages.create({
-        parent: { data_source_id: dataSourceId }, // MIGRATED: Use data_source_id instead of database_id
+        parent: { database_id: this.databaseConfigs.projects.id },
         properties: projectProps
       });
 
@@ -2673,7 +2927,7 @@ class NotionService {
       throw new Error('Notion client not initialized');
     }
 
-    if (!this.databases.organizations?.id) {
+    if (!this.databaseConfigs.organizations?.id) {
       throw new Error('Organizations database ID not configured');
     }
 
@@ -2739,11 +2993,8 @@ class NotionService {
     try {
       console.log('🏢 Creating organization in Notion with properties:', JSON.stringify(orgProps, null, 2));
       
-      // MIGRATION: Get data source ID for page creation (API v2025-09-03)
-      const dataSourceId = await this.getDataSourceId(this.databases.organizations.id, 'organizations');
-
       const response = await this.notion.pages.create({
-        parent: { data_source_id: dataSourceId }, // MIGRATED: Use data_source_id instead of database_id
+        parent: { database_id: this.databaseConfigs.organizations.id },
         properties: orgProps
       });
 

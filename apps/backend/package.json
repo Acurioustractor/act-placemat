@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.65.0",
     "@google-cloud/vision": "^5.3.3",

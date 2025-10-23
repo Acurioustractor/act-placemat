@@ -19,16 +19,56 @@ loadEnv();
 
 class SupabaseDataService {
   constructor() {
-    this.supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
-    );
-    
+    const primaryUrl = process.env.SUPABASE_URL;
+    const primaryKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const storyUrl = process.env.STORY_SUPABASE_URL;
+    const storyKey = process.env.STORY_SUPABASE_SERVICE_ROLE_KEY;
+
+    this.supabase = null;
+    this.storySupabase = null;
+
+    if (primaryUrl && primaryKey) {
+      try {
+        this.supabase = createClient(primaryUrl, primaryKey);
+        console.log('📊 Supabase Data Service (primary) initialised');
+      } catch (error) {
+        console.warn('⚠️ Failed to initialise primary Supabase client:', error.message);
+      }
+    } else {
+      console.warn('⚠️ Primary Supabase credentials not configured');
+    }
+
+    if (storyUrl && storyKey) {
+      try {
+        this.storySupabase = createClient(storyUrl, storyKey);
+        console.log('📙 Storyteller Supabase client initialised');
+      } catch (error) {
+        console.warn('⚠️ Failed to initialise storyteller Supabase client:', error.message);
+      }
+    }
+
+    if (!this.storySupabase) {
+      if (this.supabase) {
+        console.warn('⚠️ Storyteller Supabase credentials missing - falling back to primary Supabase');
+        this.storySupabase = this.supabase;
+      } else {
+        console.warn('⚠️ No Supabase credentials provided for storyteller data');
+      }
+    }
+
+    if (!this.supabase && this.storySupabase) {
+      this.supabase = this.storySupabase;
+      console.warn('⚠️ Primary Supabase missing - using storyteller Supabase for all data');
+    }
+
+    console.log('📊 Supabase Data Service ready', {
+      primarySupabase: Boolean(primaryUrl && primaryKey),
+      storytellerSupabase: Boolean(storyUrl && storyKey),
+    });
+
     // Cache for performance
     this.cache = new Map();
     this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
-    
-    console.log('📊 Supabase Data Service initialized');
   }
 
   // Cache management
@@ -57,6 +97,10 @@ class SupabaseDataService {
    * Get all stories with storyteller relationships
    */
   async getAllStories(useCache = true) {
+    if (!this.storySupabase) {
+      console.warn('Story Supabase client not available; returning empty stories list');
+      return [];
+    }
     const cacheKey = this.getCacheKey('stories_full');
     
     if (useCache && this.isCacheValid(cacheKey)) {
@@ -64,7 +108,7 @@ class SupabaseDataService {
     }
 
     try {
-      const { data, error } = await this.supabase
+      const { data, error } = await this.storySupabase
         .from('stories')
         .select(`
           *,
@@ -96,6 +140,10 @@ class SupabaseDataService {
    * Get all storytellers with full profile data
    */
   async getAllStorytellers(useCache = true) {
+    if (!this.storySupabase) {
+      console.warn('Story Supabase client not available; returning empty storytellers list');
+      return [];
+    }
     const cacheKey = this.getCacheKey('storytellers_full');
     
     if (useCache && this.isCacheValid(cacheKey)) {
@@ -103,7 +151,7 @@ class SupabaseDataService {
     }
 
     try {
-      const { data, error } = await this.supabase
+      const { data, error } = await this.storySupabase
         .from('storytellers')
         .select(`
           *,
@@ -150,7 +198,7 @@ class SupabaseDataService {
               .from('projects')
               .select('*')
               .eq('organization_id', org.id),
-            this.supabase
+            this.storySupabase
               .from('storytellers')
               .select('id, full_name, bio')
               .eq('organization_id', org.id)
@@ -197,7 +245,7 @@ class SupabaseDataService {
       // Get storytellers for each project
       const enrichedProjects = await Promise.all(
         (data || []).map(async (project) => {
-          const { data: storytellers } = await this.supabase
+          const { data: storytellers } = await this.storySupabase
             .from('storytellers')
             .select('id, full_name, bio, expertise_areas')
             .eq('project_id', project.id)
@@ -239,7 +287,7 @@ class SupabaseDataService {
       // Get storytellers for each location
       const enrichedLocations = await Promise.all(
         (data || []).map(async (location) => {
-          const { data: storytellers } = await this.supabase
+      const { data: storytellers } = await this.storySupabase
             .from('storytellers')
             .select('id, full_name, bio')
             .eq('location_id', location.id)
@@ -275,7 +323,7 @@ class SupabaseDataService {
       };
 
       // Search stories
-      const { data: stories } = await this.supabase
+      const { data: stories } = await this.storySupabase
         .from('stories')
         .select(`
           *,
@@ -288,7 +336,7 @@ class SupabaseDataService {
       searchResults.stories = stories || [];
 
       // Search storytellers
-      const { data: storytellers } = await this.supabase
+      const { data: storytellers } = await this.storySupabase
         .from('storytellers')
         .select(`
           *,
@@ -347,8 +395,8 @@ class SupabaseDataService {
   async getPlatformStats() {
     try {
       const [stories, storytellers, organizations, projects, locations] = await Promise.allSettled([
-        this.supabase.from('stories').select('*', { count: 'exact', head: true }).eq('is_public', true),
-        this.supabase.from('storytellers').select('*', { count: 'exact', head: true }).eq('consent_given', true),
+        this.storySupabase.from('stories').select('*', { count: 'exact', head: true }).eq('is_public', true),
+        this.storySupabase.from('storytellers').select('*', { count: 'exact', head: true }).eq('consent_given', true),
         this.supabase.from('organizations').select('*', { count: 'exact', head: true }),
         this.supabase.from('projects').select('*', { count: 'exact', head: true }),
         this.supabase.from('locations').select('*', { count: 'exact', head: true })
@@ -378,7 +426,7 @@ class SupabaseDataService {
    */
   async getStorytellersByOrganization(organizationId) {
     try {
-      const { data, error } = await this.supabase
+      const { data, error } = await this.storySupabase
         .from('storytellers')
         .select(`
           *,

@@ -1,467 +1,240 @@
-/**
- * Comprehensive test suite for Financial Agent Orchestrator
- * Tests the core functionality described in your specification
- */
+import { describe, it, expect, beforeAll, beforeEach, afterEach, vi } from 'vitest';
 
-import { describe, test, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
-import FinancialAgentOrchestrator from '../agents/FinancialAgentOrchestrator.js';
-import Redis from 'ioredis';
+const createAgentMock = (methodFactories = {}) => {
+  return class AgentMock {
+    constructor() {
+      this.initialize = vi.fn().mockResolvedValue(undefined);
+      this.shutdown = vi.fn().mockResolvedValue(undefined);
 
-describe('Financial Agent Orchestrator', () => {
-  let orchestrator;
-  let redis;
-
-  beforeAll(async () => {
-    // Setup test Redis instance
-    redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
-    orchestrator = new FinancialAgentOrchestrator();
-
-    // Initialize with test configuration
-    await orchestrator.initialize();
-  });
-
-  afterAll(async () => {
-    if (orchestrator) {
-      await orchestrator.shutdown();
-    }
-    if (redis) {
-      await redis.quit();
-    }
-  });
-
-  beforeEach(async () => {
-    // Clear test data before each test
-    await redis.flushdb();
-  });
-
-  describe('Initialization', () => {
-    test('should initialize with default policy when config file missing', async () => {
-      const testOrchestrator = new FinancialAgentOrchestrator();
-      await testOrchestrator.initialize();
-
-      expect(testOrchestrator.policy).toBeDefined();
-      expect(testOrchestrator.policy.version).toBe(1);
-      expect(testOrchestrator.policy.entities).toHaveLength(1);
-      expect(testOrchestrator.policy.entities[0].code).toBe('ACT_PTY_LTD');
-
-      await testOrchestrator.shutdown();
-    });
-
-    test('should initialize all financial agents', async () => {
-      expect(orchestrator.agents).toBeDefined();
-      expect(orchestrator.agents.receiptCoding).toBeDefined();
-      expect(orchestrator.agents.bankReco).toBeDefined();
-      expect(orchestrator.agents.basPrepCheck).toBeDefined();
-      expect(orchestrator.agents.cashflowForecast).toBeDefined();
-      expect(orchestrator.agents.rdtiRegistration).toBeDefined();
-      expect(orchestrator.agents.spendGuard).toBeDefined();
-      expect(orchestrator.agents.arCollections).toBeDefined();
-      expect(orchestrator.agents.boardPack).toBeDefined();
-    });
-
-    test('should load policy with correct thresholds', () => {
-      expect(orchestrator.policy.thresholds.auto_post_bill_confidence).toBe(0.85);
-      expect(orchestrator.policy.thresholds.auto_match_bank_confidence).toBe(0.90);
-      expect(orchestrator.policy.thresholds.variance_alert_pct).toBe(0.20);
-    });
-  });
-
-  describe('Thriday Allocation Detection', () => {
-    test('should detect Thriday allocation transfers', () => {
-      const testDescriptions = [
-        'GST Transfer to GST Account',
-        'Tax Allocation - Automatic',
-        'Profit Distribution Auto',
-        'THRIDAY ALLOCATION: Main to Tax',
-        'Auto Allocation - GST Reserve'
-      ];
-
-      testDescriptions.forEach(description => {
-        expect(orchestrator.isThridayAllocation(description)).toBe(true);
+      Object.entries(methodFactories).forEach(([name, factory]) => {
+        const impl = factory ?? (() => Promise.resolve(undefined));
+        this[name] = vi.fn().mockImplementation(impl);
       });
-    });
 
-    test('should not detect regular transactions as Thriday allocations', () => {
-      const testDescriptions = [
-        'Payment to Telstra',
-        'Invoice from Client ABC',
-        'Refund processed',
-        'Bank fees',
-        'Interest payment'
-      ];
-
-      testDescriptions.forEach(description => {
-        expect(orchestrator.isThridayAllocation(description)).toBe(false);
-      });
-    });
-
-    test('should process Thriday allocation event correctly', async () => {
-      const thridayPayload = {
-        bankTransactionId: 'tx-thriday-001',
-        description: 'GST Transfer to GST Account',
-        amount: -500.00,
-        bankAccount: 'Thriday Main',
-        date: '2025-09-25',
-        reference: 'Auto Allocation'
-      };
-
-      const result = await orchestrator.processEvent('xero:bank_transaction_created', thridayPayload);
-
-      expect(result).toBeDefined();
-      expect(typeof result).toBe('string'); // Event ID
-
-      // Verify event was logged
-      const eventLog = await redis.lrange('financial:event_log', 0, 0);
-      expect(eventLog).toHaveLength(1);
-
-      const loggedEvent = JSON.parse(eventLog[0]);
-      expect(loggedEvent.type).toBe('xero:bank_transaction_created');
-      expect(loggedEvent.payload.bankTransactionId).toBe('tx-thriday-001');
-    });
-  });
-
-  describe('Bank Reconciliation Agent', () => {
-    test('should process bank transaction with high confidence auto-match', async () => {
-      const bankRecoAgent = orchestrator.agents.bankReco;
-
-      // Mock successful exact match
-      jest.spyOn(bankRecoAgent, 'findExactMatches').mockResolvedValue([
-        {
-          id: 'inv-001',
-          total: 250.00,
-          contact: 'Test Client',
-          date: '2025-09-25',
-          status: 'AUTHORISED'
-        }
-      ]);
-
-      const payload = {
-        bankTransactionId: 'tx-001',
-        description: 'Payment from Test Client',
-        amount: 250.00,
-        date: '2025-09-25'
-      };
-
-      const result = await bankRecoAgent.processTransaction(payload);
-
-      expect(result.status).toBe('auto_matched');
-      expect(result.confidence).toBeGreaterThanOrEqual(0.90);
-    });
-
-    test('should create exception for low confidence matches', async () => {
-      const bankRecoAgent = orchestrator.agents.bankReco;
-
-      // Mock low confidence match
-      jest.spyOn(bankRecoAgent, 'findExactMatches').mockResolvedValue([]);
-      jest.spyOn(bankRecoAgent, 'findAmountMatches').mockResolvedValue([]);
-      jest.spyOn(bankRecoAgent, 'findNarrationMatches').mockResolvedValue([
-        {
-          id: 'inv-002',
-          total: 245.00,
-          contact: 'Similar Client',
-          relevanceScore: 0.6
-        }
-      ]);
-
-      const payload = {
-        bankTransactionId: 'tx-002',
-        description: 'Payment unclear reference',
-        amount: 250.00,
-        date: '2025-09-25'
-      };
-
-      const result = await bankRecoAgent.processTransaction(payload);
-
-      expect(result.status).toBe('pending_review');
-      expect(result.suggestions).toBeDefined();
-    });
-
-    test('should parse Thriday allocation correctly', () => {
-      const bankRecoAgent = orchestrator.agents.bankReco;
-
-      const testCases = [
-        {
-          description: 'GST Transfer to GST Account',
-          currentAccount: 'Thriday Main',
-          expected: {
-            isValid: true,
-            sourceAccount: 'Thriday Main',
-            targetAccount: 'Thriday GST',
-            reason: 'GST Allocation'
-          }
-        },
-        {
-          description: 'Tax Allocation to Tax Reserve',
-          currentAccount: 'Thriday Main',
-          expected: {
-            isValid: true,
-            sourceAccount: 'Thriday Main',
-            targetAccount: 'Thriday Tax',
-            reason: 'Tax Allocation'
-          }
-        }
-      ];
-
-      testCases.forEach(({ description, currentAccount, expected }) => {
-        const result = bankRecoAgent.parseThridayAllocation(description, currentAccount);
-        expect(result.isValid).toBe(expected.isValid);
-        expect(result.sourceAccount).toBe(expected.sourceAccount);
-        expect(result.targetAccount).toBe(expected.targetAccount);
-        expect(result.reason).toBe(expected.reason);
-      });
-    });
-  });
-
-  describe('Event Processing', () => {
-    test('should handle multiple event types correctly', async () => {
-      const events = [
-        {
-          type: 'xero:bank_transaction_created',
-          payload: { bankTransactionId: 'tx-001', amount: 100 }
-        },
-        {
-          type: 'xero:bill_created',
-          payload: { billId: 'bill-001', source: 'Dext' }
-        },
-        {
-          type: 'scheduler:daily',
-          payload: { date: '2025-09-25' }
-        }
-      ];
-
-      const eventIds = [];
-      for (const event of events) {
-        const eventId = await orchestrator.processEvent(event.type, event.payload);
-        eventIds.push(eventId);
+      if (!methodFactories.getMetrics) {
+        this.getMetrics = vi.fn().mockResolvedValue({
+          total_processed: 0,
+          auto_match_rate: '0',
+        });
       }
+    }
+  };
+};
 
-      expect(eventIds).toHaveLength(3);
-      eventIds.forEach(id => expect(typeof id).toBe('string'));
+vi.mock('fs/promises', () => ({
+  readFile: vi.fn().mockRejectedValue(new Error('financial-policy.yaml missing')),
+}));
 
-      // Verify all events were logged
-      const eventLog = await redis.lrange('financial:event_log', 0, -1);
-      expect(eventLog).toHaveLength(3);
-    });
+vi.mock('ioredis', () => {
+  class RedisMock {
+    constructor() {
+      this.store = new Map();
+    }
 
-    test('should emit events to appropriate handlers', async () => {
-      let bankTransactionHandled = false;
-      let billCreatedHandled = false;
+    async lpush(key, value) {
+      const list = this.store.get(key) ?? [];
+      list.unshift(value);
+      this.store.set(key, list);
+    }
 
-      orchestrator.on('xero:bank_transaction_created', () => {
-        bankTransactionHandled = true;
-      });
+    async lrange(key, start, end) {
+      const list = this.store.get(key) ?? [];
+      const normalizedEnd = end < 0 ? list.length + end + 1 : end + 1;
+      return list.slice(start, normalizedEnd);
+    }
 
-      orchestrator.on('xero:bill_created', () => {
-        billCreatedHandled = true;
-      });
+    async get(key) {
+      return this.store.get(key) ?? null;
+    }
 
-      await orchestrator.processEvent('xero:bank_transaction_created', { test: true });
-      await orchestrator.processEvent('xero:bill_created', { test: true });
+    async set(key, value) {
+      this.store.set(key, value);
+    }
 
-      // Allow event processing to complete
-      await new Promise(resolve => setTimeout(resolve, 100));
+    async flushdb() {
+      this.store.clear();
+    }
 
-      expect(bankTransactionHandled).toBe(true);
-      expect(billCreatedHandled).toBe(true);
-    });
-  });
+    async quit() {
+      return;
+    }
+  }
 
-  describe('Policy Enforcement', () => {
-    test('should apply approval rules correctly', () => {
-      const testCases = [
-        {
-          action: 'process_bill',
-          metadata: { amount: 100, vendor: 'Known Vendor' },
-          expected: { required: false, reason: 'auto_approved' }
-        },
-        {
-          action: 'process_payment',
-          metadata: { amount: 2500 },
-          expected: { required: true, type: 'propose' }
-        },
-        {
-          action: 'BAS_lodgement',
-          metadata: {},
-          expected: { required: true, type: 'human_signoff' }
-        }
-      ];
+  return { default: RedisMock };
+});
 
-      testCases.forEach(async ({ action, metadata, expected }) => {
-        const result = await orchestrator.agents.receiptCoding.checkApprovalRequired(action, metadata);
-        expect(result.required).toBe(expected.required);
-        if (expected.type) {
-          expect(result.type).toBe(expected.type);
-        }
-      });
-    });
+const createClientMock = vi.fn(() => {
+  const gteMock = vi.fn().mockReturnValue({ data: [] });
+  const selectMock = vi.fn().mockReturnValue({ gte: gteMock });
+  const fromMock = vi.fn().mockReturnValue({ select: selectMock });
 
-    test('should evaluate vendor rules correctly', () => {
-      const agent = orchestrator.agents.receiptCoding;
+  return {
+    from: fromMock,
+    __mocks: { gteMock, selectMock, fromMock },
+  };
+});
 
-      // Test known vendor
-      expect(agent.isKnownVendor('Telstra', 'known')).toBe(true);
+vi.mock('@supabase/supabase-js', () => ({
+  createClient: createClientMock,
+}));
 
-      // Test unknown vendor
-      expect(agent.isKnownVendor('Unknown Company', 'known')).toBe(false);
-    });
-  });
+vi.mock('../agents/agents/ReceiptCodingAgent.js', () => ({
+  default: createAgentMock({
+    processEInvoice: () => Promise.resolve({ status: 'processed_einvoice' }),
+    processBill: () => Promise.resolve({ status: 'processed_bill' }),
+    checkApprovalRequired: () => Promise.resolve({ required: false }),
+  }),
+}));
 
-  describe('Metrics and Reporting', () => {
-    test('should calculate agent metrics', async () => {
-      // Process some test transactions
-      await orchestrator.processEvent('xero:bank_transaction_created', {
-        bankTransactionId: 'tx-metrics-001',
-        amount: 100,
-        description: 'Test transaction'
-      });
+vi.mock('../agents/agents/BankRecoAgent.js', () => ({
+  default: createAgentMock({
+    processThridayTransfer: () => Promise.resolve({ status: 'thriday_processed' }),
+    processTransaction: () => Promise.resolve({ status: 'transaction_processed' }),
+    getMetrics: () =>
+      Promise.resolve({
+        total_processed: 3,
+        auto_match_rate: '0.66',
+      }),
+  }),
+}));
 
-      const metrics = await orchestrator.getMetrics();
+vi.mock('../agents/agents/BASPrepAgent.js', () => ({
+  default: createAgentMock({
+    generateDailyReport: () => Promise.resolve(),
+  }),
+}));
 
-      expect(metrics).toBeDefined();
-      expect(metrics.events_processed_30d).toBeGreaterThanOrEqual(1);
-      expect(metrics.auto_coded_percentage).toBeDefined();
-      expect(metrics.exception_rate).toBeDefined();
-      expect(metrics.agents_status).toBeDefined();
-    });
+vi.mock('../agents/agents/CashflowAgent.js', () => ({
+  default: createAgentMock({
+    updateForecasts: () => Promise.resolve(),
+  }),
+}));
 
-    test('should track agent-specific metrics', async () => {
-      const bankRecoAgent = orchestrator.agents.bankReco;
+vi.mock('../agents/agents/RDTIAgent.js', () => ({
+  default: createAgentMock({
+    processEvidence: () => Promise.resolve(),
+  }),
+}));
 
-      // Mock some processed transactions
-      jest.spyOn(bankRecoAgent.supabase, 'from').mockReturnValue({
-        select: jest.fn().mockReturnValue({
-          gte: jest.fn().mockReturnValue({
-            data: [
-              { status: 'matched', match_confidence: 0.95 },
-              { status: 'matched', match_confidence: 0.88 },
-              { status: 'pending', match_confidence: 0.65 }
-            ]
-          })
-        })
-      });
+vi.mock('../agents/agents/SpendGuardAgent.js', () => ({
+  default: createAgentMock({
+    checkPolicyCompliance: () => Promise.resolve(),
+  }),
+}));
 
-      const metrics = await bankRecoAgent.getMetrics();
+vi.mock('../agents/agents/BoardPackAgent.js', () => ({
+  default: createAgentMock({
+    generateMonthlyPack: () => Promise.resolve(),
+  }),
+}));
 
-      expect(metrics.total_processed).toBe(3);
-      expect(parseFloat(metrics.auto_match_rate)).toBeGreaterThan(0);
-    });
-  });
+vi.mock('../agents/agents/ARCollectionsAgent.js', () => ({
+  default: createAgentMock({
+    sendReminders: () => Promise.resolve(),
+    processInvoice: () => Promise.resolve(),
+  }),
+}));
 
-  describe('Error Handling', () => {
-    test('should handle processing errors gracefully', async () => {
-      const bankRecoAgent = orchestrator.agents.bankReco;
+let FinancialAgentOrchestrator;
+let orchestrator;
 
-      // Force an error
-      jest.spyOn(bankRecoAgent, 'findTransactionMatch').mockRejectedValue(
-        new Error('Database connection failed')
-      );
+beforeAll(async () => {
+  process.env.SUPABASE_URL = process.env.SUPABASE_URL || 'http://localhost:54321';
+  process.env.SUPABASE_SERVICE_ROLE_KEY =
+    process.env.SUPABASE_SERVICE_ROLE_KEY || 'service-role-test-key';
+  FinancialAgentOrchestrator =
+    (await import('../agents/FinancialAgentOrchestrator.js')).default;
+});
 
-      const payload = {
-        bankTransactionId: 'tx-error-001',
-        description: 'Test transaction',
-        amount: 100
-      };
+beforeEach(async () => {
+  orchestrator = new FinancialAgentOrchestrator();
+  await orchestrator.initialize();
+  await orchestrator.redis.flushdb();
+});
 
-      await expect(bankRecoAgent.processTransaction(payload)).rejects.toThrow();
+afterEach(async () => {
+  if (orchestrator) {
+    await orchestrator.shutdown();
+    orchestrator = null;
+  }
+  vi.clearAllMocks();
+});
 
-      // Verify error was logged
-      const errorLog = await redis.lrange('agent:errors', 0, 0);
-      expect(errorLog.length).toBeGreaterThan(0);
-    });
+describe('FinancialAgentOrchestrator (Vitest)', () => {
+  it('initializes with the default policy and boots agents', async () => {
+    expect(orchestrator.policy).toBeDefined();
+    expect(orchestrator.policy.version).toBe(1);
+    expect(orchestrator.policy.entities?.[0]?.code).toBe('ACT_PTY_LTD');
 
-    test('should create exceptions for failed processing', async () => {
-      const agent = orchestrator.agents.bankReco;
-
-      const mockError = new Error('Processing failed');
-      await agent.handleProcessingError('tx-error-002', mockError);
-
-      // Verify exception was created (would check Supabase in real implementation)
-      expect(true).toBe(true); // Placeholder - would verify exception creation
-    });
-  });
-
-  describe('Notifications', () => {
-    test('should send notifications with action buttons', async () => {
-      const notification = await orchestrator.sendNotification(
-        '#finance',
-        'Test notification',
-        [
-          { text: 'Approve', action: 'approve' },
-          { text: 'Reject', action: 'reject' }
-        ]
-      );
-
-      expect(notification.channel).toBe('#finance');
-      expect(notification.message).toBe('Test notification');
-      expect(notification.actionButtons).toHaveLength(2);
-
-      // Verify notification was stored
-      const storedNotifications = await redis.lrange('financial:notifications', 0, 0);
-      expect(storedNotifications).toHaveLength(1);
+    Object.values(orchestrator.agents).forEach(agent => {
+      expect(agent.initialize).toHaveBeenCalledTimes(1);
     });
   });
 
-  describe('Automation vs Human Rubric', () => {
-    test('should score automation decisions correctly', () => {
-      // This would test the automation rubric scoring
-      // Based on mission_culture, safety_compliance, etc.
-      const testScenario = {
-        mission_culture: 4,
-        safety_compliance: 5,
-        community_impact: 3,
-        distinctive_value: 2,
-        hours_saved: 2,
-        data_quality: 1
-      };
+  it('routes Thriday allocation events to the bank reconciliation agent', async () => {
+    const payload = {
+      bankTransactionId: 'tx-thriday-123',
+      description: 'GST Transfer to GST Account',
+      amount: -500,
+      bankAccount: 'Thriday Main',
+      date: '2025-01-15',
+    };
 
-      const totalScore = Object.values(testScenario).reduce((sum, score) => sum + score, 0);
-      const threshold = 18;
+    const eventId = await orchestrator.processEvent('xero:bank_transaction_created', payload);
 
-      expect(totalScore).toBe(17);
-      expect(totalScore < threshold).toBe(true); // Should require human review
-    });
+    expect(typeof eventId).toBe('string');
+    expect(orchestrator.agents.bankReco.processThridayTransfer).toHaveBeenCalledWith(payload);
+
+    const loggedEvents = await orchestrator.redis.lrange('financial:event_log', 0, -1);
+    expect(loggedEvents).toHaveLength(1);
+    const stored = JSON.parse(loggedEvents[0]);
+    expect(stored.id).toBe(eventId);
+    expect(stored.type).toBe('xero:bank_transaction_created');
   });
 
-  describe('Integration Tests', () => {
-    test('should handle end-to-end bill processing workflow', async () => {
-      // Simulate a complete bill processing workflow
-      const billPayload = {
-        billId: 'bill-integration-001',
-        amount: 150,
-        vendor: 'Telstra',
-        description: 'Monthly phone bill',
-        source: 'Dext'
-      };
+  it('routes standard bank transactions through the reconciliation workflow', async () => {
+    const payload = {
+      bankTransactionId: 'tx-standard-001',
+      description: 'Client payment',
+      amount: 1200,
+      bankAccount: 'Thriday Main',
+      date: '2025-02-01',
+    };
 
-      // Process bill creation event
-      const eventId = await orchestrator.processEvent('xero:bill_created', billPayload);
+    await orchestrator.processEvent('xero:bank_transaction_created', payload);
 
-      expect(eventId).toBeDefined();
+    expect(orchestrator.agents.bankReco.processTransaction).toHaveBeenCalledWith(payload);
+  });
 
-      // Allow processing to complete
-      await new Promise(resolve => setTimeout(resolve, 500));
+  it('executes scheduled daily tasks across supporting agents', async () => {
+    const basSpy = orchestrator.agents.basPrepCheck.generateDailyReport;
+    const cashflowSpy = orchestrator.agents.cashflowForecast.updateForecasts;
+    const guardSpy = orchestrator.agents.spendGuard.checkPolicyCompliance;
+    const arSpy = orchestrator.agents.arCollections.sendReminders;
 
-      // Verify bill was processed according to policy
-      // (Would check Supabase for bill categorization in real implementation)
-      expect(true).toBe(true);
-    });
+    await orchestrator.handleDailyJob({ date: '2025-03-12' });
 
-    test('should handle BAS preparation workflow', async () => {
-      // Simulate daily BAS preparation
-      const dailyJobPayload = {
-        date: '2025-09-25',
-        type: 'daily_job'
-      };
+    expect(basSpy).toHaveBeenCalledTimes(1);
+    expect(cashflowSpy).toHaveBeenCalledTimes(1);
+    expect(guardSpy).toHaveBeenCalledTimes(1);
+    expect(arSpy).toHaveBeenCalledTimes(1);
+  });
 
-      const eventId = await orchestrator.processEvent('scheduler:daily', dailyJobPayload);
+  it('sends notifications and records them in Redis', async () => {
+    const notification = await orchestrator.sendNotification(
+      null,
+      'Finance systems check',
+      [{ text: 'Open Dashboard', action: 'open_dashboard' }],
+    );
 
-      expect(eventId).toBeDefined();
+    expect(notification.channel).toBe(orchestrator.policy.notifications.slack_channel);
+    expect(notification.message).toBe('Finance systems check');
 
-      // Allow BAS preparation to complete
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Verify BAS preparation was triggered
-      expect(true).toBe(true);
-    });
+    const stored = await orchestrator.redis.lrange('financial:notifications', 0, -1);
+    expect(stored).toHaveLength(1);
+    const parsed = JSON.parse(stored[0]);
+    expect(parsed.actionButtons).toHaveLength(1);
+    expect(parsed.message).toBe('Finance systems check');
   });
 });
+

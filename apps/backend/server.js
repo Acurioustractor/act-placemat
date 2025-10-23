@@ -13,12 +13,21 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+const envPath = path.resolve(__dirname, '../../.env');
+console.log('🔧 Loading .env from:', envPath);
+dotenv.config({ path: envPath });
+
+// Diagnostic: Check if critical environment variables are loaded IMMEDIATELY after dotenv
+console.log('🔍 Environment variables loaded:');
+console.log('  - NOTION_TOKEN:', process.env.NOTION_TOKEN ? '✅ Present' : '❌ Missing');
+console.log('  - SUPABASE_URL:', process.env.SUPABASE_URL ? '✅ Present' : '❌ Missing');
+console.log('  - SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? '✅ Present' : '❌ Missing');
 
 // Now import everything else
 import express from 'express';
 import cors from 'cors';
-import { Client } from '@notionhq/client';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import notionService from './core/src/services/notionService.js';
 
 const app = express();
 const PORT = 4000;
@@ -78,6 +87,9 @@ projectFinancialsRoutes(app);
 import financialReportsRoutes from './core/src/api/financialReports.js';
 financialReportsRoutes(app);
 
+import { setupRealDashboardData } from './core/src/api/real-dashboard-data.js';
+setupRealDashboardData(app);
+
 // Curious Tractor Research API - Deep AI research for entity setup & innovation
 import curiousTractorResearchRoutes from './core/src/api/curious-tractor-research.js';
 app.use('/api/curious-tractor', curiousTractorResearchRoutes);
@@ -86,20 +98,67 @@ app.use('/api/curious-tractor', curiousTractorResearchRoutes);
 import opportunitiesRoutes from './core/src/api/opportunities.js';
 opportunitiesRoutes(app);
 
+// Contacts API - LinkedIn contact intelligence
+import contactsRoutes from './core/src/api/contacts.js';
+contactsRoutes(app);
+
+// Morning Brief API - Daily intelligence digest
+import morningBriefRoutes from './core/src/api/morningBrief.js';
+morningBriefRoutes(app);
+
+// Research API - Curious Tractor + Tavily integration
+import researchRoutes from './core/src/api/research.js';
+researchRoutes(app);
+
+// Project Intelligence API - Gmail, Calendar, Contacts integration
+import projectIntelligenceRoutes from './core/src/api/projectIntelligence.js';
+
+// Google OAuth2 Authentication - Gmail & Calendar
+import googleAuthRoutes from './core/src/api/googleAuth.js';
+googleAuthRoutes(app);
+
 // Agent Scheduler - Temporarily disabled (missing dependencies)
 // import agentScheduler from './core/src/scheduler/agentScheduler.js';
 
-// Notion setup
-const NOTION_TOKEN = process.env.NOTION_TOKEN;
-const NOTION_PROJECTS_DATABASE_ID = process.env.NOTION_PROJECTS_DATABASE_ID || '177ebcf981cf80dd9514f1ec32f3314c';
-const notion = NOTION_TOKEN ? new Client({ auth: NOTION_TOKEN }) : null;
+// Supabase configuration - use same database for both primary and storyteller
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+// Create primary Supabase client
+const primarySupabase =
+  SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY
+    ? createSupabaseClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+    : null;
+
+// Use same Supabase instance for storyteller data (unless separate credentials provided)
+const STORY_SUPABASE_URL = process.env.STORY_SUPABASE_URL || SUPABASE_URL;
+const STORY_SUPABASE_SERVICE_ROLE_KEY = process.env.STORY_SUPABASE_SERVICE_ROLE_KEY || SUPABASE_SERVICE_ROLE_KEY;
+const storytellerSupabase =
+  STORY_SUPABASE_URL && STORY_SUPABASE_SERVICE_ROLE_KEY
+    ? createSupabaseClient(STORY_SUPABASE_URL, STORY_SUPABASE_SERVICE_ROLE_KEY)
+    : primarySupabase; // Fallback to primary if no separate storyteller credentials
 
 console.log('🚜 ACT STABLE DATA SERVICE');
 console.log('========================');
 console.log(`✅ Server: http://localhost:${PORT}`);
-console.log(`✅ Notion: ${!!notion ? 'Connected' : 'No token'}`);
-console.log(`✅ Database: ${NOTION_PROJECTS_DATABASE_ID}`);
+console.log(`✅ Notion: ${notionService?.notion ? 'Connected via notionService' : 'Unavailable'}`);
+if (notionService?.databases?.projects?.id) {
+  console.log(`✅ Notion Projects DB: ${notionService.databases.projects.id}`);
+}
+if (primarySupabase) {
+  console.log('✅ Primary Supabase integration enabled');
+} else {
+  console.warn('⚠️ Primary Supabase integration disabled (missing credentials)');
+}
+if (storytellerSupabase) {
+  console.log('✅ Storyteller Supabase integration enabled');
+} else if (!primarySupabase) {
+  console.warn('⚠️ Storyteller Supabase integration disabled (missing credentials)');
+}
 console.log('🔄 Cache: 5 minutes (no spam)');
+
+// Initialize Project Intelligence Routes (needs Supabase client)
+projectIntelligenceRoutes(app, primarySupabase || storytellerSupabase);
 
 // Proper caching with no spam
 let projectsCache = {
@@ -123,52 +182,216 @@ const fetchNotionProjects = async () => {
     return projectsCache.data; // Return stale data while loading
   }
   
-  if (!notion) {
-    console.warn('⚠️ No Notion token available');
-    return [];
+  if (!notionService?.notion) {
+    console.warn('⚠️ Notion service not initialized');
+    return projectsCache.data;
   }
-  
+
   try {
     projectsCache.isLoading = true;
-    console.log('🔍 Fetching projects from Notion... (cached for 5min)');
-    
-    const response = await notion.databases.query({
-      database_id: NOTION_PROJECTS_DATABASE_ID
-      // No filters or sorts - just get everything
+    console.log('🔍 Fetching projects from Notion service (cached for 5min)…');
+
+    const storytellerClient = storytellerSupabase ?? primarySupabase;
+
+    const [
+      notionResult,
+      supabaseProjectsResult,
+      storytellersResult,
+      placesData,
+      organizationsData,
+      peopleData,
+    ] = await Promise.all([
+      notionService.getProjects({ useCache: true, getAllPages: true }),
+      primarySupabase
+        ? primarySupabase
+            .from('projects')
+            .select('id, name, summary, status, notion_id, notion_project_id, organization_id')
+            .limit(1000)
+        : Promise.resolve({ data: [], error: null }),
+      storytellerClient
+        ? storytellerClient
+            .from('storytellers')
+            .select(
+              'id, project_id, full_name, bio, expertise_areas, profile_image_url, media_type, created_at, consent_given'
+            )
+            .eq('consent_given', true)
+            .limit(2000)
+        : Promise.resolve({ data: [], error: null }),
+      notionService.getPlaces(true).catch(err => {
+        console.warn('⚠️ Failed to fetch places:', err.message);
+        return [];
+      }),
+      notionService.getOrganizations(true).catch(err => {
+        console.warn('⚠️ Failed to fetch organizations:', err.message);
+        return [];
+      }),
+      notionService.getPeople(true).catch(err => {
+        console.warn('⚠️ Failed to fetch people:', err.message);
+        return [];
+      }),
+    ]);
+
+    if (supabaseProjectsResult.error) {
+      console.warn('⚠️ Primary Supabase projects fetch failed:', supabaseProjectsResult.error.message);
+    }
+
+    if (storytellersResult.error) {
+      console.warn('⚠️ Storyteller Supabase fetch failed:', storytellersResult.error.message);
+    }
+
+    const supabaseProjects = supabaseProjectsResult.data || [];
+    const storytellers = (storytellersResult.data || []).filter(
+      (storyteller) => storyteller.consent_given !== false
+    );
+
+    // Create lookup maps for places, organizations, and people
+    const placesMap = new Map();
+    (placesData || []).forEach(place => {
+      if (place.id) {
+        // Store the full place object with both Indigenous and Western names, coordinates, and state
+        const indigenousName = place.indigenousName || place.displayName || place.name || place.place;
+        const westernName = place.westernName;
+        if (indigenousName) {
+          placesMap.set(place.id, {
+            indigenousName,
+            westernName,
+            displayName: indigenousName, // Primary display is Indigenous name
+            map: place.map || null, // Coordinates from Notion
+            state: place.state || null
+          });
+        }
+      }
     });
-    
-    const projects = response.results.map(page => {
-      // Get Cover Photo URL
-      const coverPhoto = page.cover?.type === 'external' ? page.cover.external.url :
-                        page.cover?.type === 'file' ? page.cover.file.url : null;
-      
+
+    const organizationsMap = new Map();
+    (organizationsData || []).forEach(org => {
+      if (org.id && org.name) {
+        organizationsMap.set(org.id, org.name);
+      }
+    });
+
+    const peopleMap = new Map();
+    (peopleData || []).forEach(person => {
+      if (person.id && person.name) {
+        peopleMap.set(person.id, person.name);
+      }
+    });
+
+    console.log(`📍 Loaded ${placesMap.size} places, ${organizationsMap.size} organizations, and ${peopleMap.size} people for relation resolution`);
+
+    const storytellersByProject = new Map();
+    storytellers.forEach((storyteller) => {
+      if (!storyteller.project_id) return;
+      if (!storytellersByProject.has(storyteller.project_id)) {
+        storytellersByProject.set(storyteller.project_id, []);
+      }
+      storytellersByProject.get(storyteller.project_id).push(storyteller);
+    });
+
+    const findSupabaseProject = (notionId, notionName) => {
+      const shortId = notionId.replace(/-/g, '');
+
+      // First try to match by Notion ID
+      let match = supabaseProjects.find(
+        (project) =>
+          project.notion_id === notionId ||
+          project.notion_id === shortId ||
+          project.notion_project_id === notionId ||
+          project.notion_project_id === shortId
+      );
+
+      // If no ID match, try to match by name (case-insensitive, trimmed)
+      if (!match && notionName) {
+        const normalizedNotionName = notionName.trim().toLowerCase();
+        match = supabaseProjects.find(
+          (project) =>
+            project.name &&
+            project.name.trim().toLowerCase() === normalizedNotionName
+        );
+
+        if (match) {
+          console.log(`🔗 Matched Notion project "${notionName}" to Supabase project by name (ID: ${match.id})`);
+        }
+      }
+
+      return match || null;
+    };
+
+    const enrichedProjects = notionResult.map((project) => {
+      const supabaseProject = findSupabaseProject(project.id, project.name);
+      const supabaseProjectId = supabaseProject?.id || null;
+      const projectStorytellers = supabaseProjectId
+        ? storytellersByProject.get(supabaseProjectId) || []
+        : [];
+
+      // Resolve place IDs to place objects with both Indigenous and Western names
+      const resolvedPlaces = (project.relatedPlaces || [])
+        .map(id => placesMap.get(id))
+        .filter(place => place);
+
+      // Resolve organization IDs to names
+      const resolvedOrganisations = (project.relatedOrganisations || [])
+        .map(id => organizationsMap.get(id))
+        .filter(name => name);
+
+      // Resolve people IDs to names
+      const resolvedPeople = (project.relatedPeople || [])
+        .map(id => peopleMap.get(id))
+        .filter(name => name);
+
       return {
-        id: page.id,
-        title: page.properties.Name?.title?.[0]?.plain_text || 'Untitled',
-        status: page.properties.Status?.status?.name || 'Unknown',
-        created: page.created_time,
-        lastEdited: page.last_edited_time,
-        coverPhoto: coverPhoto,
-        // Get other useful properties if they exist
-        description: page.properties.Description?.rich_text?.[0]?.plain_text || '',
-        area: page.properties.Area?.select?.name || '',
-        tags: page.properties.Tags?.multi_select?.map(tag => tag.name) || [],
-        philosophy: page.properties.Philosophy?.rich_text?.[0]?.plain_text || '',
+        ...project,
+        title: project.name || project.title || 'Untitled project',
+        supabaseProjectId,
+        supabaseProject,
+        storytellers: projectStorytellers,
+        storytellerCount: projectStorytellers.length,
+        // Override the ID arrays with resolved names
+        relatedPlaces: resolvedPlaces.length > 0 ? resolvedPlaces : project.relatedPlaces,
+        relatedOrganisations: resolvedOrganisations.length > 0 ? resolvedOrganisations : project.relatedOrganisations,
+        relatedPeople: resolvedPeople.length > 0 ? resolvedPeople : project.relatedPeople,
       };
     });
-    
-    // Update cache
-    projectsCache.data = projects;
+
+    // Include Supabase-only projects (without Notion counterparts)
+    const matchedSupabaseIds = new Set(
+      enrichedProjects.map((project) => project.supabaseProjectId).filter(Boolean)
+    );
+
+    const supplementaryProjects = supabaseProjects
+      .filter((project) => !matchedSupabaseIds.has(project.id))
+      .map((project) => {
+        const storytellersForProject = storytellersByProject.get(project.id) || [];
+        const fallbackId = project.notion_id || project.notion_project_id || `supabase-${project.id}`;
+
+        return {
+          id: fallbackId,
+          name: project.name || 'Supabase Project',
+          title: project.name || 'Supabase Project',
+          status: project.status || 'Supabase',
+          aiSummary: project.summary || 'Supabase project awaiting Notion sync.',
+          description: project.summary || null,
+          supabaseProjectId: project.id,
+          supabaseProject: project,
+          storytellers: storytellersForProject,
+          storytellerCount: storytellersForProject.length,
+          coverImage: null,
+          notionUrl: null,
+          source: 'supabase-only',
+        };
+      });
+
+    const combinedProjects = [...enrichedProjects, ...supplementaryProjects];
+
+    projectsCache.data = combinedProjects;
     projectsCache.lastFetch = now;
-    projectsCache.isLoading = false;
-    
-    console.log(`✅ Loaded ${projects.length} projects (next fetch in 5min)`);
-    return projects;
-    
+    console.log(`✅ Loaded ${combinedProjects.length} projects (next fetch in 5min)`);
+    return combinedProjects;
   } catch (error) {
+    console.error('❌ Project fetch error:', error.message);
+    return projectsCache.data;
+  } finally {
     projectsCache.isLoading = false;
-    console.error('❌ Notion fetch error:', error.message);
-    return projectsCache.data; // Return stale data on error
   }
 };
 
@@ -195,9 +418,24 @@ app.get('/api/real/health', (req, res) => {
     status: 'healthy',
     service: 'ACT Stable Data Service',
     timestamp: new Date().toISOString(),
-    notion: !!notion,
+    notion: Boolean(notionService?.notion),
     projects: projectsCache.data.length,
     cacheAge: health.cacheAge
+  });
+});
+
+app.get('/api/health', (req, res) => {
+  const health = getSystemHealth();
+  res.json({
+    status: 'healthy',
+    service: 'ACT Stable Data Service',
+    timestamp: new Date().toISOString(),
+    uptime: health.uptime,
+    memoryUsage: health.memoryUsage,
+    cacheAge: health.cacheAge,
+    notion: Boolean(notionService?.notion),
+    supabase: Boolean(primarySupabase),
+    projectCacheSize: projectsCache.data.length
   });
 });
 
@@ -210,6 +448,125 @@ app.get('/api/real/projects', async (req, res) => {
     projects,
     cached: (Date.now() - projectsCache.lastFetch) < CACHE_DURATION
   });
+});
+
+app.post('/api/real/projects/:projectId/storytellers', async (req, res) => {
+  const storytellerClient = storytellerSupabase ?? primarySupabase;
+  if (!storytellerClient || !primarySupabase) {
+    return res.status(503).json({
+      error: 'Storyteller integration is not configured',
+    });
+  }
+
+  try {
+    const { projectId } = req.params;
+    const {
+      fullName,
+      bio = null,
+      consentGranted = false,
+      expertiseAreas = [],
+      profileImageUrl = null,
+      mediaType = null,
+    } = req.body || {};
+
+    if (!fullName || typeof fullName !== 'string' || !fullName.trim()) {
+      return res.status(400).json({ error: 'fullName is required' });
+    }
+
+    const normalizedIds = Array.from(
+      new Set(
+        [projectId, projectId?.replace(/-/g, '')].filter((value) => typeof value === 'string' && value.length > 0)
+      )
+    );
+
+    if (normalizedIds.length === 0) {
+      return res.status(400).json({ error: 'Invalid project identifier' });
+    }
+
+    const supabaseIdMatch =
+      typeof projectId === 'string' && projectId.startsWith('supabase-')
+        ? projectId.replace('supabase-', '')
+        : null;
+
+    let projectRows;
+
+    if (supabaseIdMatch) {
+      const { data, error } = await primarySupabase
+        .from('projects')
+        .select('id, name, notion_id, notion_project_id')
+        .eq('id', supabaseIdMatch)
+        .limit(1);
+      if (error) throw error;
+      projectRows = data;
+    } else {
+      const projectFilter = normalizedIds
+        .map((id) => `notion_id.eq.${id}`)
+        .concat(normalizedIds.map((id) => `notion_project_id.eq.${id}`))
+        .join(',');
+
+      const { data, error } = await primarySupabase
+        .from('projects')
+        .select('id, name, notion_id, notion_project_id')
+        .or(projectFilter)
+        .limit(1);
+      if (error) throw error;
+      projectRows = data;
+    }
+
+    if (!projectRows || projectRows.length === 0) {
+      return res.status(404).json({ error: 'Project not found in Supabase' });
+    }
+
+    const projectRecord = projectRows[0];
+
+    const normalizedExpertise = Array.isArray(expertiseAreas)
+      ? expertiseAreas.map((value) => (typeof value === 'string' ? value.trim() : value)).filter(Boolean)
+      : typeof expertiseAreas === 'string'
+        ? expertiseAreas.split(',').map((value) => value.trim()).filter(Boolean)
+        : [];
+
+    const insertPayload = {
+      full_name: fullName.trim(),
+      bio: bio || null,
+      consent_given: Boolean(consentGranted),
+      expertise_areas: normalizedExpertise,
+      profile_image_url: profileImageUrl || null,
+      media_type: mediaType || null,
+      project_id: projectRecord.id,
+      notion_id: normalizedIds[0],
+    };
+
+    const { data: insertedStoryteller, error: insertError } = await storytellerClient
+      .from('storytellers')
+      .insert(insertPayload)
+      .select(
+        'id, project_id, full_name, bio, expertise_areas, profile_image_url, media_type, created_at, consent_given'
+      )
+      .single();
+
+    if (insertError) {
+      throw insertError;
+    }
+
+    // Invalidate cache so next fetch returns fresh storyteller data
+    projectsCache.data = [];
+    projectsCache.lastFetch = 0;
+
+    res.status(201).json({
+      success: true,
+      storyteller: insertedStoryteller,
+      project: {
+        id: projectRecord.id,
+        name: projectRecord.name,
+        notionId: projectRecord.notion_id || projectRecord.notion_project_id || normalizedIds[0],
+      },
+    });
+  } catch (error) {
+    console.error('❌ Failed to add storyteller:', error);
+    res.status(500).json({
+      error: error.message || 'Failed to add storyteller',
+    });
+  }
 });
 
 // Real metrics (no spam, proper caching)
@@ -250,9 +607,9 @@ app.get('/api/real/metrics', async (req, res) => {
       },
       {
         label: 'Notion API',
-        value: !!notion ? 'Connected' : 'No Token',
-        change: { value: !!notion ? '✅' : '❌', type: !!notion ? 'positive' : 'negative' },
-        status: !!notion ? 'operational' : 'error',
+        value: notionService?.notion ? 'Connected' : 'No Token',
+        change: { value: notionService?.notion ? '✅' : '❌', type: notionService?.notion ? 'positive' : 'negative' },
+        status: notionService?.notion ? 'operational' : 'error',
         source: 'connection-status'
       }
     ]
@@ -262,14 +619,25 @@ app.get('/api/real/metrics', async (req, res) => {
 // Enhanced intelligence with detailed responses
 app.post('/api/real/intelligence', async (req, res) => {
   try {
-    const { query } = req.body;
+    const { query } = req.body ?? {};
+    const normalizedQuery = typeof query === 'string' ? query.trim() : '';
+
+    if (!normalizedQuery) {
+      return res.status(400).json({
+        success: false,
+        error: 'Query is required'
+      });
+    }
+
     const projects = await fetchNotionProjects();
     const health = getSystemHealth();
 
     let response = '';
     let confidence = 0.95;
 
-    if (query.toLowerCase().includes('recent') && query.toLowerCase().includes('project')) {
+    const lowerQuery = normalizedQuery.toLowerCase();
+
+    if (lowerQuery.includes('recent') && lowerQuery.includes('project')) {
       if (projects.length > 0) {
         const recent = projects[0];
         response = `🎯 **Most Recent Project:** "${recent.title}"
@@ -286,7 +654,7 @@ app.post('/api/real/intelligence', async (req, res) => {
         confidence = 0.5;
       }
 
-    } else if (query.toLowerCase().includes('how many') && query.toLowerCase().includes('project')) {
+    } else if (lowerQuery.includes('how many') && lowerQuery.includes('project')) {
       const active = projects.filter(p =>
         p.status && (p.status.includes('Active') || p.status.includes('🔥'))
       ).length;
@@ -313,7 +681,7 @@ app.post('/api/real/intelligence', async (req, res) => {
 • API Calls: Minimized (5min cache)
 
 🔗 **Connections:**
-• Notion API: ${!!notion ? '✅ Connected' : '❌ No Token'}
+• Notion API: ${notionService?.notion ? '✅ Connected' : '❌ No Token'}
 • Data Server: ✅ Stable
 • Frontend: ✅ Active`;
 
@@ -339,7 +707,7 @@ Data is cached for 5 minutes to avoid API spam.`;
       confidence,
       sources: ['notion-cached', 'system-metrics'],
       timestamp: new Date().toISOString(),
-      query
+      query: normalizedQuery
     });
 
   } catch (error) {
@@ -358,8 +726,8 @@ app.get('/api/integrations/status', (req, res) => {
   res.json({
     success: true,
     integrations: {
-      notion: { status: 'connected', projects: projectsCache.data.length },
-      supabase: { status: 'connected' },
+      notion: { status: notionService?.notion ? 'connected' : 'unavailable', projects: projectsCache.data.length },
+      supabase: { status: primarySupabase ? 'connected' : 'unavailable' },
       gmail: { status: 'not_configured' },
       xero: { status: 'not_configured' },
       linkedin: { status: 'not_configured' }

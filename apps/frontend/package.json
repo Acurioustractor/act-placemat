@@ -6,21 +6,25 @@
   "scripts": {
     "clean": "rimraf dist node_modules/.vite",
     "dev": "vite",
-    "build": "npm run clean && tsc -b && vite build",
+    "build": "npm run clean && tsc -b tsconfig.build.json && vite build",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:prod": "vite build --mode production"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.87.4",
     "framer-motion": "^12.23.12",
+    "leaflet": "^1.9.4",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-leaflet": "^5.0.0",
     "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
     "@playwright/test": "^1.55.0",
+    "@types/leaflet": "^1.9.21",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.0",

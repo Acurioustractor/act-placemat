@@ -21,7 +21,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config();
+// Note: Environment variables are already loaded in server.js, no need to reload them here
 
 // Configure multer for file uploads
 const upload = multer({
