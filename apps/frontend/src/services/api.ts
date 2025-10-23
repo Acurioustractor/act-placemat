@@ -43,19 +43,44 @@ export class ApiService {
   }
 
   // Real Projects - From Notion databases
-  async getDashboardProjects(limit: number = 24) {
+  async getDashboardProjects(limit: number = 100) {
     const result = await this.request<{ success: boolean; count: number; projects: Record<string, unknown>[] }>(
       '/api/real/projects'
     )
 
     // Return projects in the expected format for compatibility
     if (result.success && result.projects) {
-      // Limit the results if needed
-      const projects = result.projects.slice(0, limit)
+      // Map backend fields to frontend expectations (title -> name)
+      const mappedProjects = result.projects.map(p => ({
+        ...p,
+        name: (p as any).name || p.title || 'Untitled Project',
+        // Keep title as well for compatibility
+        title: p.title || (p as any).name || 'Untitled Project'
+      }))
+
+      // Limit the results if needed (increased default to 100 to show all projects)
+      const projects = mappedProjects.slice(0, limit)
       return { projects }
     }
 
     return { projects: [] }
+  }
+
+  async addProjectStoryteller(
+    projectId: string,
+    storyteller: {
+      fullName: string
+      bio?: string | null
+      consentGranted?: boolean
+      expertiseAreas?: string[] | string
+      profileImageUrl?: string | null
+      mediaType?: string | null
+    }
+  ) {
+    return this.request(`/api/real/projects/${encodeURIComponent(projectId)}/storytellers`, {
+      method: 'POST',
+      body: JSON.stringify(storyteller),
+    })
   }
 
   // Real Contacts - From Notion and LinkedIn
@@ -187,6 +212,28 @@ export class ApiService {
     return data ?? payload
   }
 
+  // Opportunities API
+  async getOpportunities(params: { status?: string; minAmount?: number; maxAmount?: number } = {}) {
+    const searchParams = new URLSearchParams()
+    if (params.status) searchParams.set('status', params.status)
+    if (params.minAmount) searchParams.set('minAmount', String(params.minAmount))
+    if (params.maxAmount) searchParams.set('maxAmount', String(params.maxAmount))
+    const query = searchParams.toString()
+    const endpoint = query ? `/api/opportunities?${query}` : '/api/opportunities'
+    return this.request(endpoint)
+  }
+
+  async discoverOpportunities(query: string, maxResults: number = 5) {
+    return this.request('/api/opportunities/discover', {
+      method: 'POST',
+      body: JSON.stringify({ query, maxResults })
+    })
+  }
+
+  async matchOpportunitiesToProject(projectId: string) {
+    return this.request(`/api/opportunities/match/${projectId}`)
+  }
+
   async getProjectSupport(limit: number = 20) {
     const params = new URLSearchParams({ limit: String(limit) })
     const payload = await this.request(`/api/intelligence/project-support?${params.toString()}`)
@@ -270,6 +317,28 @@ export class ApiService {
     }
 
     return eventSource // Return so caller can close connection
+  }
+
+  // Project Intelligence - Gmail, Calendar, Contacts
+  async getProjectEmails(projectId: string, limit: number = 20) {
+    return this.request(`/api/projects/${encodeURIComponent(projectId)}/emails?limit=${limit}`)
+  }
+
+  async getProjectCalendar(projectId: string, limit: number = 20) {
+    return this.request(`/api/projects/${encodeURIComponent(projectId)}/calendar?limit=${limit}`)
+  }
+
+  async getProjectContacts(projectId: string) {
+    return this.request(`/api/projects/${encodeURIComponent(projectId)}/contacts`)
+  }
+
+  async getProjectIntelligence(projectId: string) {
+    return this.request(`/api/projects/${encodeURIComponent(projectId)}/intelligence`)
+  }
+
+  // Convenience method that matches the getProjects format
+  async getProjects() {
+    return this.getDashboardProjects()
   }
 }
 

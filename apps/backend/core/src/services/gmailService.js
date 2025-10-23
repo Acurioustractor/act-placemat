@@ -655,12 +655,45 @@ class GmailService {
   parseSmartRepliesFromText(text) {
     // Fallback parsing if JSON fails
     const lines = text.split('\n').filter(line => line.trim());
-    
+
     return {
       quick: lines[0] || 'Thank you for your email. I will review and respond shortly.',
       detailed: lines[1] || 'I have received your email and will provide a detailed response within 24 hours.',
       followup: lines[2] || 'Could you provide additional context on this matter?'
     };
+  }
+
+  /**
+   * Search emails by query
+   */
+  async searchEmails(options = {}) {
+    const { query, maxResults = 20 } = options;
+
+    if (!this.gmail) {
+      throw new Error('Gmail not authenticated');
+    }
+
+    try {
+      // List messages matching the query
+      const listResponse = await this.gmail.users.messages.list({
+        userId: 'me',
+        q: query,
+        maxResults
+      });
+
+      const messages = listResponse.data.messages || [];
+
+      // Get full details for each message
+      const emailDetails = await Promise.all(
+        messages.map(msg => this.getEmailDetails(msg.id))
+      );
+
+      return emailDetails;
+
+    } catch (error) {
+      logger.error('Error searching emails:', error);
+      return [];
+    }
   }
 }
 

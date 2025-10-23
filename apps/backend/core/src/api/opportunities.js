@@ -14,12 +14,12 @@
  * - Logging for debugging
  */
 
-import pkg from '@notionhq/client';
-const { Client } = pkg;
+import { Client } from '@notionhq/client';
 import axios from 'axios';
 
 // Initialize Notion client
-const notion = new Client({ auth: process.env.NOTION_TOKEN });
+const NOTION_TOKEN = process.env.NOTION_TOKEN;
+const notion = NOTION_TOKEN ? new Client({ auth: NOTION_TOKEN }) : null;
 const OPPORTUNITIES_DB = process.env.NOTION_OPPORTUNITIES_DATABASE_ID;
 const PROJECTS_DB = process.env.NOTION_PROJECTS_DATABASE_ID;
 
@@ -44,6 +44,11 @@ async function fetchNotionOpportunities() {
   if (opportunitiesCache.data.length > 0 &&
       (now - opportunitiesCache.lastFetch) < opportunitiesCache.ttl) {
     return opportunitiesCache.data;
+  }
+
+  if (!notion || !OPPORTUNITIES_DB) {
+    console.log('⚠️  Notion client or database ID not configured');
+    return [];
   }
 
   try {

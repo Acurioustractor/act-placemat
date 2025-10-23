@@ -8,8 +8,8 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import dotenv from 'dotenv';
-dotenv.config();
+
+// Note: Environment variables are already loaded in server.js, no need to reload them here
 
 // Lazy-load Supabase client
 let supabase;

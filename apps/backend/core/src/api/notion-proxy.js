@@ -450,8 +450,11 @@ router.get('/projects', asyncHandler(async (req, res) => {
     try {
       const { notionService } = await import('../services/notionService.js');
       if (notionService && notionService.getProjects) {
-        const projects = await notionService.getProjects(true, {
-          Status: ['Active 🔥', 'Preparation 📋']
+        const projects = await notionService.getProjects({
+          useCache: true,
+          filter: {
+            Status: ['Active 🔥', 'Preparation 📋']
+          }
         });
         console.log(`📊 Fetched ${projects.length} projects from Notion service`);
         return res.json(projects);
