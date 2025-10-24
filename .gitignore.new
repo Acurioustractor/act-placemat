@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+*.log
+
+# Production
+build/
+dist/
+.next/
+out/
+
+# Environment variables - NEVER commit these!
+.env
+.env.*
+!.env.example
+!.env.template
+*.env
+*.env.*
+!*.env.example
+!*.env.template
+
+# Secrets and tokens - NEVER commit these!
+*tokens*.json
+.gmail_tokens*.json
+.xero_tokens*.json
+**/.secrets/
+**/secrets/
+*.key
+*.pem
+credentials*.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pids/
+*.pid
+
+# Build info
+.tsbuildinfo
+
+# Other
+.cache/
+tmp/
+temp/

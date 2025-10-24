@@ -1,0 +1,195 @@
+{
+  "sample_projects_for_testing": {
+    "purpose": "Example data to backfill into Notion after adding Phase 1 fields",
+    "instructions": "Use these estimates as starting points - adjust based on your knowledge of each project",
+
+    "obsolete_stage_examples": [
+      {
+        "project_name": "Goods.",
+        "community_ownership_pct": 95,
+        "rocket_booster_stage": "🌅 Obsolete",
+        "connection_to_witta": "🌲 Rooted",
+        "relationship_density": "💚 Antifragile",
+        "decision_making_autonomy": "Fully Autonomous",
+        "notes": "Community-owned social enterprise, thriving independently",
+        "teaching_others": "Yes - mentoring 2-3 emerging social enterprises"
+      }
+    ],
+
+    "landed_stage_examples": [
+      {
+        "project_name": "Project Her Self",
+        "community_ownership_pct": 88,
+        "rocket_booster_stage": "🏠 Landed",
+        "connection_to_witta": "🌳 Active",
+        "relationship_density": "🟢 Resilient",
+        "decision_making_autonomy": "Community-led (ACT advisor)",
+        "notes": "Strong community leadership, ACT now in advisory role only",
+        "teaching_others": "Starting to share learnings"
+      },
+      {
+        "project_name": "Wilya Janta",
+        "community_ownership_pct": 82,
+        "rocket_booster_stage": "🏠 Landed",
+        "connection_to_witta": "🌲 Rooted",
+        "relationship_density": "🟢 Resilient",
+        "decision_making_autonomy": "Community-led (ACT advisor)",
+        "notes": "Indigenous-led, strong cultural governance",
+        "teaching_others": "Yes - cultural protocol workshops"
+      }
+    ],
+
+    "cruising_stage_examples": [
+      {
+        "project_name": "BG Fit",
+        "community_ownership_pct": 65,
+        "rocket_booster_stage": "✈️ Cruising",
+        "connection_to_witta": "🌿 Visiting",
+        "relationship_density": "🟢 Resilient",
+        "decision_making_autonomy": "Co-designed",
+        "notes": "Youth justice program, growing independence",
+        "funding_gap": 35000,
+        "teaching_others": "Not yet"
+      },
+      {
+        "project_name": "Empathy Ledger",
+        "community_ownership_pct": 60,
+        "rocket_booster_stage": "✈️ Cruising",
+        "connection_to_witta": "🌳 Active",
+        "relationship_density": "🟢 Resilient",
+        "decision_making_autonomy": "Co-designed",
+        "notes": "Gift economy platform, technical maturity reached",
+        "teaching_others": "Not yet"
+      }
+    ],
+
+    "orbit_stage_examples": [
+      {
+        "project_name": "JusticeHub",
+        "community_ownership_pct": 45,
+        "rocket_booster_stage": "🛸 Orbit",
+        "connection_to_witta": "🌱 Aware",
+        "relationship_density": "🟡 Developing",
+        "decision_making_autonomy": "Co-designed",
+        "notes": "Building momentum, ACT still heavily involved",
+        "teaching_others": "No"
+      },
+      {
+        "project_name": "MMEIC",
+        "community_ownership_pct": 50,
+        "rocket_booster_stage": "🛸 Orbit",
+        "connection_to_witta": "🌿 Visiting",
+        "relationship_density": "🟢 Resilient",
+        "decision_making_autonomy": "Co-designed",
+        "notes": "Strong partnerships, transitioning to community governance",
+        "teaching_others": "No"
+      }
+    ],
+
+    "launch_stage_examples": [
+      {
+        "project_name": "New Project (generic)",
+        "community_ownership_pct": 15,
+        "rocket_booster_stage": "🚀 Launch",
+        "connection_to_witta": "None",
+        "relationship_density": "🔴 Isolated",
+        "decision_making_autonomy": "ACT-led",
+        "notes": "Just starting, ACT-intensive support needed",
+        "teaching_others": "No"
+      }
+    ]
+  },
+
+  "beautiful_obsolescence_readiness_formula": {
+    "description": "Calculate readiness score (0-100). Above 80 = ready for transition",
+    "formula": "= (Community Ownership % × 0.3) + (Revenue Independence % × 0.3) + (Decision Autonomy Points × 0.2) + (Relationship Density Points × 0.2)",
+    "decision_autonomy_points": {
+      "ACT-led": 0,
+      "Co-designed": 10,
+      "Community-led (ACT advisor)": 15,
+      "Fully Autonomous": 20
+    },
+    "relationship_density_points": {
+      "🔴 Isolated": 0,
+      "🟡 Developing": 10,
+      "🟢 Resilient": 15,
+      "💚 Antifragile": 20
+    },
+    "examples": {
+      "Goods (Obsolete)": {
+        "calculation": "(95 × 0.3) + (100 × 0.3) + (20 × 0.2) + (20 × 0.2)",
+        "result": 86.5,
+        "status": "✅ Ready for Beautiful Obsolescence"
+      },
+      "BG Fit (Cruising)": {
+        "calculation": "(65 × 0.3) + (75 × 0.3) + (10 × 0.2) + (15 × 0.2)",
+        "result": 67,
+        "status": "⚠️ Not yet ready (need 13 more points)"
+      },
+      "New Project (Launch)": {
+        "calculation": "(15 × 0.3) + (0 × 0.3) + (0 × 0.2) + (0 × 0.2)",
+        "result": 4.5,
+        "status": "🚀 Early stage - long way to go"
+      }
+    }
+  },
+
+  "dashboard_views_to_create": [
+    {
+      "name": "Beautiful Obsolescence Pipeline",
+      "type": "Board",
+      "group_by": "Rocket Booster Stage",
+      "sort": "Community Ownership % (descending)",
+      "purpose": "See which projects are closest to handover"
+    },
+    {
+      "name": "Witta Ecosystem",
+      "type": "Table",
+      "filter": "Connection to Witta ≠ None",
+      "group_by": "Connection to Witta",
+      "sort": "Relationship Density",
+      "purpose": "Visualize place-based movement building"
+    },
+    {
+      "name": "Ready for Transition",
+      "type": "Table",
+      "filter": "Community Ownership % ≥ 80",
+      "sort": "Community Ownership % (descending)",
+      "purpose": "Celebrate projects ready for Beautiful Obsolescence! 🌅"
+    },
+    {
+      "name": "Teaching Pipeline",
+      "type": "Table",
+      "filter": "Who They're Teaching is not empty",
+      "sort": "Number of people/projects teaching (descending)",
+      "purpose": "Projects becoming ecosystem teachers = autonomy achieved"
+    }
+  ],
+
+  "implementation_checklist": {
+    "week_1": [
+      "✅ Add 7 Phase 1 fields to Notion Projects database",
+      "✅ Create Beautiful Obsolescence Pipeline view",
+      "✅ Backfill Community Ownership % for top 10 projects",
+      "✅ Identify 1-2 projects ready for transition"
+    ],
+    "week_2": [
+      "Add Gift Economy fields (Value Given/Received)",
+      "Add Ecosystem Role classification",
+      "Create Witta Ecosystem view",
+      "Interview project leads about their core pods"
+    ],
+    "week_3": [
+      "Add Trust Score field",
+      "Add 'Who They're Teaching' relationships",
+      "Create Teaching Pipeline view",
+      "Plan first Beautiful Obsolescence celebration"
+    ],
+    "week_4": [
+      "Launch Witta Learning Journeys database",
+      "Design first residency cohort",
+      "Invite 3-5 people to Witta learning journey",
+      "Celebrate first project reaching Obsolete stage! 🎉"
+    ]
+  }
+}
