@@ -6,6 +6,7 @@ import { AIAgentChat, AIAgentButton } from './components/AIAgentChat'
 import CuriousTractorResearch from './components/CuriousTractorResearch'
 import { Opportunities } from './components/tabs/Opportunities'
 import { AboutACT } from './components/AboutACT'
+import { NeedsDashboard } from './components/NeedsDashboard'
 
 function App() {
   const [activeTab, setActiveTab] = useState('morning-brief')
@@ -14,6 +15,7 @@ function App() {
   // ✅ NEW INTELLIGENCE-FOCUSED TABS
   const tabs = [
     { id: 'about', name: 'About ACT', icon: '🚜', description: 'What is A Curious Tractor?' },
+    { id: 'needs', name: 'Needs', icon: '🚨', description: 'Urgent project needs detected' },
     { id: 'morning-brief', name: 'Morning Brief', icon: '🌅', description: 'Daily intelligence digest' },
     { id: 'contacts', name: 'Contacts', icon: '🤝', description: '20K relationship network' },
     { id: 'projects', name: 'Projects', icon: '🏘️', description: 'Portfolio & Beautiful Obsolescence tracking' },
@@ -102,6 +104,7 @@ function App() {
 
       <main>
         {activeTab === 'about' && <AboutACT />}
+        {activeTab === 'needs' && <NeedsDashboard />}
         {activeTab === 'morning-brief' && <MorningBrief />}
         {activeTab === 'contacts' && <ContactIntelligenceHub />}
         {activeTab === 'projects' && <CommunityProjects />}
