@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npm run clean && vite build",
+  "framework": null,
+  "installCommand": "npm install"
+}
