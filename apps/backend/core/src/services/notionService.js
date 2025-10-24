@@ -30,21 +30,21 @@ class NotionService {
         lastUpdated: null,
       },
       projects: {
-        id: process.env.NOTION_PROJECTS_DATABASE_ID,
+        id: process.env.NOTION_PROJECTS_DATABASE_ID || '177ebcf9-81cf-80dd-9514-f1ec32f3314c',
         dataSourceId: null, // Will be populated when first accessed
         version: '2025.1',
         schema: this.getProjectsSchema(),
         lastUpdated: null,
       },
       opportunities: {
-        id: process.env.NOTION_OPPORTUNITIES_DATABASE_ID,
+        id: process.env.NOTION_OPPORTUNITIES_DATABASE_ID || '234ebcf9-81cf-804e-873f-f352f03c36da',
         dataSourceId: null, // Will be populated when first accessed
         version: '2025.1',
         schema: this.getOpportunitiesSchema(),
         lastUpdated: null,
       },
       organizations: {
-        id: process.env.NOTION_ORGANIZATIONS_DATABASE_ID,
+        id: process.env.NOTION_ORGANIZATIONS_DATABASE_ID || '948f3946-7d1c-42f2-bd7e-1317a755e67b',
         dataSourceId: null, // Will be populated when first accessed
         version: '2025.1',
         schema: this.getOrganizationsSchema(),
@@ -58,7 +58,7 @@ class NotionService {
         lastUpdated: null,
       },
       people: {
-        id: process.env.NOTION_PEOPLE_DATABASE_ID,
+        id: process.env.NOTION_PEOPLE_DATABASE_ID || '47bdc1c4-df99-4ddc-81c4-a0214c919d69',
         dataSourceId: null, // Will be populated when first accessed
         version: '2025.1',
         schema: this.getPeopleSchema(),
@@ -79,7 +79,7 @@ class NotionService {
         lastUpdated: null,
       },
       places: {
-        id: process.env.NOTION_PLACES_DATABASE_ID,
+        id: process.env.NOTION_PLACES_DATABASE_ID || '25debcf9-81cf-808e-a632-cbc6ae78d582',
         dataSourceId: null, // Will be populated when first accessed
         version: '2025.1',
         schema: this.getPlacesSchema(),
@@ -1647,6 +1647,28 @@ class NotionService {
       console.error('❌ Failed to fetch projects from Notion:', error.message);
       console.error('❌ Stack trace:', error.stack);
       return this.getFallbackProjects();
+    }
+  }
+
+  // Get single project by ID
+  async getProjectById(projectId) {
+    try {
+      console.log(`🔍 Fetching project by ID: ${projectId}`);
+
+      // First try to get from cache by filtering all projects
+      const allProjects = await this.getProjects({ useCache: true });
+      const project = allProjects.find(p => p.id === projectId || p.notionId === projectId);
+
+      if (project) {
+        console.log(`✅ Found project: ${project.name}`);
+        return project;
+      }
+
+      console.warn(`⚠️ Project not found with ID: ${projectId}`);
+      return null;
+    } catch (error) {
+      console.error('❌ Failed to fetch project by ID:', error.message);
+      return null;
     }
   }
 
