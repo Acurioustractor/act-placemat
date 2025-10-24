@@ -6,18 +6,22 @@
  */
 
 // IMPORTANT: Load environment variables FIRST before any other imports
-import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
+// On Vercel, environment variables are provided automatically via process.env
+// Only load dotenv in local development
+if (process.env.VERCEL !== '1') {
+  const dotenv = await import('dotenv');
+  const path = await import('path');
+  const { fileURLToPath } = await import('url');
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
 
-const envPath = path.resolve(__dirname, '../../.env');
-console.log('🔧 Loading .env from:', envPath);
-dotenv.config({ path: envPath });
+  const envPath = path.resolve(__dirname, '../../.env');
+  console.log('🔧 Loading .env from:', envPath);
+  dotenv.config({ path: envPath });
+}
 
-// Diagnostic: Check if critical environment variables are loaded IMMEDIATELY after dotenv
+// Diagnostic: Check if critical environment variables are loaded
 console.log('🔍 Environment variables loaded:');
 console.log('  - NOTION_TOKEN:', process.env.NOTION_TOKEN ? '✅ Present' : '❌ Missing');
 console.log('  - SUPABASE_URL:', process.env.SUPABASE_URL ? '✅ Present' : '❌ Missing');
@@ -30,7 +34,7 @@ import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import notionService from './core/src/services/notionService.js';
 
 const app = express();
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 
 app.use(cors());
 app.use(express.json());
@@ -93,6 +97,9 @@ setupRealDashboardData(app);
 // Curious Tractor Research API - Deep AI research for entity setup & innovation
 import curiousTractorResearchRoutes from './core/src/api/curious-tractor-research.js';
 app.use('/api/curious-tractor', curiousTractorResearchRoutes);
+
+// Project Health Intelligence API - Phase 1: Surface Important Needs
+import projectHealthRoutes from './core/src/api/projectHealth.js';
 
 // Opportunities API - Grant discovery & application tracking
 import opportunitiesRoutes from './core/src/api/opportunities.js';
@@ -159,6 +166,12 @@ console.log('🔄 Cache: 5 minutes (no spam)');
 
 // Initialize Project Intelligence Routes (needs Supabase client)
 projectIntelligenceRoutes(app, primarySupabase || storytellerSupabase);
+
+// Make notionService available to projectHealth routes
+app.locals.notionService = notionService;
+
+// Mount Project Health Intelligence API
+app.use('/api/v2/projects', projectHealthRoutes);
 
 // Proper caching with no spam
 let projectsCache = {
@@ -859,24 +872,30 @@ fetchNotionProjects().then(projects => {
   console.log(`🎯 Initial cache: ${projects.length} projects`);
 });
 
-app.listen(PORT, async () => {
-  console.log(`🚀 Stable server running on port ${PORT}`);
-  console.log('📊 Endpoints:');
-  console.log('   GET  /api/real/health');
-  console.log('   GET  /api/real/projects');
-  console.log('   GET  /api/real/metrics');
-  console.log('   POST /api/real/intelligence');
-  console.log('   💚  /api/v2/monitoring/integrations (Integration health)');
-  console.log('   💚  /api/v2/monitoring/health (System health)');
-  console.log('   📧  /api/v2/gmail/sync/status (Gmail sync status)');
-  console.log('   📧  /api/v2/gmail/sync/start (Start Gmail sync)');
-  console.log('   📧  /api/v2/gmail/messages (Query messages)');
-  console.log('   📧  /api/v2/gmail/contacts (Discovered contacts)');
-  console.log('🔥 NO SPAM - SMART CACHING');
+// Only start the server if not running in Vercel serverless
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, async () => {
+    console.log(`🚀 Stable server running on port ${PORT}`);
+    console.log('📊 Endpoints:');
+    console.log('   GET  /api/real/health');
+    console.log('   GET  /api/real/projects');
+    console.log('   GET  /api/real/metrics');
+    console.log('   POST /api/real/intelligence');
+    console.log('   💚  /api/v2/monitoring/integrations (Integration health)');
+    console.log('   💚  /api/v2/monitoring/health (System health)');
+    console.log('   📧  /api/v2/gmail/sync/status (Gmail sync status)');
+    console.log('   📧  /api/v2/gmail/sync/start (Start Gmail sync)');
+    console.log('   📧  /api/v2/gmail/messages (Query messages)');
+    console.log('   📧  /api/v2/gmail/contacts (Discovered contacts)');
+    console.log('🔥 NO SPAM - SMART CACHING');
 
-  // Business agent scheduler temporarily disabled (missing dependencies)
-  console.log('');
-  console.log('💚 Integration Health Monitoring: Active');
-  console.log('   Real-time status tracking for all data sources');
-  console.log('');
-});
+    // Business agent scheduler temporarily disabled (missing dependencies)
+    console.log('');
+    console.log('💚 Integration Health Monitoring: Active');
+    console.log('   Real-time status tracking for all data sources');
+    console.log('');
+  });
+}
+
+// Export for Vercel serverless
+export default app;
