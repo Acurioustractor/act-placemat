@@ -365,15 +365,22 @@ class ConnectionDiscoveryService {
   async batchDiscover(projectIds, options = {}) {
     logger.info(`🚀 Starting batch connection discovery for ${projectIds.length} projects`);
 
+    const gmailAvailable = this.gmailService && this.gmailService.gmail;
+    if (!gmailAvailable) {
+      logger.info('⚠️  Gmail not authenticated - using theme discovery only');
+    }
+
     const results = [];
 
     for (const projectId of projectIds) {
       try {
         const project = await this.notionService.getProjectById(projectId);
 
-        // Run both Gmail and theme-based discovery
+        // Run both Gmail and theme-based discovery (Gmail only if authenticated)
         const [gmailResults, themeResults] = await Promise.all([
-          this.discoverFromGmail(project, options),
+          gmailAvailable
+            ? this.discoverFromGmail(project, options)
+            : Promise.resolve({ discovered: { organizations: [], people: [], relatedProjects: [], total: 0 } }),
           this.discoverFromThemes(project)
         ]);
 
@@ -383,8 +390,8 @@ class ConnectionDiscoveryService {
           gmail: gmailResults,
           themes: themeResults,
           totalDiscovered:
-            gmailResults.discovered.total +
-            themeResults.discovered.sameThemeProjects.length
+            (gmailResults.discovered?.total || 0) +
+            (themeResults.discovered?.sameThemeProjects?.length || 0)
         });
 
       } catch (error) {
@@ -402,7 +409,8 @@ class ConnectionDiscoveryService {
     return {
       projectsProcessed: projectIds.length,
       totalConnectionsDiscovered: totalDiscovered,
-      results
+      results,
+      gmailUsed: gmailAvailable
     };
   }
 }
