@@ -32,6 +32,7 @@ import express from 'express';
 import cors from 'cors';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import notionService from './core/src/services/notionService.js';
+import gmailService from './core/src/services/gmailService.js';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
