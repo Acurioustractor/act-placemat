@@ -225,6 +225,117 @@ function calculateOwnershipHealth(project) {
 }
 
 /**
+ * Calculate Beautiful Obsolescence readiness (AUTOMATED)
+ * Auto-calculates from existing Notion data - no manual fields needed
+ */
+function calculateBeautifulObsolescence(project, healthMetrics) {
+  // 1. Revenue Independence (from existing budget data)
+  const revenueIndependence = project.actualIncoming && project.budget > 0
+    ? Math.min(100, (project.actualIncoming / project.budget) * 100)
+    : project.actualIncoming > 0 ? 80 : 0; // If has income but no budget, assume 80%
+
+  // 2. Relationship Density (from existing relationship data)
+  const connections =
+    (project.supporters?.length || 0) +
+    (project.relatedOrganisations?.length || 0) +
+    (project.relatedPeople?.length || 0) +
+    (project.relatedProjects?.length || 0);
+
+  const densityPoints = connections >= 31 ? 20 :
+                        connections >= 16 ? 15 :
+                        connections >= 6 ? 10 : 0;
+
+  const densityLabel = connections >= 31 ? 'Antifragile' :
+                       connections >= 16 ? 'Resilient' :
+                       connections >= 6 ? 'Developing' : 'Isolated';
+
+  // 3. Decision Autonomy (inferred from ACT involvement)
+  const touchpointsLast90 = healthMetrics?.people?.touchpointsLast90Days || 0;
+  const hasACTLead = project.lead?.toLowerCase?.()?.includes?.('act') ||
+                     project.projectLead?.toLowerCase?.()?.includes?.('act');
+
+  // If low touchpoints + high revenue = probably autonomous
+  // If ACT in lead name = ACT-led
+  const autonomyPoints =
+    !hasACTLead && touchpointsLast90 < 3 && revenueIndependence > 80 ? 20 : // Fully autonomous
+    !hasACTLead && revenueIndependence > 60 && connections > 10 ? 15 :  // Community-led
+    revenueIndependence > 30 || connections > 5 ? 10 :  // Co-designed
+    0;  // ACT-led
+
+  const autonomyLabel = autonomyPoints === 20 ? 'Fully Autonomous' :
+                        autonomyPoints === 15 ? 'Community-led (ACT advisor)' :
+                        autonomyPoints === 10 ? 'Co-designed' : 'ACT-led';
+
+  // 4. Community Ownership % (manual field OR auto-calculate)
+  // Prefer manual value if exists, otherwise calculate
+  const communityOwnership = project.communityOwnership !== undefined && project.communityOwnership !== null
+    ? project.communityOwnership
+    : Math.min(100, (revenueIndependence * 0.6) + (autonomyPoints * 2));
+
+  // 5. Beautiful Obsolescence Score
+  const boScore = Math.round(
+    (communityOwnership * 0.3) +
+    (revenueIndependence * 0.3) +
+    (autonomyPoints * 0.2) +
+    (densityPoints * 0.2)
+  );
+
+  // 6. Infer Rocket Booster Stage (prefer manual, fallback to auto)
+  const inferredStage = project.rocketBoosterStage || (
+    project.status?.includes('Transferred') || boScore >= 85 ? '🌅 Obsolete' :
+    project.status?.includes('Sunsetting') || boScore >= 75 ? '🏠 Landed' :
+    boScore >= 60 ? '✈️ Cruising' :
+    boScore >= 40 ? '🛸 Orbit' : '🚀 Launch'
+  );
+
+  const readyForTransition = boScore >= 80;
+
+  const recommendations = [];
+  if (readyForTransition) {
+    recommendations.push('🌅 Ready for Beautiful Obsolescence celebration!');
+    recommendations.push(`${connections} active relationships - ${densityLabel.toLowerCase()} network`);
+    recommendations.push(`${Math.round(revenueIndependence)}% revenue independent - ${communityOwnership >= 80 ? 'community sustainable' : 'nearly sustainable'}`);
+  } else {
+    const gap = 80 - boScore;
+    recommendations.push(`${gap} points from Beautiful Obsolescence readiness (target: 80)`);
+
+    if (communityOwnership < 70) {
+      recommendations.push(`Increase community ownership (currently ${Math.round(communityOwnership)}%)`);
+    }
+    if (revenueIndependence < 70) {
+      recommendations.push(`Increase revenue independence (currently ${Math.round(revenueIndependence)}%)`);
+    }
+    if (connections < 16) {
+      recommendations.push(`Grow network connections (currently ${connections}, target: 16+)`);
+    }
+    if (autonomyPoints < 15) {
+      recommendations.push(`Transition decision-making to community (currently: ${autonomyLabel})`);
+    }
+  }
+
+  return {
+    score: boScore,
+    readyForTransition,
+    metrics: {
+      communityOwnership: Math.round(communityOwnership),
+      revenueIndependence: Math.round(revenueIndependence),
+      relationshipDensity: {
+        count: connections,
+        label: densityLabel,
+        points: densityPoints
+      },
+      decisionAutonomy: {
+        label: autonomyLabel,
+        points: autonomyPoints
+      },
+      inferredStage,
+      isAutoCalculated: !project.communityOwnership && !project.rocketBoosterStage
+    },
+    recommendations
+  };
+}
+
+/**
  * Calculate data completeness
  */
 function calculateDataCompleteness(project) {
@@ -597,6 +708,139 @@ router.get('/health-summary', async (req, res) => {
 
   } catch (error) {
     console.error('Error calculating health summary:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /api/v2/projects/:id/beautiful-obsolescence
+ * Calculate Beautiful Obsolescence readiness (AUTOMATED - no manual fields needed!)
+ */
+router.get('/:projectId/beautiful-obsolescence', async (req, res) => {
+  try {
+    const { projectId } = req.params;
+
+    // Get project data
+    const project = await req.app.locals.notionService.getProjectById(projectId);
+
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    // Calculate health metrics (needed for Beautiful Obsolescence calculation)
+    const funding = calculateFundingHealth(project);
+    const people = calculatePeopleHealth(project, []);
+    const momentum = calculateMomentum(project);
+    const ownership = calculateOwnershipHealth(project);
+    const data = calculateDataCompleteness(project);
+
+    const healthMetrics = { funding, people, momentum, ownership, data };
+
+    // Calculate Beautiful Obsolescence (AUTOMATED!)
+    const beautifulObsolescence = calculateBeautifulObsolescence(project, healthMetrics);
+
+    const overallHealth = Math.round(
+      funding.score * 0.25 +
+      people.score * 0.25 +
+      momentum.score * 0.20 +
+      ownership.score * 0.20 +
+      data.score * 0.10
+    );
+
+    res.json({
+      projectId: project.id,
+      projectName: project.name,
+      beautifulObsolescence,
+      health: {
+        overall: overallHealth,
+        funding,
+        people,
+        momentum
+      },
+      calculatedAt: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error calculating Beautiful Obsolescence:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /api/v2/projects/beautiful-obsolescence-summary
+ * Get Beautiful Obsolescence readiness across all projects (AUTOMATED!)
+ */
+router.get('/beautiful-obsolescence-summary', async (req, res) => {
+  try {
+    const projects = await req.app.locals.notionService.getProjects();
+
+    const boScores = [];
+    let readyForTransitionCount = 0;
+
+    for (const project of projects) {
+      const funding = calculateFundingHealth(project);
+      const people = calculatePeopleHealth(project, []);
+      const momentum = calculateMomentum(project);
+      const ownership = calculateOwnershipHealth(project);
+      const data = calculateDataCompleteness(project);
+
+      const healthMetrics = { funding, people, momentum, ownership, data };
+      const bo = calculateBeautifulObsolescence(project, healthMetrics);
+
+      if (bo.readyForTransition) {
+        readyForTransitionCount++;
+      }
+
+      boScores.push({
+        projectId: project.id,
+        projectName: project.name,
+        score: bo.score,
+        readyForTransition: bo.readyForTransition,
+        stage: bo.metrics.inferredStage,
+        communityOwnership: bo.metrics.communityOwnership,
+        revenueIndependence: bo.metrics.revenueIndependence,
+        relationshipDensity: bo.metrics.relationshipDensity.label,
+        decisionAutonomy: bo.metrics.decisionAutonomy.label,
+        isAutoCalculated: bo.metrics.isAutoCalculated,
+        status: project.status,
+        themes: project.themes
+      });
+    }
+
+    // Sort by Beautiful Obsolescence score
+    boScores.sort((a, b) => b.score - a.score);
+
+    // Group by stage
+    const byStage = {
+      obsolete: boScores.filter(p => p.stage === '🌅 Obsolete'),
+      landed: boScores.filter(p => p.stage === '🏠 Landed'),
+      cruising: boScores.filter(p => p.stage === '✈️ Cruising'),
+      orbit: boScores.filter(p => p.stage === '🛸 Orbit'),
+      launch: boScores.filter(p => p.stage === '🚀 Launch')
+    };
+
+    res.json({
+      summary: {
+        totalProjects: projects.length,
+        readyForTransition: readyForTransitionCount,
+        averageScore: Math.round(boScores.reduce((sum, p) => sum + p.score, 0) / boScores.length),
+        byStage: {
+          obsolete: byStage.obsolete.length,
+          landed: byStage.landed.length,
+          cruising: byStage.cruising.length,
+          orbit: byStage.orbit.length,
+          launch: byStage.launch.length
+        },
+        autoCalculated: boScores.filter(p => p.isAutoCalculated).length
+      },
+      projects: boScores,
+      readyForTransition: boScores.filter(p => p.readyForTransition),
+      byStage,
+      calculatedAt: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error calculating Beautiful Obsolescence summary:', error);
     res.status(500).json({ error: error.message });
   }
 });
