@@ -101,6 +101,9 @@ app.use('/api/curious-tractor', curiousTractorResearchRoutes);
 // Project Health Intelligence API - Phase 1: Surface Important Needs
 import projectHealthRoutes from './core/src/api/projectHealth.js';
 
+// Connection Discovery API - Auto-discover project connections via Gmail + AI
+import connectionDiscoveryRoutes from './core/src/api/connectionDiscovery.js';
+
 // Opportunities API - Grant discovery & application tracking
 import opportunitiesRoutes from './core/src/api/opportunities.js';
 opportunitiesRoutes(app);
@@ -167,11 +170,15 @@ console.log('🔄 Cache: 5 minutes (no spam)');
 // Initialize Project Intelligence Routes (needs Supabase client)
 projectIntelligenceRoutes(app, primarySupabase || storytellerSupabase);
 
-// Make notionService available to projectHealth routes
+// Make notionService and gmailService available to routes
 app.locals.notionService = notionService;
+app.locals.gmailService = gmailService;
 
 // Mount Project Health Intelligence API
 app.use('/api/v2/projects', projectHealthRoutes);
+
+// Mount Connection Discovery API
+app.use('/api/v2/connections', connectionDiscoveryRoutes);
 
 // Proper caching with no spam
 let projectsCache = {
