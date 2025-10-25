@@ -520,6 +520,86 @@ function identifyUrgentNeeds(project, healthDimensions) {
 }
 
 /**
+ * GET /api/v2/projects/beautiful-obsolescence-summary
+ * Get Beautiful Obsolescence readiness across all projects (AUTOMATED!)
+ * IMPORTANT: This must be BEFORE /:projectId routes to avoid being matched as a projectId
+ */
+router.get('/beautiful-obsolescence-summary', async (req, res) => {
+  try {
+    const projects = await req.app.locals.notionService.getProjects();
+
+    const boScores = [];
+    let readyForTransitionCount = 0;
+
+    for (const project of projects) {
+      const funding = calculateFundingHealth(project);
+      const people = calculatePeopleHealth(project, []);
+      const momentum = calculateMomentum(project);
+      const ownership = calculateOwnershipHealth(project);
+      const data = calculateDataCompleteness(project);
+
+      const healthMetrics = { funding, people, momentum, ownership, data };
+      const bo = calculateBeautifulObsolescence(project, healthMetrics);
+
+      if (bo.readyForTransition) {
+        readyForTransitionCount++;
+      }
+
+      boScores.push({
+        projectId: project.id,
+        projectName: project.name,
+        score: bo.score,
+        readyForTransition: bo.readyForTransition,
+        stage: bo.metrics.inferredStage,
+        communityOwnership: bo.metrics.communityOwnership,
+        revenueIndependence: bo.metrics.revenueIndependence,
+        relationshipDensity: bo.metrics.relationshipDensity.label,
+        decisionAutonomy: bo.metrics.decisionAutonomy.label,
+        isAutoCalculated: bo.metrics.isAutoCalculated,
+        status: project.status,
+        themes: project.themes
+      });
+    }
+
+    // Sort by Beautiful Obsolescence score
+    boScores.sort((a, b) => b.score - a.score);
+
+    // Group by stage
+    const byStage = {
+      obsolete: boScores.filter(p => p.stage === '🌅 Obsolete'),
+      landed: boScores.filter(p => p.stage === '🏠 Landed'),
+      cruising: boScores.filter(p => p.stage === '✈️ Cruising'),
+      orbit: boScores.filter(p => p.stage === '🛸 Orbit'),
+      launch: boScores.filter(p => p.stage === '🚀 Launch')
+    };
+
+    res.json({
+      summary: {
+        totalProjects: projects.length,
+        readyForTransition: readyForTransitionCount,
+        averageScore: Math.round(boScores.reduce((sum, p) => sum + p.score, 0) / boScores.length),
+        byStage: {
+          obsolete: byStage.obsolete.length,
+          landed: byStage.landed.length,
+          cruising: byStage.cruising.length,
+          orbit: byStage.orbit.length,
+          launch: byStage.launch.length
+        },
+        autoCalculated: boScores.filter(p => p.isAutoCalculated).length
+      },
+      projects: boScores,
+      readyForTransition: boScores.filter(p => p.readyForTransition),
+      byStage,
+      calculatedAt: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error calculating Beautiful Obsolescence summary:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
  * GET /api/v2/projects/:id/health
  * Calculate comprehensive health score for a project
  */
@@ -762,85 +842,6 @@ router.get('/:projectId/beautiful-obsolescence', async (req, res) => {
 
   } catch (error) {
     console.error('Error calculating Beautiful Obsolescence:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-/**
- * GET /api/v2/projects/beautiful-obsolescence-summary
- * Get Beautiful Obsolescence readiness across all projects (AUTOMATED!)
- */
-router.get('/beautiful-obsolescence-summary', async (req, res) => {
-  try {
-    const projects = await req.app.locals.notionService.getProjects();
-
-    const boScores = [];
-    let readyForTransitionCount = 0;
-
-    for (const project of projects) {
-      const funding = calculateFundingHealth(project);
-      const people = calculatePeopleHealth(project, []);
-      const momentum = calculateMomentum(project);
-      const ownership = calculateOwnershipHealth(project);
-      const data = calculateDataCompleteness(project);
-
-      const healthMetrics = { funding, people, momentum, ownership, data };
-      const bo = calculateBeautifulObsolescence(project, healthMetrics);
-
-      if (bo.readyForTransition) {
-        readyForTransitionCount++;
-      }
-
-      boScores.push({
-        projectId: project.id,
-        projectName: project.name,
-        score: bo.score,
-        readyForTransition: bo.readyForTransition,
-        stage: bo.metrics.inferredStage,
-        communityOwnership: bo.metrics.communityOwnership,
-        revenueIndependence: bo.metrics.revenueIndependence,
-        relationshipDensity: bo.metrics.relationshipDensity.label,
-        decisionAutonomy: bo.metrics.decisionAutonomy.label,
-        isAutoCalculated: bo.metrics.isAutoCalculated,
-        status: project.status,
-        themes: project.themes
-      });
-    }
-
-    // Sort by Beautiful Obsolescence score
-    boScores.sort((a, b) => b.score - a.score);
-
-    // Group by stage
-    const byStage = {
-      obsolete: boScores.filter(p => p.stage === '🌅 Obsolete'),
-      landed: boScores.filter(p => p.stage === '🏠 Landed'),
-      cruising: boScores.filter(p => p.stage === '✈️ Cruising'),
-      orbit: boScores.filter(p => p.stage === '🛸 Orbit'),
-      launch: boScores.filter(p => p.stage === '🚀 Launch')
-    };
-
-    res.json({
-      summary: {
-        totalProjects: projects.length,
-        readyForTransition: readyForTransitionCount,
-        averageScore: Math.round(boScores.reduce((sum, p) => sum + p.score, 0) / boScores.length),
-        byStage: {
-          obsolete: byStage.obsolete.length,
-          landed: byStage.landed.length,
-          cruising: byStage.cruising.length,
-          orbit: byStage.orbit.length,
-          launch: byStage.launch.length
-        },
-        autoCalculated: boScores.filter(p => p.isAutoCalculated).length
-      },
-      projects: boScores,
-      readyForTransition: boScores.filter(p => p.readyForTransition),
-      byStage,
-      calculatedAt: new Date().toISOString()
-    });
-
-  } catch (error) {
-    console.error('Error calculating Beautiful Obsolescence summary:', error);
     res.status(500).json({ error: error.message });
   }
 });
