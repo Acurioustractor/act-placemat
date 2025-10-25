@@ -7,6 +7,7 @@
 
 import express from 'express';
 import ConnectionDiscoveryService from '../services/connectionDiscoveryService.js';
+import ConnectionLinkingService from '../services/connectionLinkingService.js';
 import { logger } from '../utils/logger.js';
 
 const router = express.Router();
@@ -251,5 +252,136 @@ function calculateBOImpact(project, newConnections) {
       : `Already at ${currentDensityPoints} density points`
   };
 }
+
+/**
+ * POST /api/v2/connections/link
+ * Link a single discovered connection
+ */
+router.post('/link', async (req, res) => {
+  try {
+    const { sourceProjectId, targetProjectId, metadata = {}, dryRun = false } = req.body;
+
+    if (!sourceProjectId || !targetProjectId) {
+      return res.status(400).json({ error: 'sourceProjectId and targetProjectId are required' });
+    }
+
+    const { notionService } = req.app.locals;
+    const linkingService = new ConnectionLinkingService(notionService);
+
+    const result = await linkingService.linkConnection(
+      sourceProjectId,
+      targetProjectId,
+      metadata,
+      { dryRun }
+    );
+
+    res.json(result);
+  } catch (error) {
+    logger.error('Failed to link connection:', error);
+    res.status(500).json({ error: 'Failed to link connection', message: error.message });
+  }
+});
+
+/**
+ * POST /api/v2/connections/link-project
+ * Link all discovered connections for a single project
+ */
+router.post('/link-project', async (req, res) => {
+  try {
+    const { projectId, discoveryResults, confidenceThreshold = 0.7, dryRun = false } = req.body;
+
+    if (!projectId || !discoveryResults) {
+      return res.status(400).json({ error: 'projectId and discoveryResults are required' });
+    }
+
+    const { notionService } = req.app.locals;
+    const linkingService = new ConnectionLinkingService(notionService);
+
+    const result = await linkingService.linkProjectConnections(
+      projectId,
+      discoveryResults,
+      { confidenceThreshold, dryRun }
+    );
+
+    res.json(result);
+  } catch (error) {
+    logger.error('Failed to link project connections:', error);
+    res.status(500).json({ error: 'Failed to link project connections', message: error.message });
+  }
+});
+
+/**
+ * POST /api/v2/connections/batch-link
+ * Link connections for all projects from batch discovery
+ */
+router.post('/batch-link', async (req, res) => {
+  try {
+    const { batchDiscoveryResults, confidenceThreshold = 0.7, dryRun = false } = req.body;
+
+    if (!batchDiscoveryResults) {
+      return res.status(400).json({ error: 'batchDiscoveryResults is required' });
+    }
+
+    const { notionService } = req.app.locals;
+    const linkingService = new ConnectionLinkingService(notionService);
+
+    const result = await linkingService.batchLinkConnections(
+      batchDiscoveryResults,
+      { confidenceThreshold, dryRun }
+    );
+
+    res.json(result);
+  } catch (error) {
+    logger.error('Failed to batch link connections:', error);
+    res.status(500).json({ error: 'Failed to batch link connections', message: error.message });
+  }
+});
+
+/**
+ * POST /api/v2/connections/discover-and-link
+ * Convenience endpoint: discover + link in one operation
+ */
+router.post('/discover-and-link', async (req, res) => {
+  try {
+    const { projectId, confidenceThreshold = 0.7, dryRun = false } = req.body;
+
+    if (!projectId) {
+      return res.status(400).json({ error: 'projectId is required' });
+    }
+
+    const { notionService, gmailService } = req.app.locals;
+
+    // Get project
+    const project = await notionService.getProjectById(projectId);
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    // Discover connections (theme-based only, since Gmail requires auth)
+    const discoveryService = new ConnectionDiscoveryService(gmailService, notionService);
+    const discoveryResults = await discoveryService.discoverFromThemes(project);
+
+    // Link discovered connections
+    const linkingService = new ConnectionLinkingService(notionService);
+    const linkingResults = await linkingService.linkProjectConnections(
+      projectId,
+      discoveryResults,
+      { confidenceThreshold, dryRun }
+    );
+
+    res.json({
+      discovery: discoveryResults,
+      linking: linkingResults,
+      summary: {
+        discovered: discoveryResults.discovered?.sameThemeProjects?.length || 0,
+        linked: linkingResults.linked,
+        duplicates: linkingResults.duplicates
+      }
+    });
+  } catch (error) {
+    logger.error('Failed to discover and link:', error);
+    res.status(500).json({ error: 'Failed to discover and link', message: error.message });
+  }
+});
 
 export default router;
