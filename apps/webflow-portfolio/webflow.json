@@ -1,9 +1,5 @@
 {
-  "cosmic": {
-    "framework": "next",
-    "buildCommand": "npm run build",
-    "outputDirectory": ".next",
-    "installCommand": "npm install",
-    "rootDir": "."
+  "cloud": {
+    "framework": "nextjs"
   }
 }
