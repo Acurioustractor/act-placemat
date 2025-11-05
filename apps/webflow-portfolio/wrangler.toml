@@ -1,0 +1,4 @@
+# Minimal wrangler config for OpenNext Cloudflare build
+# This is primarily for Webflow Cloud deployment
+name = "act-portfolio"
+compatibility_date = "2024-11-01"
