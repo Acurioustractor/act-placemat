@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import parse from 'html-react-parser';
 
 export function WebflowLayout({ children }: { children: React.ReactNode }) {
   const [navHtml, setNavHtml] = useState('');
@@ -14,6 +15,7 @@ export function WebflowLayout({ children }: { children: React.ReactNode }) {
         const response = await fetch('/portfolio/api/webflow-layout');
 
         if (!response.ok) {
+          console.error('Failed to fetch layout:', await response.text());
           throw new Error('Failed to fetch layout');
         }
 
@@ -30,13 +32,13 @@ export function WebflowLayout({ children }: { children: React.ReactNode }) {
 
         // Load CSS stylesheets
         if (data.css && data.css.length > 0 && !stylesLoaded) {
-          data.css.forEach((cssTag: string) => {
-            // Extract href from the link tag
-            const hrefMatch = cssTag.match(/href="([^"]*)"/);
-            if (hrefMatch && hrefMatch[1]) {
+          data.css.forEach((href: string) => {
+            // Check if stylesheet is already loaded
+            const existing = document.querySelector(`link[href="${href}"]`);
+            if (!existing) {
               const link = document.createElement('link');
               link.rel = 'stylesheet';
-              link.href = hrefMatch[1];
+              link.href = href;
               document.head.appendChild(link);
             }
           });
@@ -51,25 +53,15 @@ export function WebflowLayout({ children }: { children: React.ReactNode }) {
   }, [stylesLoaded]);
 
   return (
-    <div className="webflow-integrated-layout">
+    <>
       {/* Navigation from Webflow */}
-      {navHtml && (
-        <div
-          dangerouslySetInnerHTML={{ __html: navHtml }}
-          suppressHydrationWarning
-        />
-      )}
+      {navHtml && parse(navHtml)}
 
       {/* Your Next.js content */}
       <main>{children}</main>
 
       {/* Footer from Webflow */}
-      {footerHtml && (
-        <div
-          dangerouslySetInnerHTML={{ __html: footerHtml }}
-          suppressHydrationWarning
-        />
-      )}
-    </div>
+      {footerHtml && parse(footerHtml)}
+    </>
   );
 }

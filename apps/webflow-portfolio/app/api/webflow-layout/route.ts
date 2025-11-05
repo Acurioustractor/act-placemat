@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
+import * as cheerio from 'cheerio';
 
 export async function GET() {
   try {
     const response = await fetch('https://act.place', {
       headers: {
-        'User-Agent': 'Mozilla/5.0',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
       },
     });
 
@@ -13,24 +14,34 @@ export async function GET() {
     }
 
     const html = await response.text();
+    const $ = cheerio.load(html);
 
-    // Extract nav and footer
-    const navMatch = html.match(/<nav[^>]*>[\s\S]*?<\/nav>/i);
-    const footerMatch = html.match(/<footer[^>]*>[\s\S]*?<\/footer>/i);
+    // Extract navigation
+    const nav = $('nav').first();
+    const navHtml = nav.length > 0 ? $.html(nav) : '';
+
+    // Extract footer
+    const footer = $('footer').first();
+    const footerHtml = footer.length > 0 ? $.html(footer) : '';
 
     // Extract CSS links
-    const cssLinks = [...html.matchAll(/<link[^>]*rel="stylesheet"[^>]*>/gi)]
-      .map(match => match[0]);
+    const cssLinks: string[] = [];
+    $('link[rel="stylesheet"]').each((_, elem) => {
+      const href = $(elem).attr('href');
+      if (href) {
+        cssLinks.push(href);
+      }
+    });
 
     return NextResponse.json({
-      nav: navMatch ? navMatch[0] : '',
-      footer: footerMatch ? footerMatch[0] : '',
+      nav: navHtml,
+      footer: footerHtml,
       css: cssLinks,
     });
   } catch (error) {
     console.error('Error fetching Webflow layout:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch layout' },
+      { error: 'Failed to fetch layout', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
