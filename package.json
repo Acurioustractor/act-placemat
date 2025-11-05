@@ -219,6 +219,7 @@
     "axios": "^1.11.0",
     "chalk": "^5.5.0",
     "cors": "^2.8.5",
+    "csv-parse": "^6.1.0",
     "dotenv": "^17.2.2",
     "expo": "~53.0.10",
     "expo-splash-screen": "~0.30.9",

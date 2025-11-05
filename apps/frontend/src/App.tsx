@@ -7,6 +7,7 @@ import CuriousTractorResearch from './components/CuriousTractorResearch'
 import { Opportunities } from './components/tabs/Opportunities'
 import { AboutACT } from './components/AboutACT'
 import { NeedsDashboard } from './components/NeedsDashboard'
+import { InfrastructureDataCollector } from './components/InfrastructureDataCollector'
 
 function App() {
   const [activeTab, setActiveTab] = useState('morning-brief')
@@ -19,6 +20,7 @@ function App() {
     { id: 'morning-brief', name: 'Morning Brief', icon: '🌅', description: 'Daily intelligence digest' },
     { id: 'contacts', name: 'Contacts', icon: '🤝', description: '20K relationship network' },
     { id: 'projects', name: 'Projects', icon: '🏘️', description: 'Portfolio & Beautiful Obsolescence tracking' },
+    { id: 'impact-data', name: 'Impact Data', icon: '📊', description: 'Add infrastructure metrics to projects' },
     { id: 'opportunities', name: 'Opportunities', icon: '💎', description: 'AI-powered grant discovery' },
     { id: 'research', name: 'Research', icon: '🌱', description: 'Curious Tractor deep dives' },
   ]
@@ -108,6 +110,7 @@ function App() {
         {activeTab === 'morning-brief' && <MorningBrief />}
         {activeTab === 'contacts' && <ContactIntelligenceHub />}
         {activeTab === 'projects' && <CommunityProjects />}
+        {activeTab === 'impact-data' && <InfrastructureDataCollector />}
         {activeTab === 'opportunities' && <Opportunities />}
         {activeTab === 'research' && <CuriousTractorResearch />}
       </main>

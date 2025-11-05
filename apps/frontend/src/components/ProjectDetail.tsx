@@ -1,44 +1,18 @@
 import { useState, useEffect } from 'react'
 import { api } from '../services/api'
+import { CommunityLaborValueCard } from './CommunityLaborValueCard'
+import { StorytellingScaleCard } from './StorytellingScaleCard'
+import { GrantDependencyIndicator } from './GrantDependencyIndicator'
+import { ProjectTypeBadge } from './ProjectTypeBadge'
+import type { Project as FullProject } from '../types/project'
 
 interface ProjectDetailProps {
   projectId: string
   onBack: () => void
 }
 
-interface Project {
-  id: string
-  name: string
-  description?: string
-  aiSummary?: string
-  status?: string
-  coverImage?: string
-  projectLead?: { name: string; email?: string }
-  lead?: string
-
-  // Financial
-  actualIncoming?: number
-  potentialIncoming?: number
-  revenueActual?: number
-  revenuePotential?: number
-  totalFunding?: number
-
-  // Categorization
-  theme?: string[]
-  themes?: string[]
-  tags?: string[]
-  coreValues?: string
-
-  // Timeline
-  nextMilestoneDate?: string
-  location?: string
-
-  // Relations
-  relatedOrganisations?: string[]
-  relatedPlaces?: string[]
-  supporters?: number
-  partnerCount?: number
-}
+// Use the full Project type from types/project.ts
+type Project = FullProject
 
 export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
   const [project, setProject] = useState<Project | null>(null)
@@ -144,7 +118,13 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
             </button>
 
             {/* Location and partners */}
-            <div className="flex items-center gap-3 text-white/80 text-sm mb-3">
+            <div className="flex items-center gap-3 text-white/80 text-sm mb-3 flex-wrap">
+              {project.projectType && (
+                <>
+                  <ProjectTypeBadge type={project.projectType} size="md" />
+                  <span>•</span>
+                </>
+              )}
               {displayPlaces.length > 0 && (
                 <>
                   <span>📍</span>
@@ -158,12 +138,15 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
             </div>
 
             <h1 className="text-5xl font-bold text-white mb-4 leading-tight">{project.name}</h1>
+            {project.status && (
+              <div className="text-white/90 text-lg font-medium">{project.status}</div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Main Content - Story Flow */}
-      <div className="max-w-5xl mx-auto px-6 py-12">
+      <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="space-y-10">
           {/* The Story */}
           <section className="bg-white rounded-xl shadow-sm p-8">
@@ -174,6 +157,39 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
               </p>
             </div>
           </section>
+
+          {/* THE IMPACT - Infrastructure Metrics */}
+          {(project.communityLaborMetrics || project.storytellingMetrics || project.grantDependencyMetrics) && (
+            <section className="space-y-6">
+              <h2 className="text-3xl font-bold text-clay-900">The Impact</h2>
+
+              <div className="space-y-6">
+                {/* Community Labor Value */}
+                {project.communityLaborMetrics && (
+                  <CommunityLaborValueCard
+                    metrics={project.communityLaborMetrics}
+                    projectName={project.name}
+                  />
+                )}
+
+                {/* Storytelling Scale */}
+                {project.storytellingMetrics && (
+                  <StorytellingScaleCard
+                    metrics={project.storytellingMetrics}
+                    projectName={project.name}
+                  />
+                )}
+
+                {/* Grant Dependency */}
+                {project.grantDependencyMetrics && (
+                  <GrantDependencyIndicator
+                    metrics={project.grantDependencyMetrics}
+                    projectName={project.name}
+                  />
+                )}
+              </div>
+            </section>
+          )}
 
           {/* The Relationships */}
           {(partners.length > 0 || people.length > 0) && (
