@@ -16,7 +16,9 @@ export function ProjectGrid() {
   useEffect(() => {
     getProjects()
       .then(data => {
-        setProjects(data);
+        // Filter to only show Active projects for public view
+        const activeProjects = data.filter(p => p.status === 'Active 🔥');
+        setProjects(activeProjects);
         setLoading(false);
       })
       .catch(err => {
