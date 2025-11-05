@@ -734,6 +734,17 @@ class NotionService {
     return emailObj?.email || '';
   }
 
+  extractJSONField(richTextArray) {
+    const plainText = this.extractPlainText(richTextArray);
+    if (!plainText) return null;
+    try {
+      return JSON.parse(plainText);
+    } catch (error) {
+      console.warn('⚠️ Failed to parse JSON field:', error.message);
+      return null;
+    }
+  }
+
   extractCheckbox(checkboxObj) {
     return checkboxObj?.checkbox === true;
   }
@@ -1578,6 +1589,12 @@ class NotionService {
           themes: this.extractMultiSelect(page.properties.Theme?.multi_select || []), // Alias for compatibility
           tags: this.extractMultiSelect(page.properties.Tags?.multi_select || []),
           relationshipPillars: this.extractMultiSelect(page.properties['Relationship Pillars']?.multi_select || []),
+
+          // Infrastructure tracking fields - NEW
+          projectType: this.extractSelect(page.properties['Project Type']?.select),
+          communityLaborMetrics: this.extractJSONField(page.properties['Community Labor Metrics']?.rich_text || []),
+          storytellingMetrics: this.extractJSONField(page.properties['Storytelling Metrics']?.rich_text || []),
+          grantDependencyMetrics: this.extractJSONField(page.properties['Grant Dependency Metrics']?.rich_text || []),
 
           // Timeline & Location - EXACT field names from your Notion
           nextMilestoneDate: this.extractDate(page.properties['Next Milestone Date']?.date),

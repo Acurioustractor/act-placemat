@@ -45,34 +45,28 @@ async function getContactStats() {
   }
 
   try {
-    console.log('📊 Fetching contact statistics...');
+    console.log('📊 Fetching contact statistics from linkedin_imports...');
 
-    // Get total count
+    // Get total count from linkedin_imports
     const { count: totalCount, error: countError } = await supabase
-      .from('linkedin_contacts')
+      .from('linkedin_imports')
       .select('*', { count: 'exact', head: true });
 
     if (countError) throw countError;
 
-    // Get count with email
-    const { count: withEmailCount, error: emailError } = await supabase
-      .from('linkedin_contacts')
-      .select('*', { count: 'exact', head: true })
-      .not('email_address', 'is', null);
-
-    if (emailError) throw emailError;
-
     const stats = {
       total_contacts: totalCount || 0,
-      contacts_with_email: withEmailCount || 0,
-      contacts_without_email: (totalCount || 0) - (withEmailCount || 0)
+      contacts_with_email: 0, // LinkedIn imports only have names
+      contacts_without_email: totalCount || 0,
+      data_source: 'linkedin_imports',
+      note: 'LinkedIn imports contain names only. Full contact data needs re-import from LinkedIn CSV.'
     };
 
     // Update cache
     statsCache.data = stats;
     statsCache.lastFetch = now;
 
-    console.log(`✅ Contact stats: ${stats.total_contacts} total, ${stats.contacts_with_email} with email`);
+    console.log(`✅ Contact stats: ${stats.total_contacts} total from linkedin_imports`);
     return stats;
 
   } catch (error) {
@@ -90,50 +84,61 @@ async function searchContacts(query = '', hasEmail = false, industry = '', locat
   }
 
   try {
-    console.log(`🔍 Searching contacts: "${query}" (hasEmail: ${hasEmail}, industry: ${industry}, location: ${location}, limit: ${limit})`);
+    console.log(`🔍 Searching linkedin_imports: "${query}" (limit: ${limit})`);
 
     let queryBuilder = supabase
-      .from('linkedin_contacts')
-      .select('id, full_name, email_address, current_company, current_position, location, industry')
-      // Always filter out contacts with blank/null names
-      .not('full_name', 'is', null)
-      .neq('full_name', '')
-      .neq('full_name', ' ');
-
-    // Apply filters
-    if (query && query.trim()) {
-      // Search across multiple fields
-      queryBuilder = queryBuilder.or(
-        `full_name.ilike.%${query}%,` +
-        `current_company.ilike.%${query}%,` +
-        `current_position.ilike.%${query}%,` +
-        `industry.ilike.%${query}%`
-      );
-    }
-
-    if (hasEmail) {
-      queryBuilder = queryBuilder.not('email_address', 'is', null).not('email_address', 'eq', '');
-    }
-
-    if (industry && industry.trim()) {
-      queryBuilder = queryBuilder.ilike('industry', `%${industry}%`);
-    }
-
-    if (location && location.trim()) {
-      queryBuilder = queryBuilder.ilike('location', `%${location}%`);
-    }
-
-    // Apply limit and ordering
-    const { data, error } = await queryBuilder
-      .order('full_name', { ascending: true})
+      .from('linkedin_imports')
+      .select('id, payload, imported_at')
+      .order('imported_at', { ascending: false })
       .limit(limit);
+
+    // Apply search filter on payload->Notes: field
+    if (query && query.trim()) {
+      queryBuilder = queryBuilder.ilike('payload->>Notes:', `%${query}%`);
+    }
+
+    const { data, error } = await queryBuilder;
 
     if (error) throw error;
 
-    // Return all contacts - let frontend handle filtering if needed
-    const validContacts = data || [];
+    // Debug: Log first record to see what we're getting
+    if (data && data.length > 0) {
+      console.log('📝 Sample record from DB:', JSON.stringify(data[0]));
+    }
 
-    console.log(`✅ Found ${validContacts.length} contacts`);
+    // Transform linkedin_imports to match Contact interface
+    const validContacts = (data || []).map(record => {
+      const payload = record.payload || {};
+
+      // Handle two different LinkedIn CSV formats
+      let name = 'Unknown Contact';
+      if (payload['Notes:']) {
+        // Older format: Notes field contains the full name
+        name = payload['Notes:'];
+      } else if (payload['First Name'] || payload['Last Name']) {
+        // Newer format: Separate First Name and Last Name fields
+        const firstName = payload['First Name'] || '';
+        const lastName = payload['Last Name'] || '';
+        name = `${firstName} ${lastName}`.trim();
+      }
+
+      return {
+        id: record.id,
+        full_name: name,
+        email_address: payload['Email Address'] || null,
+        current_company: payload['Company'] || null,
+        current_position: payload['Position'] || null,
+        location: null,
+        industry: null,
+        profile_picture_url: null,
+        relationship_strength: null,
+        last_contact_date: record.imported_at,
+        data_source: 'linkedin_import',
+        imported_at: record.imported_at
+      };
+    });
+
+    console.log(`✅ Found ${validContacts.length} contacts from linkedin_imports`);
     if (validContacts.length > 0) {
       console.log(`   Sample names: ${validContacts.slice(0, 3).map(c => c.full_name).join(', ')}`);
     }
@@ -155,13 +160,37 @@ async function getContactById(id) {
 
   try {
     const { data, error } = await supabase
-      .from('linkedin_contacts')
+      .from('linkedin_imports')
       .select('*')
       .eq('id', id)
       .single();
 
     if (error) throw error;
-    return data;
+
+    // Transform to Contact interface
+    const payload = data.payload || {};
+
+    // Handle two different LinkedIn CSV formats
+    let name = 'Unknown Contact';
+    if (payload['Notes:']) {
+      name = payload['Notes:'];
+    } else if (payload['First Name'] || payload['Last Name']) {
+      const firstName = payload['First Name'] || '';
+      const lastName = payload['Last Name'] || '';
+      name = `${firstName} ${lastName}`.trim();
+    }
+
+    return {
+      id: data.id,
+      full_name: name,
+      email_address: payload['Email Address'] || null,
+      current_company: payload['Company'] || null,
+      current_position: payload['Position'] || null,
+      location: null,
+      industry: null,
+      data_source: 'linkedin_import',
+      imported_at: data.imported_at
+    };
 
   } catch (error) {
     console.error('❌ Error fetching contact:', error.message);

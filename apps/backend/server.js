@@ -105,6 +105,9 @@ import projectHealthRoutes from './core/src/api/projectHealth.js';
 // Connection Discovery API - Auto-discover project connections via Gmail + AI
 import connectionDiscoveryRoutes from './core/src/api/connectionDiscovery.js';
 
+// Contact Intelligence API - Strategic contact management & tier assignment
+import contactIntelligenceRoutes from './core/src/api/contact-intelligence.js';
+
 // Opportunities API - Grant discovery & application tracking
 import opportunitiesRoutes from './core/src/api/opportunities.js';
 opportunitiesRoutes(app);
@@ -112,6 +115,10 @@ opportunitiesRoutes(app);
 // Contacts API - LinkedIn contact intelligence
 import contactsRoutes from './core/src/api/contacts.js';
 contactsRoutes(app);
+
+// LinkedIn Contacts API - Properly imported CSV connections (4,459 contacts)
+import linkedinContactsRouter from './core/src/api/linkedin-contacts.js';
+app.use('/api/contacts/linkedin', linkedinContactsRouter);
 
 // Morning Brief API - Daily intelligence digest
 import morningBriefRoutes from './core/src/api/morningBrief.js';
@@ -180,6 +187,9 @@ app.use('/api/v2/projects', projectHealthRoutes);
 
 // Mount Connection Discovery API
 app.use('/api/v2/connections', connectionDiscoveryRoutes);
+
+// Mount Contact Intelligence API
+app.use('/api/contact-intelligence', contactIntelligenceRoutes);
 
 // Proper caching with no spam
 let projectsCache = {
@@ -873,6 +883,68 @@ app.get('/api/stories', (req, res) => {
     stories: [],
     message: 'Stories feature not configured'
   });
+});
+
+// Update project infrastructure data
+app.post('/api/projects/:projectId/infrastructure', async (req, res) => {
+  try {
+    const { projectId } = req.params;
+    const { projectType, communityLaborMetrics, storytellingMetrics, grantDependencyMetrics } = req.body;
+
+    console.log(`📊 Updating infrastructure data for project: ${projectId}`);
+
+    const properties = {};
+
+    // Project Type - use select field
+    if (projectType) {
+      properties['Project Type'] = {
+        select: { name: projectType }
+      };
+    }
+
+    // Community Labor Metrics - store as JSON in rich_text
+    if (communityLaborMetrics) {
+      properties['Community Labor Metrics'] = {
+        rich_text: [{
+          text: { content: JSON.stringify(communityLaborMetrics) }
+        }]
+      };
+    }
+
+    // Storytelling Metrics - store as JSON in rich_text
+    if (storytellingMetrics) {
+      properties['Storytelling Metrics'] = {
+        rich_text: [{
+          text: { content: JSON.stringify(storytellingMetrics) }
+        }]
+      };
+    }
+
+    // Grant Dependency Metrics - store as JSON in rich_text
+    if (grantDependencyMetrics) {
+      properties['Grant Dependency Metrics'] = {
+        rich_text: [{
+          text: { content: JSON.stringify(grantDependencyMetrics) }
+        }]
+      };
+    }
+
+    // Update in Notion
+    await notionService.updatePage(projectId, properties);
+
+    console.log(`✅ Infrastructure data updated successfully`);
+
+    res.json({
+      success: true,
+      message: 'Infrastructure data saved to Notion'
+    });
+  } catch (error) {
+    console.error('❌ Failed to update infrastructure data:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 // Initial data load

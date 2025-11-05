@@ -1,19 +1,27 @@
 import { NextResponse } from 'next/server';
 import * as cheerio from 'cheerio';
+import axios from 'axios';
+import https from 'https';
 
 export async function GET() {
   try {
-    const response = await fetch('https://act.place', {
+    // Create axios instance with SSL support and complete browser headers
+    const response = await axios.get('https://act.place', {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache',
       },
+      httpsAgent: new https.Agent({
+        rejectUnauthorized: false, // For development - bypasses SSL verification
+      }),
+      timeout: 10000, // 10 second timeout
     });
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch: ${response.status}`);
-    }
-
-    const html = await response.text();
+    const html = response.data;
     const $ = cheerio.load(html);
 
     // Extract navigation
