@@ -206,7 +206,11 @@ export default async function ProjectPage({ params }: PageProps) {
                   {(project.projectLead || project.lead) && (
                     <div>
                       <p className="text-sm text-gray-600 mb-1">Project Lead</p>
-                      <p className="font-medium text-gray-800">{project.projectLead || project.lead}</p>
+                      <p className="font-medium text-gray-800">
+                        {typeof project.projectLead === 'object' && project.projectLead !== null
+                          ? (project.projectLead as any).name
+                          : project.projectLead || project.lead}
+                      </p>
                     </div>
                   )}
                   {project.notionUrl && (

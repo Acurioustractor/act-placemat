@@ -35,7 +35,7 @@ export interface Project {
   notionUrl?: string;
 
   // Contact & Team
-  projectLead?: string | null;
+  projectLead?: string | null | { id: string; name: string; avatarUrl?: string; type: string };
   lead?: string;
 
   // Funding
