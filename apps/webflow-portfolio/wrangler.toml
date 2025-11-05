@@ -1,4 +1,16 @@
-# Minimal wrangler config for OpenNext Cloudflare build
-# This is primarily for Webflow Cloud deployment
+# Cloudflare Workers configuration for ACT Project Portfolio
 name = "act-portfolio"
+main = ".open-next/worker.js"
 compatibility_date = "2024-11-01"
+
+# Environment variables
+[vars]
+NEXT_PUBLIC_API_URL = "https://act-backend-production.up.railway.app"
+
+# Workers settings
+workers_dev = true
+routes = []
+
+# Asset configuration
+[site]
+bucket = ".open-next/assets"
