@@ -9,10 +9,43 @@ export interface Project {
   themes?: string[];
   relatedPlaces?: Array<{ displayName: string; [key: string]: any }>;
   relatedOrganisations?: string[];
+  relatedPeople?: string[];
   autonomyScore?: number;
   rocketBoosterStage?: string;
   coverImage?: string | null;
   storytellerCount?: number;
+
+  // Timeline & Dates
+  startDate?: string | null;
+  endDate?: string | null;
+  nextMilestoneDate?: string | null;
+  notionCreatedAt?: string;
+  notionLastEditedAt?: string;
+  updatedAt?: string;
+
+  // Impact Metrics
+  supporters?: number;
+  partnerCount?: number;
+
+  // Resources & Links
+  relatedResources?: string[];
+  relatedArtifacts?: string[];
+  relatedConversations?: string[];
+  relatedOpportunities?: string[];
+  notionUrl?: string;
+
+  // Contact & Team
+  projectLead?: string | null;
+  lead?: string;
+
+  // Funding
+  funding?: string;
+  budget?: number;
+  totalFunding?: number;
+
+  // Other
+  featured?: boolean;
+  projectType?: string;
 }
 
 export async function getProjects(): Promise<Project[]> {
