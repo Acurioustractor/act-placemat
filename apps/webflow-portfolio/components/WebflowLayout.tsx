@@ -11,7 +11,7 @@ export function WebflowLayout({ children }: { children: React.ReactNode }) {
     // Fetch the Webflow layout via our API route
     async function fetchWebflowLayout() {
       try {
-        const response = await fetch('/api/webflow-layout');
+        const response = await fetch('/portfolio/api/webflow-layout');
 
         if (!response.ok) {
           throw new Error('Failed to fetch layout');

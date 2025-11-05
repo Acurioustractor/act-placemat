@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { WebflowLayout } from '../components/WebflowLayout';
+import { ACTNavigation } from '../components/ACTNavigation';
+import { ACTFooter } from '../components/ACTFooter';
 
 export const metadata: Metadata = {
   title: 'ACT Project Portfolio',
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <WebflowLayout>{children}</WebflowLayout>
+        <ACTNavigation />
+        {children}
+        <ACTFooter />
       </body>
     </html>
   );
