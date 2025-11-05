@@ -8,47 +8,38 @@ export function WebflowLayout({ children }: { children: React.ReactNode }) {
   const [stylesLoaded, setStylesLoaded] = useState(false);
 
   useEffect(() => {
-    // Fetch the Webflow page to extract nav and footer
+    // Fetch the Webflow layout via our API route
     async function fetchWebflowLayout() {
       try {
-        const response = await fetch('https://act.place');
-        const html = await response.text();
+        const response = await fetch('/api/webflow-layout');
 
-        // Parse the HTML
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-
-        // Extract navigation
-        const nav = doc.querySelector('nav') || doc.querySelector('[data-w-id*="nav"]') || doc.querySelector('.navbar');
-        if (nav) {
-          setNavHtml(nav.outerHTML);
+        if (!response.ok) {
+          throw new Error('Failed to fetch layout');
         }
 
-        // Extract footer
-        const footer = doc.querySelector('footer') || doc.querySelector('[data-w-id*="footer"]');
-        if (footer) {
-          setFooterHtml(footer.outerHTML);
+        const data = await response.json();
+
+        // Set nav and footer HTML
+        if (data.nav) {
+          setNavHtml(data.nav);
         }
 
-        // Load Webflow CSS if not already loaded
-        if (!document.querySelector('link[href*="webflow"]')) {
-          const webflowCss = doc.querySelector('link[href*="webflow"]');
-          const siteCss = doc.querySelector('link[href*=".css"]:not([href*="webflow"])');
+        if (data.footer) {
+          setFooterHtml(data.footer);
+        }
 
-          if (webflowCss) {
-            const link1 = document.createElement('link');
-            link1.rel = 'stylesheet';
-            link1.href = webflowCss.getAttribute('href') || '';
-            document.head.appendChild(link1);
-          }
-
-          if (siteCss) {
-            const link2 = document.createElement('link');
-            link2.rel = 'stylesheet';
-            link2.href = siteCss.getAttribute('href') || '';
-            document.head.appendChild(link2);
-          }
-
+        // Load CSS stylesheets
+        if (data.css && data.css.length > 0 && !stylesLoaded) {
+          data.css.forEach((cssTag: string) => {
+            // Extract href from the link tag
+            const hrefMatch = cssTag.match(/href="([^"]*)"/);
+            if (hrefMatch && hrefMatch[1]) {
+              const link = document.createElement('link');
+              link.rel = 'stylesheet';
+              link.href = hrefMatch[1];
+              document.head.appendChild(link);
+            }
+          });
           setStylesLoaded(true);
         }
       } catch (error) {
@@ -57,7 +48,7 @@ export function WebflowLayout({ children }: { children: React.ReactNode }) {
     }
 
     fetchWebflowLayout();
-  }, []);
+  }, [stylesLoaded]);
 
   return (
     <div className="webflow-integrated-layout">
