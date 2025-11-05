@@ -132,3 +132,4 @@ tmp/
 # tasks.json
 # tasks/ 
 apps/backend/google-tokens.json
+apps/backend/core/.gmail_tokens.json
