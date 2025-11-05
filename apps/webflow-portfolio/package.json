@@ -4,9 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",
-    "build": "NODE_ENV=production next build && NODE_ENV=production npx @opennextjs/cloudflare build --skip-build",
-    "build:next": "NODE_ENV=production next build",
-    "build:cloudflare": "NODE_ENV=production npx @opennextjs/cloudflare build --skip-build",
+    "build": "next build",
+    "build:standalone": "next build && npx @opennextjs/cloudflare build --skip-build",
     "start": "next start",
     "lint": "next lint"
   },
