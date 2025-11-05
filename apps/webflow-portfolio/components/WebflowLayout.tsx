@@ -2,11 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import parse from 'html-react-parser';
+import { ACTNavigation } from './ACTNavigation';
+import { ACTFooter } from './ACTFooter';
 
 export function WebflowLayout({ children }: { children: React.ReactNode }) {
   const [navHtml, setNavHtml] = useState('');
   const [footerHtml, setFooterHtml] = useState('');
   const [stylesLoaded, setStylesLoaded] = useState(false);
+  const [useFallback, setUseFallback] = useState(false);
 
   useEffect(() => {
     // Fetch the Webflow layout via our API route
@@ -15,11 +18,19 @@ export function WebflowLayout({ children }: { children: React.ReactNode }) {
         const response = await fetch('/portfolio/api/webflow-layout');
 
         if (!response.ok) {
-          console.error('Failed to fetch layout:', await response.text());
-          throw new Error('Failed to fetch layout');
+          console.warn('Failed to fetch Webflow layout, using fallback components');
+          setUseFallback(true);
+          return;
         }
 
         const data = await response.json();
+
+        // If API returned error, use fallback
+        if (data.error) {
+          console.warn('API error, using fallback components:', data.error);
+          setUseFallback(true);
+          return;
+        }
 
         // Set nav and footer HTML
         if (data.nav) {
@@ -45,12 +56,24 @@ export function WebflowLayout({ children }: { children: React.ReactNode }) {
           setStylesLoaded(true);
         }
       } catch (error) {
-        console.error('Failed to fetch Webflow layout:', error);
+        console.warn('Failed to fetch Webflow layout, using fallback components:', error);
+        setUseFallback(true);
       }
     }
 
     fetchWebflowLayout();
   }, [stylesLoaded]);
+
+  // Use fallback components if fetch failed (for development)
+  if (useFallback || (!navHtml && !footerHtml)) {
+    return (
+      <>
+        <ACTNavigation />
+        <main>{children}</main>
+        <ACTFooter />
+      </>
+    );
+  }
 
   return (
     <>
