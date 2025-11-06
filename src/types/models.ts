@@ -54,6 +54,7 @@ export interface Project {
   artifacts: string[];
   websiteLinks: string;
   lastModified: Date;
+  [key: string]: unknown;
 }
 
 export interface Opportunity {
@@ -84,6 +85,7 @@ export interface Opportunity {
   riskAssessment: string;
   notes: string;
   lastModified: Date;
+  [key: string]: unknown;
 }
 
 export interface Organization {
@@ -111,6 +113,7 @@ export interface Organization {
   nextContactDate?: Date;
   notes: string;
   lastModified: Date;
+  [key: string]: unknown;
 }
 
 export interface Person {
@@ -138,6 +141,7 @@ export interface Person {
   birthday?: Date;
   personalInterests: string;
   lastModified: Date;
+  [key: string]: unknown;
 }
 
 export interface Artifact {
@@ -163,4 +167,5 @@ export interface Artifact {
   tags: string[];
   usageNotes: string;
   lastModified: Date;
+  [key: string]: unknown;
 }

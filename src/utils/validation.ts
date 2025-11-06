@@ -20,7 +20,17 @@ export interface ValidationResult {
   errors: string[];
 }
 
-// Generic validation helper
+/**
+ * Validates that a value is not null, undefined, or empty string.
+ * Generic validation helper used across all validation functions.
+ *
+ * @param {unknown} value - The value to validate
+ * @param {string} fieldName - The name of the field being validated (for error messages)
+ * @returns {string | null} Error message if validation fails, null if valid
+ * @example
+ * const error = validateRequired(project.name, 'Project name');
+ * if (error) console.error(error);
+ */
 export function validateRequired(value: unknown, fieldName: string): string | null {
   if (value === null || value === undefined || value === '') {
     return `${fieldName} is required`;
@@ -28,6 +38,16 @@ export function validateRequired(value: unknown, fieldName: string): string | nu
   return null;
 }
 
+/**
+ * Validates email address format using regex pattern.
+ * Checks for basic email structure: localpart@domain.tld
+ *
+ * @param {string} email - The email address to validate
+ * @returns {string | null} Error message if invalid, null if valid
+ * @example
+ * const error = validateEmail('user@example.com');
+ * if (!error) console.log('Email is valid');
+ */
 export function validateEmail(email: string): string | null {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
@@ -36,6 +56,16 @@ export function validateEmail(email: string): string | null {
   return null;
 }
 
+/**
+ * Validates URL format using the URL constructor.
+ * Checks if the string is a valid, parseable URL.
+ *
+ * @param {string} url - The URL to validate
+ * @returns {string | null} Error message if invalid, null if valid
+ * @example
+ * const error = validateUrl('https://example.com');
+ * if (!error) console.log('URL is valid');
+ */
 export function validateUrl(url: string): string | null {
   try {
     new URL(url);
@@ -45,6 +75,16 @@ export function validateUrl(url: string): string | null {
   }
 }
 
+/**
+ * Validates phone number format using regex pattern.
+ * Accepts international format with optional + prefix and up to 16 digits.
+ *
+ * @param {string} phone - The phone number to validate
+ * @returns {string | null} Error message if invalid, null if valid
+ * @example
+ * const error = validatePhone('+1234567890');
+ * if (!error) console.log('Phone number is valid');
+ */
 export function validatePhone(phone: string): string | null {
   const phoneRegex = /^[+]?[1-9][\d]{0,15}$/;
   if (!phoneRegex.test(phone.replace(/[\s\-()]/g, ''))) {
@@ -53,6 +93,19 @@ export function validatePhone(phone: string): string | null {
   return null;
 }
 
+/**
+ * Validates that a value exists in a TypeScript enum.
+ * Checks if the provided value matches any enum value.
+ *
+ * @template T - The enum type
+ * @param {string} value - The value to validate against the enum
+ * @param {T} enumObject - The TypeScript enum object
+ * @param {string} fieldName - The name of the field being validated (for error messages)
+ * @returns {string | null} Error message listing valid values if invalid, null if valid
+ * @example
+ * const error = validateEnum(status, ProjectStatus, 'Project status');
+ * if (error) console.error(error);
+ */
 export function validateEnum<T extends object>(value: string, enumObject: T, fieldName: string): string | null {
   const enumValues = Object.values(enumObject);
   if (!enumValues.includes(value)) {
@@ -61,7 +114,18 @@ export function validateEnum<T extends object>(value: string, enumObject: T, fie
   return null;
 }
 
-// Project validation
+/**
+ * Validates a project object comprehensively.
+ * Checks required fields, enum values, numeric ranges, and URL formats.
+ *
+ * @param {Partial<Project>} project - The project object to validate (can be partial for updates)
+ * @returns {ValidationResult} Object containing isValid flag and array of error messages
+ * @example
+ * const result = validateProject(projectData);
+ * if (!result.isValid) {
+ *   console.error('Validation errors:', result.errors);
+ * }
+ */
 export function validateProject(project: Partial<Project>): ValidationResult {
   const errors: string[] = [];
 
@@ -113,7 +177,18 @@ export function validateProject(project: Partial<Project>): ValidationResult {
   };
 }
 
-// Opportunity validation
+/**
+ * Validates an opportunity object comprehensively.
+ * Checks required fields, enum values, numeric ranges, and probability bounds.
+ *
+ * @param {Partial<Opportunity>} opportunity - The opportunity object to validate (can be partial for updates)
+ * @returns {ValidationResult} Object containing isValid flag and array of error messages
+ * @example
+ * const result = validateOpportunity(opportunityData);
+ * if (!result.isValid) {
+ *   console.error('Validation errors:', result.errors);
+ * }
+ */
 export function validateOpportunity(opportunity: Partial<Opportunity>): ValidationResult {
   const errors: string[] = [];
 
@@ -155,7 +230,18 @@ export function validateOpportunity(opportunity: Partial<Opportunity>): Validati
   };
 }
 
-// Organization validation
+/**
+ * Validates an organization object comprehensively.
+ * Checks required fields, enum values, numeric ranges, and URL formats.
+ *
+ * @param {Partial<Organization>} organization - The organization object to validate (can be partial for updates)
+ * @returns {ValidationResult} Object containing isValid flag and array of error messages
+ * @example
+ * const result = validateOrganization(orgData);
+ * if (!result.isValid) {
+ *   console.error('Validation errors:', result.errors);
+ * }
+ */
 export function validateOrganization(organization: Partial<Organization>): ValidationResult {
   const errors: string[] = [];
 
@@ -194,7 +280,18 @@ export function validateOrganization(organization: Partial<Organization>): Valid
   };
 }
 
-// Person validation
+/**
+ * Validates a person/contact object comprehensively.
+ * Checks required fields, email format, phone format, and URL formats.
+ *
+ * @param {Partial<Person>} person - The person object to validate (can be partial for updates)
+ * @returns {ValidationResult} Object containing isValid flag and array of error messages
+ * @example
+ * const result = validatePerson(personData);
+ * if (!result.isValid) {
+ *   console.error('Validation errors:', result.errors);
+ * }
+ */
 export function validatePerson(person: Partial<Person>): ValidationResult {
   const errors: string[] = [];
 
@@ -229,7 +326,18 @@ export function validatePerson(person: Partial<Person>): ValidationResult {
   };
 }
 
-// Artifact validation
+/**
+ * Validates an artifact/document object comprehensively.
+ * Checks required fields, URL formats, and version numbers.
+ *
+ * @param {Partial<Artifact>} artifact - The artifact object to validate (can be partial for updates)
+ * @returns {ValidationResult} Object containing isValid flag and array of error messages
+ * @example
+ * const result = validateArtifact(artifactData);
+ * if (!result.isValid) {
+ *   console.error('Validation errors:', result.errors);
+ * }
+ */
 export function validateArtifact(artifact: Partial<Artifact>): ValidationResult {
   const errors: string[] = [];
 
@@ -260,22 +368,63 @@ export function validateArtifact(artifact: Partial<Artifact>): ValidationResult 
   };
 }
 
-// Generic form validation helper
+/**
+ * Generic form validation wrapper.
+ * Applies a specific validator function to form data.
+ *
+ * @template T - The data type being validated
+ * @param {Partial<T>} data - The form data to validate
+ * @param {(data: Partial<T>) => ValidationResult} validator - The validator function to apply
+ * @returns {ValidationResult} Object containing isValid flag and array of error messages
+ * @example
+ * const result = validateForm(projectFormData, validateProject);
+ * if (!result.isValid) {
+ *   setErrors(result.errors);
+ * }
+ */
 export function validateForm<T>(data: Partial<T>, validator: (data: Partial<T>) => ValidationResult): ValidationResult {
   return validator(data);
 }
 
-// Utility to check if a date is valid
+/**
+ * Checks if a value is a valid Date object.
+ * Verifies the value is an instance of Date and not Invalid Date.
+ *
+ * @param {unknown} date - The value to check
+ * @returns {boolean} True if valid date, false otherwise
+ * @example
+ * if (isValidDate(project.startDate)) {
+ *   console.log('Start date is valid');
+ * }
+ */
 export function isValidDate(date: unknown): boolean {
   return date instanceof Date && !isNaN(date.getTime());
 }
 
-// Utility to sanitize string input
+/**
+ * Sanitizes string input by removing potentially dangerous characters.
+ * Trims whitespace and removes angle brackets to prevent XSS attacks.
+ *
+ * @param {string} input - The string to sanitize
+ * @returns {string} Sanitized string with whitespace trimmed and angle brackets removed
+ * @example
+ * const cleanName = sanitizeString(userInput);
+ */
 export function sanitizeString(input: string): string {
   return input.trim().replace(/[<>]/g, '');
 }
 
-// Utility to validate array of strings
+/**
+ * Validates that a value is an array of strings.
+ * Checks array type and ensures all elements are strings.
+ *
+ * @param {unknown} arr - The value to validate
+ * @param {string} fieldName - The name of the field being validated (for error messages)
+ * @returns {string | null} Error message if validation fails, null if valid
+ * @example
+ * const error = validateStringArray(project.tags, 'Tags');
+ * if (error) console.error(error);
+ */
 export function validateStringArray(arr: unknown, fieldName: string): string | null {
   if (!Array.isArray(arr)) {
     return `${fieldName} must be an array`;

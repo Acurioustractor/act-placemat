@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Card from './Card';
 import Badge from './Badge';
 import Button from './Button';
@@ -43,21 +43,17 @@ const ModernFilterPanel = ({
     return value !== undefined && value !== null && value !== '';
   }).length;
 
-  useEffect(() => {
-    setActiveFilters(filters);
-  }, [filters]);
-
   const handleFilterChange = (filterId: string, value: unknown) => {
     const newFilters = { ...filters, [filterId]: value };
     onFiltersChange(newFilters);
   };
 
   const handleMultiSelectToggle = (filterId: string, optionValue: string) => {
-    const currentValues = filters[filterId] || [];
+    const currentValues = (filters[filterId] as string[] | undefined) || [];
     const newValues = currentValues.includes(optionValue)
       ? currentValues.filter((v: string) => v !== optionValue)
       : [...currentValues, optionValue];
-    
+
     handleFilterChange(filterId, newValues.length > 0 ? newValues : undefined);
   };
 
@@ -107,7 +103,7 @@ const ModernFilterPanel = ({
               {option.label}
             </label>
             <select
-              value={currentValue || ''}
+              value={(currentValue as string | undefined) || ''}
               onChange={(e) => handleFilterChange(option.id, e.target.value || undefined)}
               className="input-modern select-modern"
             >
@@ -126,19 +122,20 @@ const ModernFilterPanel = ({
           opt.label.toLowerCase().includes(searchValue.toLowerCase())
         ) || [];
 
+        const currentMultiValue = currentValue as string[] | undefined;
         return (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <label className="block text-sm font-medium text-gray-700">
                 {option.label}
               </label>
-              {currentValue?.length > 0 && (
+              {(currentMultiValue?.length || 0) > 0 && (
                 <Badge variant="primary" className="text-xs">
-                  {currentValue.length} selected
+                  {currentMultiValue?.length || 0} selected
                 </Badge>
               )}
             </div>
-            
+
             {/* Search within options */}
             {option.options && option.options.length > 5 && (
               <div className="relative">
@@ -156,10 +153,10 @@ const ModernFilterPanel = ({
                 </div>
               </div>
             )}
-            
+
             <div className="max-h-48 overflow-y-auto space-y-1">
               {filteredOptions.map((opt) => {
-                const isSelected = currentValue?.includes(opt.value);
+                const isSelected = currentMultiValue?.includes(opt.value);
                 return (
                   <button
                     key={opt.value}
@@ -217,7 +214,8 @@ const ModernFilterPanel = ({
         );
       }
 
-      case 'range':
+      case 'range': {
+        const currentRangeValue = currentValue as { min?: number; max?: number } | undefined;
         return (
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
@@ -230,9 +228,9 @@ const ModernFilterPanel = ({
                   placeholder="Min"
                   min={option.min}
                   max={option.max}
-                  value={currentValue?.min || ''}
+                  value={currentRangeValue?.min || ''}
                   onChange={(e) => handleFilterChange(option.id, {
-                    ...currentValue,
+                    ...(currentRangeValue || {}),
                     min: e.target.value ? parseInt(e.target.value) : undefined
                   })}
                   className="input-modern text-sm"
@@ -244,9 +242,9 @@ const ModernFilterPanel = ({
                   placeholder="Max"
                   min={option.min}
                   max={option.max}
-                  value={currentValue?.max || ''}
+                  value={currentRangeValue?.max || ''}
                   onChange={(e) => handleFilterChange(option.id, {
-                    ...currentValue,
+                    ...(currentRangeValue || {}),
                     max: e.target.value ? parseInt(e.target.value) : undefined
                   })}
                   className="input-modern text-sm"
@@ -255,8 +253,10 @@ const ModernFilterPanel = ({
             </div>
           </div>
         );
+      }
 
-      case 'date':
+      case 'date': {
+        const currentDateValue = currentValue as { start?: string; end?: string } | undefined;
         return (
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
@@ -266,9 +266,9 @@ const ModernFilterPanel = ({
               <div>
                 <input
                   type="date"
-                  value={currentValue?.start || ''}
+                  value={currentDateValue?.start || ''}
                   onChange={(e) => handleFilterChange(option.id, {
-                    ...currentValue,
+                    ...(currentDateValue || {}),
                     start: e.target.value || undefined
                   })}
                   className="input-modern text-sm"
@@ -277,9 +277,9 @@ const ModernFilterPanel = ({
               <div>
                 <input
                   type="date"
-                  value={currentValue?.end || ''}
+                  value={currentDateValue?.end || ''}
                   onChange={(e) => handleFilterChange(option.id, {
-                    ...currentValue,
+                    ...(currentDateValue || {}),
                     end: e.target.value || undefined
                   })}
                   className="input-modern text-sm"
@@ -288,6 +288,7 @@ const ModernFilterPanel = ({
             </div>
           </div>
         );
+      }
 
       default:
         return null;
@@ -380,13 +381,14 @@ const ModernFilterPanel = ({
                   </Badge>
                 ));
               } else if (typeof value === 'object' && value !== null) {
+                const rangeValue = value as { min?: number; max?: number };
                 return (
                   <Badge
                     key={key}
                     variant="primary"
                     className="text-xs border border-primary-200"
                   >
-                    {option.label}: {value.min || '0'} - {value.max || '∞'}
+                    {option.label}: {rangeValue.min || '0'} - {rangeValue.max || '∞'}
                     <button
                       onClick={() => handleFilterChange(key, undefined)}
                       className="ml-1 hover:text-primary-900"
@@ -402,7 +404,7 @@ const ModernFilterPanel = ({
                     variant="primary"
                     className="text-xs border border-primary-200"
                   >
-                    {option.label}: {value}
+                    {option.label}: {String(value)}
                     <button
                       onClick={() => handleFilterChange(key, undefined)}
                       className="ml-1 hover:text-primary-900"

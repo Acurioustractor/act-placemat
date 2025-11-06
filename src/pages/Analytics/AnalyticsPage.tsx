@@ -68,7 +68,7 @@ const AnalyticsPage = () => {
             ].map((view) => (
               <button
                 key={view.id}
-                onClick={() => setActiveView(view.id as 'overview' | 'projects' | 'opportunities' | 'network' | 'trends')}
+                onClick={() => setActiveView(view.id as 'overview' | 'predictive' | 'network' | 'trends')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   activeView === view.id
                     ? 'text-white shadow-sm'

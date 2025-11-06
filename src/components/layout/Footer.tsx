@@ -1,3 +1,4 @@
+import { ACT_PROFIT_SHARING } from '../../constants';
 
 /**
  * Application footer component

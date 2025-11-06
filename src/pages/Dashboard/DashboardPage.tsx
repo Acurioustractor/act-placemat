@@ -1,6 +1,9 @@
 import CommunityImpactRadar from '../../components/charts/CommunityImpactRadar';
 import GeographicImpactMap from '../../components/charts/GeographicImpactMap';
 import OpportunityPipelineFunnel from '../../components/charts/OpportunityPipelineFunnel';
+import Card from '../../components/ui/Card';
+import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import ConnectionStatus from '../../components/ui/ConnectionStatus';
 import { useProjects, useOpportunities, useOrganizations, usePeople } from '../../hooks';
 import { PROJECT_AREAS } from '../../constants';
 import { ProjectStatus, RelationshipStatus } from '../../types';

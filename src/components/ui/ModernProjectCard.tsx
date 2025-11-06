@@ -1,21 +1,7 @@
 import { useState } from 'react';
 import Badge from './Badge';
 import Button from './Button';
-
-interface Project {
-  id: string;
-  name: string;
-  description: string;
-  status: string;
-  themes: string[];
-  lead: string;
-  location: string;
-  state: string;
-  revenueActual: number;
-  revenuePotential: number;
-  artifacts?: Array<Record<string, unknown>>;
-  lastModified: Date;
-}
+import type { Project } from '../../types';
 
 interface ModernProjectCardProps {
   project: Project;

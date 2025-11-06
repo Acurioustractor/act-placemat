@@ -23,9 +23,9 @@ const DataStatus = ({ showDetails = false }: DataStatusProps) => {
     // Get database configuration status
     const dbStatus = smartDataService.getDatabaseStatus();
     const stats = smartDataService.getCacheStats();
-    
-    setStatus(dbStatus);
-    setCacheStats(stats);
+
+    setStatus(dbStatus as unknown as Record<string, unknown>);
+    setCacheStats(stats as unknown as Record<string, unknown>);
   }, []);
 
   if (!showDetails && !status) return null;
@@ -100,15 +100,15 @@ const DataStatus = ({ showDetails = false }: DataStatusProps) => {
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-gray-600">Cached Entries:</span>
-                  <span className="ml-2 font-medium">{cacheStats.totalEntries}</span>
+                  <span className="ml-2 font-medium">{cacheStats.totalEntries as number}</span>
                 </div>
                 <div>
                   <span className="text-gray-600">Cache Size:</span>
-                  <span className="ml-2 font-medium">{Math.round(cacheStats.totalSize / 1024)}KB</span>
+                  <span className="ml-2 font-medium">{Math.round((cacheStats.totalSize as number) / 1024)}KB</span>
                 </div>
                 <div>
                   <span className="text-gray-600">Expired:</span>
-                  <span className="ml-2 font-medium">{cacheStats.expiredEntries}</span>
+                  <span className="ml-2 font-medium">{cacheStats.expiredEntries as number}</span>
                 </div>
               </div>
             </div>

@@ -27,7 +27,7 @@ import { OpportunityStage } from '../../types';
  * - Database platforms (Retool, Notion, Airtable)
  */
 const EnhancedDashboardPage = () => {
-  const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedProject, setSelectedProject] = useState<Record<string, unknown> | null>(null);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [activeView, setActiveView] = useState<'overview' | 'insights' | 'artifacts'>('overview');
 
@@ -144,7 +144,7 @@ const EnhancedDashboardPage = () => {
     setIsProjectModalOpen(true);
   };
 
-  const handleArtifactClick = (artifact: Record<string, unknown>) => {
+  const handleArtifactClick = (artifact: { fileUrl?: string; [key: string]: unknown }) => {
     // In a real app, this might open an artifact viewer or navigate to detail page
     console.log('Artifact clicked:', artifact);
     if (artifact.fileUrl) {

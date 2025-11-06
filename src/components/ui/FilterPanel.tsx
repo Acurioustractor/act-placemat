@@ -60,7 +60,7 @@ function FilterPanel<T extends Record<string, unknown>>({
               {option.type === 'select' && (
                 <select
                   className="block w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-150 hover:border-gray-400"
-                  value={filters[option.id] || ''}
+                  value={(filters[option.id] as string | undefined) || ''}
                   onChange={(e) => handleFilterChange(option.id, e.target.value || undefined)}
                   disabled={isLoading}
                 >
@@ -72,11 +72,11 @@ function FilterPanel<T extends Record<string, unknown>>({
                   ))}
                 </select>
               )}
-              
+
               {option.type === 'multiselect' && (
                 <select
                   className="block w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-150 hover:border-gray-400"
-                  value={filters[option.id]?.[0] || ''}
+                  value={(filters[option.id] as string[] | undefined)?.[0] || ''}
                   onChange={(e) => {
                     const value = e.target.value;
                     handleFilterChange(option.id, value ? [value] : undefined);
@@ -91,23 +91,23 @@ function FilterPanel<T extends Record<string, unknown>>({
                   ))}
                 </select>
               )}
-              
+
               {option.type === 'text' && (
                 <input
                   type="text"
                   className="block w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-150 hover:border-gray-400 placeholder-gray-400"
                   placeholder={option.placeholder}
-                  value={filters[option.id] || ''}
+                  value={(filters[option.id] as string | undefined) || ''}
                   onChange={(e) => handleFilterChange(option.id, e.target.value || undefined)}
                   disabled={isLoading}
                 />
               )}
-              
+
               {option.type === 'date' && (
                 <input
                   type="date"
                   className="block w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-150 hover:border-gray-400"
-                  value={filters[option.id] || ''}
+                  value={(filters[option.id] as string | undefined) || ''}
                   onChange={(e) => handleFilterChange(option.id, e.target.value || undefined)}
                   disabled={isLoading}
                 />
@@ -119,11 +119,12 @@ function FilterPanel<T extends Record<string, unknown>>({
                     type="number"
                     className="block w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-150 hover:border-gray-400 placeholder-gray-400"
                     placeholder="Min"
-                    value={filters[option.id]?.min || ''}
+                    value={(filters[option.id] as { min?: number; max?: number } | undefined)?.min || ''}
                     onChange={(e) => {
                       const value = e.target.value ? Number(e.target.value) : undefined;
+                      const currentRange = filters[option.id] as { min?: number; max?: number } | undefined;
                       handleFilterChange(option.id, {
-                        ...filters[option.id],
+                        ...(currentRange || {}),
                         min: value,
                       });
                     }}
@@ -133,11 +134,12 @@ function FilterPanel<T extends Record<string, unknown>>({
                     type="number"
                     className="block w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-150 hover:border-gray-400 placeholder-gray-400"
                     placeholder="Max"
-                    value={filters[option.id]?.max || ''}
+                    value={(filters[option.id] as { min?: number; max?: number } | undefined)?.max || ''}
                     onChange={(e) => {
                       const value = e.target.value ? Number(e.target.value) : undefined;
+                      const currentRange = filters[option.id] as { min?: number; max?: number } | undefined;
                       handleFilterChange(option.id, {
-                        ...filters[option.id],
+                        ...(currentRange || {}),
                         max: value,
                       });
                     }}
@@ -190,18 +192,19 @@ function FilterPanel<T extends Record<string, unknown>>({
                 if (Array.isArray(value)) {
                   displayValue = value[0] || '';
                 } else if (typeof value === 'object' && value !== null) {
-                  if ('min' in value || 'max' in value) {
+                  const rangeValue = value as { min?: number; max?: number };
+                  if ('min' in rangeValue || 'max' in rangeValue) {
                     const parts = [];
-                    if (value.min !== undefined) parts.push(`Min: ${value.min}`);
-                    if (value.max !== undefined) parts.push(`Max: ${value.max}`);
+                    if (rangeValue.min !== undefined) parts.push(`Min: ${rangeValue.min}`);
+                    if (rangeValue.max !== undefined) parts.push(`Max: ${rangeValue.max}`);
                     displayValue = parts.join(', ');
                   }
                 } else {
                   displayValue = String(value);
                 }
-                
+
                 if (!displayValue) return null;
-                
+
                 return (
                   <span
                     key={key}
@@ -209,7 +212,7 @@ function FilterPanel<T extends Record<string, unknown>>({
                   >
                     {option.label}: {displayValue}
                     <button
-                      onClick={() => handleFilterChange(option.key, undefined)}
+                      onClick={() => handleFilterChange(option.id, undefined)}
                       className="ml-2 hover:text-blue-600 focus:outline-none"
                     >
                       ×

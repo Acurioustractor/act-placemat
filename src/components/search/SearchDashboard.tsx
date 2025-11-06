@@ -186,26 +186,34 @@ const SearchDashboard = () => {
     let score = 0;
 
     // Check name/title (highest weight)
-    if (entity.name?.toLowerCase().includes(queryLower) || 
-        entity.fullName?.toLowerCase().includes(queryLower)) {
+    const name = entity.name as string | undefined;
+    const fullName = entity.fullName as string | undefined;
+    if (name?.toLowerCase().includes(queryLower) ||
+        fullName?.toLowerCase().includes(queryLower)) {
       score += 10;
     }
 
     // Check description/summary
-    if (entity.description?.toLowerCase().includes(queryLower) ||
-        entity.aiSummary?.toLowerCase().includes(queryLower)) {
+    const description = entity.description as string | undefined;
+    const aiSummary = entity.aiSummary as string | undefined;
+    if (description?.toLowerCase().includes(queryLower) ||
+        aiSummary?.toLowerCase().includes(queryLower)) {
       score += 5;
     }
 
     // Check tags and themes
-    if (entity.tags?.some((tag: string) => tag.toLowerCase().includes(queryLower)) ||
-        entity.themes?.some((theme: string) => theme.toLowerCase().includes(queryLower))) {
+    const tags = entity.tags as string[] | undefined;
+    const themes = entity.themes as string[] | undefined;
+    if (tags?.some((tag: string) => tag.toLowerCase().includes(queryLower)) ||
+        themes?.some((theme: string) => theme.toLowerCase().includes(queryLower))) {
       score += 3;
     }
 
     // Check organization/location
-    if (entity.organization?.toLowerCase().includes(queryLower) ||
-        entity.location?.toLowerCase().includes(queryLower)) {
+    const organization = entity.organization as string | undefined;
+    const location = entity.location as string | undefined;
+    if (organization?.toLowerCase().includes(queryLower) ||
+        location?.toLowerCase().includes(queryLower)) {
       score += 2;
     }
 
@@ -217,32 +225,41 @@ const SearchDashboard = () => {
     const discrepancies: string[] = [];
 
     switch (type) {
-      case 'project':
+      case 'project': {
         if (!entity.lead) discrepancies.push('No project lead assigned');
-        if (entity.relatedOpportunities.length === 0 && entity.revenuePotential > 0) {
+        const relatedOpportunities = entity.relatedOpportunities as string[] | undefined;
+        const revenuePotential = entity.revenuePotential as number | undefined;
+        if ((relatedOpportunities?.length || 0) === 0 && (revenuePotential || 0) > 0) {
           discrepancies.push('Has revenue potential but no opportunities');
         }
         if (!entity.nextMilestone) discrepancies.push('No milestone date set');
         break;
+      }
 
-      case 'opportunity':
+      case 'opportunity': {
         if (!entity.organization) discrepancies.push('No organization specified');
         if (!entity.primaryContact) discrepancies.push('No primary contact');
         if (entity.amount === 0) discrepancies.push('No amount specified');
         break;
+      }
 
-      case 'organization':
-        if (entity.keyContacts.length === 0) discrepancies.push('No key contacts');
+      case 'organization': {
+        const keyContacts = entity.keyContacts as string[] | undefined;
+        if ((keyContacts?.length || 0) === 0) discrepancies.push('No key contacts');
         if (!entity.website) discrepancies.push('No website listed');
         break;
+      }
 
-      case 'person':
+      case 'person': {
         if (!entity.email) discrepancies.push('No email address');
         if (!entity.organization) discrepancies.push('No organization specified');
-        if (entity.relatedProjects.length === 0 && entity.relatedOpportunities.length === 0) {
+        const relatedProjects = entity.relatedProjects as string[] | undefined;
+        const relatedOppsPerson = entity.relatedOpportunities as string[] | undefined;
+        if ((relatedProjects?.length || 0) === 0 && (relatedOppsPerson?.length || 0) === 0) {
           discrepancies.push('Not linked to any projects or opportunities');
         }
         break;
+      }
     }
 
     return discrepancies;
@@ -304,10 +321,12 @@ const SearchDashboard = () => {
   const calculateConnectionStrength = (entity1: Record<string, unknown>, entity2: Record<string, unknown>): 'weak' | 'medium' | 'strong' => {
     // Simple heuristic based on data completeness and recency
     let score = 0;
-    
-    if (entity1.lastModified && entity2.lastModified) {
+
+    const lastModified1 = entity1.lastModified as Date | string | undefined;
+    const lastModified2 = entity2.lastModified as Date | string | undefined;
+    if (lastModified1 && lastModified2) {
       const daysDiff = Math.abs(
-        new Date(entity1.lastModified).getTime() - new Date(entity2.lastModified).getTime()
+        new Date(lastModified1).getTime() - new Date(lastModified2).getTime()
       ) / (1000 * 60 * 60 * 24);
       
       if (daysDiff < 7) score += 2;

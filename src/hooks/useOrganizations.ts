@@ -6,10 +6,19 @@ import { OrganizationFilters, SortOption } from '../types';
 import { CACHE_CONFIG } from '../constants';
 
 /**
- * Hook for fetching organizations with optional filters and sorting
- * @param filters - Optional filters to apply
- * @param sort - Optional sort configuration
- * @returns Query result with organizations data
+ * Fetches organizations with optional filtering and sorting using React Query.
+ * Provides automatic caching, background updates, and error handling.
+ *
+ * @param {OrganizationFilters} [filters] - Optional filters to apply to the organization query
+ * @param {SortOption} [sort] - Optional sort configuration for ordering results
+ * @returns {UseQueryResult<Organization[]>} React Query result containing organizations data
+ * @example
+ * // Fetch partner organizations
+ * const { data: partners } = useOrganizations({ relationshipStatus: ['Partner'] });
+ *
+ * @example
+ * // Fetch organizations by type
+ * const { data: orgs } = useOrganizations({ type: ['Foundation'] });
  */
 export function useOrganizations(filters?: OrganizationFilters, sort?: SortOption) {
   return useQuery({

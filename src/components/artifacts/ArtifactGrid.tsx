@@ -16,6 +16,7 @@ interface Artifact {
   tags: string[];
   createdBy: string;
   lastModified: Date;
+  [key: string]: unknown;
 }
 
 interface ArtifactGridProps {

@@ -8,6 +8,11 @@ import {
   extractSelect,
   extractMultiSelect,
   extractProbabilityFromSelect,
+  extractUrl,
+  extractCheckbox,
+  extractRelations,
+  extractPeople,
+  extractEmail,
   transformNotionProject,
   transformNotionOpportunity,
   transformNotionResponse
@@ -110,31 +115,148 @@ describe('Notion Transformation Utilities', () => {
       const selectProperty = { name: '75%' };
       expect(extractProbabilityFromSelect(selectProperty)).toBe(75);
     });
-    
+
     it('should work with different percentage values', () => {
       expect(extractProbabilityFromSelect({ name: '10%' })).toBe(10);
       expect(extractProbabilityFromSelect({ name: '25%' })).toBe(25);
       expect(extractProbabilityFromSelect({ name: '50%' })).toBe(50);
       expect(extractProbabilityFromSelect({ name: '90%' })).toBe(90);
     });
-    
+
     it('should handle numeric strings without percentage sign', () => {
       const selectProperty = { name: '75' };
       expect(extractProbabilityFromSelect(selectProperty)).toBe(75);
     });
-    
+
     it('should return 0 for undefined input', () => {
       expect(extractProbabilityFromSelect(undefined)).toBe(0);
     });
-    
+
     it('should return 0 for non-numeric strings', () => {
       expect(extractProbabilityFromSelect({ name: 'High' })).toBe(0);
       expect(extractProbabilityFromSelect({ name: 'Very likely' })).toBe(0);
     });
-    
+
     it('should return 0 for empty select property', () => {
       expect(extractProbabilityFromSelect({ name: '' })).toBe(0);
       expect(extractProbabilityFromSelect({})).toBe(0);
+    });
+  });
+
+  describe('extractUrl', () => {
+    it('should extract URL from URL property', () => {
+      expect(extractUrl('https://example.com')).toBe('https://example.com');
+    });
+
+    it('should return empty string for null input', () => {
+      expect(extractUrl(null)).toBe('');
+    });
+
+    it('should return empty string for undefined input', () => {
+      expect(extractUrl(undefined)).toBe('');
+    });
+
+    it('should convert numbers to strings', () => {
+      expect(extractUrl(123)).toBe('123');
+    });
+  });
+
+  describe('extractCheckbox', () => {
+    it('should return true for true value', () => {
+      expect(extractCheckbox(true)).toBe(true);
+    });
+
+    it('should return false for false value', () => {
+      expect(extractCheckbox(false)).toBe(false);
+    });
+
+    it('should return false for null', () => {
+      expect(extractCheckbox(null)).toBe(false);
+    });
+
+    it('should return false for undefined', () => {
+      expect(extractCheckbox(undefined)).toBe(false);
+    });
+
+    it('should return true for truthy values', () => {
+      expect(extractCheckbox('yes')).toBe(true);
+      expect(extractCheckbox(1)).toBe(true);
+    });
+  });
+
+  describe('extractRelations', () => {
+    it('should extract relation IDs from relation property', () => {
+      const relations = [
+        { id: 'relation-1' },
+        { id: 'relation-2' }
+      ];
+
+      expect(extractRelations(relations)).toEqual(['relation-1', 'relation-2']);
+    });
+
+    it('should return empty array for undefined input', () => {
+      expect(extractRelations(undefined as unknown as unknown[])).toEqual([]);
+    });
+
+    it('should filter out items without id', () => {
+      const relations = [
+        { id: 'relation-1' },
+        { name: 'no-id' },
+        { id: 'relation-2' }
+      ];
+
+      expect(extractRelations(relations)).toEqual(['relation-1', 'relation-2']);
+    });
+  });
+
+  describe('extractPeople', () => {
+    it('should extract people names from people property', () => {
+      const people = [
+        { name: 'John Doe' },
+        { name: 'Jane Smith' }
+      ];
+
+      expect(extractPeople(people)).toBe('John Doe, Jane Smith');
+    });
+
+    it('should return empty string for undefined input', () => {
+      expect(extractPeople(undefined as unknown as unknown[])).toBe('');
+    });
+
+    it('should filter out items without name', () => {
+      const people = [
+        { name: 'John Doe' },
+        { id: '123' },
+        { name: 'Jane Smith' }
+      ];
+
+      expect(extractPeople(people)).toBe('John Doe, Jane Smith');
+    });
+
+    it('should return empty string for empty array', () => {
+      expect(extractPeople([])).toBe('');
+    });
+  });
+
+  describe('extractEmail', () => {
+    it('should extract email from string property', () => {
+      expect(extractEmail('test@example.com')).toBe('test@example.com');
+    });
+
+    it('should extract email from object property', () => {
+      expect(extractEmail({ email: 'test@example.com' })).toBe('test@example.com');
+    });
+
+    it('should return empty string for null input', () => {
+      expect(extractEmail(null)).toBe('');
+    });
+
+    it('should return empty string for undefined input', () => {
+      expect(extractEmail(undefined)).toBe('');
+    });
+
+    it('should return empty string for object without email property', () => {
+      expect(extractEmail({ id: '123' })).toBe('');
     });
   });
   
@@ -279,11 +401,14 @@ describe('Notion Transformation Utilities', () => {
         page_or_database: {}
       };
       
-      const transformer = (page: Record<string, unknown>) => ({
-        id: page.id,
-        name: extractPlainText((page.properties as Record<string, unknown>).Name?.title as unknown[] || []),
-        lastModified: new Date(page.last_edited_time as string)
-      });
+      const transformer = (page: Record<string, unknown>) => {
+        const properties = page.properties as Record<string, { title?: unknown[] }>;
+        return {
+          id: page.id,
+          name: extractPlainText((properties.Name?.title as unknown[]) || []),
+          lastModified: new Date(page.last_edited_time as string)
+        };
+      };
       
       const result = transformNotionResponse(notionResponse, transformer);
       
@@ -295,9 +420,12 @@ describe('Notion Transformation Utilities', () => {
     });
     
     it('should return empty array for invalid response', () => {
-      expect(transformNotionResponse(undefined as unknown as Record<string, unknown>, () => ({}))).toEqual([]);
-      expect(transformNotionResponse({ results: null } as unknown as Record<string, unknown>, () => ({}))).toEqual([]);
-      expect(transformNotionResponse({ results: 'not an array' } as unknown as Record<string, unknown>, () => ({}))).toEqual([]);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect(transformNotionResponse(undefined as any, () => ({}))).toEqual([]);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect(transformNotionResponse({ results: null } as any, () => ({}))).toEqual([]);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect(transformNotionResponse({ results: 'not an array' } as any, () => ({}))).toEqual([]);
     });
   });
 });

@@ -24,7 +24,7 @@ const ModernProjectsPage = () => {
   
   const [sortOption, setSortOption] = useState<SortOption>(PROJECT_SORT_OPTIONS[0]);
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'featured'>('grid');
-  const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedProject, setSelectedProject] = useState<Record<string, unknown> | null>(null);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
   // Update filters when URL parameters change
@@ -40,8 +40,8 @@ const ModernProjectsPage = () => {
   const { data: projects = [], isLoading, error, refetch } = useProjects(filters, sortOption);
 
   // Handle project click
-  const handleProjectClick = (project: Record<string, unknown>) => {
-    setSelectedProject(project);
+  const handleProjectClick = (project: import('../../types').Project) => {
+    setSelectedProject(project as Record<string, unknown>);
     setIsProjectModalOpen(true);
   };
 
@@ -185,7 +185,7 @@ const ModernProjectsPage = () => {
                       ? 'bg-primary-500 text-white shadow-lg scale-105'
                       : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                   }`}
-                  onClick={() => setViewMode(mode.id as 'grid' | 'list' | 'map')}
+                  onClick={() => setViewMode(mode.id as 'grid' | 'list' | 'featured')}
                 >
                   <span className="mr-1">{mode.icon}</span>
                   {mode.label}
@@ -223,15 +223,10 @@ const ModernProjectsPage = () => {
               </svg>
             </div>
           }
-          action={
-            <Button 
-              variant="primary" 
-              onClick={resetFilters}
-              className="btn-modern bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
-            >
-              Clear Filters
-            </Button>
-          }
+          action={{
+            label: "Clear Filters",
+            onClick: resetFilters
+          }}
         />
       ) : (
         <>

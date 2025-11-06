@@ -3,12 +3,22 @@
 import { useQuery } from '@tanstack/react-query';
 import { projectService } from '../services';
 import { CACHE_CONFIG } from '../constants';
+import { ProjectFilters, SortOption } from '../types';
 
 /**
- * Hook for fetching projects with optional filters and sorting
- * @param filters - Optional filters to apply
- * @param sort - Optional sort configuration
- * @returns Query result with projects data
+ * Fetches projects with optional filtering and sorting using React Query.
+ * Provides automatic caching, background updates, and error handling.
+ *
+ * @param {ProjectFilters} [filters] - Optional filters to apply to the project query
+ * @param {SortOption} [sort] - Optional sort configuration for ordering results
+ * @returns {UseQueryResult<Project[]>} React Query result containing projects data
+ * @example
+ * // Fetch all active projects
+ * const { data: projects, isLoading } = useProjects({ status: ['Active'] });
+ *
+ * @example
+ * // Fetch projects sorted by last modified
+ * const { data: projects } = useProjects(undefined, { field: 'lastModified', direction: 'desc' });
  */
 export function useProjects(filters?: ProjectFilters, sort?: SortOption) {
   const queryResult = useQuery({
@@ -126,8 +136,15 @@ export function useProjectsForOrganization(organizationId: string | undefined) {
 }
 
 /**
- * Hook for project metrics and analytics
- * @returns Query result with project metrics
+ * Calculates comprehensive metrics for all projects.
+ * Provides aggregated statistics including counts by area, status, and revenue totals.
+ *
+ * @returns {{ total: number; byArea: Record<string, number>; byStatus: Record<string, number>; totalRevenue: number; potentialRevenue: number }} Aggregated project metrics
+ * @example
+ * const metrics = useProjectMetrics();
+ * console.log(`Total projects: ${metrics.total}`);
+ * console.log(`Active projects: ${metrics.byStatus['Active']}`);
+ * console.log(`Total revenue: $${metrics.totalRevenue}`);
  */
 export function useProjectMetrics() {
   const { data: projects = [] } = useProjects();

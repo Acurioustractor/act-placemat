@@ -1,11 +1,12 @@
 import { useMemo } from 'react';
 import Card from '../ui/Card';
 import Badge from '../ui/Badge';
+import { Project, Opportunity, Organization } from '../../types';
 
 interface MetricsCardsProps {
-  projects: Record<string, unknown>[];
-  opportunities: Record<string, unknown>[];
-  organizations: Record<string, unknown>[];
+  projects: Project[];
+  opportunities: Opportunity[];
+  organizations: Organization[];
 }
 
 const MetricsCards = ({ projects, opportunities, organizations }: MetricsCardsProps) => {
@@ -17,9 +18,9 @@ const MetricsCards = ({ projects, opportunities, organizations }: MetricsCardsPr
     
     const opportunityValue = opportunities.reduce((sum, o) => sum + (o.amount || 0), 0);
     const weightedValue = opportunities.reduce((sum, o) => sum + (o.weightedValue || 0), 0);
-    const appliedOpportunities = opportunities.filter(o => o.stage === 'Applied').length;
-    
-    const partnerOrgs = organizations.filter(o => o.relationshipStatus === 'Won').length;
+    const appliedOpportunities = opportunities.filter(o => (o.stage as string) === 'Applied').length;
+
+    const partnerOrgs = organizations.filter(o => (o.relationshipStatus as string).includes('Won')).length;
     
     return {
       revenue: {

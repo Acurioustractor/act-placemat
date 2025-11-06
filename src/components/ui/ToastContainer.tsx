@@ -53,8 +53,8 @@ const ToastContainer = ({
 
     return () => {
       if (typeof window !== 'undefined') {
-        (window as Record<string, unknown>).showToast = undefined;
-        (window as Record<string, unknown>).closeToast = undefined;
+        (window as unknown as Record<string, unknown>).showToast = undefined;
+        (window as unknown as Record<string, unknown>).closeToast = undefined;
       }
     };
   }, []);

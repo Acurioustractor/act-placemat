@@ -4,12 +4,18 @@ import { API_BASE_URL, ERROR_MESSAGES, CACHE_CONFIG } from '../constants';
 import { APIError } from '../types';
 
 /**
- * Base API service for handling HTTP requests
+ * Base API service for handling HTTP requests with error handling and retry logic.
+ * Provides methods for common HTTP operations (GET, POST, PUT, DELETE) with consistent error handling.
  */
 class ApiService {
   private baseUrl: string;
   private defaultHeaders: HeadersInit;
 
+  /**
+   * Creates a new ApiService instance.
+   *
+   * @param {string} [baseUrl=API_BASE_URL] - The base URL for all API requests
+   */
   constructor(baseUrl: string = API_BASE_URL) {
     this.baseUrl = baseUrl;
     this.defaultHeaders = {
@@ -18,10 +24,16 @@ class ApiService {
   }
 
   /**
-   * Make a GET request
-   * @param endpoint - API endpoint
-   * @param params - Query parameters
-   * @returns Promise with response data
+   * Makes a GET request to the specified endpoint.
+   * Automatically handles query parameters and error responses.
+   *
+   * @template T - The expected response data type
+   * @param {string} endpoint - API endpoint path (relative or absolute URL)
+   * @param {Record<string, unknown>} [params] - Optional query parameters to append to the URL
+   * @returns {Promise<T>} Promise resolving to the parsed response data
+   * @throws {APIError} If the request fails with error status or network issues
+   * @example
+   * const projects = await apiService.get<Project[]>('/api/projects', { status: 'active' });
    */
   async get<T>(endpoint: string, params?: Record<string, unknown>): Promise<T> {
     const url = this.buildUrl(endpoint, params);
@@ -39,10 +51,19 @@ class ApiService {
   }
 
   /**
-   * Make a POST request
-   * @param endpoint - API endpoint
-   * @param data - Request body data
-   * @returns Promise with response data
+   * Makes a POST request to the specified endpoint.
+   * Automatically serializes request body as JSON and handles error responses.
+   *
+   * @template T - The expected response data type
+   * @param {string} endpoint - API endpoint path (relative or absolute URL)
+   * @param {unknown} data - Request body data to be JSON-serialized
+   * @returns {Promise<T>} Promise resolving to the parsed response data
+   * @throws {APIError} If the request fails with error status or network issues
+   * @example
+   * const newProject = await apiService.post<Project>('/api/projects', {
+   *   name: 'New Project',
+   *   status: 'active'
+   * });
    */
   async post<T>(endpoint: string, data: unknown): Promise<T> {
     const url = this.buildUrl(endpoint);
@@ -61,10 +82,18 @@ class ApiService {
   }
 
   /**
-   * Make a PUT request
-   * @param endpoint - API endpoint
-   * @param data - Request body data
-   * @returns Promise with response data
+   * Makes a PUT request to the specified endpoint.
+   * Automatically serializes request body as JSON and handles error responses.
+   *
+   * @template T - The expected response data type
+   * @param {string} endpoint - API endpoint path (relative or absolute URL)
+   * @param {unknown} data - Request body data to be JSON-serialized
+   * @returns {Promise<T>} Promise resolving to the parsed response data
+   * @throws {APIError} If the request fails with error status or network issues
+   * @example
+   * const updatedProject = await apiService.put<Project>('/api/projects/123', {
+   *   status: 'completed'
+   * });
    */
   async put<T>(endpoint: string, data: unknown): Promise<T> {
     const url = this.buildUrl(endpoint);
@@ -83,9 +112,15 @@ class ApiService {
   }
 
   /**
-   * Make a DELETE request
-   * @param endpoint - API endpoint
-   * @returns Promise with response data
+   * Makes a DELETE request to the specified endpoint.
+   * Handles error responses and empty 204 responses gracefully.
+   *
+   * @template T - The expected response data type
+   * @param {string} endpoint - API endpoint path (relative or absolute URL)
+   * @returns {Promise<T>} Promise resolving to the parsed response data (or empty object for 204)
+   * @throws {APIError} If the request fails with error status or network issues
+   * @example
+   * await apiService.delete('/api/projects/123');
    */
   async delete<T>(endpoint: string): Promise<T> {
     const url = this.buildUrl(endpoint);
@@ -103,10 +138,13 @@ class ApiService {
   }
 
   /**
-   * Build URL with query parameters
-   * @param endpoint - API endpoint
-   * @param params - Query parameters
-   * @returns Full URL string
+   * Constructs a full URL from an endpoint and query parameters.
+   * Handles both relative paths and absolute URLs correctly.
+   *
+   * @private
+   * @param {string} endpoint - API endpoint path (relative or absolute URL)
+   * @param {Record<string, unknown>} [params] - Optional query parameters to append
+   * @returns {string} The complete URL with query parameters
    */
   private buildUrl(endpoint: string, params?: Record<string, unknown>): string {
     // Handle full URLs (starting with http:// or https://) vs relative paths
@@ -142,10 +180,14 @@ class ApiService {
   }
 
   /**
-   * Handle API response
-   * @param response - Fetch Response object
-   * @returns Parsed response data
-   * @throws APIError if response is not ok
+   * Processes API responses and handles various status codes.
+   * Parses JSON responses and throws formatted errors for non-OK status codes.
+   *
+   * @private
+   * @template T - The expected response data type
+   * @param {Response} response - The Fetch API Response object to process
+   * @returns {Promise<T>} Promise resolving to the parsed response data
+   * @throws {APIError} If the response has a non-OK status (400-599)
    */
   private async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
@@ -167,9 +209,12 @@ class ApiService {
   }
 
   /**
-   * Handle API errors
-   * @param error - Error object
-   * @throws APIError with formatted error message
+   * Handles and formats errors from API requests.
+   * Converts various error types into standardized APIError instances.
+   *
+   * @private
+   * @param {unknown} error - The error object to handle
+   * @throws {APIError} Always throws with formatted error information
    */
   private handleError(error: unknown): never {
     console.error('API Error:', error);
@@ -187,11 +232,21 @@ class ApiService {
   }
 
   /**
-   * Retry a failed request
-   * @param fn - Function to retry
-   * @param retries - Number of retries
-   * @param delay - Delay between retries in ms
-   * @returns Promise with response data
+   * Retries a failed request with exponential backoff.
+   * Useful for handling transient network failures.
+   *
+   * @template T - The expected response data type
+   * @param {() => Promise<T>} fn - The function to retry
+   * @param {number} [retries=CACHE_CONFIG.RETRY_ATTEMPTS] - Maximum number of retry attempts
+   * @param {number} [delay=CACHE_CONFIG.RETRY_DELAY] - Initial delay between retries in milliseconds (doubles on each retry)
+   * @returns {Promise<T>} Promise resolving to the result of the function
+   * @throws {Error} Throws the last error if all retries are exhausted
+   * @example
+   * const data = await apiService.retry(
+   *   () => apiService.get<Project[]>('/api/projects'),
+   *   3,
+   *   1000
+   * );
    */
   async retry<T>(fn: () => Promise<T>, retries: number = CACHE_CONFIG.RETRY_ATTEMPTS, delay: number = CACHE_CONFIG.RETRY_DELAY): Promise<T> {
     try {

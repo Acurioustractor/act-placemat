@@ -6,10 +6,19 @@ import { OpportunityFilters, SortOption } from '../types';
 import { CACHE_CONFIG } from '../constants';
 
 /**
- * Hook for fetching opportunities with optional filters and sorting
- * @param filters - Optional filters to apply
- * @param sort - Optional sort configuration
- * @returns Query result with opportunities data
+ * Fetches opportunities with optional filtering and sorting using React Query.
+ * Provides automatic caching, background updates, and error handling.
+ *
+ * @param {OpportunityFilters} [filters] - Optional filters to apply to the opportunity query
+ * @param {SortOption} [sort] - Optional sort configuration for ordering results
+ * @returns {UseQueryResult<Opportunity[]>} React Query result containing opportunities data
+ * @example
+ * // Fetch opportunities in proposal stage
+ * const { data: opportunities } = useOpportunities({ stage: ['Proposal'] });
+ *
+ * @example
+ * // Fetch opportunities sorted by amount
+ * const { data: opportunities } = useOpportunities(undefined, { field: 'amount', direction: 'desc' });
  */
 export function useOpportunities(filters?: OpportunityFilters, sort?: SortOption) {
   return useQuery({

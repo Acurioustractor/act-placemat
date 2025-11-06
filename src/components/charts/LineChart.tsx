@@ -45,10 +45,10 @@ const LineChart = ({
       }
 
       const category = item.category || 'value';
-      acc[dateStr][category] = item.value;
+      (acc[dateStr] as Record<string, unknown>)[category] = item.value;
 
       return acc;
-    }, {} as Record<string, unknown>);
+    }, {} as Record<string, Record<string, unknown>>);
     
     // Extract unique categories
     const uniqueCategories = Array.from(

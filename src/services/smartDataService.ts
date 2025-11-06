@@ -4,7 +4,7 @@ import { apiService } from './apiService';
 import { configService } from './configService';
 import { API_ENDPOINTS } from '../constants';
 import { getMockProjects, getMockOpportunities, getMockOrganizations, getMockPeople } from '../utils/mockData';
-import { 
+import {
   transformNotionResponse,
   transformNotionProject,
   transformNotionOpportunity,
@@ -12,6 +12,9 @@ import {
   transformNotionPerson,
   transformNotionArtifact
 } from './notionTransform';
+
+// Import NotionPage type
+type NotionPage = Parameters<typeof transformNotionProject>[0];
 
 interface DataServiceConfig {
   useCache: boolean;
@@ -27,7 +30,8 @@ interface CacheEntry {
 }
 
 /**
- * Smart data service that provides intelligent fallbacks and caching
+ * Smart data service that provides intelligent fallbacks, caching, and error recovery.
+ * Handles data fetching from Notion with automatic retries, fallbacks, and transformation.
  */
 class SmartDataService {
   private cache = new Map<string, CacheEntry>();
@@ -39,7 +43,21 @@ class SmartDataService {
   };
 
   /**
-   * Generic data fetcher with smart fallbacks
+   * Fetches data from Notion API with intelligent fallback strategies.
+   * Implements caching, error recovery, and automatic data transformation.
+   *
+   * @template T - The expected data type (Project, Opportunity, Organization, Person, or Artifact)
+   * @param {'projects' | 'opportunities' | 'organizations' | 'people' | 'artifacts'} type - The type of data to fetch
+   * @param {Record<string, unknown>} requestPayload - The Notion API query payload with filters and sorts
+   * @returns {Promise<T[]>} Promise resolving to an array of transformed data
+   * @throws {Error} Logs errors and falls back to cache or mock data if enabled
+   * @example
+   * // Fetch all projects
+   * const projects = await smartDataService.fetchData<Project>('projects', {
+   *   databaseId: 'abc123',
+   *   filters: {},
+   *   sorts: []
+   * });
    */
   async fetchData<T>(
     type: 'projects' | 'opportunities' | 'organizations' | 'people' | 'artifacts',
@@ -117,7 +135,12 @@ class SmartDataService {
   }
 
   /**
-   * Clear all cache entries
+   * Clears all cached data entries.
+   * Useful for forcing a refresh of all data.
+   *
+   * @returns {void}
+   * @example
+   * smartDataService.clearCache();
    */
   clearCache(): void {
     this.cache.clear();
@@ -125,7 +148,13 @@ class SmartDataService {
   }
 
   /**
-   * Clear cache for specific data type
+   * Clears cached entries for a specific data type.
+   * Useful for refreshing only certain types of data.
+   *
+   * @param {string} type - The data type to clear from cache (e.g., 'projects', 'opportunities')
+   * @returns {void}
+   * @example
+   * smartDataService.clearCacheForType('projects');
    */
   clearCacheForType(type: string): void {
     const keysToDelete = Array.from(this.cache.keys()).filter(key => key.startsWith(type));
@@ -193,7 +222,14 @@ class SmartDataService {
    */
   private transformNotionData<T>(type: string, response: { results: unknown[]; object?: string; next_cursor?: string | null; has_more?: boolean }): T[] {
     // Cast response to NotionResponse format for transformation
-    const notionResponse = response as { object: 'list'; results: unknown[]; next_cursor: string | null; has_more: boolean; type: 'page_or_database'; page_or_database: Record<string, never> };
+    const notionResponse = {
+      object: 'list' as const,
+      results: response.results as NotionPage[],
+      next_cursor: response.next_cursor || null,
+      has_more: response.has_more || false,
+      type: 'page_or_database' as const,
+      page_or_database: {} as Record<string, never>
+    };
 
     switch (type) {
       case 'projects':
@@ -230,7 +266,16 @@ class SmartDataService {
   }
 
   /**
-   * Check if a database is properly configured
+   * Checks if a specific database is properly configured and available.
+   * Queries the config service to determine database availability.
+   *
+   * @param {'projects' | 'opportunities' | 'organizations' | 'people' | 'artifacts'} type - The database type to check
+   * @returns {Promise<boolean>} Promise resolving to true if database is available, false otherwise
+   * @example
+   * const isAvailable = await smartDataService.isDatabaseConfigured('projects');
+   * if (!isAvailable) {
+   *   console.log('Projects database is not configured');
+   * }
    */
   async isDatabaseConfigured(type: 'projects' | 'opportunities' | 'organizations' | 'people' | 'artifacts'): Promise<boolean> {
     try {
@@ -242,7 +287,14 @@ class SmartDataService {
   }
 
   /**
-   * Get configuration status for all databases
+   * Retrieves the configuration status for all database types.
+   * Checks availability of projects, opportunities, organizations, people, and artifacts databases.
+   *
+   * @returns {Promise<{ projects: boolean; opportunities: boolean; organizations: boolean; people: boolean; artifacts: boolean }>} Promise resolving to an object with availability status for each database
+   * @example
+   * const status = await smartDataService.getDatabaseStatus();
+   * console.log('Projects available:', status.projects);
+   * console.log('Opportunities available:', status.opportunities);
    */
   async getDatabaseStatus() {
     return {
@@ -255,7 +307,13 @@ class SmartDataService {
   }
 
   /**
-   * Get cache statistics
+   * Retrieves statistics about the current cache state.
+   * Useful for monitoring and debugging caching behavior.
+   *
+   * @returns {{ totalEntries: number; totalSize: number; expiredEntries: number; hitRate: number }} Object containing cache statistics
+   * @example
+   * const stats = await smartDataService.getCacheStats();
+   * console.log(`Cache has ${stats.totalEntries} entries, ${stats.expiredEntries} expired`);
    */
   getCacheStats() {
     const entries = Array.from(this.cache.entries());

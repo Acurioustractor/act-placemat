@@ -10,8 +10,15 @@ import { DashboardMetrics, ChartDataPoint, TimeSeriesDataPoint } from '../types'
 import { CHART_COLORS } from '../constants';
 
 /**
- * Hook for dashboard metrics
- * @returns Dashboard metrics
+ * Aggregates comprehensive dashboard metrics from all data sources.
+ * Combines metrics from projects, opportunities, organizations, people, and artifacts.
+ *
+ * @returns {DashboardMetrics} Aggregated metrics object containing all dashboard statistics
+ * @example
+ * const metrics = useDashboardMetrics();
+ * console.log('Active projects:', metrics.projects.active);
+ * console.log('Total pipeline value:', metrics.opportunities.totalValue);
+ * console.log('Partner organizations:', metrics.organizations.partners);
  */
 export function useDashboardMetrics(): DashboardMetrics {
   const projectMetrics = useProjectMetrics();
@@ -55,9 +62,15 @@ export function useDashboardMetrics(): DashboardMetrics {
 }
 
 /**
- * Hook for revenue chart data
- * @param timeRange - Time range for the chart
- * @returns Revenue chart data
+ * Generates revenue chart data aggregated by time period.
+ * Provides actual, projected, by-project, and by-area revenue breakdowns.
+ *
+ * @param {'month' | 'quarter' | 'year'} [timeRange='month'] - Time period for data aggregation
+ * @returns {{ actual: TimeSeriesDataPoint[]; projected: TimeSeriesDataPoint[]; byProject: ChartDataPoint[]; byArea: ChartDataPoint[] }} Revenue chart data organized by different dimensions
+ * @example
+ * const revenueData = useRevenueChartData('quarter');
+ * // revenueData.actual contains daily revenue for the current quarter
+ * // revenueData.byProject contains top 10 projects by revenue
  */
 export function useRevenueChartData(timeRange: 'month' | 'quarter' | 'year' = 'month') {
   const { data: projects = [] } = useQuery({
@@ -126,8 +139,15 @@ export function useRevenueChartData(timeRange: 'month' | 'quarter' | 'year' = 'm
 }
 
 /**
- * Hook for pipeline chart data
- * @returns Pipeline chart data
+ * Generates opportunity pipeline visualization data.
+ * Provides stage breakdown, conversion rates, and timeline projections.
+ *
+ * @returns {{ stages: ChartDataPoint[]; conversion: Array<{ stage: string; count: number; rate: number }>; timeline: TimeSeriesDataPoint[] }} Pipeline chart data with stages, conversion, and timeline
+ * @example
+ * const pipelineData = usePipelineChartData();
+ * console.log('Opportunities by stage:', pipelineData.stages);
+ * console.log('Stage conversion rates:', pipelineData.conversion);
+ * console.log('Pipeline timeline:', pipelineData.timeline);
  */
 export function usePipelineChartData() {
   const { opportunities = [] } = useOpportunityPipelineMetrics();
@@ -208,9 +228,12 @@ export function usePipelineChartData() {
 }
 
 /**
- * Generate time points based on time range
- * @param timeRange - Time range ('month', 'quarter', 'year')
- * @returns Array of date objects
+ * Generates an array of date points for the specified time range.
+ * Used internally for creating time-series data.
+ *
+ * @private
+ * @param {'month' | 'quarter' | 'year'} timeRange - The time range to generate points for
+ * @returns {Date[]} Array of Date objects representing time points
  */
 function generateTimePoints(timeRange: 'month' | 'quarter' | 'year'): Date[] {
   const now = new Date();

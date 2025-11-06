@@ -5,14 +5,28 @@ import { configService } from './configService';
 import { Artifact, ArtifactFilters, NotionQueryRequest, SortOption } from '../types';
 
 /**
- * Service for fetching and managing artifact data
+ * Service for fetching and managing artifact/document data from Notion databases.
+ * Provides methods to query, filter, and manage project artifacts, documents, and media.
  */
 class ArtifactService {
   /**
-   * Fetch all artifacts with optional filters
-   * @param filters - Optional filters to apply
-   * @param sort - Optional sort configuration
-   * @returns Promise with array of artifacts
+   * Fetches all artifacts with optional filtering and sorting capabilities.
+   * Returns empty array as fallback if the API fails.
+   *
+   * @param {ArtifactFilters} [filters] - Optional filters to apply to the artifact query
+   * @param {SortOption} [sort] - Optional sort configuration for ordering results
+   * @returns {Promise<Artifact[]>} Promise resolving to an array of artifacts matching the criteria
+   * @throws {Error} Logs errors but returns empty array to prevent app crashes
+   * @example
+   * // Fetch all presentation artifacts
+   * const presentations = await artifactService.getArtifacts({ type: ['PRESENTATION'] });
+   *
+   * @example
+   * // Fetch artifacts sorted by last modified date
+   * const recentArtifacts = await artifactService.getArtifacts(
+   *   undefined,
+   *   { field: 'lastModified', direction: 'desc' }
+   * );
    */
   async getArtifacts(filters?: ArtifactFilters, sort?: SortOption): Promise<Artifact[]> {
     try {
@@ -42,9 +56,17 @@ class ArtifactService {
   }
   
   /**
-   * Fetch a single artifact by ID
-   * @param id - Artifact ID
-   * @returns Promise with artifact or undefined if not found
+   * Fetches a single artifact by its unique identifier.
+   * Queries the Notion database for an artifact with a matching ID.
+   *
+   * @param {string} id - The unique identifier of the artifact to fetch
+   * @returns {Promise<Artifact | undefined>} Promise resolving to the artifact if found, undefined otherwise
+   * @throws {Error} Logs errors and returns undefined to handle missing artifacts gracefully
+   * @example
+   * const artifact = await artifactService.getArtifactById('artifact-456');
+   * if (artifact) {
+   *   console.log(`Found artifact: ${artifact.name} (${artifact.type})`);
+   * }
    */
   async getArtifactById(id: string): Promise<Artifact | undefined> {
     try {
@@ -74,10 +96,20 @@ class ArtifactService {
   }
   
   /**
-   * Get artifacts for a specific entity (project, opportunity, etc.)
-   * @param entityType - Type of entity ('project', 'opportunity', 'organization', 'person')
-   * @param entityId - ID of the entity
-   * @returns Promise with array of related artifacts
+   * Fetches all artifacts related to a specific entity.
+   * Queries Notion using the relation property corresponding to the entity type.
+   *
+   * @param {'project' | 'opportunity' | 'organization' | 'person'} entityType - Type of entity to filter by
+   * @param {string} entityId - The unique identifier of the entity
+   * @returns {Promise<Artifact[]>} Promise resolving to an array of related artifacts
+   * @throws {Error} If entityType is invalid, or logs errors and returns empty array for other failures
+   * @example
+   * // Get all artifacts for a project
+   * const projectArtifacts = await artifactService.getArtifactsForEntity('project', 'proj-123');
+   *
+   * @example
+   * // Get all artifacts for an opportunity
+   * const oppArtifacts = await artifactService.getArtifactsForEntity('opportunity', 'opp-456');
    */
   async getArtifactsForEntity(entityType: 'project' | 'opportunity' | 'organization' | 'person', entityId: string): Promise<Artifact[]> {
     try {
@@ -118,9 +150,12 @@ class ArtifactService {
   }
   
   /**
-   * Build Notion filter object from application filters
-   * @param filters - Application filter object
-   * @returns Notion filter object
+   * Converts application-level artifact filters into Notion API filter format.
+   * Maps filter properties to their corresponding Notion database property names.
+   *
+   * @private
+   * @param {ArtifactFilters} [filters] - Application filter object with typed properties
+   * @returns {Record<string, unknown>} Notion-formatted filter object with AND conditions
    */
   private buildNotionFilters(filters?: ArtifactFilters): Record<string, unknown> {
     if (!filters) return {};
@@ -202,9 +237,12 @@ class ArtifactService {
   }
   
   /**
-   * Build Notion sort object from application sort option
-   * @param sort - Application sort option
-   * @returns Notion sort object
+   * Converts application-level sort options into Notion API sort format.
+   * Maps application field names to their corresponding Notion property names.
+   *
+   * @private
+   * @param {SortOption} sort - Application sort option with field and direction
+   * @returns {{ property: string; direction: 'ascending' | 'descending' }} Notion-formatted sort object
    */
   private buildNotionSort(sort: SortOption): { property: string; direction: 'ascending' | 'descending' } {
     // Map application field names to Notion property names

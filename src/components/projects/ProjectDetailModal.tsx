@@ -6,29 +6,8 @@ import Button from '../ui/Button';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import ArtifactGrid from '../artifacts/ArtifactGrid';
 
-interface Project {
-  id: string;
-  name: string;
-  description: string;
-  aiSummary?: string;
-  status: string;
-  themes: string[];
-  lead: string;
-  location: string;
-  state: string;
-  revenueActual: number;
-  revenuePotential: number;
-  startDate?: Date;
-  endDate?: Date;
-  artifacts: Array<Record<string, unknown>>;
-  relatedOpportunities: Array<Record<string, unknown>>;
-  partnerOrganizations: Array<Record<string, unknown>>;
-  websiteLinks: string;
-  lastModified: Date;
-}
-
 interface ProjectDetailModalProps {
-  project: Project | null;
+  project: Record<string, unknown> | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -58,11 +37,12 @@ const ProjectDetailModal = ({ project, isOpen, onClose }: ProjectDetailModalProp
     }).format(amount);
   };
 
-  const getStatusColor = (status: string) => {
-    if (status?.includes('Active')) return 'success';
-    if (status?.includes('Transferred')) return 'primary';
-    if (status?.includes('Sunsetting')) return 'warning';
-    if (status?.includes('Ideation')) return 'default';
+  const getStatusColor = (status: unknown) => {
+    const statusStr = String(status || '');
+    if (statusStr.includes('Active')) return 'success';
+    if (statusStr.includes('Transferred')) return 'primary';
+    if (statusStr.includes('Sunsetting')) return 'warning';
+    if (statusStr.includes('Ideation')) return 'default';
     return 'default';
   };
 
@@ -81,28 +61,28 @@ const ProjectDetailModal = ({ project, isOpen, onClose }: ProjectDetailModalProp
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="flex items-center space-x-3 mb-2">
-                <h2 className="text-2xl font-bold text-gray-900">{project.name}</h2>
-                <Badge variant={getStatusColor(project.status)}>{project.status}</Badge>
+                <h2 className="text-2xl font-bold text-gray-900">{String(project.name)}</h2>
+                <Badge variant={getStatusColor(project.status)}>{String(project.status)}</Badge>
               </div>
-              
+
               <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
                 <span className="flex items-center">
                   <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
-                  {project.location}, {project.state}
+                  {String(project.location)}, {String(project.state)}
                 </span>
                 <span className="flex items-center">
                   <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
-                  Led by {project.lead}
+                  Led by {String(project.lead)}
                 </span>
-                {project.websiteLinks && (
-                  <a 
-                    href={project.websiteLinks} 
-                    target="_blank" 
+                {Boolean(project.websiteLinks) && (
+                  <a
+                    href={String(project.websiteLinks)}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center text-primary-600 hover:text-primary-700"
                   >
@@ -115,9 +95,9 @@ const ProjectDetailModal = ({ project, isOpen, onClose }: ProjectDetailModalProp
               </div>
 
               {/* Themes */}
-              {project.themes && project.themes.length > 0 && (
+              {Boolean(project.themes && Array.isArray(project.themes) && (project.themes as string[]).length > 0) && (
                 <div className="flex flex-wrap gap-1 mt-3">
-                  {project.themes.map((theme, index) => (
+                  {(project.themes as string[]).map((theme, index) => (
                     <Badge key={index} variant="default" className="text-xs">
                       {theme}
                     </Badge>
@@ -169,19 +149,19 @@ const ProjectDetailModal = ({ project, isOpen, onClose }: ProjectDetailModalProp
                   <Card className="p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-3">Project Description</h3>
                     <p className="text-gray-700 leading-relaxed">
-                      {project.description || 'No description available.'}
+                      {String(project.description || 'No description available.')}
                     </p>
                   </Card>
 
                   {/* AI Summary */}
-                  {project.aiSummary && (
+                  {Boolean(project.aiSummary) && (
                     <Card className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
                       <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
                         <span className="mr-2">🤖</span>
                         AI Summary
                       </h3>
                       <p className="text-gray-700 leading-relaxed">
-                        {project.aiSummary}
+                        {String(project.aiSummary)}
                       </p>
                     </Card>
                   )}
@@ -189,15 +169,15 @@ const ProjectDetailModal = ({ project, isOpen, onClose }: ProjectDetailModalProp
                   {/* Quick Stats */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Card className="p-4 text-center">
-                      <div className="text-2xl font-bold text-green-600">{formatCurrency(project.revenueActual)}</div>
+                      <div className="text-2xl font-bold text-green-600">{formatCurrency((project.revenueActual as number) || 0)}</div>
                       <div className="text-sm text-gray-600">Revenue Generated</div>
                     </Card>
                     <Card className="p-4 text-center">
-                      <div className="text-2xl font-bold text-blue-600">{project.artifacts?.length || 0}</div>
+                      <div className="text-2xl font-bold text-blue-600">{Array.isArray(project.artifacts) ? project.artifacts.length : 0}</div>
                       <div className="text-sm text-gray-600">Artifacts</div>
                     </Card>
                     <Card className="p-4 text-center">
-                      <div className="text-2xl font-bold text-purple-600">{project.partnerOrganizations?.length || 0}</div>
+                      <div className="text-2xl font-bold text-purple-600">{Array.isArray(project.partnerOrganizations) ? project.partnerOrganizations.length : 0}</div>
                       <div className="text-sm text-gray-600">Partners</div>
                     </Card>
                   </div>
@@ -208,11 +188,11 @@ const ProjectDetailModal = ({ project, isOpen, onClose }: ProjectDetailModalProp
                 <div>
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-lg font-semibold text-gray-900">Project Artifacts</h3>
-                    <Badge variant="default">{project.artifacts?.length || 0} items</Badge>
+                    <Badge variant="default">{Array.isArray(project.artifacts) ? project.artifacts.length : 0} items</Badge>
                   </div>
-                  {project.artifacts && project.artifacts.length > 0 ? (
-                    <ArtifactGrid 
-                      artifacts={project.artifacts} 
+                  {Array.isArray(project.artifacts) && project.artifacts.length > 0 ? (
+                    <ArtifactGrid
+                      artifacts={project.artifacts as unknown as import('../../types').Artifact[]}
                       onArtifactClick={(artifact) => {
                         // Handle artifact click - could open another modal or navigate
                         console.log('Artifact clicked:', artifact);
@@ -237,17 +217,17 @@ const ProjectDetailModal = ({ project, isOpen, onClose }: ProjectDetailModalProp
                       <div className="space-y-3">
                         <div className="flex justify-between">
                           <span className="text-gray-600">Actual Revenue:</span>
-                          <span className="font-semibold text-green-600">{formatCurrency(project.revenueActual)}</span>
+                          <span className="font-semibold text-green-600">{formatCurrency((project.revenueActual as number) || 0)}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-600">Potential Revenue:</span>
-                          <span className="font-semibold text-blue-600">{formatCurrency(project.revenuePotential)}</span>
+                          <span className="font-semibold text-blue-600">{formatCurrency((project.revenuePotential as number) || 0)}</span>
                         </div>
                         <div className="flex justify-between pt-2 border-t">
                           <span className="text-gray-600">Growth Potential:</span>
                           <span className="font-semibold">
-                            {project.revenueActual > 0 ? 
-                              `${(((project.revenuePotential - project.revenueActual) / project.revenueActual) * 100).toFixed(1)}%` : 
+                            {(project.revenueActual as number) > 0 ?
+                              `${((((project.revenuePotential as number) - (project.revenueActual as number)) / (project.revenueActual as number)) * 100).toFixed(1)}%` :
                               'N/A'
                             }
                           </span>
@@ -258,7 +238,7 @@ const ProjectDetailModal = ({ project, isOpen, onClose }: ProjectDetailModalProp
                     <Card className="p-6">
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">Related Opportunities</h3>
                       <div className="text-2xl font-bold text-purple-600 mb-2">
-                        {project.relatedOpportunities?.length || 0}
+                        {Array.isArray(project.relatedOpportunities) ? project.relatedOpportunities.length : 0}
                       </div>
                       <p className="text-sm text-gray-600">
                         Active funding opportunities linked to this project
@@ -273,30 +253,30 @@ const ProjectDetailModal = ({ project, isOpen, onClose }: ProjectDetailModalProp
                   <Card className="p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Project Timeline</h3>
                     <div className="space-y-4">
-                      {project.startDate && (
+                      {Boolean(project.startDate) && (
                         <div className="flex items-center space-x-3">
                           <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                           <div>
                             <div className="font-medium">Project Started</div>
-                            <div className="text-sm text-gray-600">{new Date(project.startDate).toLocaleDateString()}</div>
+                            <div className="text-sm text-gray-600">{new Date(project.startDate as string | Date).toLocaleDateString()}</div>
                           </div>
                         </div>
                       )}
-                      
+
                       <div className="flex items-center space-x-3">
                         <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
                         <div>
                           <div className="font-medium">Last Updated</div>
-                          <div className="text-sm text-gray-600">{new Date(project.lastModified).toLocaleDateString()}</div>
+                          <div className="text-sm text-gray-600">{new Date(project.lastModified as string | Date).toLocaleDateString()}</div>
                         </div>
                       </div>
 
-                      {project.endDate && (
+                      {Boolean(project.endDate) && (
                         <div className="flex items-center space-x-3">
                           <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
                           <div>
                             <div className="font-medium">Target Completion</div>
-                            <div className="text-sm text-gray-600">{new Date(project.endDate).toLocaleDateString()}</div>
+                            <div className="text-sm text-gray-600">{new Date(project.endDate as string | Date).toLocaleDateString()}</div>
                           </div>
                         </div>
                       )}

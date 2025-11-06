@@ -72,7 +72,7 @@ const PieChart = ({
               fill="#8884d8"
               dataKey="value"
               nameKey="name"
-              label={({ name, percent }: { name: string; percent: number }) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`}
+              label={({ name, percent }: { name: string; percent?: number }) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`}
               isAnimationActive={true}
               animationDuration={500}
             >

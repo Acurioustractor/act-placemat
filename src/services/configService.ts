@@ -31,15 +31,23 @@ export interface HealthStatus {
 }
 
 /**
- * Service for fetching application configuration and health status
+ * Service for fetching and managing application configuration from the backend.
+ * Provides centralized access to database IDs, availability status, and health checks.
  */
 class ConfigService {
   private config: AppConfig | null = null;
   private configPromise: Promise<AppConfig> | null = null;
 
   /**
-   * Get application configuration from backend
-   * Uses caching to avoid repeated requests
+   * Retrieves the application configuration from the backend.
+   * Implements caching to avoid repeated requests and returns the cached config if available.
+   *
+   * @returns {Promise<AppConfig>} Promise resolving to the application configuration with database IDs and status
+   * @throws {Error} If the backend request fails and no fallback is available
+   * @example
+   * const config = await configService.getConfig();
+   * console.log('Projects database ID:', config.databases.projects);
+   * console.log('Notion configured:', config.status.notion_configured);
    */
   async getConfig(): Promise<AppConfig> {
     // Return cached config if available
@@ -66,7 +74,14 @@ class ConfigService {
   }
 
   /**
-   * Force refresh of configuration from backend
+   * Forces a refresh of the configuration from the backend.
+   * Clears the cached config and fetches a fresh copy.
+   *
+   * @returns {Promise<AppConfig>} Promise resolving to the refreshed application configuration
+   * @throws {Error} If the backend request fails and no fallback is available
+   * @example
+   * // Force refresh after configuration changes
+   * const newConfig = await configService.refreshConfig();
    */
   async refreshConfig(): Promise<AppConfig> {
     this.config = null;
@@ -75,7 +90,15 @@ class ConfigService {
   }
 
   /**
-   * Get database ID for a specific type
+   * Retrieves the Notion database ID for a specific data type.
+   * Ensures that the database is configured before returning the ID.
+   *
+   * @param {keyof AppConfig['databases']} type - The database type ('projects', 'opportunities', 'organizations', 'people', or 'artifacts')
+   * @returns {Promise<string>} Promise resolving to the Notion database ID
+   * @throws {Error} If the database ID is not configured in the backend
+   * @example
+   * const projectsDbId = await configService.getDatabaseId('projects');
+   * console.log('Projects database ID:', projectsDbId);
    */
   async getDatabaseId(type: keyof AppConfig['databases']): Promise<string> {
     const config = await this.getConfig();
@@ -89,7 +112,16 @@ class ConfigService {
   }
 
   /**
-   * Check if a specific database is available
+   * Checks if a specific database is available and properly configured.
+   * Queries the backend configuration status.
+   *
+   * @param {keyof AppConfig['databases']} type - The database type to check
+   * @returns {Promise<boolean>} Promise resolving to true if the database is available, false otherwise
+   * @example
+   * const isAvailable = await configService.isDatabaseAvailable('opportunities');
+   * if (!isAvailable) {
+   *   console.warn('Opportunities database is not available');
+   * }
    */
   async isDatabaseAvailable(type: keyof AppConfig['databases']): Promise<boolean> {
     const config = await this.getConfig();
@@ -98,7 +130,15 @@ class ConfigService {
   }
 
   /**
-   * Check if Notion is properly configured
+   * Checks if Notion integration is properly configured.
+   * Verifies that the Notion API token and connection are working.
+   *
+   * @returns {Promise<boolean>} Promise resolving to true if Notion is configured, false otherwise
+   * @example
+   * const isConfigured = await configService.isNotionConfigured();
+   * if (!isConfigured) {
+   *   console.error('Notion is not configured. Please check your API token.');
+   * }
    */
   async isNotionConfigured(): Promise<boolean> {
     const config = await this.getConfig();
@@ -106,7 +146,16 @@ class ConfigService {
   }
 
   /**
-   * Get health status from backend
+   * Retrieves the health status of the backend API.
+   * Includes information about API availability, version, and configuration.
+   *
+   * @returns {Promise<HealthStatus>} Promise resolving to the health status object
+   * @throws {Error} If the health check request fails
+   * @example
+   * const health = await configService.getHealthStatus();
+   * console.log('API Status:', health.status);
+   * console.log('Version:', health.version);
+   * console.log('Notion Token:', health.notion_token);
    */
   async getHealthStatus(): Promise<HealthStatus> {
     try {
@@ -156,7 +205,12 @@ class ConfigService {
   }
 
   /**
-   * Clear cached configuration (useful for testing)
+   * Clears the cached configuration.
+   * Useful for testing or when you need to force a fresh config fetch.
+   *
+   * @returns {void}
+   * @example
+   * configService.clearCache();
    */
   clearCache(): void {
     this.config = null;

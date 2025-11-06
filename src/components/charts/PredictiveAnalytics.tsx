@@ -55,19 +55,19 @@ const PredictiveAnalytics = ({
     score += amountFactor;
     
     // Stage progression factor (20%)
-    const stageFactors = {
+    const stageFactors: Record<string, number> = {
       'Discovery': 10,
       'Applied': 25,
       'Negotiation': 40,
       'Closed Won': 100,
       'Closed Lost': 0
     };
-    score += (stageFactors[opportunity.stage as keyof typeof stageFactors] || 10) * 0.2;
+    score += (stageFactors[opportunity.stage as string] || 10) * 0.2;
     
     // Relationship strength factor (20%) - based on related projects
-    const relatedProjects = projects.filter(p => 
-      p.partnerOrganizations.some(org => 
-        opportunity.organization && org.name === opportunity.organization
+    const relatedProjects = projects.filter(p =>
+      p.partnerOrganizations.some(org =>
+        opportunity.organization && org === opportunity.organization
       )
     ).length;
     const relationshipBonus = Math.min(relatedProjects * 5, 20);
@@ -209,17 +209,15 @@ const PredictiveAnalytics = ({
               margin={{ top: 20, right: 100, bottom: 70, left: 70 }}
               xScale={{ type: 'linear', min: 0, max: 100 }}
               yScale={{ type: 'linear', min: 0, max: 100 }}
-              nodeSize={function(node) { return Math.max(6, Math.min(20, (node.data.amount || 0) / 5000)) }}
-              colors={function(node) {
-                const risk = node.data.riskLevel;
-                return risk === 'Low' ? COMMUNITY_COLORS.success[600] : 
-                       risk === 'Medium' ? COMMUNITY_COLORS.secondary[600] : 
-                       COMMUNITY_COLORS.error[500];
+              nodeSize={{
+                key: 'data.amount',
+                values: [0, 100000],
+                sizes: [6, 20]
               }}
+              colors={[COMMUNITY_COLORS.success[600], COMMUNITY_COLORS.secondary[600], COMMUNITY_COLORS.error[500]]}
               axisTop={null}
               axisRight={null}
               axisBottom={{
-                orient: 'bottom',
                 tickSize: 5,
                 tickPadding: 5,
                 tickRotation: 0,
@@ -228,7 +226,6 @@ const PredictiveAnalytics = ({
                 legendOffset: 46
               }}
               axisLeft={{
-                orient: 'left',
                 tickSize: 5,
                 tickPadding: 5,
                 tickRotation: 0,
@@ -238,8 +235,10 @@ const PredictiveAnalytics = ({
               }}
               theme={{
                 background: 'transparent',
-                textColor: COMMUNITY_COLORS.neutral[700],
-                fontSize: 11,
+                text: {
+                  fill: COMMUNITY_COLORS.neutral[700],
+                  fontSize: 11
+                },
                 axis: {
                   domain: {
                     line: {
@@ -301,8 +300,10 @@ const PredictiveAnalytics = ({
               borderColor={COMMUNITY_COLORS.neutral[300]}
               theme={{
                 background: 'transparent',
-                textColor: COMMUNITY_COLORS.neutral[50],
-                fontSize: 14,
+                text: {
+                  fill: COMMUNITY_COLORS.neutral[50],
+                  fontSize: 14
+                },
                 tooltip: {
                   container: {
                     background: COMMUNITY_COLORS.neutral[900],

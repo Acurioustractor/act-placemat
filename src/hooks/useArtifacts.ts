@@ -6,10 +6,19 @@ import { ArtifactFilters, SortOption } from '../types';
 import { CACHE_CONFIG } from '../constants';
 
 /**
- * Hook for fetching artifacts with optional filters and sorting
- * @param filters - Optional filters to apply
- * @param sort - Optional sort configuration
- * @returns Query result with artifacts data
+ * Fetches artifacts/documents with optional filtering and sorting using React Query.
+ * Provides automatic caching, background updates, and error handling.
+ *
+ * @param {ArtifactFilters} [filters] - Optional filters to apply to the artifact query
+ * @param {SortOption} [sort] - Optional sort configuration for ordering results
+ * @returns {UseQueryResult<Artifact[]>} React Query result containing artifacts data
+ * @example
+ * // Fetch presentation artifacts
+ * const { data: presentations } = useArtifacts({ type: ['PRESENTATION'] });
+ *
+ * @example
+ * // Fetch artifacts sorted by last modified
+ * const { data: artifacts } = useArtifacts(undefined, { field: 'lastModified', direction: 'desc' });
  */
 export function useArtifacts(filters?: ArtifactFilters, sort?: SortOption) {
   return useQuery({

@@ -38,7 +38,6 @@ const SmartDataEntry = () => {
   const [discrepancies, setDiscrepancies] = useState<DataDiscrepancy[]>([]);
   const [suggestions, setSuggestions] = useState<SmartSuggestion[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  // const [selectedDiscrepancy, setSelectedDiscrepancy] = useState<DataDiscrepancy | null>(null);
 
   // Analyze data for discrepancies
   const analyzeData = () => {
@@ -282,8 +281,7 @@ const SmartDataEntry = () => {
           {discrepancies.map((disc, idx) => (
             <div
               key={idx}
-              className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => setSelectedDiscrepancy(disc)}
+              className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3">

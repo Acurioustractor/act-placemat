@@ -5,14 +5,28 @@ import { configService } from './configService';
 import { Project, ProjectFilters, NotionQueryRequest, SortOption } from '../types';
 
 /**
- * Service for fetching and managing project data
+ * Service for fetching and managing project data from Notion databases.
+ * Provides methods to query, filter, and sort projects with intelligent fallbacks.
  */
 class ProjectService {
   /**
-   * Fetch all projects with optional filters
-   * @param filters - Optional filters to apply
-   * @param sort - Optional sort configuration
-   * @returns Promise with array of projects
+   * Fetches all projects with optional filtering and sorting capabilities.
+   * Uses the smart data service for intelligent caching and fallback strategies.
+   *
+   * @param {ProjectFilters} [filters] - Optional filters to apply to the project query
+   * @param {SortOption} [sort] - Optional sort configuration for ordering results
+   * @returns {Promise<Project[]>} Promise resolving to an array of projects matching the criteria
+   * @throws {Error} Logs errors but returns empty array as fallback to prevent app crashes
+   * @example
+   * // Fetch all active projects
+   * const projects = await projectService.getProjects({ status: ['Active'] });
+   *
+   * @example
+   * // Fetch projects with sorting
+   * const sortedProjects = await projectService.getProjects(
+   *   undefined,
+   *   { field: 'lastModified', direction: 'desc' }
+   * );
    */
   async getProjects(filters?: ProjectFilters, sort?: SortOption): Promise<Project[]> {
     try {
@@ -42,9 +56,17 @@ class ProjectService {
   }
   
   /**
-   * Fetch a single project by ID
-   * @param id - Project ID
-   * @returns Promise with project or undefined if not found
+   * Fetches a single project by its unique identifier.
+   * Queries the Notion database for a project with a matching ID.
+   *
+   * @param {string} id - The unique identifier of the project to fetch
+   * @returns {Promise<Project | undefined>} Promise resolving to the project if found, undefined otherwise
+   * @throws {Error} Logs errors and returns undefined to handle missing projects gracefully
+   * @example
+   * const project = await projectService.getProjectById('project-123');
+   * if (project) {
+   *   console.log('Found project:', project.name);
+   * }
    */
   async getProjectById(id: string): Promise<Project | undefined> {
     try {
@@ -74,9 +96,17 @@ class ProjectService {
   }
   
   /**
-   * Build Notion filter object from application filters
-   * @param filters - Application filter object
-   * @returns Notion filter object
+   * Converts application-level project filters into Notion API filter format.
+   * Maps filter properties to their corresponding Notion database property names
+   * and constructs compound AND filters for multiple criteria.
+   *
+   * @private
+   * @param {ProjectFilters} [filters] - Application filter object with typed properties
+   * @returns {Record<string, unknown>} Notion-formatted filter object with AND conditions
+   * @example
+   * // Input filters
+   * const filters = { area: ['Economic Freedom'], status: ['Active'] };
+   * // Returns: { and: [{ property: 'Theme', multi_select: { contains: 'Economic Freedom' } }, ...] }
    */
   private buildNotionFilters(filters?: ProjectFilters): Record<string, unknown> {
     console.log('🔍 Building Notion filters with:', filters);
@@ -183,9 +213,16 @@ class ProjectService {
   }
   
   /**
-   * Build Notion sort object from application sort option
-   * @param sort - Application sort option
-   * @returns Notion sort object
+   * Converts application-level sort options into Notion API sort format.
+   * Maps application field names to their corresponding Notion property names
+   * and translates sort directions to Notion's ascending/descending format.
+   *
+   * @private
+   * @param {SortOption} sort - Application sort option with field and direction
+   * @returns {{ property: string; direction: 'ascending' | 'descending' }} Notion-formatted sort object
+   * @example
+   * // Input: { field: 'name', direction: 'asc' }
+   * // Returns: { property: 'Name', direction: 'ascending' }
    */
   private buildNotionSort(sort: SortOption): { property: string; direction: 'ascending' | 'descending' } {
     // Map application field names to Notion property names

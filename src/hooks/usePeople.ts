@@ -6,10 +6,19 @@ import { PersonFilters, SortOption } from '../types';
 import { CACHE_CONFIG } from '../constants';
 
 /**
- * Hook for fetching people with optional filters and sorting
- * @param filters - Optional filters to apply
- * @param sort - Optional sort configuration
- * @returns Query result with people data
+ * Fetches people/contacts with optional filtering and sorting using React Query.
+ * Provides automatic caching, background updates, and error handling.
+ *
+ * @param {PersonFilters} [filters] - Optional filters to apply to the person query
+ * @param {SortOption} [sort] - Optional sort configuration for ordering results
+ * @returns {UseQueryResult<Person[]>} React Query result containing people data
+ * @example
+ * // Fetch people from a specific organization
+ * const { data: people } = usePeople({ organization: ['Company XYZ'] });
+ *
+ * @example
+ * // Fetch people sorted by relationship strength
+ * const { data: people } = usePeople(undefined, { field: 'relationshipStrength', direction: 'desc' });
  */
 export function usePeople(filters?: PersonFilters, sort?: SortOption) {
   return useQuery({

@@ -5,8 +5,7 @@ import {
   LoadingSpinner,
   EmptyState,
   ErrorState,
-  SearchBar,
-  Button
+  SearchBar
 } from '../../components/ui';
 import { ModernFilterPanel } from '../../components/ui/modern';
 import { useProjects } from '../../hooks';
@@ -189,11 +188,10 @@ const ProjectsPage = () => {
               />
             </svg>
           }
-          action={
-            <Button variant="secondary" onClick={resetFilters}>
-              Clear Filters
-            </Button>
-          }
+          action={{
+            label: "Clear Filters",
+            onClick: resetFilters
+          }}
         />
       ) : (
         <div className={

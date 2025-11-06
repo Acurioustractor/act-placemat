@@ -42,6 +42,7 @@ export interface NotionQueryRequest {
   sorts?: NotionSort[];
   pageSize?: number;
   startCursor?: string;
+  [key: string]: unknown;
 }
 
 export interface NotionFilter {
@@ -96,7 +97,7 @@ export interface NotionSort {
   direction: 'ascending' | 'descending';
 }
 
-export interface NotionResponse<T> {
+export interface NotionResponse<T = Record<string, unknown>> {
   object: 'list';
   results: T[];
   next_cursor: string | null;
@@ -141,6 +142,7 @@ export interface OpportunityFilters {
     end?: Date;
   };
   search?: string;
+  [key: string]: unknown;
 }
 
 export interface OrganizationFilters {
@@ -155,6 +157,7 @@ export interface OrganizationFilters {
   mobile?: string;
   source?: string;
   search?: string;
+  [key: string]: unknown;
 }
 
 export interface PersonFilters {
@@ -167,6 +170,7 @@ export interface PersonFilters {
   mobile?: string;
   source?: string;
   search?: string;
+  [key: string]: unknown;
 }
 
 export interface ArtifactFilters {

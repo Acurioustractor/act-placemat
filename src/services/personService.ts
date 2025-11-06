@@ -5,14 +5,28 @@ import { configService } from './configService';
 import { Person, PersonFilters, NotionQueryRequest, SortOption } from '../types';
 
 /**
- * Service for fetching and managing person data
+ * Service for fetching and managing person/contact data from Notion databases.
+ * Provides methods to query, filter, and manage relationships with key contacts and stakeholders.
  */
 class PersonService {
   /**
-   * Fetch all people with optional filters
-   * @param filters - Optional filters to apply
-   * @param sort - Optional sort configuration
-   * @returns Promise with array of people
+   * Fetches all people/contacts with optional filtering and sorting capabilities.
+   * Includes intelligent fallback to mock data if the API fails.
+   *
+   * @param {PersonFilters} [filters] - Optional filters to apply to the person query
+   * @param {SortOption} [sort] - Optional sort configuration for ordering results
+   * @returns {Promise<Person[]>} Promise resolving to an array of people matching the criteria
+   * @throws {Error} Logs errors but falls back to mock data to prevent app crashes
+   * @example
+   * // Fetch people by organization
+   * const people = await personService.getPeople({ organization: ['Company XYZ'] });
+   *
+   * @example
+   * // Fetch people sorted by relationship strength
+   * const sortedPeople = await personService.getPeople(
+   *   undefined,
+   *   { field: 'relationshipStrength', direction: 'desc' }
+   * );
    */
   async getPeople(filters?: PersonFilters, sort?: SortOption): Promise<Person[]> {
     try {
@@ -42,9 +56,17 @@ class PersonService {
   }
   
   /**
-   * Fetch a single person by ID
-   * @param id - Person ID
-   * @returns Promise with person or undefined if not found
+   * Fetches a single person by their unique identifier.
+   * Queries the Notion database for a person with a matching ID.
+   *
+   * @param {string} id - The unique identifier of the person to fetch
+   * @returns {Promise<Person | undefined>} Promise resolving to the person if found, undefined otherwise
+   * @throws {Error} Logs errors and returns undefined to handle missing persons gracefully
+   * @example
+   * const person = await personService.getPersonById('person-123');
+   * if (person) {
+   *   console.log(`Found contact: ${person.fullName} at ${person.organization}`);
+   * }
    */
   async getPersonById(id: string): Promise<Person | undefined> {
     try {
@@ -76,9 +98,19 @@ class PersonService {
   }
   
   /**
-   * Get people who need follow-up soon
-   * @param daysThreshold - Number of days to consider for follow-up
-   * @returns Promise with array of people needing follow-up
+   * Fetches people whose next contact date falls within the specified time threshold.
+   * Useful for identifying contacts that need follow-up soon.
+   *
+   * @param {number} [daysThreshold=7] - Number of days to look ahead for follow-ups (default: 7)
+   * @returns {Promise<Person[]>} Promise resolving to an array of people needing follow-up, sorted by next contact date
+   * @throws {Error} Logs errors but falls back to mock data to prevent app crashes
+   * @example
+   * // Get people needing follow-up in the next week
+   * const followUps = await personService.getPeopleNeedingFollowUp();
+   *
+   * @example
+   * // Get people needing follow-up in the next 30 days
+   * const monthlyFollowUps = await personService.getPeopleNeedingFollowUp(30);
    */
   async getPeopleNeedingFollowUp(daysThreshold = 7): Promise<Person[]> {
     try {
@@ -117,9 +149,12 @@ class PersonService {
   }
   
   /**
-   * Build Notion filter object from application filters
-   * @param filters - Application filter object
-   * @returns Notion filter object
+   * Converts application-level person filters into Notion API filter format.
+   * Maps filter properties to their corresponding Notion database property names.
+   *
+   * @private
+   * @param {PersonFilters} [filters] - Application filter object with typed properties
+   * @returns {Record<string, unknown>} Notion-formatted filter object with AND conditions
    */
   private buildNotionFilters(filters?: PersonFilters): Record<string, unknown> {
     console.log('👤 Building Notion filters for people with:', filters);
@@ -186,9 +221,12 @@ class PersonService {
   }
   
   /**
-   * Build Notion sort object from application sort option
-   * @param sort - Application sort option
-   * @returns Notion sort object
+   * Converts application-level sort options into Notion API sort format.
+   * Maps application field names to their corresponding Notion property names.
+   *
+   * @private
+   * @param {SortOption} sort - Application sort option with field and direction
+   * @returns {{ property: string; direction: 'ascending' | 'descending' }} Notion-formatted sort object
    */
   private buildNotionSort(sort: SortOption): { property: string; direction: 'ascending' | 'descending' } {
     // Map application field names to Notion property names

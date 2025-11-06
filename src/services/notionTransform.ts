@@ -31,6 +31,60 @@ import {
   NotionResponse
 } from '../types';
 
+// Notion Property Types
+interface NotionRichText {
+  plain_text: string;
+  [key: string]: unknown;
+}
+
+interface NotionSelect {
+  name: string;
+  [key: string]: unknown;
+}
+
+interface NotionDate {
+  start: string;
+  end?: string | null;
+  [key: string]: unknown;
+}
+
+interface NotionRelation {
+  id: string;
+  [key: string]: unknown;
+}
+
+interface NotionFile {
+  file?: { url: string };
+  external?: { url: string };
+  [key: string]: unknown;
+}
+
+interface NotionProperties {
+  [key: string]: {
+    title?: NotionRichText[];
+    rich_text?: NotionRichText[];
+    select?: NotionSelect;
+    multi_select?: NotionSelect[];
+    date?: NotionDate;
+    number?: number;
+    checkbox?: boolean;
+    url?: string;
+    email?: string;
+    phone_number?: string;
+    relation?: NotionRelation[];
+    people?: { name: string }[];
+    files?: NotionFile[];
+    [key: string]: unknown;
+  };
+}
+
+interface NotionPage {
+  id: string;
+  properties: NotionProperties;
+  last_edited_time: string;
+  [key: string]: unknown;
+}
+
 /**
  * Extract plain text from Notion rich text array
  * @param richText - Notion rich text array
@@ -203,17 +257,22 @@ function mapNotionPlace(notionPlace: string | null): ProjectPlace {
 }
 
 /**
- * Transform Notion project page to Project model
- * @param page - Notion page object
- * @returns Project object
+ * Transforms a Notion page object into an application Project model.
+ * Extracts and maps Notion properties to strongly-typed application fields.
+ *
+ * @param {NotionPage} page - The Notion page object to transform
+ * @returns {Project} Fully transformed Project object with all properties mapped
+ * @example
+ * const project = transformNotionProject(notionPage);
+ * console.log(`Project: ${project.name} - ${project.status}`);
  */
-export function transformNotionProject(page: Record<string, unknown>): Project {
+export function transformNotionProject(page: NotionPage): Project {
   console.log('🔍 Transforming project page:', {
     id: page.id,
     hasName: !!page.properties?.Name,
     properties: Object.keys(page.properties || {})
   });
-  
+
   const properties = page.properties;
   
   // Handle area mapping - check for common field names and provide default
@@ -253,11 +312,16 @@ export function transformNotionProject(page: Record<string, unknown>): Project {
 }
 
 /**
- * Transform Notion opportunity page to Opportunity model
- * @param page - Notion page object
- * @returns Opportunity object
+ * Transforms a Notion page object into an application Opportunity model.
+ * Extracts and maps Notion properties to strongly-typed application fields.
+ *
+ * @param {NotionPage} page - The Notion page object to transform
+ * @returns {Opportunity} Fully transformed Opportunity object with all properties mapped
+ * @example
+ * const opportunity = transformNotionOpportunity(notionPage);
+ * console.log(`Opportunity: ${opportunity.name} - $${opportunity.amount}`);
  */
-export function transformNotionOpportunity(page: Record<string, unknown>): Opportunity {
+export function transformNotionOpportunity(page: NotionPage): Opportunity {
   const properties = page.properties;
   
   return {
@@ -295,11 +359,16 @@ export function transformNotionOpportunity(page: Record<string, unknown>): Oppor
 }
 
 /**
- * Transform Notion organization page to Organization model
- * @param page - Notion page object
- * @returns Organization object
+ * Transforms a Notion page object into an application Organization model.
+ * Extracts and maps Notion properties to strongly-typed application fields.
+ *
+ * @param {NotionPage} page - The Notion page object to transform
+ * @returns {Organization} Fully transformed Organization object with all properties mapped
+ * @example
+ * const organization = transformNotionOrganization(notionPage);
+ * console.log(`Organization: ${organization.name} (${organization.type})`);
  */
-export function transformNotionOrganization(page: Record<string, unknown>): Organization {
+export function transformNotionOrganization(page: NotionPage): Organization {
   const properties = page.properties;
   
   // Handle empty relationship status by defaulting to PROSPECT
@@ -338,17 +407,23 @@ export function transformNotionOrganization(page: Record<string, unknown>): Orga
 }
 
 /**
- * Transform Notion person page to Person model
- * @param page - Notion page object
- * @returns Person object
+ * Transforms a Notion page object into an application Person model.
+ * Extracts and maps Notion properties to strongly-typed application fields.
+ * Handles various name field formats and generates fallback names from email.
+ *
+ * @param {NotionPage} page - The Notion page object to transform
+ * @returns {Person} Fully transformed Person object with all properties mapped
+ * @example
+ * const person = transformNotionPerson(notionPage);
+ * console.log(`Contact: ${person.fullName} at ${person.organization}`);
  */
-export function transformNotionPerson(page: Record<string, unknown>): Person {
+export function transformNotionPerson(page: NotionPage): Person {
   console.log('🔍 Transforming person page (FULL DATA):', {
     id: page.id,
     properties: page.properties,
     propertyKeys: Object.keys(page.properties || {})
   });
-  
+
   const properties = page.properties;
   
   // Try multiple possible name fields
@@ -402,7 +477,7 @@ export function transformNotionPerson(page: Record<string, unknown>): Person {
     roleTitle: extractSelect(properties.Role?.select) || '', // Use Role select field
     organization: extractSelect(properties.Company?.select) || '', // Use Company select field
     email: extractEmail(properties.Email),
-    phone: extractPlainText(properties.Mobile?.phone_number || []),
+    phone: (properties.Mobile?.phone_number as string | undefined) || '',
     linkedin: extractUrl(properties.LinkedIn?.url),
     location: extractSelect(properties.Location?.select) || '', // Use Location select field
     relationshipType: extractSelect(properties.Connection?.select) as RelationshipType || 'CONTACT', // Use Connection field
@@ -425,18 +500,24 @@ export function transformNotionPerson(page: Record<string, unknown>): Person {
 }
 
 /**
- * Transform Notion artifact page to Artifact model
- * @param page - Notion page object
- * @returns Artifact object
+ * Transforms a Notion page object into an application Artifact model.
+ * Extracts and maps Notion properties to strongly-typed application fields.
+ * Handles file URL extraction from Notion's file properties.
+ *
+ * @param {NotionPage} page - The Notion page object to transform
+ * @returns {Artifact} Fully transformed Artifact object with all properties mapped
+ * @example
+ * const artifact = transformNotionArtifact(notionPage);
+ * console.log(`Artifact: ${artifact.name} (${artifact.type})`);
  */
-export function transformNotionArtifact(page: Record<string, unknown>): Artifact {
+export function transformNotionArtifact(page: NotionPage): Artifact {
   const properties = page.properties;
   
   // Extract file URLs from Files & media and Thumbnail Image
-  const files = properties['Files & media']?.files || [];
-  const thumbnails = properties['Thumbnail Image']?.files || [];
-  const primaryFileUrl = files.length > 0 ? files[0].file?.url || files[0].external?.url : '';
-  const thumbnailUrl = thumbnails.length > 0 ? thumbnails[0].file?.url || thumbnails[0].external?.url : '';
+  const files = (properties['Files & media']?.files as NotionFile[] | undefined) || [];
+  const thumbnails = (properties['Thumbnail Image']?.files as NotionFile[] | undefined) || [];
+  const primaryFileUrl = files.length > 0 ? (files[0].file?.url || files[0].external?.url || '') : '';
+  const thumbnailUrl = thumbnails.length > 0 ? (thumbnails[0].file?.url || thumbnails[0].external?.url || '') : '';
   
   return {
     id: page.id,
@@ -465,14 +546,21 @@ export function transformNotionArtifact(page: Record<string, unknown>): Artifact
 }
 
 /**
- * Transform Notion response to array of application models
- * @param response - Notion API response
- * @param transformer - Transformer function for specific model type
- * @returns Array of transformed models
+ * Transforms a Notion API response into an array of application models.
+ * Applies a transformer function to each page in the response.
+ * Handles errors gracefully and logs transformation progress.
+ *
+ * @template T - The target application model type
+ * @param {NotionResponse<NotionPage>} response - The Notion API response containing pages
+ * @param {(page: NotionPage) => T} transformer - Function to transform each Notion page
+ * @returns {T[]} Array of transformed application models
+ * @example
+ * const projects = transformNotionResponse(notionResponse, transformNotionProject);
+ * console.log(`Transformed ${projects.length} projects`);
  */
 export function transformNotionResponse<T>(
-  response: NotionResponse<Record<string, unknown>>,
-  transformer: (page: Record<string, unknown>) => T
+  response: NotionResponse<NotionPage>,
+  transformer: (page: NotionPage) => T
 ): T[] {
   console.log('🔍 transformNotionResponse starting with:', {
     hasResponse: !!response,

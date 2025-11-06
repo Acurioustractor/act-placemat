@@ -43,9 +43,10 @@ const DashboardCharts = ({ projects, opportunities, organizations }: DashboardCh
   const chartData = useMemo(() => {
     // Projects by Theme
     const projectsByTheme = projects.reduce((acc: Record<string, number>, project) => {
-      const themes = Array.isArray(project.themes) ? project.themes : 
-                    project.theme ? [project.theme] : ['Uncategorized'];
-      
+      const themes = Array.isArray(project.themes) && project.themes.length > 0
+                    ? project.themes
+                    : ['Uncategorized'];
+
       themes.forEach((theme: string) => {
         acc[theme] = (acc[theme] || 0) + 1;
       });
@@ -61,10 +62,11 @@ const DashboardCharts = ({ projects, opportunities, organizations }: DashboardCh
 
     // Revenue by Theme
     const revenueByTheme = projects.reduce((acc: Record<string, number>, project) => {
-      const themes = Array.isArray(project.themes) ? project.themes : 
-                    project.theme ? [project.theme] : ['Uncategorized'];
+      const themes = Array.isArray(project.themes) && project.themes.length > 0
+                    ? project.themes
+                    : ['Uncategorized'];
       const revenue = project.revenueActual || 0;
-      
+
       themes.forEach((theme: string) => {
         acc[theme] = (acc[theme] || 0) + revenue;
       });
@@ -72,7 +74,7 @@ const DashboardCharts = ({ projects, opportunities, organizations }: DashboardCh
     }, {});
 
     // Opportunities Pipeline
-    const opportunitiesByStage = opportunities.reduce((acc, opp) => {
+    const opportunitiesByStage = opportunities.reduce((acc: Record<string, number>, opp) => {
       const stage = opp.stage || 'Unknown';
       acc[stage] = (acc[stage] || 0) + 1;
       return acc;
@@ -89,8 +91,8 @@ const DashboardCharts = ({ projects, opportunities, organizations }: DashboardCh
     ];
 
     // Partnership status
-    const partnershipStatus = organizations.reduce((acc, org) => {
-      const status = org.relationshipStatus || org.status || 'Unknown';
+    const partnershipStatus = organizations.reduce((acc: Record<string, number>, org) => {
+      const status = org.relationshipStatus || 'Unknown';
       acc[status] = (acc[status] || 0) + 1;
       return acc;
     }, {});
