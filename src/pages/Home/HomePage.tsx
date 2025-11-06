@@ -132,8 +132,7 @@ const HomePage = () => {
             >
               <div className="text-2xl mb-2">{area.icon}</div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">{area.label}</h3>
-              <p className="text-sm text-gray-500 mb-4">{area.description}</p>
-              <Link to={`${ROUTES.PROJECTS}?area=${encodeURIComponent(area.key)}`}>
+              <Link to={`${ROUTES.PROJECTS}?area=${encodeURIComponent(area.value)}`}>
                 <Button variant="outline" fullWidth>
                   View Projects
                 </Button>

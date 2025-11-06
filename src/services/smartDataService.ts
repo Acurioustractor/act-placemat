@@ -21,7 +21,7 @@ interface DataServiceConfig {
 }
 
 interface CacheEntry {
-  data: any;
+  data: unknown;
   timestamp: number;
   ttl: number;
 }
@@ -43,7 +43,7 @@ class SmartDataService {
    */
   async fetchData<T>(
     type: 'projects' | 'opportunities' | 'organizations' | 'people' | 'artifacts',
-    requestPayload: any
+    requestPayload: Record<string, unknown>
   ): Promise<T[]> {
     const cacheKey = `${type}_${JSON.stringify(requestPayload)}`;
     
@@ -61,8 +61,8 @@ class SmartDataService {
     try {
       // Try Notion API
       console.log(`🌐 Fetching ${type} from Notion API`);
-      
-      const response = await apiService.post<any>(
+
+      const response = await apiService.post<{ results: unknown[]; has_more: boolean }>(
         API_ENDPOINTS.NOTION_QUERY,
         requestPayload
       );
@@ -93,8 +93,9 @@ class SmartDataService {
         throw new Error(`Invalid response structure for ${type}`);
       }
 
-    } catch (error: any) {
-      console.warn(`⚠️ Notion API failed for ${type}:`, error.message);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.warn(`⚠️ Notion API failed for ${type}:`, errorMessage);
       
       // Try cache as fallback
       const staleCache = this.getFromCache<T[]>(cacheKey, true); // Allow stale
@@ -135,17 +136,17 @@ class SmartDataService {
   /**
    * Fetch real data in background after serving mock data
    */
-  private async fetchRealDataInBackground(type: string, requestPayload: any, cacheKey: string) {
+  private async fetchRealDataInBackground(type: string, requestPayload: Record<string, unknown>, cacheKey: string) {
     try {
       console.log(`🔄 Background fetching real ${type} data...`);
       
-      const response = await apiService.post<any>(
+      const response = await apiService.post<{ results: unknown[] }>(
         API_ENDPOINTS.NOTION_QUERY,
         requestPayload
       );
 
       if (response && response.results && Array.isArray(response.results)) {
-        const transformedData = this.transformNotionData(type as any, response);
+        const transformedData = this.transformNotionData(type, response);
         
         // Cache for next time
         if (this.config.useCache && transformedData.length > 0) {
@@ -158,23 +159,6 @@ class SmartDataService {
     }
   }
 
-  /**
-   * Get cache status and statistics
-   */
-  getCacheStats() {
-    const stats = {
-      totalEntries: this.cache.size,
-      typeBreakdown: {} as Record<string, number>,
-      cacheHitRate: 0 // Could track this with counters
-    };
-
-    Array.from(this.cache.keys()).forEach(key => {
-      const type = key.split('_')[0];
-      stats.typeBreakdown[type] = (stats.typeBreakdown[type] || 0) + 1;
-    });
-
-    return stats;
-  }
 
   /**
    * Get data from cache
@@ -196,7 +180,7 @@ class SmartDataService {
   /**
    * Set data in cache
    */
-  private setCache(key: string, data: any): void {
+  private setCache(key: string, data: unknown): void {
     this.cache.set(key, {
       data,
       timestamp: Date.now(),
@@ -207,18 +191,21 @@ class SmartDataService {
   /**
    * Transform Notion response to application format
    */
-  private transformNotionData<T>(type: string, response: any): T[] {
+  private transformNotionData<T>(type: string, response: { results: unknown[]; object?: string; next_cursor?: string | null; has_more?: boolean }): T[] {
+    // Cast response to NotionResponse format for transformation
+    const notionResponse = response as { object: 'list'; results: unknown[]; next_cursor: string | null; has_more: boolean; type: 'page_or_database'; page_or_database: Record<string, never> };
+
     switch (type) {
       case 'projects':
-        return transformNotionResponse<T>(response, transformNotionProject);
+        return transformNotionResponse(notionResponse, transformNotionProject) as T[];
       case 'opportunities':
-        return transformNotionResponse<T>(response, transformNotionOpportunity);
+        return transformNotionResponse(notionResponse, transformNotionOpportunity) as T[];
       case 'organizations':
-        return transformNotionResponse<T>(response, transformNotionOrganization);
+        return transformNotionResponse(notionResponse, transformNotionOrganization) as T[];
       case 'people':
-        return transformNotionResponse<T>(response, transformNotionPerson);
+        return transformNotionResponse(notionResponse, transformNotionPerson) as T[];
       case 'artifacts':
-        return transformNotionResponse<T>(response, transformNotionArtifact);
+        return transformNotionResponse(notionResponse, transformNotionArtifact) as T[];
       default:
         return [];
     }
@@ -274,7 +261,7 @@ class SmartDataService {
     const entries = Array.from(this.cache.entries());
     const totalEntries = entries.length;
     const totalSize = JSON.stringify(Array.from(this.cache.values())).length;
-    const expiredEntries = entries.filter(([_, entry]) => 
+    const expiredEntries = entries.filter(([, entry]) =>
       Date.now() - entry.timestamp > entry.ttl
     ).length;
 

@@ -30,7 +30,7 @@ describe('Notion Transformation Utilities', () => {
     });
     
     it('should return empty string for undefined input', () => {
-      expect(extractPlainText(undefined as any)).toBe('');
+      expect(extractPlainText(undefined as unknown as unknown[])).toBe('');
     });
   });
   
@@ -62,7 +62,7 @@ describe('Notion Transformation Utilities', () => {
     });
     
     it('should return 0 for non-numeric input', () => {
-      expect(extractNumber('not a number' as any)).toBe(0);
+      expect(extractNumber('not a number' as unknown)).toBe(0);
     });
   });
   
@@ -92,7 +92,7 @@ describe('Notion Transformation Utilities', () => {
     });
     
     it('should return empty array for undefined input', () => {
-      expect(extractMultiSelect(undefined as any)).toEqual([]);
+      expect(extractMultiSelect(undefined as unknown as unknown[])).toEqual([]);
     });
     
     it('should filter out items without name', () => {
@@ -279,10 +279,10 @@ describe('Notion Transformation Utilities', () => {
         page_or_database: {}
       };
       
-      const transformer = (page: any) => ({
+      const transformer = (page: Record<string, unknown>) => ({
         id: page.id,
-        name: extractPlainText(page.properties.Name?.title || []),
-        lastModified: new Date(page.last_edited_time)
+        name: extractPlainText((page.properties as Record<string, unknown>).Name?.title as unknown[] || []),
+        lastModified: new Date(page.last_edited_time as string)
       });
       
       const result = transformNotionResponse(notionResponse, transformer);
@@ -295,9 +295,9 @@ describe('Notion Transformation Utilities', () => {
     });
     
     it('should return empty array for invalid response', () => {
-      expect(transformNotionResponse(undefined as any, () => ({}))).toEqual([]);
-      expect(transformNotionResponse({ results: null } as any, () => ({}))).toEqual([]);
-      expect(transformNotionResponse({ results: 'not an array' } as any, () => ({}))).toEqual([]);
+      expect(transformNotionResponse(undefined as unknown as Record<string, unknown>, () => ({}))).toEqual([]);
+      expect(transformNotionResponse({ results: null } as unknown as Record<string, unknown>, () => ({}))).toEqual([]);
+      expect(transformNotionResponse({ results: 'not an array' } as unknown as Record<string, unknown>, () => ({}))).toEqual([]);
     });
   });
 });

@@ -1,7 +1,5 @@
 // API-related types for the ACT Placemat application
 
-import { Project, Opportunity, Organization, Person, Artifact } from './models';
-
 // API Response types
 export interface APIResponse<T> {
   data: T;
@@ -23,11 +21,18 @@ export interface PaginatedResponse<T> {
 }
 
 // API Error types
-export interface APIError {
+export class APIError extends Error {
   status: number;
-  message: string;
-  details?: any;
+  details?: Record<string, unknown>;
   timestamp: Date;
+
+  constructor(status: number, message: string, details?: Record<string, unknown>) {
+    super(message);
+    this.name = 'APIError';
+    this.status = status;
+    this.details = details;
+    this.timestamp = new Date();
+  }
 }
 
 // Notion API specific types
@@ -43,7 +48,7 @@ export interface NotionFilter {
   and?: NotionPropertyFilter[];
   or?: NotionPropertyFilter[];
   property?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface NotionPropertyFilter {
@@ -97,7 +102,7 @@ export interface NotionResponse<T> {
   next_cursor: string | null;
   has_more: boolean;
   type: 'page_or_database';
-  page_or_database: {};
+  page_or_database: Record<string, never>;
 }
 
 // Filter and search types
@@ -115,12 +120,14 @@ export interface ProjectFilters {
     end?: Date;
   };
   search?: string;
+  [key: string]: unknown;
 }
 
 export interface OpportunityFilters {
   stage?: string[];
   type?: string[];
   organization?: string[];
+  probability?: string[];
   amountRange?: {
     min?: number;
     max?: number;
@@ -140,9 +147,13 @@ export interface OrganizationFilters {
   type?: string[];
   sector?: string[];
   size?: string[];
+  status?: string[];
   relationshipStatus?: string[];
   location?: string[];
   fundingCapacity?: string[];
+  email?: string;
+  mobile?: string;
+  source?: string;
   search?: string;
 }
 
@@ -152,6 +163,9 @@ export interface PersonFilters {
   influenceLevel?: string[];
   location?: string[];
   expertise?: string[];
+  email?: string;
+  mobile?: string;
+  source?: string;
   search?: string;
 }
 
@@ -211,14 +225,14 @@ export interface ChartDataPoint {
   label: string;
   value: number;
   color?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface TimeSeriesDataPoint {
   date: Date;
   value: number;
   category?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface RevenueChartData {

@@ -4,7 +4,7 @@ import { useProjects, useOpportunities, useOrganizations, usePeople } from '../.
 import { ArtifactType, ArtifactFormat, ArtifactStatus, ArtifactPurpose } from '../../types';
 
 interface EmailCaptureFormProps {
-  onSubmit?: (data: any) => void;
+  onSubmit?: (data: Record<string, unknown>) => void;
   onCancel?: () => void;
 }
 

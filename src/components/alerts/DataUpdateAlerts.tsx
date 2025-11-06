@@ -29,6 +29,7 @@ interface AlertRule {
   id: string;
   name: string;
   description: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   condition: (data: any) => boolean;
   severity: 'urgent' | 'info' | 'success' | 'warning';
   enabled: boolean;
@@ -117,6 +118,7 @@ const DataUpdateAlerts = () => {
   // Initialize alert rules
   useEffect(() => {
     setAlertRules(defaultRules);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Monitor data and generate alerts
@@ -227,31 +229,35 @@ const DataUpdateAlerts = () => {
     if (newAlerts.length > 0) {
       setAlerts(prev => [...newAlerts, ...prev]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projects, opportunities, organizations, people, alertRules]);
 
   // Generate context-specific alert messages
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const generateAlertMessage = (ruleId: string, entity: any): string => {
     switch (ruleId) {
-      case 'milestone-overdue':
-        const daysOverdue = Math.floor((new Date().getTime() - new Date(entity.nextMilestone).getTime()) / (1000 * 60 * 60 * 24));
+      case 'milestone-overdue': {
+        const daysOverdue = Math.floor((new Date().getTime() - new Date(entity.nextMilestone as string).getTime()) / (1000 * 60 * 60 * 24));
         return `Milestone was due ${daysOverdue} day${daysOverdue !== 1 ? 's' : ''} ago`;
-      
-      case 'opportunity-deadline':
-        const daysUntil = Math.ceil((new Date(entity.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-        return `Deadline in ${daysUntil} day${daysUntil !== 1 ? 's' : ''} - ${new Date(entity.deadline).toLocaleDateString()}`;
-      
+      }
+
+      case 'opportunity-deadline': {
+        const daysUntil = Math.ceil((new Date(entity.deadline as string).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+        return `Deadline in ${daysUntil} day${daysUntil !== 1 ? 's' : ''} - ${new Date(entity.deadline as string).toLocaleDateString()}`;
+      }
+
       case 'missing-contacts':
         return `No key contacts listed. Consider adding contact information to maintain relationships.`;
-      
+
       case 'revenue-mismatch':
-        return `Has $${(entity.revenuePotential / 1000).toFixed(0)}K revenue potential but no linked opportunities`;
-      
+        return `Has $${((entity.revenuePotential as number) / 1000).toFixed(0)}K revenue potential but no linked opportunities`;
+
       case 'contact-follow-up':
-        return `Follow-up scheduled for ${new Date(entity.nextContactDate).toLocaleDateString()}`;
-      
+        return `Follow-up scheduled for ${new Date(entity.nextContactDate as string).toLocaleDateString()}`;
+
       case 'project-success':
         return `Project recently updated and showing progress!`;
-      
+
       default:
         return 'Data update detected';
     }

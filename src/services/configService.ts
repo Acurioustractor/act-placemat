@@ -1,7 +1,6 @@
 // Configuration service for fetching app config from backend
 
 import { apiService } from './api';
-import { APIError } from '../types';
 import { API_ENDPOINTS } from '../constants';
 
 export interface AppConfig {

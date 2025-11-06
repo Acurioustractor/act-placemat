@@ -2,12 +2,9 @@
 
 import { ReactNode } from 'react';
 import { Project, Opportunity, Organization, Person, Artifact } from './models';
-import { 
-  ProjectFilters, 
-  OpportunityFilters, 
-  OrganizationFilters, 
-  PersonFilters, 
-  ArtifactFilters,
+import {
+  ProjectFilters,
+  OpportunityFilters,
   SortOption,
   ChartDataPoint,
   TimeSeriesDataPoint,
@@ -103,7 +100,7 @@ export interface TableColumn<T> {
   key: keyof T;
   label: string;
   sortable?: boolean;
-  render?: (value: any, item: T) => ReactNode;
+  render?: (value: unknown, item: T) => ReactNode;
   width?: string;
   align?: 'left' | 'center' | 'right';
 }
@@ -191,6 +188,7 @@ export interface ToastProps {
 }
 
 // Page component props
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface DashboardPageProps {
   // Dashboard-specific props if needed
 }

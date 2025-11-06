@@ -1,5 +1,5 @@
 import { ResponsiveLine } from '@nivo/line';
-import { COMMUNITY_COLORS, DATA_COLORS } from '../../constants/designSystem';
+import { COMMUNITY_COLORS } from '../../constants/designSystem';
 import { Project, Opportunity } from '../../types';
 
 interface TimeSeriesAnalyticsProps {
@@ -41,10 +41,14 @@ const TimeSeriesAnalytics = ({
 
   // Calculate projects created per month
   const projectsData: TimeSeriesDataPoint[] = last12Months.map(month => {
-    const projectsInMonth = projects.filter(p => 
-      p.startDate && p.startDate.startsWith(month)
-    ).length;
-    
+    const projectsInMonth = projects.filter(p => {
+      if (!p.startDate) return false;
+      const dateStr = p.startDate instanceof Date
+        ? p.startDate.toISOString().slice(0, 7)
+        : String(p.startDate).slice(0, 7);
+      return dateStr === month;
+    }).length;
+
     return {
       x: new Date(month + '-01').toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
       y: projectsInMonth
@@ -53,10 +57,14 @@ const TimeSeriesAnalytics = ({
 
   // Calculate opportunities created per month
   const opportunitiesData: TimeSeriesDataPoint[] = last12Months.map(month => {
-    const oppsInMonth = opportunities.filter(o => 
-      o.createdDate && o.createdDate.startsWith(month)
-    ).length;
-    
+    const oppsInMonth = opportunities.filter(o => {
+      if (!o.createdDate) return false;
+      const dateStr = o.createdDate instanceof Date
+        ? o.createdDate.toISOString().slice(0, 7)
+        : String(o.createdDate).slice(0, 7);
+      return dateStr === month;
+    }).length;
+
     return {
       x: new Date(month + '-01').toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
       y: oppsInMonth
@@ -67,9 +75,15 @@ const TimeSeriesAnalytics = ({
   const revenueData: TimeSeriesDataPoint[] = last12Months.map((month, index) => {
     const monthsToInclude = last12Months.slice(0, index + 1);
     const cumulativeRevenue = projects
-      .filter(p => p.startDate && monthsToInclude.some(m => p.startDate!.startsWith(m)))
+      .filter(p => {
+        if (!p.startDate) return false;
+        const dateStr = p.startDate instanceof Date
+          ? p.startDate.toISOString().slice(0, 7)
+          : String(p.startDate).slice(0, 7);
+        return monthsToInclude.includes(dateStr);
+      })
       .reduce((sum, p) => sum + (p.revenueActual || 0), 0) / 1000; // Convert to K
-    
+
     return {
       x: new Date(month + '-01').toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
       y: Math.round(cumulativeRevenue)
@@ -237,8 +251,6 @@ const TimeSeriesAnalytics = ({
           ]}
           theme={{
             background: 'transparent',
-            textColor: COMMUNITY_COLORS.neutral[700],
-            fontSize: 12,
             axis: {
               domain: {
                 line: {

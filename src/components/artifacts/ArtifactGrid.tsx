@@ -28,7 +28,7 @@ const ArtifactGrid = ({ artifacts, onArtifactClick, className = '' }: ArtifactGr
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   const getArtifactIcon = (type: string, format: string) => {
-    const typeFormat = `${type}_${format}`.toLowerCase();
+    // const typeFormat = `${type}_${format}`.toLowerCase();
     
     if (format?.toLowerCase().includes('image') || format?.toLowerCase().includes('png') || format?.toLowerCase().includes('jpg')) {
       return '🖼️';

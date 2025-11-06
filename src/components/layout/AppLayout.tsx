@@ -1,5 +1,4 @@
 import { ReactNode, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import Footer from './Footer';
@@ -15,7 +14,7 @@ interface AppLayoutProps {
  */
 const AppLayout = ({ children }: AppLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const location = useLocation();
+  // const location = useLocation();
   const { data: healthData, isLoading: healthLoading } = useApiHealth();
 
   const toggleSidebar = () => {

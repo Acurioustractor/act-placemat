@@ -9,6 +9,7 @@ import MetricsCards from '../../components/dashboard/MetricsCards';
 import DashboardCharts from '../../components/charts/DashboardCharts';
 import ArtifactGrid from '../../components/artifacts/ArtifactGrid';
 import ProjectDetailModal from '../../components/projects/ProjectDetailModal';
+import { OpportunityStage } from '../../types';
 
 /**
  * Enhanced Dashboard Page - Modern Zero Interface Design
@@ -61,16 +62,16 @@ const EnhancedDashboardPage = () => {
 
     // Active project concentration
     const activeProjects = projects.filter(p => p.status?.includes('Active'));
-    const themes = activeProjects.reduce((acc, p) => {
-      const projectThemes = Array.isArray(p.themes) ? p.themes : p.theme ? [p.theme] : [];
+    const themes = activeProjects.reduce((acc: Record<string, number>, p) => {
+      const projectThemes = Array.isArray(p.themes) ? p.themes : [];
       projectThemes.forEach(theme => {
         acc[theme] = (acc[theme] || 0) + 1;
       });
       return acc;
     }, {});
 
-    const topTheme = Object.entries(themes).sort(([,a], [,b]) => b - a)[0];
-    if (topTheme && topTheme[1] > 2) {
+    const topTheme = Object.entries(themes).sort(([,a], [,b]) => (b as number) - (a as number))[0];
+    if (topTheme && (topTheme[1] as number) > 2) {
       insights.push({
         type: 'trend',
         title: `Strong Focus on ${topTheme[0]}`,
@@ -81,7 +82,7 @@ const EnhancedDashboardPage = () => {
     }
 
     // Partnership opportunity
-    const appliedOpportunities = opportunities.filter(o => o.stage === 'Applied').length;
+    const appliedOpportunities = opportunities.filter(o => o.stage === OpportunityStage.PROPOSAL).length;
     if (appliedOpportunities > 3) {
       insights.push({
         type: 'action',
@@ -138,12 +139,12 @@ const EnhancedDashboardPage = () => {
     }
   ], []);
 
-  const handleProjectClick = (project: any) => {
+  const handleProjectClick = (project: Record<string, unknown>) => {
     setSelectedProject(project);
     setIsProjectModalOpen(true);
   };
 
-  const handleArtifactClick = (artifact: any) => {
+  const handleArtifactClick = (artifact: Record<string, unknown>) => {
     // In a real app, this might open an artifact viewer or navigate to detail page
     console.log('Artifact clicked:', artifact);
     if (artifact.fileUrl) {
@@ -185,7 +186,7 @@ const EnhancedDashboardPage = () => {
               {['overview', 'insights', 'artifacts'].map((view) => (
                 <button
                   key={view}
-                  onClick={() => setActiveView(view as any)}
+                  onClick={() => setActiveView(view as 'overview' | 'insights' | 'artifacts')}
                   className={`px-4 py-2 text-sm font-medium capitalize transition-colors ${
                     activeView === view
                       ? 'bg-primary-500 text-white'

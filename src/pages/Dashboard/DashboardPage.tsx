@@ -1,14 +1,10 @@
-import { useState } from 'react';
-import { Card, LoadingSpinner, ErrorState, ConnectionStatus } from '../../components/ui';
-import { BarChart, PieChart, LineChart, FunnelChart } from '../../components/charts';
 import CommunityImpactRadar from '../../components/charts/CommunityImpactRadar';
 import GeographicImpactMap from '../../components/charts/GeographicImpactMap';
 import OpportunityPipelineFunnel from '../../components/charts/OpportunityPipelineFunnel';
 import { useProjects, useOpportunities, useOrganizations, usePeople } from '../../hooks';
-import { useConfig, useHealthStatus } from '../../hooks/useConfig';
 import { PROJECT_AREAS } from '../../constants';
 import { ProjectStatus, RelationshipStatus } from '../../types';
-import { formatCurrency, formatPercentage, formatNumber } from '../../utils/formatting';
+import { formatCurrency } from '../../utils/formatting';
 import { useQueryClient } from '@tanstack/react-query';
 import { smartDataService } from '../../services/smartDataService';
 
@@ -18,8 +14,6 @@ import { smartDataService } from '../../services/smartDataService';
  */
 const DashboardPage = () => {
   const queryClient = useQueryClient();
-  const { data: health } = useHealthStatus();
-  const { data: config } = useConfig();
   
   // Debug function to clear all caches
   const clearAllCaches = () => {

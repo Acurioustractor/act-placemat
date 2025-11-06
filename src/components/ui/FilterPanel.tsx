@@ -22,7 +22,7 @@ interface FilterPanelProps<T> {
 /**
  * Modern FilterPanel component for filtering data
  */
-function FilterPanel<T extends Record<string, any>>({
+function FilterPanel<T extends Record<string, unknown>>({
   filters,
   options,
   onFiltersChange,
@@ -32,7 +32,7 @@ function FilterPanel<T extends Record<string, any>>({
 }: FilterPanelProps<T>) {
   const [expanded, setExpanded] = useState(false);
 
-  const handleFilterChange = (id: string, value: any) => {
+  const handleFilterChange = (id: string, value: unknown) => {
     onFiltersChange({
       ...filters,
       [id]: value,
@@ -174,7 +174,7 @@ function FilterPanel<T extends Record<string, any>>({
         </div>
         
         {/* Active filters display */}
-        {Object.entries(filters).some(([key, value]) => value !== undefined && value !== null && value !== '' && (Array.isArray(value) ? value.length > 0 : true)) && (
+        {Object.values(filters).some(value => value !== undefined && value !== null && value !== '' && (Array.isArray(value) ? value.length > 0 : true)) && (
           <div className="mt-4 pt-4 border-t border-gray-200">
             <div className="flex flex-wrap gap-2">
               <span className="text-sm font-medium text-gray-700">Active filters:</span>
@@ -182,7 +182,7 @@ function FilterPanel<T extends Record<string, any>>({
                 if (value === undefined || value === null || value === '' || (Array.isArray(value) && value.length === 0)) {
                   return null;
                 }
-                
+
                 const option = options.find(opt => opt.id === key);
                 if (!option) return null;
                 
@@ -209,7 +209,7 @@ function FilterPanel<T extends Record<string, any>>({
                   >
                     {option.label}: {displayValue}
                     <button
-                      onClick={() => handleFilterChange(key, undefined)}
+                      onClick={() => handleFilterChange(option.key, undefined)}
                       className="ml-2 hover:text-blue-600 focus:outline-none"
                     >
                       ×

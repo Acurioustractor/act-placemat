@@ -1,11 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { 
   MagnifyingGlassIcon,
-  FunnelIcon,
   ArrowPathIcon,
   ShareIcon,
   ExclamationTriangleIcon,
-  CheckCircleIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
 import { useProjects, useOpportunities, useOrganizations, usePeople } from '../../hooks';
@@ -22,7 +20,7 @@ interface SearchResult {
   title: string;
   type: string;
   snippet: string;
-  entity: any;
+  entity: Record<string, unknown>;
   relatedEntities: Array<{id: string; name: string; type: string}>;
   score: number;
   discrepancies?: string[];
@@ -183,7 +181,7 @@ const SearchDashboard = () => {
   };
 
   // Calculate relevance score for search
-  const calculateRelevanceScore = (entity: any, query: string): number => {
+  const calculateRelevanceScore = (entity: Record<string, unknown>, query: string): number => {
     const queryLower = query.toLowerCase();
     let score = 0;
 
@@ -215,7 +213,7 @@ const SearchDashboard = () => {
   };
 
   // Find discrepancies in entity data
-  const findEntityDiscrepancies = (entity: any, type: string): string[] => {
+  const findEntityDiscrepancies = (entity: Record<string, unknown>, type: string): string[] => {
     const discrepancies: string[] = [];
 
     switch (type) {
@@ -303,7 +301,7 @@ const SearchDashboard = () => {
   };
 
   // Calculate connection strength
-  const calculateConnectionStrength = (entity1: any, entity2: any): 'weak' | 'medium' | 'strong' => {
+  const calculateConnectionStrength = (entity1: Record<string, unknown>, entity2: Record<string, unknown>): 'weak' | 'medium' | 'strong' => {
     // Simple heuristic based on data completeness and recency
     let score = 0;
     
@@ -357,7 +355,7 @@ const SearchDashboard = () => {
         <div className="flex gap-2">
           <select
             value={filters.type}
-            onChange={(e) => setFilters({ ...filters, type: e.target.value as any })}
+            onChange={(e) => setFilters({ ...filters, type: e.target.value as 'all' | 'projects' | 'opportunities' | 'organizations' | 'people' | 'artifacts' })}
             className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
           >
             <option value="all">All Types</option>

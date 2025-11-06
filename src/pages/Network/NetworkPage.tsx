@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { 
-  Card, 
-  Badge, 
-  LoadingSpinner, 
-  EmptyState, 
-  ErrorState, 
-  SearchBar,
-  Button 
+import {
+  Card,
+  Badge,
+  LoadingSpinner,
+  EmptyState,
+  ErrorState,
+  SearchBar
 } from '../../components/ui';
 import { ModernFilterPanel } from '../../components/ui/modern';
 import { useOrganizations, usePeople, useProjects, useOpportunities } from '../../hooks';
@@ -464,35 +463,35 @@ const NetworkPage = () => {
     {
       id: 'type',
       label: 'Organization Type',
-      type: 'text' as const,
+      type: 'search' as const,
       placeholder: 'Filter by type...'
     },
     {
       id: 'location',
       label: 'Location',
-      type: 'text' as const,
+      type: 'search' as const,
       placeholder: 'Filter by location...'
     }
   ];
-  
+
   // Filter options for People
   const peopleFilterOptions = [
     {
       id: 'organization',
       label: 'Organization',
-      type: 'text' as const,
+      type: 'search' as const,
       placeholder: 'Filter by organization...'
     },
     {
       id: 'relationshipType',
       label: 'Relationship Type',
-      type: 'text' as const,
+      type: 'search' as const,
       placeholder: 'Filter by relationship type...'
     },
     {
       id: 'influenceLevel',
       label: 'Influence Level',
-      type: 'text' as const,
+      type: 'search' as const,
       placeholder: 'Filter by influence level...'
     }
   ];

@@ -21,7 +21,7 @@ export interface ValidationResult {
 }
 
 // Generic validation helper
-export function validateRequired(value: any, fieldName: string): string | null {
+export function validateRequired(value: unknown, fieldName: string): string | null {
   if (value === null || value === undefined || value === '') {
     return `${fieldName} is required`;
   }
@@ -46,15 +46,15 @@ export function validateUrl(url: string): string | null {
 }
 
 export function validatePhone(phone: string): string | null {
-  const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-  if (!phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''))) {
+  const phoneRegex = /^[+]?[1-9][\d]{0,15}$/;
+  if (!phoneRegex.test(phone.replace(/[\s\-()]/g, ''))) {
     return 'Invalid phone number format';
   }
   return null;
 }
 
-export function validateEnum<T>(value: string, enumObject: T, fieldName: string): string | null {
-  const enumValues = Object.values(enumObject as any);
+export function validateEnum<T extends object>(value: string, enumObject: T, fieldName: string): string | null {
+  const enumValues = Object.values(enumObject);
   if (!enumValues.includes(value)) {
     return `${fieldName} must be one of: ${enumValues.join(', ')}`;
   }
@@ -266,7 +266,7 @@ export function validateForm<T>(data: Partial<T>, validator: (data: Partial<T>) 
 }
 
 // Utility to check if a date is valid
-export function isValidDate(date: any): boolean {
+export function isValidDate(date: unknown): boolean {
   return date instanceof Date && !isNaN(date.getTime());
 }
 
@@ -276,16 +276,16 @@ export function sanitizeString(input: string): string {
 }
 
 // Utility to validate array of strings
-export function validateStringArray(arr: any, fieldName: string): string | null {
+export function validateStringArray(arr: unknown, fieldName: string): string | null {
   if (!Array.isArray(arr)) {
     return `${fieldName} must be an array`;
   }
-  
+
   for (let i = 0; i < arr.length; i++) {
     if (typeof arr[i] !== 'string') {
       return `${fieldName}[${i}] must be a string`;
     }
   }
-  
+
   return null;
 }

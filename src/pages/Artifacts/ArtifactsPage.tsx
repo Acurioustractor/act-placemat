@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, Badge, LoadingSpinner, EmptyState, ErrorState, Button } from '../../components/ui';
+import { LoadingSpinner, EmptyState, ErrorState } from '../../components/ui';
 import { useArtifacts } from '../../hooks';
 import { ArtifactFilters, ArtifactType, ArtifactStatus, ArtifactFormat } from '../../types';
 import { COMMUNITY_COLORS } from '../../constants/designSystem';
@@ -25,7 +25,8 @@ const ArtifactsPage = () => {
     return acc;
   }, {} as Record<string, typeof artifacts>);
 
-  // Get status badge variant
+  // Get status badge variant - currently unused
+  /*
   const getStatusVariant = (status: string): 'primary' | 'success' | 'warning' | 'danger' | 'default' => {
     switch (status) {
       case ArtifactStatus.DRAFT:
@@ -42,6 +43,7 @@ const ArtifactsPage = () => {
         return 'default';
     }
   };
+  */
 
   // Get format icon
   const getFormatIcon = (format: string) => {
@@ -140,10 +142,10 @@ const ArtifactsPage = () => {
       </div>
 
       {/* Modern Filter Panel */}
-      <div 
+      <div
         className="p-6 rounded-xl border shadow-sm"
         style={{
-          background: `linear-gradient(180deg, ${COMMUNITY_COLORS.primary[25]} 0%, ${COMMUNITY_COLORS.neutral[25]} 100%)`,
+          background: `linear-gradient(180deg, ${COMMUNITY_COLORS.primary[50]} 0%, ${COMMUNITY_COLORS.neutral[50]} 100%)`,
           borderColor: COMMUNITY_COLORS.primary[200]
         }}
       >

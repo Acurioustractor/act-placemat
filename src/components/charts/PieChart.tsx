@@ -41,7 +41,7 @@ const PieChart = ({
   }, [data]);
 
   // Custom tooltip
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: { name: string; value: number } }> }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
@@ -72,7 +72,7 @@ const PieChart = ({
               fill="#8884d8"
               dataKey="value"
               nameKey="name"
-              label={({ name, percent }: any) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`}
+              label={({ name, percent }: { name: string; percent: number }) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`}
               isAnimationActive={true}
               animationDuration={500}
             >

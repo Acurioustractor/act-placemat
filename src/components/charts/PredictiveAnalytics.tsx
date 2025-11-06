@@ -1,6 +1,6 @@
 import { ResponsiveScatterPlot } from '@nivo/scatterplot';
 import { ResponsiveTreeMap } from '@nivo/treemap';
-import { COMMUNITY_COLORS, DATA_COLORS } from '../../constants/designSystem';
+import { COMMUNITY_COLORS } from '../../constants/designSystem';
 import { Opportunity, Project } from '../../types';
 
 interface PredictiveAnalyticsProps {

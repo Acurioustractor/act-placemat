@@ -1,5 +1,5 @@
 import { ResponsiveSankey } from '@nivo/sankey';
-import { COMMUNITY_COLORS, DATA_COLORS } from '../../constants/designSystem';
+import { COMMUNITY_COLORS } from '../../constants/designSystem';
 import { Opportunity } from '../../types';
 
 interface OpportunityPipelineFunnelProps {

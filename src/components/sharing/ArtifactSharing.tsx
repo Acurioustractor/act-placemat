@@ -39,7 +39,7 @@ interface ShareLink {
 
 interface ArtifactSharingProps {
   artifact: ShareableArtifact;
-  onShare?: (shareData: any) => void;
+  onShare?: (shareData: Record<string, unknown>) => void;
 }
 
 /**
@@ -194,7 +194,7 @@ const ArtifactSharing = ({ artifact, onShare }: ArtifactSharingProps) => {
               ].map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setShareMode(tab.id as any)}
+                  onClick={() => setShareMode(tab.id as 'link' | 'email' | 'embed')}
                   className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium border-b-2 ${
                     shareMode === tab.id
                       ? 'border-primary-500 text-primary-600'
@@ -217,7 +217,7 @@ const ArtifactSharing = ({ artifact, onShare }: ArtifactSharingProps) => {
               </label>
               <select
                 value={permissions.type}
-                onChange={(e) => setPermissions({ ...permissions, type: e.target.value as any })}
+                onChange={(e) => setPermissions({ ...permissions, type: e.target.value as 'view' | 'comment' | 'edit' })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500"
               >
                 <option value="view">View Only</option>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Card from './Card';
 import Badge from './Badge';
 import Button from './Button';
-import { COMMUNITY_COLORS, SPACING } from '../../constants/designSystem';
+import { COMMUNITY_COLORS } from '../../constants/designSystem';
 
 interface FilterOption {
   id: string;
@@ -15,9 +15,9 @@ interface FilterOption {
 }
 
 interface ModernFilterPanelProps {
-  filters: Record<string, any>;
+  filters: Record<string, unknown>;
   options: FilterOption[];
-  onFiltersChange: (filters: Record<string, any>) => void;
+  onFiltersChange: (filters: Record<string, unknown>) => void;
   onReset: () => void;
   isLoading?: boolean;
   className?: string;
@@ -35,7 +35,6 @@ const ModernFilterPanel = ({
 }: ModernFilterPanelProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [searchValues, setSearchValues] = useState<Record<string, string>>({});
-  const [activeFilters, setActiveFilters] = useState<Record<string, any>>({});
 
   // Calculate active filter count
   const activeFilterCount = Object.values(filters).filter(value => {
@@ -48,7 +47,7 @@ const ModernFilterPanel = ({
     setActiveFilters(filters);
   }, [filters]);
 
-  const handleFilterChange = (filterId: string, value: any) => {
+  const handleFilterChange = (filterId: string, value: unknown) => {
     const newFilters = { ...filters, [filterId]: value };
     onFiltersChange(newFilters);
   };
@@ -122,8 +121,8 @@ const ModernFilterPanel = ({
           </div>
         );
 
-      case 'multiselect':
-        const filteredOptions = option.options?.filter(opt => 
+      case 'multiselect': {
+        const filteredOptions = option.options?.filter(opt =>
           opt.label.toLowerCase().includes(searchValue.toLowerCase())
         ) || [];
 
@@ -216,6 +215,7 @@ const ModernFilterPanel = ({
             </div>
           </div>
         );
+      }
 
       case 'range':
         return (
@@ -367,13 +367,8 @@ const ModernFilterPanel = ({
                 return value.map((v, idx) => (
                   <Badge
                     key={`${key}-${idx}`}
-                    variant="default"
-                    className="text-xs border"
-                    style={{
-                      backgroundColor: COMMUNITY_COLORS.primary[50],
-                      color: COMMUNITY_COLORS.primary[700],
-                      borderColor: COMMUNITY_COLORS.primary[200]
-                    }}
+                    variant="primary"
+                    className="text-xs border border-primary-200"
                   >
                     {option.label}: {v}
                     <button
@@ -388,13 +383,8 @@ const ModernFilterPanel = ({
                 return (
                   <Badge
                     key={key}
-                    variant="default"
-                    className="text-xs border"
-                    style={{
-                      backgroundColor: COMMUNITY_COLORS.primary[50],
-                      color: COMMUNITY_COLORS.primary[700],
-                      borderColor: COMMUNITY_COLORS.primary[200]
-                    }}
+                    variant="primary"
+                    className="text-xs border border-primary-200"
                   >
                     {option.label}: {value.min || '0'} - {value.max || '∞'}
                     <button
@@ -409,13 +399,8 @@ const ModernFilterPanel = ({
                 return (
                   <Badge
                     key={key}
-                    variant="default"
-                    className="text-xs border"
-                    style={{
-                      backgroundColor: COMMUNITY_COLORS.primary[50],
-                      color: COMMUNITY_COLORS.primary[700],
-                      borderColor: COMMUNITY_COLORS.primary[200]
-                    }}
+                    variant="primary"
+                    className="text-xs border border-primary-200"
                   >
                     {option.label}: {value}
                     <button

@@ -1,4 +1,4 @@
-import { COMMUNITY_COLORS, DATA_COLORS } from '../../constants/designSystem';
+import { COMMUNITY_COLORS } from '../../constants/designSystem';
 import { Project } from '../../types';
 
 interface CommunityImpactRadarProps {
@@ -22,26 +22,13 @@ interface FocusAreaData {
  * Shows ACT's project distribution and financial impact across different focus areas
  * Uses meaningful bar charts to show actual differences between areas
  */
-const CommunityImpactRadar = ({ 
-  projects, 
-  className = '', 
-  height = 400 
+const CommunityImpactRadar = ({
+  projects,
+  className = '',
 }: CommunityImpactRadarProps) => {
-  
-  // Define focus area colors from our design system
-  const areaColors: Record<string, string> = {
-    'Art': DATA_COLORS.projectAreas.storyMatter || COMMUNITY_COLORS.primary[600],
-    'Economic Freedom': DATA_COLORS.projectAreas.economicFreedom || COMMUNITY_COLORS.secondary[600],
-    'Health and wellbeing': DATA_COLORS.projectAreas.healingJustice || COMMUNITY_COLORS.success[600],
-    'Indigenous': COMMUNITY_COLORS.secondary[500],
-    'Youth Justice': DATA_COLORS.projectAreas.politicalPower || '#8b5cf6',
-    'Storytelling': DATA_COLORS.projectAreas.storyMatter || COMMUNITY_COLORS.primary[500],
-    'Global community': '#ef4444',
-    'Operations': '#64748b'
-  };
 
   // Initialize focus area data with actual project areas from Notion
-  const focusAreaData: Record<string, FocusAreaData> = {};
+  // const focusAreaData: Record<string, FocusAreaData> = {};
   
   // Group by locations instead of focus areas
   const locationData: Record<string, FocusAreaData> = {};
@@ -116,7 +103,7 @@ const CommunityImpactRadar = ({
       {/* Compact Cards - 3 Across */}
       {chartData.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {chartData.map((area, index) => (
+          {chartData.map((area) => (
             <div
               key={area.area}
               className="p-3 bg-white border border-gray-200 rounded-lg hover:shadow-sm transition-shadow"

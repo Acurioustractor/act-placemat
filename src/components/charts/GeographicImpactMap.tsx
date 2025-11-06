@@ -1,19 +1,6 @@
-import { ResponsiveChoropleth } from '@nivo/geo';
-import { COMMUNITY_COLORS, DATA_COLORS } from '../../constants/designSystem';
+// ResponsiveChoropleth not currently used
+import { COMMUNITY_COLORS } from '../../constants/designSystem';
 import { Project } from '../../types';
-
-// Australian States and Territories data - matching ACT's actual geographic presence
-const australianStatesAndTerritories = [
-  { id: 'QLD', properties: { name: 'Queensland' } },
-  { id: 'NT', properties: { name: 'Northern Territory' } },
-  { id: 'NSW', properties: { name: 'New South Wales' } },
-  { id: 'ACT', properties: { name: 'Australian Capital Territory' } },
-  { id: 'VIC', properties: { name: 'Victoria' } },
-  { id: 'SA', properties: { name: 'South Australia' } },
-  { id: 'WA', properties: { name: 'Western Australia' } },
-  { id: 'TAS', properties: { name: 'Tasmania' } },
-  { id: 'GLOBAL', properties: { name: 'Global/National' } }
-];
 
 interface GeographicImpactMapProps {
   projects: Project[];
@@ -34,10 +21,9 @@ interface GeographicData {
  * Shows community reach and project distribution across geographic regions
  * Meaningful visualization of ACT's geographic footprint and regional impact
  */
-const GeographicImpactMap = ({ 
-  projects, 
-  className = '', 
-  height = 500 
+const GeographicImpactMap = ({
+  projects,
+  className = ''
 }: GeographicImpactMapProps) => {
   
   // Process projects to calculate geographic impact metrics

@@ -1,7 +1,6 @@
 import { ReactNode, useState } from 'react';
 import LoadingSpinner from './LoadingSpinner';
 import EmptyState from './EmptyState';
-import Badge from './Badge';
 
 export interface TableColumn<T> {
   key: string;

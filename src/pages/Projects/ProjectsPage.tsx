@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { 
-  ProjectCard, 
-  LoadingSpinner, 
-  EmptyState, 
-  ErrorState, 
+import {
+  ProjectCard,
+  LoadingSpinner,
+  EmptyState,
+  ErrorState,
   SearchBar,
-  Button 
+  Button
 } from '../../components/ui';
 import { ModernFilterPanel } from '../../components/ui/modern';
 import { useProjects } from '../../hooks';
-import { ProjectFilters, ProjectStatus, SortOption } from '../../types';
+import { ProjectFilters, SortOption } from '../../types';
 import { PROJECT_AREAS, PROJECT_SORT_OPTIONS, STATUS_OPTIONS, LOCATION_OPTIONS } from '../../constants';
 
 /**
@@ -44,7 +44,7 @@ const ProjectsPage = () => {
   const navigate = useNavigate();
 
   // Handle project navigation
-  const handleProjectClick = (project: any) => {
+  const handleProjectClick = (project: Record<string, unknown>) => {
     navigate(`/projects/${project.id}`);
   };
 

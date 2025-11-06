@@ -36,9 +36,9 @@ import {
  * @param richText - Notion rich text array
  * @returns Plain text string
  */
-export function extractPlainText(richText: any[]): string {
+export function extractPlainText(richText: unknown[]): string {
   if (!richText || !Array.isArray(richText)) return '';
-  return richText.map(text => text.plain_text || '').join('');
+  return richText.map((text: unknown) => (text as Record<string, unknown>).plain_text || '').join('');
 }
 
 /**
@@ -46,9 +46,9 @@ export function extractPlainText(richText: any[]): string {
  * @param dateProperty - Notion date property
  * @returns Date object or undefined
  */
-export function extractDate(dateProperty: any): Date | undefined {
-  if (!dateProperty || !dateProperty.start) return undefined;
-  return new Date(dateProperty.start);
+export function extractDate(dateProperty: unknown): Date | undefined {
+  if (!dateProperty || !(dateProperty as Record<string, unknown>).start) return undefined;
+  return new Date((dateProperty as Record<string, unknown>).start as string);
 }
 
 /**
@@ -56,7 +56,7 @@ export function extractDate(dateProperty: any): Date | undefined {
  * @param numberProperty - Notion number property
  * @returns Number or 0
  */
-export function extractNumber(numberProperty: any): number {
+export function extractNumber(numberProperty: unknown): number {
   if (numberProperty === null || numberProperty === undefined) return 0;
   return Number(numberProperty) || 0;
 }
@@ -66,9 +66,9 @@ export function extractNumber(numberProperty: any): number {
  * @param selectProperty - Notion select property
  * @returns Select value string or empty string
  */
-export function extractSelect(selectProperty: any): string {
-  if (!selectProperty || !selectProperty.name) return '';
-  return selectProperty.name;
+export function extractSelect(selectProperty: unknown): string {
+  if (!selectProperty || !(selectProperty as Record<string, unknown>).name) return '';
+  return (selectProperty as Record<string, unknown>).name as string;
 }
 
 /**
@@ -76,10 +76,10 @@ export function extractSelect(selectProperty: any): string {
  * @param selectProperty - Notion select property with percentage values
  * @returns Numeric percentage (e.g., 75 for "75%") or 0
  */
-export function extractProbabilityFromSelect(selectProperty: any): number {
+export function extractProbabilityFromSelect(selectProperty: unknown): number {
   const percentageString = extractSelect(selectProperty);
   if (!percentageString) return 0;
-  
+
   // Extract numeric value from percentage string (e.g., "75%" -> 75)
   const match = percentageString.match(/(\d+)%?/);
   return match ? parseInt(match[1], 10) : 0;
@@ -90,9 +90,9 @@ export function extractProbabilityFromSelect(selectProperty: any): number {
  * @param multiSelectProperty - Notion multi-select property
  * @returns Array of strings
  */
-export function extractMultiSelect(multiSelectProperty: any[]): string[] {
+export function extractMultiSelect(multiSelectProperty: unknown[]): string[] {
   if (!multiSelectProperty || !Array.isArray(multiSelectProperty)) return [];
-  return multiSelectProperty.map(item => item.name || '').filter(Boolean);
+  return multiSelectProperty.map((item: unknown) => (item as Record<string, unknown>).name || '').filter(Boolean) as string[];
 }
 
 /**
@@ -100,7 +100,7 @@ export function extractMultiSelect(multiSelectProperty: any[]): string[] {
  * @param urlProperty - Notion URL property
  * @returns URL string or empty string
  */
-export function extractUrl(urlProperty: any): string {
+export function extractUrl(urlProperty: unknown): string {
   if (!urlProperty) return '';
   return String(urlProperty);
 }
@@ -110,7 +110,7 @@ export function extractUrl(urlProperty: any): string {
  * @param checkboxProperty - Notion checkbox property
  * @returns Boolean value
  */
-export function extractCheckbox(checkboxProperty: any): boolean {
+export function extractCheckbox(checkboxProperty: unknown): boolean {
   return Boolean(checkboxProperty);
 }
 
@@ -119,9 +119,9 @@ export function extractCheckbox(checkboxProperty: any): boolean {
  * @param relationProperty - Notion relation property
  * @returns Array of relation IDs
  */
-export function extractRelations(relationProperty: any[]): string[] {
+export function extractRelations(relationProperty: unknown[]): string[] {
   if (!relationProperty || !Array.isArray(relationProperty)) return [];
-  return relationProperty.map(item => item.id || '').filter(Boolean);
+  return relationProperty.map((item: unknown) => (item as Record<string, unknown>).id || '').filter(Boolean) as string[];
 }
 
 /**
@@ -129,9 +129,9 @@ export function extractRelations(relationProperty: any[]): string[] {
  * @param people - Notion people property
  * @returns Comma-separated names or empty string
  */
-export function extractPeople(people: any[]): string {
+export function extractPeople(people: unknown[]): string {
   if (!people || !Array.isArray(people)) return '';
-  return people.map(person => person.name || '').filter(name => name).join(', ');
+  return people.map((person: unknown) => (person as Record<string, unknown>).name || '').filter(name => name).join(', ');
 }
 
 /**
@@ -139,14 +139,14 @@ export function extractPeople(people: any[]): string {
  * @param emailProperty - Notion email property
  * @returns Email string
  */
-export function extractEmail(emailProperty: any): string {
+export function extractEmail(emailProperty: unknown): string {
   if (!emailProperty) return '';
-  
+
   // Notion email property is just a string
   if (typeof emailProperty === 'string') return emailProperty;
-  
+
   // Handle object format (though Notion emails are usually strings)
-  return emailProperty.email || '';
+  return (emailProperty as Record<string, unknown>).email as string || '';
 }
 
 /**
@@ -207,7 +207,7 @@ function mapNotionPlace(notionPlace: string | null): ProjectPlace {
  * @param page - Notion page object
  * @returns Project object
  */
-export function transformNotionProject(page: any): Project {
+export function transformNotionProject(page: Record<string, unknown>): Project {
   console.log('🔍 Transforming project page:', {
     id: page.id,
     hasName: !!page.properties?.Name,
@@ -257,7 +257,7 @@ export function transformNotionProject(page: any): Project {
  * @param page - Notion page object
  * @returns Opportunity object
  */
-export function transformNotionOpportunity(page: any): Opportunity {
+export function transformNotionOpportunity(page: Record<string, unknown>): Opportunity {
   const properties = page.properties;
   
   return {
@@ -299,7 +299,7 @@ export function transformNotionOpportunity(page: any): Opportunity {
  * @param page - Notion page object
  * @returns Organization object
  */
-export function transformNotionOrganization(page: any): Organization {
+export function transformNotionOrganization(page: Record<string, unknown>): Organization {
   const properties = page.properties;
   
   // Handle empty relationship status by defaulting to PROSPECT
@@ -342,7 +342,7 @@ export function transformNotionOrganization(page: any): Organization {
  * @param page - Notion page object
  * @returns Person object
  */
-export function transformNotionPerson(page: any): Person {
+export function transformNotionPerson(page: Record<string, unknown>): Person {
   console.log('🔍 Transforming person page (FULL DATA):', {
     id: page.id,
     properties: page.properties,
@@ -429,7 +429,7 @@ export function transformNotionPerson(page: any): Person {
  * @param page - Notion page object
  * @returns Artifact object
  */
-export function transformNotionArtifact(page: any): Artifact {
+export function transformNotionArtifact(page: Record<string, unknown>): Artifact {
   const properties = page.properties;
   
   // Extract file URLs from Files & media and Thumbnail Image
@@ -471,8 +471,8 @@ export function transformNotionArtifact(page: any): Artifact {
  * @returns Array of transformed models
  */
 export function transformNotionResponse<T>(
-  response: NotionResponse<any>,
-  transformer: (page: any) => T
+  response: NotionResponse<Record<string, unknown>>,
+  transformer: (page: Record<string, unknown>) => T
 ): T[] {
   console.log('🔍 transformNotionResponse starting with:', {
     hasResponse: !!response,

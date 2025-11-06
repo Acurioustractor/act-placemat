@@ -76,7 +76,8 @@ export const getActualPropertyNames = (database: keyof typeof DATABASE_SCHEMAS):
  * Get select options for a property in a database
  */
 export const getSelectOptions = (database: keyof typeof DATABASE_SCHEMAS, property: string): string[] => {
-  const prop = DATABASE_SCHEMAS[database].properties[property];
+  const properties = DATABASE_SCHEMAS[database].properties as Record<string, { type?: string; options?: string[] }>;
+  const prop = properties[property];
   if (prop?.type === 'select' && prop.options) {
     return prop.options;
   }
@@ -97,6 +98,7 @@ export const propertyExists = (database: keyof typeof DATABASE_SCHEMAS, property
  * Get the actual property type from the database schema
  */
 export const getPropertyType = (database: keyof typeof DATABASE_SCHEMAS, property: string): string | null => {
-  const prop = DATABASE_SCHEMAS[database].properties[property];
+  const properties = DATABASE_SCHEMAS[database].properties as Record<string, { type?: string }>;
+  const prop = properties[property];
   return prop?.type || null;
 };

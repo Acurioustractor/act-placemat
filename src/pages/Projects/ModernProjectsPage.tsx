@@ -40,7 +40,7 @@ const ModernProjectsPage = () => {
   const { data: projects = [], isLoading, error, refetch } = useProjects(filters, sortOption);
 
   // Handle project click
-  const handleProjectClick = (project: any) => {
+  const handleProjectClick = (project: Record<string, unknown>) => {
     setSelectedProject(project);
     setIsProjectModalOpen(true);
   };
@@ -185,7 +185,7 @@ const ModernProjectsPage = () => {
                       ? 'bg-primary-500 text-white shadow-lg scale-105'
                       : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                   }`}
-                  onClick={() => setViewMode(mode.id as any)}
+                  onClick={() => setViewMode(mode.id as 'grid' | 'list' | 'map')}
                 >
                   <span className="mr-1">{mode.icon}</span>
                   {mode.label}

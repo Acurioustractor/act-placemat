@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, LoadingSpinner, ErrorState } from '../../components/ui';
+import { Card, LoadingSpinner } from '../../components/ui';
 import { useProjects, useOpportunities, useOrganizations, usePeople, useArtifacts } from '../../hooks';
 import CommunityImpactRadar from '../../components/charts/CommunityImpactRadar';
 import GeographicImpactMap from '../../components/charts/GeographicImpactMap';
@@ -8,6 +8,7 @@ import TimeSeriesAnalytics from '../../components/charts/TimeSeriesAnalytics';
 import RelationshipNetworkGraph from '../../components/charts/RelationshipNetworkGraph';
 import PredictiveAnalytics from '../../components/charts/PredictiveAnalytics';
 import { COMMUNITY_COLORS } from '../../constants/designSystem';
+import { OpportunityStage } from '../../types';
 
 /**
  * Advanced Analytics Intelligence Center
@@ -35,8 +36,8 @@ const AnalyticsPage = () => {
     networkSize: organizations.length + people.length,
     knowledgeAssets: artifacts.length,
     activeProjects: projects.filter(p => p.status === 'Active 🔥').length,
-    conversionRate: opportunities.length > 0 ? 
-      (opportunities.filter(o => o.stage === 'Closed Won').length / opportunities.length) * 100 : 0
+    conversionRate: opportunities.length > 0 ?
+      (opportunities.filter(o => o.stage === OpportunityStage.CLOSED_WON).length / opportunities.length) * 100 : 0
   };
 
   if (isLoading) {
@@ -67,7 +68,7 @@ const AnalyticsPage = () => {
             ].map((view) => (
               <button
                 key={view.id}
-                onClick={() => setActiveView(view.id as any)}
+                onClick={() => setActiveView(view.id as 'overview' | 'projects' | 'opportunities' | 'network' | 'trends')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   activeView === view.id
                     ? 'text-white shadow-sm'

@@ -172,7 +172,7 @@ const PublicProjectShowcase = () => {
                 </label>
                 <select
                   value={filters.place}
-                  onChange={(e) => setFilters({ ...filters, place: e.target.value as any })}
+                  onChange={(e) => setFilters({ ...filters, place: e.target.value as ProjectPlace | 'all' })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500"
                 >
                   <option value="all">All Scales</option>
@@ -205,7 +205,7 @@ const PublicProjectShowcase = () => {
                 </label>
                 <select
                   value={filters.status}
-                  onChange={(e) => setFilters({ ...filters, status: e.target.value as any })}
+                  onChange={(e) => setFilters({ ...filters, status: e.target.value as ProjectStatus | 'all' })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500"
                 >
                   <option value="all">All Statuses</option>

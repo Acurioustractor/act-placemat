@@ -34,6 +34,7 @@ export interface Project {
   aiSummary?: string;
   lead: string;
   teamMembers: string[];
+  people?: string[];
   coreValues: string;
   themes: string[];
   tags: string[];
@@ -48,6 +49,7 @@ export interface Project {
   startDate?: Date;
   endDate?: Date;
   relatedOpportunities: string[];
+  relatedProjects?: string[];
   partnerOrganizations: string[];
   artifacts: string[];
   websiteLinks: string;
@@ -57,6 +59,7 @@ export interface Project {
 export interface Opportunity {
   id: string;
   name: string;
+  title?: string;
   organization: string;
   stage: OpportunityStage;
   amount: number;
@@ -72,6 +75,7 @@ export interface Opportunity {
   deadline?: Date;
   applicationDate?: Date;
   expectedDecisionDate?: Date;
+  createdDate?: Date;
   artifacts: string[];
   requirements: string;
   competition: string;
@@ -94,6 +98,7 @@ export interface Organization {
   relationshipStatus: RelationshipStatus;
   partnershipType: string[];
   keyContacts: string[];
+  people?: string[];
   activeOpportunities: string[];
   relatedProjects: string[];
   sharedArtifacts: string[];

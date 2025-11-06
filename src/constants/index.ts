@@ -253,9 +253,9 @@ export const STATE_OPTIONS = [
 
 // Project Sort Options
 export const PROJECT_SORT_OPTIONS = [
-  { value: 'name-asc', label: 'Name (A-Z)', field: 'name', direction: 'asc' },
-  { value: 'name-desc', label: 'Name (Z-A)', field: 'name', direction: 'desc' },
-  { value: 'revenue-desc', label: 'Revenue (High to Low)', field: 'revenueActual', direction: 'desc' },
-  { value: 'revenue-asc', label: 'Revenue (Low to High)', field: 'revenueActual', direction: 'asc' },
-  { value: 'modified-desc', label: 'Recently Modified', field: 'lastModified', direction: 'desc' }
+  { value: 'name-asc', label: 'Name (A-Z)', field: 'name', direction: 'asc' as const },
+  { value: 'name-desc', label: 'Name (Z-A)', field: 'name', direction: 'desc' as const },
+  { value: 'revenue-desc', label: 'Revenue (High to Low)', field: 'revenueActual', direction: 'desc' as const },
+  { value: 'revenue-asc', label: 'Revenue (Low to High)', field: 'revenueActual', direction: 'asc' as const },
+  { value: 'modified-desc', label: 'Recently Modified', field: 'lastModified', direction: 'desc' as const }
 ];

@@ -1,5 +1,5 @@
 import { ResponsiveNetwork } from '@nivo/network';
-import { COMMUNITY_COLORS, DATA_COLORS } from '../../constants/designSystem';
+import { COMMUNITY_COLORS } from '../../constants/designSystem';
 import { Project, Organization, Person } from '../../types';
 
 interface RelationshipNetworkGraphProps {
@@ -48,10 +48,10 @@ const RelationshipNetworkGraph = ({
     
     // Add project nodes
     projects.slice(0, 20).forEach(project => { // Limit for performance
-      const connections = project.partnerOrganizations.length + 
-                         project.people.length + 
+      const connections = project.partnerOrganizations.length +
+                         (project.people?.length || 0) +
                          (project.relatedProjects?.length || 0);
-      
+
       nodes.push({
         id: `project-${project.id}`,
         height: 1,
@@ -62,10 +62,10 @@ const RelationshipNetworkGraph = ({
 
     // Add organization nodes
     organizations.slice(0, 15).forEach(org => { // Limit for performance
-      const projectConnections = projects.filter(p => 
-        p.partnerOrganizations.some(po => po.id === org.id)
+      const projectConnections = projects.filter(p =>
+        p.partnerOrganizations.some(po => po === org.id)
       ).length;
-      
+
       nodes.push({
         id: `org-${org.id}`,
         height: 1,
@@ -76,10 +76,10 @@ const RelationshipNetworkGraph = ({
 
     // Add key people nodes
     people.slice(0, 15).forEach(person => { // Limit for performance
-      const projectConnections = projects.filter(p => 
-        p.people.some(pp => pp.id === person.id)
+      const projectConnections = projects.filter(p =>
+        p.people?.some(pp => pp === person.id)
       ).length;
-      
+
       nodes.push({
         id: `person-${person.id}`,
         height: 1,
@@ -93,8 +93,8 @@ const RelationshipNetworkGraph = ({
       const projectNodeId = `project-${project.id}`;
       
       // Link projects to organizations
-      project.partnerOrganizations.forEach(org => {
-        const orgNodeId = `org-${org.id}`;
+      project.partnerOrganizations.forEach(orgId => {
+        const orgNodeId = `org-${orgId}`;
         if (nodes.some(n => n.id === orgNodeId)) {
           links.push({
             source: projectNodeId,
@@ -105,8 +105,8 @@ const RelationshipNetworkGraph = ({
       });
 
       // Link projects to people
-      project.people.forEach(person => {
-        const personNodeId = `person-${person.id}`;
+      project.people?.forEach(personId => {
+        const personNodeId = `person-${personId}`;
         if (nodes.some(n => n.id === personNodeId)) {
           links.push({
             source: projectNodeId,
@@ -120,9 +120,9 @@ const RelationshipNetworkGraph = ({
     // Add organization-to-people links
     organizations.slice(0, 15).forEach(org => {
       const orgNodeId = `org-${org.id}`;
-      
-      org.people?.slice(0, 5).forEach(person => { // Limit connections
-        const personNodeId = `person-${person.id}`;
+
+      org.people?.slice(0, 5).forEach(personId => { // Limit connections
+        const personNodeId = `person-${personId}`;
         if (nodes.some(n => n.id === personNodeId)) {
           links.push({
             source: orgNodeId,
@@ -223,7 +223,6 @@ const RelationshipNetworkGraph = ({
             ]}
             theme={{
               background: 'transparent',
-              textColor: COMMUNITY_COLORS.neutral[700],
               tooltip: {
                 container: {
                   background: COMMUNITY_COLORS.neutral[900],

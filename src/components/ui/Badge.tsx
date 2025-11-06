@@ -2,8 +2,8 @@ import { ReactNode } from 'react';
 
 interface BadgeProps {
   children: ReactNode;
-  variant?: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'outline';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   rounded?: boolean;
   className?: string;
 }
@@ -23,6 +23,7 @@ const Badge = ({
 
   // Size classes
   const sizeClasses = {
+    xs: 'px-1.5 py-0.5 text-xs',
     sm: 'px-2 py-0.5 text-xs',
     md: 'px-2.5 py-0.5 text-sm',
     lg: 'px-3 py-1 text-base',
@@ -36,6 +37,7 @@ const Badge = ({
     warning: 'bg-amber-100 text-amber-800',
     danger: 'bg-red-100 text-red-800',
     info: 'bg-blue-100 text-blue-800',
+    outline: 'bg-white border border-gray-300 text-gray-700',
   };
 
   // Rounded classes

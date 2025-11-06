@@ -2,7 +2,6 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ApiService, { APIError } from '../api';
-import { ERROR_MESSAGES } from '../../constants';
 
 // Mock URL constructor
 class MockURL {
@@ -23,7 +22,7 @@ class MockURL {
 
 // Mock fetch
 global.fetch = vi.fn();
-global.URL = MockURL as any;
+global.URL = MockURL as unknown as typeof URL;
 
 describe('ApiService', () => {
   let apiService: ApiService;
@@ -35,9 +34,9 @@ describe('ApiService', () => {
   
   it('should make a GET request', async () => {
     const mockResponse = { data: 'test' };
-    
+
     // Mock successful fetch response
-    (global.fetch as any).mockResolvedValueOnce({
+    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       ok: true,
       json: async () => mockResponse
     });
@@ -59,9 +58,9 @@ describe('ApiService', () => {
   it('should make a POST request', async () => {
     const mockResponse = { data: 'test' };
     const requestData = { foo: 'bar' };
-    
+
     // Mock successful fetch response
-    (global.fetch as any).mockResolvedValueOnce({
+    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       ok: true,
       json: async () => mockResponse
     });
@@ -86,9 +85,9 @@ describe('ApiService', () => {
       message: 'Not found',
       details: { code: 404 }
     };
-    
+
     // Mock error fetch response
-    (global.fetch as any).mockResolvedValueOnce({
+    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       ok: false,
       status: 404,
       statusText: 'Not Found',
@@ -103,7 +102,7 @@ describe('ApiService', () => {
   
   it('should handle network errors', async () => {
     // Mock network error
-    (global.fetch as any).mockRejectedValueOnce(new Error('Network error'));
+    (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error('Network error'));
     
     // Expect the request to throw an error
     await expect(apiService.get('/test')).rejects.toHaveProperty('status', 500);
@@ -112,8 +111,8 @@ describe('ApiService', () => {
   it('should retry failed requests', async () => {
     // Mock first attempt to fail, second to succeed
     const mockResponse = { data: 'test' };
-    
-    (global.fetch as any)
+
+    (global.fetch as ReturnType<typeof vi.fn>)
       .mockRejectedValueOnce(new Error('Network error'))
       .mockResolvedValueOnce({
         ok: true,

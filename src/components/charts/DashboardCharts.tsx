@@ -3,12 +3,12 @@ import Card from '../ui/Card';
 import PieChart from './PieChart';
 import BarChart from './BarChart';
 import LineChart from './LineChart';
-import { ChartDataPoint, TimeSeriesDataPoint } from '../../types';
+import { ChartDataPoint, TimeSeriesDataPoint, Project, Opportunity, Organization } from '../../types';
 
 interface DashboardChartsProps {
-  projects: any[];
-  opportunities: any[];
-  organizations: any[];
+  projects: Project[];
+  opportunities: Opportunity[];
+  organizations: Organization[];
 }
 
 const DashboardCharts = ({ projects, opportunities, organizations }: DashboardChartsProps) => {
@@ -127,7 +127,8 @@ const DashboardCharts = ({ projects, opportunities, organizations }: DashboardCh
         color: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'][Object.keys(partnershipStatus).indexOf(label)] || '#6b7280'
       })) as ChartDataPoint[]
     };
-  }, [projects, opportunities, organizations, themeColors, statusColors]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projects, opportunities, organizations]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">

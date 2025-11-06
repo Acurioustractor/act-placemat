@@ -13,7 +13,7 @@ interface Project {
   state: string;
   revenueActual: number;
   revenuePotential: number;
-  artifacts?: any[];
+  artifacts?: Array<Record<string, unknown>>;
   lastModified: Date;
 }
 

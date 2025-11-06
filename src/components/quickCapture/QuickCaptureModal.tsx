@@ -9,7 +9,7 @@ import {
   CalendarDaysIcon,
   LinkIcon
 } from '@heroicons/react/24/outline';
-import { useProjects, useOpportunities, useOrganizations, usePeople } from '../../hooks';
+import { useProjects, useOpportunities, usePeople } from '../../hooks';
 import { ArtifactType, ArtifactFormat, ArtifactStatus, ArtifactPurpose } from '../../types';
 import { EmailCaptureForm } from '../emailCapture';
 import { VoiceRecorder } from '../voiceCapture';
@@ -37,7 +37,6 @@ const QuickCaptureModal = ({ isOpen, onClose }: QuickCaptureModalProps) => {
   // Load entity data for linking
   const { data: projects = [] } = useProjects();
   const { data: opportunities = [] } = useOpportunities();
-  const { data: organizations = [] } = useOrganizations();
   const { data: people = [] } = usePeople();
 
   const captureOptions = [

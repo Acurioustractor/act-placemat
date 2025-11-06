@@ -109,7 +109,7 @@ class OpportunityService {
    * @param filters - Application filter object
    * @returns Notion filter object
    */
-  private buildNotionFilters(filters?: OpportunityFilters): any {
+  private buildNotionFilters(filters?: OpportunityFilters): Record<string, unknown> {
     console.log('🔍 Building Notion filters for opportunities with:', filters);
     if (!filters) return {};
     
@@ -208,7 +208,7 @@ class OpportunityService {
    * @param sort - Application sort option
    * @returns Notion sort object
    */
-  private buildNotionSort(sort: SortOption): any {
+  private buildNotionSort(sort: SortOption): { property: string; direction: 'ascending' | 'descending' } {
     // Map application field names to Notion property names
     const fieldMap: Record<string, string> = {
       name: 'Name',

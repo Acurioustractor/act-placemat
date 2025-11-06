@@ -20,9 +20,9 @@ interface Project {
   revenuePotential: number;
   startDate?: Date;
   endDate?: Date;
-  artifacts: any[];
-  relatedOpportunities: any[];
-  partnerOrganizations: any[];
+  artifacts: Array<Record<string, unknown>>;
+  relatedOpportunities: Array<Record<string, unknown>>;
+  partnerOrganizations: Array<Record<string, unknown>>;
   websiteLinks: string;
   lastModified: Date;
 }
@@ -140,7 +140,7 @@ const ProjectDetailModal = ({ project, isOpen, onClose }: ProjectDetailModalProp
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id as 'overview' | 'artifacts' | 'financials' | 'timeline')}
                 className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                   activeTab === tab.id
                     ? 'border-primary-500 text-primary-600'

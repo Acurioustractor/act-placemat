@@ -15,9 +15,9 @@ interface DataStatusProps {
 /**
  * Component that shows the current data status and configuration
  */
-const DataStatus = ({ type, showDetails = false }: DataStatusProps) => {
-  const [status, setStatus] = useState<any>(null);
-  const [cacheStats, setCacheStats] = useState<any>(null);
+const DataStatus = ({ showDetails = false }: DataStatusProps) => {
+  const [status, setStatus] = useState<Record<string, unknown> | null>(null);
+  const [cacheStats, setCacheStats] = useState<Record<string, unknown> | null>(null);
 
   useEffect(() => {
     // Get database configuration status

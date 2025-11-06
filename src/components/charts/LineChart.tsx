@@ -43,12 +43,12 @@ const LineChart = ({
           formattedDate: new Date(item.date).toLocaleDateString(),
         };
       }
-      
+
       const category = item.category || 'value';
       acc[dateStr][category] = item.value;
-      
+
       return acc;
-    }, {} as Record<string, any>);
+    }, {} as Record<string, unknown>);
     
     // Extract unique categories
     const uniqueCategories = Array.from(

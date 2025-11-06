@@ -5,8 +5,7 @@ import {
   validateProject,
   validateOpportunity,
   validateOrganization,
-  validatePerson,
-  validateArtifact
+  validatePerson
 } from '../../utils/validation';
 import {
   getMockProjects,
@@ -99,7 +98,7 @@ describe('Data Models', () => {
     it('should reject invalid project data', () => {
       const invalidProject = {
         name: '', // Required field empty
-        area: 'Invalid Area' as any, // Invalid enum value
+        area: 'Invalid Area' as ProjectArea, // Invalid enum value
         revenueActual: -1000 // Negative revenue
       };
 

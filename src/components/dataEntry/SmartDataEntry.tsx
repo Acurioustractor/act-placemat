@@ -38,7 +38,7 @@ const SmartDataEntry = () => {
   const [discrepancies, setDiscrepancies] = useState<DataDiscrepancy[]>([]);
   const [suggestions, setSuggestions] = useState<SmartSuggestion[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [selectedDiscrepancy, setSelectedDiscrepancy] = useState<DataDiscrepancy | null>(null);
+  // const [selectedDiscrepancy, setSelectedDiscrepancy] = useState<DataDiscrepancy | null>(null);
 
   // Analyze data for discrepancies
   const analyzeData = () => {
@@ -195,6 +195,7 @@ const SmartDataEntry = () => {
   useEffect(() => {
     // Auto-analyze on component mount
     analyzeData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projects, opportunities, organizations, people]);
 
   return (

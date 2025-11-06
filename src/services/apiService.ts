@@ -23,7 +23,7 @@ class ApiService {
    * @param params - Query parameters
    * @returns Promise with response data
    */
-  async get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
+  async get<T>(endpoint: string, params?: Record<string, unknown>): Promise<T> {
     const url = this.buildUrl(endpoint, params);
     
     try {
@@ -44,7 +44,7 @@ class ApiService {
    * @param data - Request body data
    * @returns Promise with response data
    */
-  async post<T>(endpoint: string, data: any): Promise<T> {
+  async post<T>(endpoint: string, data: unknown): Promise<T> {
     const url = this.buildUrl(endpoint);
     
     try {
@@ -66,7 +66,7 @@ class ApiService {
    * @param data - Request body data
    * @returns Promise with response data
    */
-  async put<T>(endpoint: string, data: any): Promise<T> {
+  async put<T>(endpoint: string, data: unknown): Promise<T> {
     const url = this.buildUrl(endpoint);
     
     try {
@@ -108,7 +108,7 @@ class ApiService {
    * @param params - Query parameters
    * @returns Full URL string
    */
-  private buildUrl(endpoint: string, params?: Record<string, any>): string {
+  private buildUrl(endpoint: string, params?: Record<string, unknown>): string {
     // Handle full URLs (starting with http:// or https://) vs relative paths
     let url: URL;
     
@@ -150,15 +150,12 @@ class ApiService {
   private async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      
-      const apiError: APIError = {
-        status: response.status,
-        message: errorData.message || response.statusText || ERROR_MESSAGES.API_ERROR,
-        details: errorData,
-        timestamp: new Date(),
-      };
-      
-      throw apiError;
+
+      throw new APIError(
+        response.status,
+        errorData.message || response.statusText || ERROR_MESSAGES.API_ERROR,
+        errorData
+      );
     }
     
     // Handle empty responses (like 204 No Content)
@@ -174,17 +171,19 @@ class ApiService {
    * @param error - Error object
    * @throws APIError with formatted error message
    */
-  private handleError(error: any): never {
+  private handleError(error: unknown): never {
     console.error('API Error:', error);
-    
-    const apiError: APIError = {
-      status: error.status || 500,
-      message: error.message || ERROR_MESSAGES.NETWORK_ERROR,
-      details: error,
-      timestamp: new Date(),
-    };
-    
-    throw apiError;
+
+    if (error instanceof APIError) {
+      throw error;
+    }
+
+    const errorObj = error as { status?: number; message?: string };
+    throw new APIError(
+      errorObj.status || 500,
+      errorObj.message || ERROR_MESSAGES.NETWORK_ERROR,
+      { error }
+    );
   }
 
   /**

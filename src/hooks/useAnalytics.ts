@@ -64,9 +64,8 @@ export function useRevenueChartData(timeRange: 'month' | 'quarter' | 'year' = 'm
     queryKey: ['projects'],
     queryFn: () => import('../services').then(m => m.projectService.getProjects())
   });
-  
+
   // Generate time series data based on time range
-  const now = new Date();
   const actual: TimeSeriesDataPoint[] = [];
   const projected: TimeSeriesDataPoint[] = [];
   
@@ -106,7 +105,7 @@ export function useRevenueChartData(timeRange: 'month' | 'quarter' | 'year' = 'm
     .map((project, index) => ({
       label: project.name,
       value: project.revenueActual,
-      color: CHART_COLORS[index % CHART_COLORS.length],
+      color: CHART_COLORS.rainbow[index % CHART_COLORS.rainbow.length],
       metadata: { id: project.id }
     }));
   
@@ -120,7 +119,7 @@ export function useRevenueChartData(timeRange: 'month' | 'quarter' | 'year' = 'm
     .map(([area, value], index) => ({
       label: area,
       value,
-      color: CHART_COLORS[index % CHART_COLORS.length]
+      color: CHART_COLORS.rainbow[index % CHART_COLORS.rainbow.length]
     }));
   
   return { actual, projected, byProject, byArea };
@@ -143,7 +142,7 @@ export function usePipelineChartData() {
     .map(([stage, value], index) => ({
       label: stage,
       value,
-      color: CHART_COLORS[index % CHART_COLORS.length]
+      color: CHART_COLORS.rainbow[index % CHART_COLORS.rainbow.length]
     }));
   
   // Generate conversion data
@@ -218,15 +217,16 @@ function generateTimePoints(timeRange: 'month' | 'quarter' | 'year'): Date[] {
   const points: Date[] = [];
   
   switch (timeRange) {
-    case 'month':
+    case 'month': {
       // Daily points for the current month
       const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
       for (let i = 1; i <= daysInMonth; i++) {
         points.push(new Date(now.getFullYear(), now.getMonth(), i));
       }
       break;
-      
-    case 'quarter':
+    }
+
+    case 'quarter': {
       // Monthly points for the current quarter
       const currentQuarter = Math.floor(now.getMonth() / 3);
       const startMonth = currentQuarter * 3;
@@ -234,7 +234,8 @@ function generateTimePoints(timeRange: 'month' | 'quarter' | 'year'): Date[] {
         points.push(new Date(now.getFullYear(), startMonth + i, 1));
       }
       break;
-      
+    }
+
     case 'year':
       // Monthly points for the current year
       for (let i = 0; i < 12; i++) {

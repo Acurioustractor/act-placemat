@@ -1,8 +1,7 @@
 // Custom hook for fetching and managing projects
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { projectService } from '../services';
-import { Project, ProjectFilters, SortOption } from '../types';
 import { CACHE_CONFIG } from '../constants';
 
 /**

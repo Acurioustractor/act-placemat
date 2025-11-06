@@ -189,7 +189,8 @@ export const DATABASE_SCHEMAS = {
 
 // Helper functions to get actual options
 export const getActualStatusOptions = (database: keyof typeof DATABASE_SCHEMAS) => {
-  return DATABASE_SCHEMAS[database].properties.Status?.options || [];
+  const properties = DATABASE_SCHEMAS[database].properties as Record<string, { type?: string; options?: string[] }>;
+  return properties.Status?.options || [];
 };
 
 export const getActualThemeOptions = () => {

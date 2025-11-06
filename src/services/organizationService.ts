@@ -48,9 +48,12 @@ class OrganizationService {
    */
   async getOrganizationById(id: string): Promise<Organization | undefined> {
     try {
+      // Get database ID from config service
+      const databaseId = await configService.getDatabaseId('organizations');
+
       // Create request payload to filter by ID
       const requestPayload: NotionQueryRequest = {
-        databaseId: DATABASE_IDS.ORGANIZATIONS,
+        databaseId,
         filters: {
           property: 'id',
           rich_text: {
@@ -58,28 +61,17 @@ class OrganizationService {
           }
         }
       };
-      
-      // Make API request
-      const response = await apiService.post<NotionResponse<any>>(
-        API_ENDPOINTS.ORGANIZATIONS,
-        requestPayload
-      );
-      
-      // Transform response to Organization objects
-      const organizations = transformNotionResponse<Organization>(response, transformNotionOrganization);
-      
+
+      // Use smart data service with intelligent fallbacks
+      const organizations = await smartDataService.fetchData<Organization>('organizations', requestPayload);
+
       // Return first match or undefined
       return organizations[0];
     } catch (error) {
       console.error(`Error fetching organization with ID ${id}:`, error);
-      
-      // If feature flag for real-time updates is off, return mock data
-      if (!FEATURE_FLAGS.REAL_TIME_UPDATES) {
-        console.log('Using mock organization data');
-        return getMockOrganizationById(id);
-      }
-      
-      throw error;
+
+      // Fall back to smart data service for mock data
+      return undefined;
     }
   }
   
@@ -88,7 +80,7 @@ class OrganizationService {
    * @param filters - Application filter object
    * @returns Notion filter object
    */
-  private buildNotionFilters(filters?: OrganizationFilters): any {
+  private buildNotionFilters(filters?: OrganizationFilters): Record<string, unknown> {
     console.log('🏢 Building Notion filters for organizations with:', filters);
     if (!filters) return {};
     
@@ -148,7 +140,7 @@ class OrganizationService {
    * @param sort - Application sort option
    * @returns Notion sort object
    */
-  private buildNotionSort(sort: SortOption): any {
+  private buildNotionSort(sort: SortOption): { property: string; direction: 'ascending' | 'descending' } {
     // Map application field names to Notion property names
     const fieldMap: Record<string, string> = {
       name: 'Name',

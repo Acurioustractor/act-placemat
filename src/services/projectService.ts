@@ -78,7 +78,7 @@ class ProjectService {
    * @param filters - Application filter object
    * @returns Notion filter object
    */
-  private buildNotionFilters(filters?: ProjectFilters): any {
+  private buildNotionFilters(filters?: ProjectFilters): Record<string, unknown> {
     console.log('🔍 Building Notion filters with:', filters);
     if (!filters) return {};
     
@@ -187,7 +187,7 @@ class ProjectService {
    * @param sort - Application sort option
    * @returns Notion sort object
    */
-  private buildNotionSort(sort: SortOption): any {
+  private buildNotionSort(sort: SortOption): { property: string; direction: 'ascending' | 'descending' } {
     // Map application field names to Notion property names
     const fieldMap: Record<string, string> = {
       name: 'Name',
@@ -196,9 +196,9 @@ class ProjectService {
       revenuePotential: 'Revenue Potential',
       nextMilestone: 'Next Milestone'
     };
-    
+
     const notionProperty = fieldMap[sort.field] || sort.field;
-    
+
     return {
       property: notionProperty,
       direction: sort.direction === 'asc' ? 'ascending' : 'descending'

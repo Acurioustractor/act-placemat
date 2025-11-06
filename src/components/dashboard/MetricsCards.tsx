@@ -3,9 +3,9 @@ import Card from '../ui/Card';
 import Badge from '../ui/Badge';
 
 interface MetricsCardsProps {
-  projects: any[];
-  opportunities: any[];
-  organizations: any[];
+  projects: Record<string, unknown>[];
+  opportunities: Record<string, unknown>[];
+  organizations: Record<string, unknown>[];
 }
 
 const MetricsCards = ({ projects, opportunities, organizations }: MetricsCardsProps) => {

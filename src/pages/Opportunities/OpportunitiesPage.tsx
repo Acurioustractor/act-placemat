@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { 
-  Card, 
-  Badge, 
-  LoadingSpinner, 
-  EmptyState, 
-  ErrorState, 
-  SearchBar,
-  Button 
+import {
+  Card,
+  Badge,
+  LoadingSpinner,
+  EmptyState,
+  ErrorState,
+  SearchBar
 } from '../../components/ui';
 import { ModernFilterPanel } from '../../components/ui/modern';
 import { useOpportunities } from '../../hooks';
@@ -76,7 +75,7 @@ const OpportunitiesPage = () => {
     {
       id: 'organization',
       label: 'Organization',
-      type: 'text' as const,
+      type: 'search' as const,
       placeholder: 'Filter by organization...'
     },
     {
@@ -87,13 +86,13 @@ const OpportunitiesPage = () => {
   ];
 
   // Sort options
-  const sortOptions = [
-    { field: 'amount', direction: 'desc', label: 'Amount (High to Low)' },
-    { field: 'amount', direction: 'asc', label: 'Amount (Low to High)' },
-    { field: 'weightedValue', direction: 'desc', label: 'Weighted Value (High to Low)' },
-    { field: 'probability', direction: 'desc', label: 'Probability (High to Low)' },
-    { field: 'deadline', direction: 'asc', label: 'Deadline (Soonest First)' },
-    { field: 'name', direction: 'asc', label: 'Name (A-Z)' }
+  const sortOptions: SortOption[] = [
+    { field: 'amount', direction: 'desc' as const, label: 'Amount (High to Low)' },
+    { field: 'amount', direction: 'asc' as const, label: 'Amount (Low to High)' },
+    { field: 'weightedValue', direction: 'desc' as const, label: 'Weighted Value (High to Low)' },
+    { field: 'probability', direction: 'desc' as const, label: 'Probability (High to Low)' },
+    { field: 'deadline', direction: 'asc' as const, label: 'Deadline (Soonest First)' },
+    { field: 'name', direction: 'asc' as const, label: 'Name (A-Z)' }
   ];
 
   // Group opportunities by stage for pipeline view
@@ -210,11 +209,10 @@ const OpportunitiesPage = () => {
               />
             </svg>
           }
-          action={
-            <Button variant="secondary" onClick={resetFilters}>
-              Clear Filters
-            </Button>
-          }
+          action={{
+            label: 'Clear Filters',
+            onClick: resetFilters
+          }}
         />
       ) : viewMode === 'pipeline' ? (
         /* Pipeline View */
