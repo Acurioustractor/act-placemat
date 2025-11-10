@@ -4,6 +4,8 @@ import Header from './Header';
 import Sidebar from './Sidebar';
 import Footer from './Footer';
 import { useApiHealth } from '../../hooks';
+import { SimpleWebflowNav } from '../webflow/SimpleWebflowNav';
+import { FEATURES } from '../../config/features';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -29,10 +31,12 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 
       {/* Main content */}
       <div className="flex flex-col flex-1 overflow-hidden">
-        {/* Header */}
-        <Header 
-          onMenuClick={toggleSidebar}
-        />
+        {/* Header - use Webflow nav if enabled */}
+        {FEATURES.showWebflowNav ? (
+          <SimpleWebflowNav siteUrl={FEATURES.mainSiteUrl} type="header" />
+        ) : (
+          <Header onMenuClick={toggleSidebar} />
+        )}
 
         {/* Main content area */}
         <main className="flex-1 overflow-y-auto pb-20">
@@ -61,8 +65,12 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           </div>
         </main>
 
-        {/* Footer */}
-        <Footer />
+        {/* Footer - use Webflow footer if enabled */}
+        {FEATURES.showWebflowNav ? (
+          <SimpleWebflowNav siteUrl={FEATURES.mainSiteUrl} type="footer" />
+        ) : (
+          <Footer />
+        )}
       </div>
     </div>
   );
