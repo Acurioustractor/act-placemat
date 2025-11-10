@@ -4,7 +4,7 @@ import { apiService } from './apiService';
 import { configService } from './configService';
 import { API_ENDPOINTS } from '../constants';
 import { getMockProjects, getMockOpportunities, getMockOrganizations, getMockPeople } from '../utils/mockData';
-import { 
+import {
   transformNotionResponse,
   transformNotionProject,
   transformNotionOpportunity,
@@ -12,6 +12,7 @@ import {
   transformNotionPerson,
   transformNotionArtifact
 } from './notionTransform';
+import { cacheLogger, dataLogger } from '../utils/logger';
 
 interface DataServiceConfig {
   useCache: boolean;
@@ -32,7 +33,7 @@ interface CacheEntry {
 class SmartDataService {
   private cache = new Map<string, CacheEntry>();
   private config: DataServiceConfig = {
-    useCache: false, // Disable cache temporarily for debugging
+    useCache: true, // Enable intelligent caching for performance
     fallbackToMock: false, // NO MOCK DATA - only real data
     retryAttempts: 1,
     cacheTimeout: 30 * 60 * 1000 // 30 minutes caching
@@ -51,7 +52,7 @@ class SmartDataService {
     if (this.config.useCache) {
       const cached = this.getFromCache<T[]>(cacheKey);
       if (cached) {
-        console.log(`📦 Using cached data for ${type}`);
+        cacheLogger.debug(`Using cached data for ${type}`);
         return cached;
       }
     }
@@ -60,57 +61,55 @@ class SmartDataService {
 
     try {
       // Try Notion API
-      console.log(`🌐 Fetching ${type} from Notion API`);
-      
+      dataLogger.info(`Fetching ${type} from Notion API`);
+
       const response = await apiService.post<any>(
         API_ENDPOINTS.NOTION_QUERY,
         requestPayload
       );
 
       if (response && response.results && Array.isArray(response.results)) {
-        console.log(`🔍 Raw Notion response for ${type}:`, {
+        dataLogger.debug(`Raw Notion response for ${type}:`, {
           resultCount: response.results.length,
-          hasMoreResults: response.has_more,
-          sampleResult: response.results[0] || 'No results'
+          hasMoreResults: response.has_more
         });
-        
+
         const transformedData = this.transformNotionData<T>(type, response);
-        
-        console.log(`🔍 Transformed ${type} data:`, {
+
+        dataLogger.debug(`Transformed ${type} data:`, {
           originalCount: response.results.length,
-          transformedCount: transformedData.length,
-          sampleTransformed: transformedData[0] || 'No transformed data'
+          transformedCount: transformedData.length
         });
-        
+
         // Cache successful response
         if (this.config.useCache && transformedData.length > 0) {
           this.setCache(cacheKey, transformedData);
         }
-        
-        console.log(`✅ Successfully fetched ${transformedData.length} ${type} from Notion`);
+
+        dataLogger.info(`Successfully fetched ${transformedData.length} ${type} from Notion`);
         return transformedData;
       } else {
         throw new Error(`Invalid response structure for ${type}`);
       }
 
     } catch (error: any) {
-      console.warn(`⚠️ Notion API failed for ${type}:`, error.message);
-      
+      dataLogger.warn(`Notion API failed for ${type}:`, error.message);
+
       // Try cache as fallback
       const staleCache = this.getFromCache<T[]>(cacheKey, true); // Allow stale
       if (staleCache) {
-        console.log(`📦 Using stale cached data for ${type}`);
+        cacheLogger.info(`Using stale cached data for ${type}`);
         return staleCache;
       }
 
       // Fall back to mock data if enabled
       if (this.config.fallbackToMock) {
-        console.log(`🎭 Using mock data for ${type}`);
+        dataLogger.info(`Using mock data for ${type}`);
         return this.getMockData<T>(type);
       }
 
       // Last resort: return empty array with error info
-      console.error(`❌ No fallback available for ${type}`);
+      dataLogger.error(`No fallback available for ${type}`);
       return [];
     }
   }
@@ -120,7 +119,7 @@ class SmartDataService {
    */
   clearCache(): void {
     this.cache.clear();
-    console.log('🗑️ Cache cleared');
+    cacheLogger.info('Cache cleared');
   }
 
   /**
@@ -129,7 +128,7 @@ class SmartDataService {
   clearCacheForType(type: string): void {
     const keysToDelete = Array.from(this.cache.keys()).filter(key => key.startsWith(type));
     keysToDelete.forEach(key => this.cache.delete(key));
-    console.log(`🗑️ Cache cleared for ${type}`);
+    cacheLogger.info(`Cache cleared for ${type}`);
   }
 
   /**
@@ -137,8 +136,8 @@ class SmartDataService {
    */
   private async fetchRealDataInBackground(type: string, requestPayload: any, cacheKey: string) {
     try {
-      console.log(`🔄 Background fetching real ${type} data...`);
-      
+      dataLogger.debug(`Background fetching real ${type} data...`);
+
       const response = await apiService.post<any>(
         API_ENDPOINTS.NOTION_QUERY,
         requestPayload
@@ -146,34 +145,16 @@ class SmartDataService {
 
       if (response && response.results && Array.isArray(response.results)) {
         const transformedData = this.transformNotionData(type as any, response);
-        
+
         // Cache for next time
         if (this.config.useCache && transformedData.length > 0) {
           this.setCache(cacheKey, transformedData);
-          console.log(`✅ Background cached ${transformedData.length} ${type} items`);
+          cacheLogger.debug(`Background cached ${transformedData.length} ${type} items`);
         }
       }
     } catch (error) {
-      console.warn(`⚠️ Background fetch failed for ${type}:`, error);
+      dataLogger.warn(`Background fetch failed for ${type}:`, error);
     }
-  }
-
-  /**
-   * Get cache status and statistics
-   */
-  getCacheStats() {
-    const stats = {
-      totalEntries: this.cache.size,
-      typeBreakdown: {} as Record<string, number>,
-      cacheHitRate: 0 // Could track this with counters
-    };
-
-    Array.from(this.cache.keys()).forEach(key => {
-      const type = key.split('_')[0];
-      stats.typeBreakdown[type] = (stats.typeBreakdown[type] || 0) + 1;
-    });
-
-    return stats;
   }
 
   /**

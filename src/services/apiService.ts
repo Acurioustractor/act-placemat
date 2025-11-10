@@ -2,6 +2,7 @@
 
 import { API_BASE_URL, ERROR_MESSAGES, CACHE_CONFIG } from '../constants';
 import { APIError } from '../types';
+import { apiLogger } from '../utils/logger';
 
 /**
  * Base API service for handling HTTP requests
@@ -111,7 +112,7 @@ class ApiService {
   private buildUrl(endpoint: string, params?: Record<string, any>): string {
     // Handle full URLs (starting with http:// or https://) vs relative paths
     let url: URL;
-    
+
     if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
       // It's already a full URL, use it directly
       url = new URL(endpoint);
@@ -119,15 +120,13 @@ class ApiService {
       // It's a relative path, construct with base URL
       url = new URL(endpoint, this.baseUrl);
     }
-    
-    // Debug logging
-    console.log(`🔧 URL Construction Debug:`, {
+
+    apiLogger.debug(`URL Construction:`, {
       endpoint,
       isFullUrl: endpoint.startsWith('http'),
-      baseUrl: this.baseUrl,
-      constructedUrl: url.toString()
+      baseUrl: this.baseUrl
     });
-    
+
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -135,9 +134,9 @@ class ApiService {
         }
       });
     }
-    
+
     const finalUrl = url.toString();
-    console.log(`🎯 Final URL: ${finalUrl}`);
+    apiLogger.debug(`Final URL: ${finalUrl}`);
     return finalUrl;
   }
 
@@ -175,15 +174,15 @@ class ApiService {
    * @throws APIError with formatted error message
    */
   private handleError(error: any): never {
-    console.error('API Error:', error);
-    
+    apiLogger.error('API Error:', error);
+
     const apiError: APIError = {
       status: error.status || 500,
       message: error.message || ERROR_MESSAGES.NETWORK_ERROR,
       details: error,
       timestamp: new Date(),
     };
-    
+
     throw apiError;
   }
 

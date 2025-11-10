@@ -63,7 +63,16 @@ src/
 
 ## API Integration
 
-The client communicates with the Express server running on port 3000. In development, Vite proxies API calls to the backend server.
+The client communicates with the Express backend server. The API base URL is configured via the `VITE_API_BASE_URL` environment variable, which defaults to `http://localhost:5001/api` in development.
+
+**Backend Setup**:
+- The backend server should run on port 5001 (default)
+- API endpoints are prefixed with `/api`
+- Example: `http://localhost:5001/api/projects`
+
+**Configuration**:
+- Set `VITE_API_BASE_URL` in your environment to point to your backend
+- For production, update this to your production API URL
 
 ## Environment Variables
 
