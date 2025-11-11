@@ -9,3 +9,4 @@ export { default as InteractiveImpactMap } from './InteractiveImpactMap';
 export { default as ShareButtons } from './ShareButtons';
 export { default as CTAButton } from './CTAButton';
 export { default as ContactForm } from './ContactForm';
+export { default as SEOHead, generateProjectSchema } from './SEOHead';

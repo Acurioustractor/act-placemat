@@ -14,7 +14,9 @@ import {
   TestimonialCard,
   ImpactStats,
   ShareButtons,
-  CTAButton
+  CTAButton,
+  SEOHead,
+  generateProjectSchema
 } from '../../components/showcase';
 import { LoadingSpinner, Badge, Button } from '../../components/ui';
 import { PROJECT_AREAS } from '../../constants';
@@ -93,6 +95,27 @@ const ProjectShowcasePage = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* SEO Meta Tags */}
+      <SEOHead
+        title={project.name}
+        description={project.metaDescription || project.aiSummary || project.description}
+        url={window.location.href}
+        image={project.socialImageUrl || project.heroImageUrl || project.galleryImages?.[0]}
+        type="article"
+        publishedTime={project.startDate?.toISOString()}
+        tags={project.themes}
+        schema={generateProjectSchema({
+          name: project.name,
+          description: project.description,
+          url: window.location.href,
+          image: project.heroImageUrl || project.galleryImages?.[0],
+          location: project.location,
+          startDate: project.startDate,
+          fundingAmount: project.revenueActual,
+          organizationName: 'ACT Placemat'
+        })}
+      />
+
       {/* Back Navigation */}
       <div className="bg-gray-50 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">

@@ -100,7 +100,7 @@ const ShareButtons = ({
   return (
     <div className={`flex flex-wrap items-center gap-3 ${className}`}>
       {/* Native Share Button (Mobile) */}
-      {navigator.share && (
+      {typeof navigator !== 'undefined' && 'share' in navigator && (
         <button
           onClick={handleNativeShare}
           className="flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-all hover:scale-105"

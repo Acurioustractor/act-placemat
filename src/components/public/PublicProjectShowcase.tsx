@@ -12,7 +12,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useProjects } from '../../hooks';
 import { ProjectStatus, ProjectPlace } from '../../types';
-import { InteractiveImpactMap } from '../showcase';
+import { InteractiveImpactMap, SEOHead } from '../showcase';
 
 interface PublicProject {
   id: string;
@@ -121,6 +121,16 @@ const PublicProjectShowcase = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* SEO Meta Tags */}
+      <SEOHead
+        title="Project Showcase - ACT Placemat"
+        description="Discover ACT's community-driven projects creating positive impact across Australia. Explore our initiatives in youth justice, community development, and social innovation."
+        url={window.location.href}
+        image="https://act-revised-site.webflow.io/images/og-default.jpg"
+        type="website"
+        tags={['Community Projects', 'Social Impact', 'Australia', 'ACT', 'Youth Justice', 'Community Development']}
+      />
+
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-primary-600 to-primary-800 text-white">
         <div className="max-w-7xl mx-auto px-4 py-16">
