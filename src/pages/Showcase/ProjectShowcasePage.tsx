@@ -12,7 +12,9 @@ import {
   VideoEmbed,
   PhotoGallery,
   TestimonialCard,
-  ImpactStats
+  ImpactStats,
+  ShareButtons,
+  CTAButton
 } from '../../components/showcase';
 import { LoadingSpinner, Badge, Button } from '../../components/ui';
 import { PROJECT_AREAS } from '../../constants';
@@ -174,14 +176,14 @@ const ProjectShowcasePage = () => {
               )}
             </div>
 
-            {/* Share button */}
-            <button
-              onClick={handleShare}
-              className="mt-8 inline-flex items-center gap-2 px-6 py-3 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <ShareIcon className="w-5 h-5" />
-              Share This Project
-            </button>
+            {/* Share buttons */}
+            <div className="mt-8 flex justify-center">
+              <ShareButtons
+                title={project.name}
+                description={project.aiSummary || project.description}
+                hashtags={project.themes}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -312,24 +314,34 @@ const ProjectShowcasePage = () => {
           <p className="text-xl text-primary-100 mb-8">
             Join us in making a difference. Your support helps us continue this important work.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
             {project.ctaLink && (
-              <a
+              <CTAButton
+                type={project.ctaType || 'donate'}
+                text={project.ctaText}
                 href={project.ctaLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-primary-600 bg-white rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                {project.ctaText || 'Support This Project'}
-              </a>
+                size="lg"
+                variant="primary"
+                className="bg-white text-primary-600 hover:bg-gray-50"
+              />
             )}
-            <button
-              onClick={handleShare}
-              className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg transition-colors"
-            >
-              <ShareIcon className="w-5 h-5 mr-2" />
-              Share This Project
-            </button>
+            <CTAButton
+              type="contact"
+              size="lg"
+              variant="outline"
+              onClick={() => {}}
+              className="border-white text-white hover:bg-white hover:bg-opacity-20"
+            />
+          </div>
+
+          {/* Share buttons */}
+          <div className="flex justify-center">
+            <ShareButtons
+              title={project.name}
+              description={project.aiSummary || project.description}
+              hashtags={project.themes}
+              className="flex-wrap justify-center"
+            />
           </div>
         </div>
       </div>

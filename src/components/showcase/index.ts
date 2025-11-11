@@ -6,3 +6,6 @@ export { default as PhotoGallery } from './PhotoGallery';
 export { default as TestimonialCard } from './TestimonialCard';
 export { default as ImpactStats } from './ImpactStats';
 export { default as InteractiveImpactMap } from './InteractiveImpactMap';
+export { default as ShareButtons } from './ShareButtons';
+export { default as CTAButton } from './CTAButton';
+export { default as ContactForm } from './ContactForm';
