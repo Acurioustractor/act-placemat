@@ -14,6 +14,8 @@ import {
   AnalyticsPage
 } from './pages';
 import ProjectDetailPage from './pages/Projects/ProjectDetailPage';
+import { ProjectShowcasePage } from './pages/Showcase';
+import PublicProjectShowcase from './components/public/PublicProjectShowcase';
 import { ROUTES } from './constants';
 
 function App() {
@@ -45,6 +47,11 @@ function App() {
           <Route path={ROUTES.ARTIFACTS} element={<ArtifactsPage />} />
           <Route path={ROUTES.NETWORK} element={<NetworkPage />} />
           <Route path={ROUTES.ANALYTICS} element={<AnalyticsPage />} />
+
+          {/* Public Showcase Routes */}
+          <Route path="/showcase" element={<PublicProjectShowcase />} />
+          <Route path="/showcase/:slug" element={<ProjectShowcasePage />} />
+
           <Route path="*" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
         </Routes>
       </AppLayout>
