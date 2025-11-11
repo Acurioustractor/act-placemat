@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
-import { 
+import { useNavigate } from 'react-router-dom';
+import {
   MapPinIcon,
   CalendarDaysIcon,
   CurrencyDollarIcon,
@@ -11,6 +12,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useProjects } from '../../hooks';
 import { ProjectStatus, ProjectPlace } from '../../types';
+import { InteractiveImpactMap } from '../showcase';
 
 interface PublicProject {
   id: string;
@@ -40,6 +42,7 @@ interface ShowcaseFilters {
  * Displays ACT projects in an engaging, filterable view for community visibility
  */
 const PublicProjectShowcase = () => {
+  const navigate = useNavigate();
   const { data: allProjects = [] } = useProjects();
   const [selectedProject, setSelectedProject] = useState<PublicProject | null>(null);
   const [filters, setFilters] = useState<ShowcaseFilters>({
@@ -110,6 +113,12 @@ const PublicProjectShowcase = () => {
     return { active, totalImpact, locations, partnerships };
   }, [filteredProjects]);
 
+  // Handle project click from map
+  const handleProjectClick = (project: any) => {
+    const slug = project.slug || project.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    navigate(`/showcase/${slug}`);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -146,6 +155,22 @@ const PublicProjectShowcase = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Interactive Impact Map */}
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">
+            Where We Work
+          </h2>
+          <p className="text-lg text-gray-600">
+            Explore our projects across Australia and beyond
+          </p>
+        </div>
+        <InteractiveImpactMap
+          projects={publicProjects as any}
+          onProjectClick={handleProjectClick}
+        />
       </div>
 
       {/* Filters */}
@@ -228,7 +253,7 @@ const PublicProjectShowcase = () => {
               <div
                 key={project.id}
                 className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden cursor-pointer group"
-                onClick={() => setSelectedProject(project)}
+                onClick={() => handleProjectClick(project)}
               >
                 {/* Project Header */}
                 <div className="p-6 pb-4">
