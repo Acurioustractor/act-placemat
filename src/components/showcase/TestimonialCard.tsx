@@ -40,6 +40,7 @@ const TestimonialCard = ({
                 src={authorPhotoUrl}
                 alt={authorName}
                 className="w-16 h-16 rounded-full object-cover ring-4 ring-white shadow-lg"
+                loading="lazy"
               />
             )}
             <div>
@@ -67,6 +68,7 @@ const TestimonialCard = ({
             <img
               src={authorPhotoUrl}
               alt={authorName}
+              loading="lazy"
               className="w-8 h-8 rounded-full object-cover"
             />
           )}
@@ -103,6 +105,7 @@ const TestimonialCard = ({
             src={authorPhotoUrl}
             alt={authorName}
             className="w-12 h-12 rounded-full object-cover"
+            loading="lazy"
           />
         )}
         <div>

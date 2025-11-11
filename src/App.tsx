@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { AppLayout } from './components';
 import { QuickCaptureButton } from './components/quickCapture';
+import { LoadingSpinner } from './components/ui';
 import { prefetchService } from './services/prefetchService';
 import { projectService } from './services';
 import {
@@ -14,9 +15,11 @@ import {
   AnalyticsPage
 } from './pages';
 import ProjectDetailPage from './pages/Projects/ProjectDetailPage';
-import { ProjectShowcasePage } from './pages/Showcase';
-import PublicProjectShowcase from './components/public/PublicProjectShowcase';
 import { ROUTES } from './constants';
+
+// Lazy load showcase pages for better initial load performance
+const ProjectShowcasePage = lazy(() => import('./pages/Showcase/ProjectShowcasePage'));
+const PublicProjectShowcase = lazy(() => import('./components/public/PublicProjectShowcase'));
 
 function App() {
   const queryClient = useQueryClient();
@@ -48,9 +51,31 @@ function App() {
           <Route path={ROUTES.NETWORK} element={<NetworkPage />} />
           <Route path={ROUTES.ANALYTICS} element={<AnalyticsPage />} />
 
-          {/* Public Showcase Routes */}
-          <Route path="/showcase" element={<PublicProjectShowcase />} />
-          <Route path="/showcase/:slug" element={<ProjectShowcasePage />} />
+          {/* Public Showcase Routes - Lazy loaded for performance */}
+          <Route
+            path="/showcase"
+            element={
+              <Suspense fallback={
+                <div className="flex items-center justify-center min-h-screen">
+                  <LoadingSpinner size="lg" />
+                </div>
+              }>
+                <PublicProjectShowcase />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/showcase/:slug"
+            element={
+              <Suspense fallback={
+                <div className="flex items-center justify-center min-h-screen">
+                  <LoadingSpinner size="lg" />
+                </div>
+              }>
+                <ProjectShowcasePage />
+              </Suspense>
+            }
+          />
 
           <Route path="*" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
         </Routes>

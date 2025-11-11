@@ -90,6 +90,7 @@ const VideoEmbed = ({ url, title = 'Project Video', caption, autoplay = false, c
               src={thumbnail}
               alt={title}
               className="absolute inset-0 w-full h-full object-cover rounded-lg"
+              loading="lazy"
             />
             {/* Dark overlay on hover */}
             <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-30 transition-opacity rounded-lg" />
