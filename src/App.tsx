@@ -15,6 +15,7 @@ import {
   AnalyticsPage
 } from './pages';
 import ProjectDetailPage from './pages/Projects/ProjectDetailPage';
+import ProjectAnalysisPage from './pages/Admin/ProjectAnalysisPage';
 import { ROUTES } from './constants';
 
 // Lazy load showcase pages for better initial load performance
@@ -50,6 +51,9 @@ function App() {
           <Route path={ROUTES.ARTIFACTS} element={<ArtifactsPage />} />
           <Route path={ROUTES.NETWORK} element={<NetworkPage />} />
           <Route path={ROUTES.ANALYTICS} element={<AnalyticsPage />} />
+
+          {/* Admin/Analysis Routes */}
+          <Route path="/admin/project-analysis" element={<ProjectAnalysisPage />} />
 
           {/* Public Showcase Routes - Lazy loaded for performance */}
           <Route
