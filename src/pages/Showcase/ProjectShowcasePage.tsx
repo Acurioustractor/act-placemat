@@ -21,6 +21,7 @@ import {
 import { LoadingSpinner, Badge, Button } from '../../components/ui';
 import { PROJECT_AREAS } from '../../constants';
 import { formatCurrency } from '../../utils/formatting';
+import { prepareProjectForShowcase } from '../../utils/showcaseDataMapper';
 
 /**
  * ProjectShowcasePage - World-class individual project page
@@ -41,11 +42,14 @@ const ProjectShowcasePage = () => {
   const { data: projects = [], isLoading } = useProjects();
 
   // Find project by slug or ID
-  const project = projects.find(p =>
+  const rawProject = projects.find(p =>
     p.slug === slug ||
     p.id === slug ||
     p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') === slug
   );
+
+  // Enhance project with smart derived data from existing Notion fields
+  const project = rawProject ? prepareProjectForShowcase(rawProject) : null;
 
   if (isLoading) {
     return (

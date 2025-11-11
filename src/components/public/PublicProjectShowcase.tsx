@@ -13,6 +13,7 @@ import {
 import { useProjects } from '../../hooks';
 import { ProjectStatus, ProjectPlace } from '../../types';
 import { InteractiveImpactMap, SEOHead } from '../showcase';
+import { prepareProjectForShowcase } from '../../utils/showcaseDataMapper';
 
 interface PublicProject {
   id: string;
@@ -55,15 +56,19 @@ const PublicProjectShowcase = () => {
   // Filter projects for public display (only active/harvest projects)
   const publicProjects = useMemo(() => {
     return allProjects
-      .filter(project => 
+      .filter(project =>
         project.status === ProjectStatus.ACTIVE
       )
-      .map(project => ({
-        ...project,
-        // Sanitize sensitive information for public view
-        revenueActual: Math.round(project.revenueActual / 1000) * 1000, // Round to nearest thousand
-        description: project.aiSummary || project.description || 'Empowering communities through innovative approaches.',
-      }));
+      .map(project => {
+        // Enhance with smart derived data from existing Notion fields
+        const enhanced = prepareProjectForShowcase(project);
+        return {
+          ...enhanced,
+          // Sanitize sensitive information for public view
+          revenueActual: Math.round(project.revenueActual / 1000) * 1000, // Round to nearest thousand
+          description: enhanced.aiSummary || enhanced.description || 'Empowering communities through innovative approaches.',
+        };
+      });
   }, [allProjects]);
 
   // Apply filters
