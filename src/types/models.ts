@@ -52,6 +52,81 @@ export interface Project {
   artifacts: string[];
   websiteLinks: string;
   lastModified: Date;
+
+  // ============================================
+  // WORLD-CLASS SHOWCASE FIELDS (2025)
+  // ============================================
+
+  // Hero Media
+  heroVideoUrl?: string;           // YouTube/Vimeo embed URL
+  heroImageUrl?: string;            // Main project hero image
+  heroCaption?: string;             // Caption for hero media
+
+  // Photo Gallery
+  galleryImages?: string[];         // Array of image URLs
+  galleryVideos?: string[];         // Array of video URLs
+
+  // Storytelling Structure
+  challengeDescription?: string;    // The problem we're solving
+  solutionDescription?: string;     // How we're solving it
+  processDescription?: string;      // Our approach and methodology
+
+  // Impact Metrics (for big number displays)
+  impactStats?: ProjectImpactStats; // Structured impact data
+  impactSummary?: string;           // Rich text impact summary
+
+  // Testimonials
+  testimonials?: ProjectTestimonial[]; // Array of testimonials
+
+  // Call-to-Action
+  ctaLink?: string;                 // Primary CTA link (donate, partner, etc.)
+  ctaText?: string;                 // CTA button text
+  ctaType?: 'donate' | 'partner' | 'volunteer' | 'learn' | 'contact';
+
+  // SEO & Sharing
+  slug?: string;                    // URL-friendly slug for individual pages
+  metaDescription?: string;         // SEO meta description
+  socialImageUrl?: string;          // Open Graph image for social sharing
+
+  // Geographic Data (for interactive map)
+  coordinates?: {                   // Lat/long for map pins
+    latitude: number;
+    longitude: number;
+  };
+
+  // Media Attribution
+  photographyCredit?: string;       // Photo credit
+  videographyCredit?: string;       // Video credit
+
+  // Visibility Controls
+  featuredOnHomepage?: boolean;     // Show in featured carousel
+  publiclyVisible?: boolean;        // Show on public showcase
+  displayOrder?: number;            // Manual ordering
+}
+
+// New interface for structured impact stats
+export interface ProjectImpactStats {
+  peopleServed?: number;
+  locationsReached?: number;
+  partnersInvolved?: number;
+  successRate?: number;             // Percentage (0-100)
+  fundingRaised?: number;
+  hoursDelivered?: number;
+  customMetrics?: {                 // Flexible custom metrics
+    label: string;
+    value: number | string;
+    unit?: string;
+  }[];
+}
+
+// New interface for testimonials
+export interface ProjectTestimonial {
+  quote: string;
+  authorName: string;
+  authorRole?: string;
+  authorPhotoUrl?: string;
+  authorOrganization?: string;
+  featured?: boolean;               // Highlight this testimonial
 }
 
 export interface Opportunity {
