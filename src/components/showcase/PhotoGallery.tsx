@@ -25,6 +25,11 @@ const PhotoGallery = ({
 }: PhotoGalleryProps) => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  // Minimum swipe distance (in px)
+  const minSwipeDistance = 50;
 
   const openLightbox = (index: number) => {
     setCurrentIndex(index);
@@ -53,6 +58,34 @@ const PhotoGallery = ({
     if (e.key === 'Escape') closeLightbox();
     if (e.key === 'ArrowLeft') goToPrevious();
     if (e.key === 'ArrowRight') goToNext();
+  };
+
+  // Touch swipe support for mobile
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null); // Reset
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      goToNext();
+    } else if (isRightSwipe) {
+      goToPrevious();
+    }
+
+    // Reset
+    setTouchStart(null);
+    setTouchEnd(null);
   };
 
   // Grid column classes
@@ -139,6 +172,9 @@ const PhotoGallery = ({
           <div
             className="relative max-w-7xl max-h-[90vh] mx-4"
             onClick={(e) => e.stopPropagation()}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
           >
             <img
               src={images[currentIndex]}
