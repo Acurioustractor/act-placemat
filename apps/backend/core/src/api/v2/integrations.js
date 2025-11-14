@@ -29,6 +29,7 @@ import secureCredentialStorage from '../../services/secureCredentialStorage.js';
 
 // Import service adapters
 import { LinkedInServiceAdapter } from '../../services/unifiedIntegration/adapters/LinkedInServiceAdapter.js';
+import { GmailServiceAdapter } from '../../services/unifiedIntegration/adapters/GmailServiceAdapter.js';
 import { SupabaseServiceAdapter } from '../../services/unifiedIntegration/adapters/SupabaseServiceAdapter.js';
 import { NotionServiceAdapter } from '../../services/unifiedIntegration/adapters/NotionServiceAdapter.js';
 import { XeroFinanceServiceAdapter } from '../../services/unifiedIntegration/adapters/XeroFinanceServiceAdapter.js';
@@ -42,6 +43,7 @@ const logger = IntegrationLogger.getInstance();
 
 // Initialize service adapters
 const linkedInAdapter = new LinkedInServiceAdapter();
+const gmailAdapter = new GmailServiceAdapter();
 const supabaseAdapter = new SupabaseServiceAdapter();
 const notionAdapter = new NotionServiceAdapter();
 const xeroAdapter = new XeroFinanceServiceAdapter();
@@ -58,7 +60,7 @@ try {
 // Initialize unified service with all adapters
 const unifiedService = new UnifiedIntegrationService(
   linkedInAdapter,
-  null, // Gmail service adapter to be implemented
+  gmailAdapter,
   notionAdapter,
   supabaseAdapter,
   xeroAdapter,

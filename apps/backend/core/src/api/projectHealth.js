@@ -12,6 +12,7 @@
  */
 
 import express from 'express';
+import projectActivityService from '../services/projectActivityService.js';
 
 const router = express.Router();
 
@@ -147,8 +148,25 @@ function calculatePeopleHealth(project, touchpoints = []) {
 /**
  * Calculate momentum based on milestones and activity
  */
-function calculateMomentum(project) {
-  const daysSinceUpdate = daysSince(project.updatedAt) || 0;
+function calculateMomentum(project, activitySummary = null) {
+  const lastActivityDates = [
+    project.updatedAt,
+    activitySummary?.last_gmail_activity,
+    activitySummary?.last_calendar_activity,
+    activitySummary?.last_notation_activity
+  ]
+    .filter(Boolean)
+    .map(date => new Date(date));
+
+  let mostRecentDate = project.updatedAt;
+  if (lastActivityDates.length > 0) {
+    const latest = lastActivityDates.reduce((latestSoFar, current) =>
+      current > latestSoFar ? current : latestSoFar
+    );
+    mostRecentDate = latest.toISOString();
+  }
+
+  const daysSinceUpdate = daysSince(mostRecentDate) || 0;
   const hasNextMilestone = !!project.nextMilestoneDate;
   const milestoneOverdue = project.nextMilestoneDate && daysSince(project.nextMilestoneDate) > 0;
 
@@ -668,14 +686,30 @@ router.get('/needs', async (req, res) => {
   try {
     // Get all projects
     const projects = await req.app.locals.notionService.getProjects();
+    const activityMap = new Map();
+
+    await Promise.all(
+      projects.map(async project => {
+        try {
+          const supabaseId = project.supabaseProjectId || project.supabase_project_id || project.id;
+          const summary = await projectActivityService.getActivitySummary(supabaseId);
+          activityMap.set(project.id, summary || null);
+        } catch (err) {
+          console.warn(`Failed to load activity for project ${project.id}:`, err.message);
+          activityMap.set(project.id, null);
+        }
+      })
+    );
 
     const allNeeds = [];
 
     // Calculate health for each project and extract needs
     for (const project of projects) {
+      const activitySummary = activityMap.get(project.id) || null;
+      const touchpoints = buildTouchpointsFromActivity(activitySummary);
       const funding = calculateFundingHealth(project);
-      const people = calculatePeopleHealth(project, []);
-      const momentum = calculateMomentum(project);
+      const people = calculatePeopleHealth(project, touchpoints);
+      const momentum = calculateMomentum(project, activitySummary);
       const ownership = calculateOwnershipHealth(project);
       const data = calculateDataCompleteness(project);
 
@@ -689,7 +723,8 @@ router.get('/needs', async (req, res) => {
           projectId: project.id,
           projectName: project.name,
           projectStatus: project.status,
-          projectThemes: project.themes || []
+          projectThemes: project.themes || [],
+          activitySnapshot: activitySummary
         });
       });
     }
@@ -847,3 +882,38 @@ router.get('/:projectId/beautiful-obsolescence', async (req, res) => {
 });
 
 export default router;
+
+function buildTouchpointsFromActivity(activitySummary) {
+  if (!activitySummary) return [];
+
+  const touchpoints = [];
+  const recentContacts = Array.isArray(activitySummary.gmail_recent_contacts)
+    ? activitySummary.gmail_recent_contacts
+    : [];
+
+  recentContacts.forEach(contact => {
+    if (contact?.lastInteraction) {
+      touchpoints.push({
+        occurredAt: contact.lastInteraction,
+        type: 'gmail',
+        metadata: contact
+      });
+    }
+  });
+
+  if (activitySummary.last_calendar_activity) {
+    touchpoints.push({
+      occurredAt: activitySummary.last_calendar_activity,
+      type: 'calendar'
+    });
+  }
+
+  if (activitySummary.last_notation_activity) {
+    touchpoints.push({
+      occurredAt: activitySummary.last_notation_activity,
+      type: 'notion'
+    });
+  }
+
+  return touchpoints;
+}

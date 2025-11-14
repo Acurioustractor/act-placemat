@@ -10,6 +10,7 @@
  */
 
 import notionService from './notionService.js';
+import projectActivityService from './projectActivityService.js';
 import { logger } from '../utils/logger.js';
 
 export class ProjectHealthService {
@@ -70,6 +71,10 @@ export class ProjectHealthService {
     //   return this.healthCache.get(cacheKey);
     // }
 
+    const activitySummary = await projectActivityService.getActivitySummary(
+      project.supabaseProjectId || project.id
+    );
+
     const healthMetrics = {
       timeAllocation: await this.calculateTimeAllocationHealth(project),
       milestoneProgress: this.calculateMilestoneHealth(project),
@@ -94,7 +99,8 @@ export class ProjectHealthService {
       recommendations: this.generateRecommendations(healthMetrics, project),
       suggestedTimeToday: this.calculateSuggestedTime(healthMetrics, project),
       keyPeopleToContact: await this.getKeyPeopleToContact(project),
-      urgencyFlag: this.calculateIntelligentUrgency(healthMetrics, project, roundedOverallScore, rawOverallScore)
+      urgencyFlag: this.calculateIntelligentUrgency(healthMetrics, project, roundedOverallScore, rawOverallScore),
+      activity: activitySummary || null
     };
 
     // Skip caching for debugging

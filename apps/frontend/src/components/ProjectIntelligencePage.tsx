@@ -332,7 +332,6 @@ export function ProjectIntelligencePage({ initialProjectId, onRequestCreateTask 
     if (project) {
       handleSelectProject(project)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projects])
 
   useEffect(() => {
@@ -341,7 +340,6 @@ export function ProjectIntelligencePage({ initialProjectId, onRequestCreateTask 
     if (project && project.project_id !== selectedProject?.project_id) {
       handleSelectProject(project)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialProjectId, projects])
 
   const filteredProjects = useMemo(() => {

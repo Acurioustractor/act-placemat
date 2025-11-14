@@ -6,7 +6,7 @@ interface CardProps {
   header?: ReactNode
   footer?: ReactNode
   hover?: boolean
-  variant?: 'default' | 'soft' | 'bordered'
+  variant?: 'default' | 'soft' | 'bordered' | 'solid'
 }
 
 export function Card({
@@ -30,6 +30,7 @@ export function Card({
     default: 'bg-white border border-clay-200 shadow-soft',
     soft: 'bg-white shadow-medium',
     bordered: 'bg-white border-2 border-clay-200',
+    solid: 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white shadow-xl',
   }
 
   const hoverClasses = hover ? 'transition-all duration-300 hover:shadow-hover hover:-translate-y-0.5' : ''

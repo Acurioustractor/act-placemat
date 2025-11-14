@@ -169,7 +169,6 @@ export function OutreachTasks({ initialCreateDefaults = null, onClearInitialCrea
       openCreateForm(initialCreateDefaults)
       onClearInitialCreateDefaults?.()
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialCreateDefaults?.projectId])
 
   const overdueTasks = useMemo(() => {

@@ -12,6 +12,14 @@ interface ProjectNeed {
   projectStatus?: string;
   projectThemes?: string[];
   suggestedActions: string[];
+  activitySnapshot?: {
+    notion_edit_minutes?: number;
+    calendar_meeting_minutes?: number;
+    gmail_thread_count?: number;
+    last_notation_activity?: string | null;
+    last_calendar_activity?: string | null;
+    last_gmail_activity?: string | null;
+  } | null;
 }
 
 interface NeedsResponse {
@@ -43,8 +51,7 @@ export function NeedsDashboard() {
   async function fetchNeeds() {
     try {
       setLoading(true);
-      const response = await fetch('https://act-backend-production.up.railway.app/api/v2/projects/needs');
-      const data = await response.json();
+      const data = await api.getProjectNeeds();
       setNeeds(data);
       setError(null);
     } catch (err) {
@@ -238,6 +245,26 @@ function NeedCard({ need }: { need: ProjectNeed }) {
           </div>
 
           <p className="text-gray-700 mb-2">{need.description}</p>
+
+          {need.activitySnapshot && (
+            <div className="flex flex-wrap gap-3 text-sm text-gray-600 mb-3">
+              {typeof need.activitySnapshot.notion_edit_minutes === 'number' && (
+                <span className="flex items-center gap-1 bg-purple-50 text-purple-700 px-2 py-1 rounded-full">
+                  📝 {Math.round(need.activitySnapshot.notion_edit_minutes || 0)} min in Notion
+                </span>
+              )}
+              {typeof need.activitySnapshot.calendar_meeting_minutes === 'number' && (
+                <span className="flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-1 rounded-full">
+                  📅 {Math.round(need.activitySnapshot.calendar_meeting_minutes || 0)} min meetings
+                </span>
+              )}
+              {typeof need.activitySnapshot.gmail_thread_count === 'number' && (
+                <span className="flex items-center gap-1 bg-emerald-50 text-emerald-700 px-2 py-1 rounded-full">
+                  📧 {need.activitySnapshot.gmail_thread_count} threads
+                </span>
+              )}
+            </div>
+          )}
 
           {need.projectThemes && need.projectThemes.length > 0 && (
             <div className="flex gap-2 mb-3">
