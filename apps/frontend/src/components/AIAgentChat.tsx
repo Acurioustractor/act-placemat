@@ -10,9 +10,11 @@ interface Message {
 interface AIAgentChatProps {
   isOpen: boolean
   onClose: () => void
+  prefillMessage?: string
+  onPrefillConsumed?: () => void
 }
 
-export function AIAgentChat({ isOpen, onClose }: AIAgentChatProps) {
+export function AIAgentChat({ isOpen, onClose, prefillMessage, onPrefillConsumed }: AIAgentChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
@@ -28,6 +30,13 @@ export function AIAgentChat({ isOpen, onClose }: AIAgentChatProps) {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  useEffect(() => {
+    if (prefillMessage) {
+      setInput(prefillMessage)
+      onPrefillConsumed?.()
+    }
+  }, [prefillMessage, onPrefillConsumed])
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return
