@@ -128,6 +128,14 @@ morningBriefRoutes(app);
 import researchRoutes from './core/src/api/research.js';
 researchRoutes(app);
 
+// Project Activity API
+import projectActivityRoutes from './core/src/api/projectActivity.js';
+app.use('/api/v2/projects/activity', projectActivityRoutes);
+
+// Direction scorecard + workflows
+import directionIntelligenceRoutes from './core/src/api/directionIntelligence.js';
+directionIntelligenceRoutes(app);
+
 // Project Intelligence API - Gmail, Calendar, Contacts integration
 import projectIntelligenceRoutes from './core/src/api/projectIntelligence.js';
 

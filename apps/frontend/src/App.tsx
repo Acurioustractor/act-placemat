@@ -7,16 +7,21 @@ import CuriousTractorResearch from './components/CuriousTractorResearch'
 import { Opportunities } from './components/tabs/Opportunities'
 import { AboutACT } from './components/AboutACT'
 import { NeedsDashboard } from './components/NeedsDashboard'
+import { CommunicationsLog } from './components/CommunicationsLog'
 import { InfrastructureDataCollector } from './components/InfrastructureDataCollector'
+import { DirectionScorecard } from './components/DirectionScorecard'
 
 function App() {
   const [activeTab, setActiveTab] = useState('morning-brief')
   const [aiChatOpen, setAiChatOpen] = useState(false)
+  const [agentPrefill, setAgentPrefill] = useState<string | null>(null)
 
   // ✅ NEW INTELLIGENCE-FOCUSED TABS
   const tabs = [
     { id: 'about', name: 'About ACT', icon: '🚜', description: 'What is A Curious Tractor?' },
+    { id: 'direction', name: 'Direction', icon: '🧭', description: 'Company-wide scorecard' },
     { id: 'needs', name: 'Needs', icon: '🚨', description: 'Urgent project needs detected' },
+    { id: 'communications', name: 'Communications', icon: '✉️', description: 'Gmail + Calendar evidence' },
     { id: 'morning-brief', name: 'Morning Brief', icon: '🌅', description: 'Daily intelligence digest' },
     { id: 'contacts', name: 'Contacts', icon: '🤝', description: '20K relationship network' },
     { id: 'projects', name: 'Projects', icon: '🏘️', description: 'Portfolio & Beautiful Obsolescence tracking' },
@@ -44,7 +49,6 @@ function App() {
     if (tabParam && tabs.some((tab) => tab.id === tabParam)) {
       setActiveTab(tabParam)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -52,6 +56,11 @@ function App() {
     params.set('tab', activeTab)
     window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`)
   }, [activeTab])
+
+  const handleAskAgent = (prompt: string) => {
+    setAgentPrefill(prompt)
+    setAiChatOpen(true)
+  }
 
   return (
     <div className="min-h-screen bg-clay-50">
@@ -106,7 +115,9 @@ function App() {
 
       <main>
         {activeTab === 'about' && <AboutACT />}
+        {activeTab === 'direction' && <DirectionScorecard onAskAgent={handleAskAgent} />}
         {activeTab === 'needs' && <NeedsDashboard />}
+        {activeTab === 'communications' && <CommunicationsLog />}
         {activeTab === 'morning-brief' && <MorningBrief />}
         {activeTab === 'contacts' && <ContactIntelligenceHub />}
         {activeTab === 'projects' && <CommunityProjects />}
@@ -116,7 +127,12 @@ function App() {
       </main>
 
       {/* AI Agent Chat Sidebar */}
-      <AIAgentChat isOpen={aiChatOpen} onClose={() => setAiChatOpen(false)} />
+      <AIAgentChat
+        isOpen={aiChatOpen}
+        prefillMessage={agentPrefill || undefined}
+        onPrefillConsumed={() => setAgentPrefill(null)}
+        onClose={() => setAiChatOpen(false)}
+      />
       <AIAgentButton onClick={() => setAiChatOpen(true)} />
     </div>
   )

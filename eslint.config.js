@@ -27,6 +27,7 @@ export default [
       'supabase/**',
       'scripts/**',
       'docker/**',
+      'apps/webflow-portfolio/.open-next/**',
     ],
   },
   ...scopedFrontendConfig,

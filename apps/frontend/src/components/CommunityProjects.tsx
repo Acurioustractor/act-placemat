@@ -472,7 +472,6 @@ export function CommunityProjects() {
     if (projectParam) {
       setSelectedProjectId(projectParam)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Extract unique statuses, themes, and project types for filter dropdowns

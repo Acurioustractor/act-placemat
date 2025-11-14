@@ -6,15 +6,22 @@
 // Load environment variables
 process.env.NODE_ENV = 'production';
 
-// Import the Express app (without the .listen() call)
-// We'll need to modify server.js to export the app
-import('../apps/backend/server.js').then(module => {
-  // The Express app should be exported
-  const app = module.default || module.app;
-  
-  // Vercel will handle the serverless function invocation
-  export default app;
-}).catch(err => {
-  console.error('Failed to load backend:', err);
-  throw err;
-});
+let cachedApp = null;
+
+async function getApp() {
+  if (!cachedApp) {
+    try {
+      const module = await import('../apps/backend/server.js');
+      cachedApp = module.default || module.app;
+    } catch (err) {
+      console.error('Failed to load backend:', err);
+      throw err;
+    }
+  }
+  return cachedApp;
+}
+
+export default async function handler(req, res) {
+  const app = await getApp();
+  return app(req, res);
+}
