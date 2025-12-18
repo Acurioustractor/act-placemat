@@ -38,7 +38,7 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // Financial Automation Webhooks
 import financialWebhooksRouter from './core/src/api/events/financialWebhooks.js';
@@ -99,6 +99,10 @@ setupRealDashboardData(app);
 import curiousTractorResearchRoutes from './core/src/api/curious-tractor-research.js';
 app.use('/api/curious-tractor', curiousTractorResearchRoutes);
 
+// Media Management API - Photos, videos, galleries with Supabase storage
+import mediaRoutes from './core/src/api/media.js';
+app.use('/api/media', mediaRoutes);
+
 // Project Health Intelligence API - Phase 1: Surface Important Needs
 import projectHealthRoutes from './core/src/api/projectHealth.js';
 
@@ -138,10 +142,17 @@ directionIntelligenceRoutes(app);
 
 // Project Intelligence API - Gmail, Calendar, Contacts integration
 import projectIntelligenceRoutes from './core/src/api/projectIntelligence.js';
+import intelligenceLayerRoutes from './core/src/api/intelligenceLayer.js';
 
 // Google OAuth2 Authentication - Gmail & Calendar
 import googleAuthRoutes from './core/src/api/googleAuth.js';
 googleAuthRoutes(app);
+
+// Year in Review API - 2025 annual review page
+import yearInReviewRoutes, { initYearInReviewService } from './core/src/api/yearInReview.js';
+import reviewProjectsRoutes from './core/src/api/reviewProjects.js';
+import reviewMediaRoutes from './core/src/api/reviewMedia.js';
+import contentGenerationRoutes from './core/src/api/contentGeneration.js';
 
 // Agent Scheduler - Temporarily disabled (missing dependencies)
 // import agentScheduler from './core/src/scheduler/agentScheduler.js';
@@ -185,13 +196,122 @@ console.log('🔄 Cache: 5 minutes (no spam)');
 
 // Initialize Project Intelligence Routes (needs Supabase client)
 projectIntelligenceRoutes(app, primarySupabase || storytellerSupabase);
+intelligenceLayerRoutes(app, primarySupabase);
 
 // Make notionService and gmailService available to routes
 app.locals.notionService = notionService;
 app.locals.gmailService = gmailService;
 
+// Initialize Gmail service with stored tokens for Year in Review
+try {
+  const fs = await import('fs');
+  const path = await import('path');
+  const tokenPath = path.default.join(process.cwd(), '.gmail_tokens.json');
+  if (fs.default.existsSync(tokenPath)) {
+    const tokens = JSON.parse(fs.default.readFileSync(tokenPath, 'utf8'));
+    if (tokens.access_token && tokens.refresh_token) {
+      await gmailService.authenticate(tokens.access_token, tokens.refresh_token);
+      console.log('✅ Gmail service authenticated for Year in Review');
+    }
+  }
+} catch (gmailInitError) {
+  console.log('⚠️ Gmail service not authenticated:', gmailInitError.message);
+}
+
+// Initialize and mount Year in Review API
+initYearInReviewService(notionService, gmailService);
+app.use('/api/year-in-review', yearInReviewRoutes);
+app.use('/api/year-in-review', reviewProjectsRoutes);
+app.use('/api/year-in-review', reviewMediaRoutes);
+app.use('/api/content-generation', contentGenerationRoutes);
+
+// Timeline Generator API
+import timelineGeneratorRoutes from './core/src/api/timelineGenerator.js';
+app.use('/api/timeline-generator', timelineGeneratorRoutes);
+
+// Public Forms API (questions, newsletter)
+import publicFormsRoutes from './core/src/api/publicForms.js';
+app.use('/api/messages', publicFormsRoutes);
+app.use('/api/newsletter', publicFormsRoutes);
+
 // Mount Project Health Intelligence API
 app.use('/api/v2/projects', projectHealthRoutes);
+
+// =============================================
+// Google Calendar API Endpoints
+// =============================================
+import googleCalendarService from './core/src/services/googleCalendarService.js';
+
+// GET /api/calendar/events - Query calendar events
+app.get('/api/calendar/events', async (req, res) => {
+  try {
+    const {
+      days = 30,
+      startDate,
+      endDate,
+      maxResults = 100,
+      q // search query
+    } = req.query;
+
+    const timeMin = startDate ? new Date(startDate).toISOString() : new Date().toISOString();
+    const timeMax = endDate
+      ? new Date(endDate).toISOString()
+      : new Date(Date.now() + parseInt(days) * 24 * 60 * 60 * 1000).toISOString();
+
+    const result = await googleCalendarService.getEventsWithProjectOverlay({
+      timeMin,
+      timeMax,
+      maxResults: parseInt(maxResults),
+      q
+    });
+
+    const eventList = result?.events || [];
+    res.json({
+      success: true,
+      count: eventList.length,
+      timeRange: { from: timeMin, to: timeMax },
+      events: eventList
+    });
+  } catch (error) {
+    console.error('Calendar query error:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      hint: 'Calendar may need re-authentication. Visit /api/google/auth'
+    });
+  }
+});
+
+// GET /api/calendar/year/:year - Get all events for a specific year
+app.get('/api/calendar/year/:year', async (req, res) => {
+  try {
+    const year = parseInt(req.params.year);
+    const timeMin = new Date(`${year}-01-01T00:00:00Z`).toISOString();
+    const timeMax = new Date(`${year}-12-31T23:59:59Z`).toISOString();
+
+    const result = await googleCalendarService.getEventsWithProjectOverlay({
+      timeMin,
+      timeMax,
+      maxResults: 500
+    });
+
+    const eventList = result?.events || [];
+    res.json({
+      success: true,
+      year,
+      count: eventList.length,
+      events: eventList
+    });
+  } catch (error) {
+    console.error('Calendar year query error:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+console.log('📅 Calendar API endpoints registered');
 
 // Mount Connection Discovery API
 app.use('/api/v2/connections', connectionDiscoveryRoutes);
