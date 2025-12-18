@@ -2,6 +2,9 @@
   "name": "webflow-portfolio",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "npm run dev:year-review",
     "dev:year-review": "rm -rf .next && NODE_ENV=development next dev -p 5175",
