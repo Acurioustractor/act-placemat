@@ -7,7 +7,6 @@
  */
 
 import type { YearInReviewData, CuratedData, TimelineEntry, LinkedInPost } from '../types/yearInReview';
-import { getCuratedEntriesFromSupabase, isSupabaseConfigured } from './yearInReviewSupabase';
 import curatedData2025 from '../data/curated-2025.json';
 
 // API base URL - adjust for production
@@ -50,10 +49,14 @@ export async function getMetrics(year: number = 2025) {
  * Fetch curated entries (admin-edited)
  * Priority: Supabase -> Backend API -> Static bundled data
  */
+const supabaseConfigured = Boolean(
+  process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
+
 export async function getCuratedEntries(year: number = 2025): Promise<CuratedData> {
-  // Try Supabase first (fastest, direct DB access)
-  if (isSupabaseConfigured()) {
+  if (supabaseConfigured) {
     try {
+      const { getCuratedEntriesFromSupabase } = await import('./yearInReviewSupabase');
       const supabaseData = await getCuratedEntriesFromSupabase(year);
       if (supabaseData.entries && supabaseData.entries.length > 0) {
         console.log(`✅ Loaded ${supabaseData.entries.length} curated entries from Supabase`);

@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Sprout, MapPin, Building2, Play, Volume2, VolumeX } from 'lucide-react';
 import type { RedevelopmentSite } from '../types/yearInReview';
 
 interface LandRedevelopmentShowcaseProps {
@@ -14,45 +15,58 @@ interface LandRedevelopmentShowcaseProps {
 
 /**
  * Parse video URL and return embed info for various platforms
+ * Prioritizes direct video links for better autoplay control
  */
-function parseVideoUrl(url: string): { type: 'direct' | 'descript' | 'youtube' | 'vimeo' | 'loom'; embedUrl: string } | null {
+function parseVideoUrl(url: string): { type: 'direct' | 'descript' | 'youtube' | 'vimeo' | 'loom'; embedUrl: string; originalUrl: string } | null {
   if (!url) return null;
 
-  // Descript: https://share.descript.com/view/ID or https://share.descript.com/embed/ID
-  const descriptMatch = url.match(/share\.descript\.com\/(view|embed)\/([a-zA-Z0-9]+)/);
-  if (descriptMatch) {
-    // Add autoplay and hide transcript for seamless video experience
+  // Direct video file (mp4, webm, etc.) - BEST for autoplay
+  if (url.match(/\.(mp4|webm|ogg|mov)(\?|$)/i) || url.includes('supabase.co/storage')) {
+    return { type: 'direct', embedUrl: url, originalUrl: url };
+  }
+
+  // YouTube - mute=1 and playsinline=1 enable mobile autoplay
+  const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+  if (ytMatch) {
     return {
-      type: 'descript',
-      embedUrl: `https://share.descript.com/embed/${descriptMatch[2]}?autoplay=1&transcript=false`
+      type: 'youtube',
+      embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${ytMatch[1]}&playsinline=1&controls=1&modestbranding=1`,
+      originalUrl: url
     };
   }
 
-  // YouTube
-  const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/);
-  if (ytMatch) {
-    return { type: 'youtube', embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${ytMatch[1]}` };
-  }
-
-  // Vimeo
+  // Vimeo - muted=1 and playsinline=1 enable mobile autoplay
   const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
   if (vimeoMatch) {
-    return { type: 'vimeo', embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&muted=1&loop=1&background=1` };
+    return {
+      type: 'vimeo',
+      embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&muted=1&loop=1&playsinline=1&controls=1`,
+      originalUrl: url
+    };
+  }
+
+  // Descript - embed with autoplay (works better on desktop, may need interaction on mobile)
+  const descriptMatch = url.match(/share\.descript\.com\/(view|embed)\/([a-zA-Z0-9]+)/);
+  if (descriptMatch) {
+    return {
+      type: 'descript',
+      embedUrl: `https://share.descript.com/embed/${descriptMatch[2]}?autoplay=true&transcript=false`,
+      originalUrl: url
+    };
   }
 
   // Loom
   const loomMatch = url.match(/loom\.com\/(share|embed)\/([a-zA-Z0-9]+)/);
   if (loomMatch) {
-    return { type: 'loom', embedUrl: `https://www.loom.com/embed/${loomMatch[2]}?autoplay=1&hide_owner=true&hide_share=true&hide_title=true` };
-  }
-
-  // Direct video file (mp4, webm, etc.)
-  if (url.match(/\.(mp4|webm|ogg|mov)(\?|$)/i) || url.includes('supabase.co/storage')) {
-    return { type: 'direct', embedUrl: url };
+    return {
+      type: 'loom',
+      embedUrl: `https://www.loom.com/embed/${loomMatch[2]}?autoplay=1&hide_owner=true&hide_share=true&hide_title=true`,
+      originalUrl: url
+    };
   }
 
   // Unknown - try as direct
-  return { type: 'direct', embedUrl: url };
+  return { type: 'direct', embedUrl: url, originalUrl: url };
 }
 
 export function LandRedevelopmentShowcase({
@@ -63,8 +77,12 @@ export function LandRedevelopmentShowcase({
 }: LandRedevelopmentShowcaseProps) {
   const [activeSite, setActiveSite] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [videoPlaying, setVideoPlaying] = useState(true); // Track if video is currently playing
+  const [videoPlaying, setVideoPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(true); // Start muted for autoplay
+  const [hasInteracted, setHasInteracted] = useState(false); // Track if user has tapped to play
+  const [showPlayOverlay, setShowPlayOverlay] = useState(true); // Show play button on mobile
   const videoRef = useRef<HTMLVideoElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const currentSite = sites[activeSite];
@@ -81,8 +99,34 @@ export function LandRedevelopmentShowcase({
 
   useEffect(() => {
     setVideoError(false);
-    setVideoPlaying(true); // Reset to playing when site changes (video autoplays)
-  }, [activeSite, currentSite.droneVideo]);
+    setVideoPlaying(true);
+    // Reset interaction state when site changes, but keep unmuted if user already unmuted
+    setShowPlayOverlay(!hasInteracted);
+  }, [activeSite, currentSite.droneVideo, hasInteracted]);
+
+  // Handle play button click
+  const handlePlayClick = useCallback(() => {
+    setHasInteracted(true);
+    setShowPlayOverlay(false);
+
+    if (videoRef.current) {
+      videoRef.current.play().catch(console.error);
+    }
+
+    // For iframes, we need to reload with autoplay after interaction
+    if (iframeRef.current) {
+      const src = iframeRef.current.src;
+      iframeRef.current.src = src;
+    }
+  }, []);
+
+  // Handle mute toggle for direct videos
+  const handleMuteToggle = useCallback(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = !videoRef.current.muted;
+      setIsMuted(videoRef.current.muted);
+    }
+  }, []);
 
   return (
     <section className="relative z-10 py-24 overflow-hidden">
@@ -162,49 +206,90 @@ export function LandRedevelopmentShowcase({
             {(() => {
               const videoInfo = currentSite.droneVideo ? parseVideoUrl(currentSite.droneVideo) : null;
 
+              // For non-direct videos (embeds), convert to direct video approach
+              // This shouldn't happen if using MP4s, but fallback to showing image
               if (videoInfo && videoInfo.type !== 'direct') {
-                // Use iframe for embedded videos (Descript, YouTube, Vimeo, Loom)
-                // Key prop forces iframe recreation when site changes (essential for autoplay)
                 return (
-                  <div className="absolute inset-0 overflow-hidden" key={`video-container-${currentSite.id}`}>
-                    <iframe
-                      key={`iframe-${currentSite.id}-${activeSite}`}
-                      src={videoInfo.embedUrl}
-                      className="absolute w-full h-full border-0"
-                      style={{
-                        // Scale to cover the container and center
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        minWidth: '100%',
-                        minHeight: '100%',
-                      }}
-                      allow="autoplay; fullscreen; picture-in-picture; encrypted-media; accelerometer; gyroscope"
-                      allowFullScreen
-                      title={`${currentSite.location} drone footage`}
-                    />
+                  <div className="absolute inset-0" key={`video-container-${currentSite.id}`}>
+                    {currentSite.droneImage ? (
+                      <Image
+                        src={currentSite.droneImage}
+                        alt={`Aerial view of ${currentSite.location}`}
+                        fill
+                        sizes="100vw"
+                        className="object-cover"
+                        priority
+                      />
+                    ) : (
+                      <div
+                        className="absolute inset-0"
+                        style={{
+                          background: `linear-gradient(135deg, ${currentSite.accentColor}40 0%, ${currentSite.accentColor}10 50%, transparent 100%)`
+                        }}
+                      />
+                    )}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <a
+                        href={videoInfo.originalUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-6 py-3 bg-white/20 backdrop-blur-md rounded-full text-white font-medium hover:bg-white/30 transition-all flex items-center gap-2"
+                      >
+                        <Play className="w-5 h-5 fill-white" />
+                        Watch Video
+                      </a>
+                    </div>
                   </div>
                 );
               }
 
               if (videoInfo && videoInfo.type === 'direct') {
-                // Direct video file - key forces recreation on site change
+                // Direct video file - best for autoplay control
                 return (
-                  <video
-                    key={`video-${currentSite.id}-${activeSite}`}
-                    ref={videoRef}
-                    src={videoInfo.embedUrl}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="absolute inset-0 w-full h-full object-cover"
-                    onLoadedData={(e) => {
-                      // Ensure autoplay works by playing on load
-                      const video = e.currentTarget;
-                      video.play().catch(() => setVideoError(true));
-                    }}
-                  />
+                  <div className="absolute inset-0" key={`video-container-${currentSite.id}`}>
+                    <video
+                      key={`video-${currentSite.id}-${activeSite}`}
+                      ref={videoRef}
+                      src={videoInfo.embedUrl}
+                      autoPlay
+                      loop
+                      muted={isMuted}
+                      playsInline
+                      className="absolute inset-0 w-full h-full object-cover"
+                      onLoadedData={(e) => {
+                        const video = e.currentTarget;
+                        video.play().catch(() => {
+                          setVideoError(true);
+                          setShowPlayOverlay(true);
+                        });
+                        setShowPlayOverlay(false);
+                      }}
+                      onError={() => setVideoError(true)}
+                    />
+                    {/* Play overlay for direct video if autoplay fails */}
+                    {showPlayOverlay && !videoError && (
+                      <button
+                        onClick={handlePlayClick}
+                        className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer z-10 group"
+                      >
+                        <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center group-hover:bg-white/30 group-hover:scale-110 transition-all">
+                          <Play className="w-10 h-10 md:w-12 md:h-12 text-white fill-white ml-1" />
+                        </div>
+                      </button>
+                    )}
+                    {/* Mute/Unmute button for direct videos */}
+                    <button
+                      onClick={handleMuteToggle}
+                      className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors z-20"
+                      title={isMuted ? 'Unmute' : 'Mute'}
+                    >
+                      {isMuted ? (
+                        <VolumeX className="w-5 h-5 text-white" />
+                      ) : (
+                        <Volume2 className="w-5 h-5 text-white" />
+                      )}
+                    </button>
+                  </div>
                 );
               }
 
@@ -230,7 +315,7 @@ export function LandRedevelopmentShowcase({
               >
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
-                    <div className="text-6xl mb-4">🌱</div>
+                    <Sprout className="w-16 h-16 mx-auto mb-4 text-slate-500" />
                     <p className="text-slate-400">Drone footage coming soon</p>
                   </div>
                 </div>
@@ -243,50 +328,14 @@ export function LandRedevelopmentShowcase({
             {/* Location badge */}
             <div className="absolute top-6 left-6">
               <div
-                className="px-4 py-2 rounded-full backdrop-blur-sm text-white font-medium"
+                className="px-4 py-2 rounded-full backdrop-blur-sm text-white font-medium flex items-center gap-2"
                 style={{ background: `${currentSite.accentColor}80` }}
               >
-                📍 {currentSite.traditionalName || currentSite.location}, {currentSite.region}
+                <MapPin className="w-4 h-4" />
+                {currentSite.traditionalName || currentSite.location}, {currentSite.region}
               </div>
             </div>
 
-            {/* Play/Pause button for direct video only */}
-            {(() => {
-              const videoInfo = currentSite.droneVideo ? parseVideoUrl(currentSite.droneVideo) : null;
-              if (videoInfo?.type === 'direct' && !videoError) {
-                return (
-                  <button
-                    onClick={() => {
-                      if (!videoRef.current) return;
-                      if (videoRef.current.paused) {
-                        void videoRef.current.play().catch(() => {
-                          setVideoError(true);
-                        });
-                        setVideoPlaying(true);
-                      } else {
-                        videoRef.current.pause();
-                        setVideoPlaying(false);
-                      }
-                    }}
-                    className="absolute bottom-6 right-6 w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-colors"
-                    title={videoPlaying ? 'Pause video' : 'Play video'}
-                  >
-                    {videoPlaying ? (
-                      /* Pause icon */
-                      <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                      </svg>
-                    ) : (
-                      /* Play icon */
-                      <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    )}
-                  </button>
-                );
-              }
-              return null;
-            })()}
           </div>
 
           {/* Content Section */}
@@ -428,10 +477,10 @@ export function LandRedevelopmentShowcase({
             >
               <div className="flex items-start gap-4">
                 <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0"
-                  style={{ background: `${site.accentColor}20` }}
+                  className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                  style={{ background: `${site.accentColor}20`, color: site.accentColor }}
                 >
-                  🏗️
+                  <Building2 className="w-6 h-6" />
                 </div>
                 <div>
                   <h4 className="text-lg font-semibold text-white group-hover:text-teal-400 transition-colors">

@@ -116,6 +116,9 @@ cache/
 # Large directories to reduce context size
 data/
 **/data/
+# Exception: Year in Review curated content (needed for deployment)
+!apps/webflow-portfolio/data/
+!apps/webflow-portfolio/data/*
 archive/
 **/cache/
 .cache/
@@ -133,3 +136,4 @@ tmp/
 # tasks/ 
 apps/backend/google-tokens.json
 apps/backend/core/.gmail_tokens.json
+apps/backend/.gmail_tokens.json

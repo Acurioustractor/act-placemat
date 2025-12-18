@@ -1,10 +1,20 @@
 /**
  * Review Projects API Client
+ * Primary: Supabase (fast, reliable)
+ * Fallback: Railway API (for write operations)
  */
 
+import { createClient } from '@supabase/supabase-js';
 import type { ReviewProject, ContentBlock, MediaItem, VideoEmbed } from '../types/yearInReview';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
+// Supabase client - PRIMARY data source
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabase = supabaseUrl && supabaseAnonKey
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null;
 
 // =============================================
 // Review Projects
@@ -12,41 +22,105 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 /**
  * Get all published review projects for a year
+ * Uses Supabase as primary source (faster, more reliable)
  */
 export async function getReviewProjects(year: number = 2025, includeUnpublished = false): Promise<ReviewProject[]> {
-  const url = new URL(`${API_BASE}/api/year-in-review/${year}/projects`);
-  if (includeUnpublished) {
-    url.searchParams.set('includeUnpublished', 'true');
+  // Primary: Supabase
+  if (supabase) {
+    try {
+      let query = supabase
+        .from('review_projects')
+        .select('*')
+        .eq('year', year)
+        .order('created_at', { ascending: false });
+
+      if (!includeUnpublished) {
+        query = query.eq('is_published', true);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      const projects = (data || []).map(transformProject);
+      if (projects.length > 0) {
+        console.log(`✅ Loaded ${projects.length} projects from Supabase`);
+        return projects;
+      }
+    } catch (supabaseError) {
+      console.warn('Supabase query failed, trying Railway API:', supabaseError);
+    }
   }
 
-  const res = await fetch(url.toString());
-  if (!res.ok) {
-    throw new Error(`Failed to fetch review projects: ${res.statusText}`);
+  // Fallback: Railway API
+  try {
+    const url = new URL(`${API_BASE}/api/year-in-review/${year}/projects`);
+    if (includeUnpublished) {
+      url.searchParams.set('includeUnpublished', 'true');
+    }
+
+    const res = await fetch(url.toString(), {
+      signal: AbortSignal.timeout(5000)
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const projects = (data.projects || []).map(transformProject);
+      console.log(`✅ Loaded ${projects.length} projects from Railway API`);
+      return projects;
+    }
+  } catch (apiError) {
+    console.error('Railway API also unavailable:', apiError);
   }
 
-  const data = await res.json();
-  return (data.projects || []).map(transformProject);
+  return [];
 }
 
 /**
  * Get a single review project by slug
+ * Uses Supabase as primary source
  */
 export async function getReviewProject(year: number, slug: string, preview = false): Promise<ReviewProject | null> {
-  const url = new URL(`${API_BASE}/api/year-in-review/${year}/projects/${slug}`);
-  if (preview) {
-    url.searchParams.set('preview', 'true');
+  // Primary: Supabase
+  if (supabase) {
+    try {
+      let query = supabase
+        .from('review_projects')
+        .select('*')
+        .eq('year', year)
+        .eq('slug', slug);
+
+      if (!preview) {
+        query = query.eq('is_published', true);
+      }
+
+      const { data, error } = await query.single();
+      if (error && error.code !== 'PGRST116') throw error; // PGRST116 = not found
+      if (data) {
+        return transformProject(data);
+      }
+    } catch (supabaseError) {
+      console.warn('Supabase query failed, trying Railway API:', supabaseError);
+    }
   }
 
-  const res = await fetch(url.toString());
-  if (res.status === 404) {
-    return null;
-  }
-  if (!res.ok) {
-    throw new Error(`Failed to fetch review project: ${res.statusText}`);
+  // Fallback: Railway API
+  try {
+    const url = new URL(`${API_BASE}/api/year-in-review/${year}/projects/${slug}`);
+    if (preview) {
+      url.searchParams.set('preview', 'true');
+    }
+
+    const res = await fetch(url.toString(), {
+      signal: AbortSignal.timeout(5000)
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return transformProject(data.project);
+    }
+  } catch (apiError) {
+    console.error('Railway API also unavailable:', apiError);
   }
 
-  const data = await res.json();
-  return transformProject(data.project);
+  return null;
 }
 
 /**

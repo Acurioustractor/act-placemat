@@ -24,6 +24,29 @@ interface PlacesMapProps {
   className?: string;
 }
 
+// Static fallback places data - used when API is unavailable
+const STATIC_PLACES: Place[] = [
+  { id: "25debcf9-81cf-8059-bf2d-ec565a5847b7", name: "Bwgcolman", traditionalName: "Bwgcolman", westernName: "Palm Island", lat: -18.7544, lng: 146.5811, region: "Qld", country: "Australia", firstPeople: "Manbarra", relatedProjects: [] },
+  { id: "25debcf9-81cf-8071-ad68-d605b79efe82", name: "Mbantua", traditionalName: "Mbantua", westernName: "Alice Springs", lat: -23.698, lng: 133.8807, region: "NT", country: "Australia", firstPeople: "Arrernte", relatedProjects: [] },
+  { id: "25eebcf9-81cf-8037-b1b1-df6054156bc6", name: "Gulumoerrgin", traditionalName: "Gulumoerrgin", westernName: "Darwin", lat: -12.4634, lng: 130.8456, region: "NT", country: "Australia", firstPeople: "Larrakia", relatedProjects: [] },
+  { id: "25febcf9-81cf-8032-9c31-ebdabc134332", name: "Jurnkkurakurr", traditionalName: "Jurnkkurakurr", westernName: "Tennant Creek", lat: -19.6497, lng: 134.1947, region: "Qld", country: "Australia", firstPeople: "Warumungu", relatedProjects: [] },
+  { id: "261ebcf9-81cf-802b-b67d-e265bc71c24d", name: "Iberia", traditionalName: "Iberia", westernName: "Spain", lat: 40.42024, lng: -3.68756, region: "Overseas", country: "Overseas", firstPeople: "Iberians", relatedProjects: [] },
+  { id: "262ebcf9-81cf-80ef-a463-c6d688547740", name: "Meanjin", traditionalName: "Meanjin", westernName: "Brisbane", lat: -27.4705, lng: 153.026, region: "Qld", country: "Australia", firstPeople: "Turrbal/Yuggera", relatedProjects: [] },
+  { id: "267ebcf9-81cf-80d0-b74c-fa1bd6476e8b", name: "Minjerribah", traditionalName: "Minjerribah", westernName: "Stradbroke Island", lat: -27.8357175, lng: 153.4192648, region: "Qld", country: "Australia", firstPeople: "Quandamooka", relatedProjects: [] },
+  { id: "267ebcf9-81cf-80f5-aa95-cb103ccba2d9", name: "Warrang", traditionalName: "Warrang", westernName: "Sydney", lat: -33.8688, lng: 151.2093, region: "NSW", country: "Australia", firstPeople: "Gadigal", relatedProjects: [] },
+  { id: "269ebcf9-81cf-80cd-8156-dcc6f3bbab0d", name: "Naarm", traditionalName: "Naarm", westernName: "Melbourne", lat: -37.8136, lng: 144.9631, region: "Vic", country: "Australia", firstPeople: "Wurundjeri/Boon Wurrung", relatedProjects: [] },
+  { id: "26aebcf9-81cf-8049-8dfc-da826171e14f", name: "Kamberra", traditionalName: "Kamberra", westernName: "Canberra", lat: -35.2809, lng: 149.13, region: "ACT", country: "Australia", firstPeople: "Ngunnawal", relatedProjects: [] },
+  { id: "26aebcf9-81cf-8061-a66a-e3c16bca68b0", name: "Kalkadoon", traditionalName: "Kalkadoon", westernName: "Mount Isa", lat: -20.7256, lng: 139.4927, region: "Qld", country: "Australia", firstPeople: "Kalkadoon", relatedProjects: [] },
+  { id: "26aebcf9-81cf-806d-bdcf-ccb3de02072f", name: "Boorloo", traditionalName: "Boorloo", westernName: "Perth", lat: -31.9505, lng: 115.8605, region: "WA", country: "Australia", firstPeople: "Whadjuk Noongar", relatedProjects: [] },
+  { id: "26aebcf9-81cf-806f-8e22-e569e3511ea9", name: "Manayingkarírra", traditionalName: "Manayingkarírra", westernName: "Maningrida", lat: -12.0563, lng: 134.2342, region: "NT", country: "Australia", firstPeople: "Kunibídji", relatedProjects: [] },
+  { id: "26aebcf9-81cf-80b9-85c5-dcd15b8bfd2f", name: "Gurrumbilbarra", traditionalName: "Gurrumbilbarra", westernName: "Townsville", lat: -19.259, lng: 146.8169, region: "Qld", country: "Australia", firstPeople: "Wulgurukaba or Bindal", relatedProjects: [] },
+  { id: "26aebcf9-81cf-80db-b651-edcc7ddfba20", name: "Gubbi Gubbi", traditionalName: "Gubbi Gubbi", westernName: "Witta", lat: -26.5833, lng: 152.7833, region: "Qld", country: "Australia", firstPeople: "Gubbi Gubbi/Kabi Kabi", relatedProjects: [] },
+  { id: "26bebcf9-81cf-80cc-9a2d-fe383c1e8874", name: "Yugambeh", traditionalName: "Yugambeh", westernName: "Gold Coast", lat: -28.0167, lng: 153.4, region: "Qld", country: "Australia", firstPeople: "Kombumerri", relatedProjects: [] },
+  { id: "26bebcf9-81cf-80cd-9ff7-c4507bb4d248", name: "Albion", traditionalName: "Albion", westernName: "United Kingdom", lat: 51.50643, lng: -0.12721, region: "Overseas", country: "Overseas", firstPeople: "Priteni", relatedProjects: [] },
+  { id: "26bebcf9-81cf-80f2-9029-d43c1e8a7bc7", name: "Mulubinba", traditionalName: "Mulubinba", westernName: "Newcastle", lat: -32.9283, lng: 151.7817, region: "NSW", country: "Australia", firstPeople: "Awabakal", relatedProjects: [] },
+  { id: "298ebcf9-81cf-806b-98e6-f0bb49c50e72", name: "Bali", traditionalName: "Bali", westernName: "Bali", lat: -8.67325, lng: 115.20338, region: "Overseas", country: "Overseas", firstPeople: "", relatedProjects: [] },
+];
+
 // Get color for region
 function getRegionColor(region?: string): string {
   switch (region) {
@@ -48,22 +71,34 @@ export function PlacesMap({ onPlaceClick, highlightedPlaceId, className = '' }: 
   const mapInstanceRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
 
-  // Fetch places from API
+  // Fetch places from API with static fallback
   useEffect(() => {
     async function fetchPlaces() {
       try {
         const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-        const response = await fetch(`${API_BASE}/api/year-in-review/places`);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        const response = await fetch(`${API_BASE}/api/year-in-review/places`, {
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
 
         if (!response.ok) {
           throw new Error(`Failed to fetch places: ${response.status}`);
         }
 
         const data = await response.json();
-        setPlaces(data.places || []);
+        if (data.places && data.places.length > 0) {
+          console.log(`Loaded ${data.places.length} places from API`);
+          setPlaces(data.places);
+        } else {
+          throw new Error('No places in API response');
+        }
       } catch (err) {
-        console.error('Error fetching places:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load places');
+        // Use static fallback data
+        console.warn('API unavailable, using static places data:', err);
+        setPlaces(STATIC_PLACES);
       } finally {
         setLoading(false);
       }
@@ -193,11 +228,11 @@ export function PlacesMap({ onPlaceClick, highlightedPlaceId, className = '' }: 
     );
   }
 
-  if (error) {
+  if (error && places.length === 0) {
     return (
       <div className={`bg-slate-800/30 rounded-2xl flex items-center justify-center ${className}`} style={{ minHeight: '500px' }}>
         <div className="text-center text-red-400">
-          <p>⚠️ {error}</p>
+          <p>{error}</p>
           <p className="text-sm text-slate-500 mt-2">Check that the backend is running</p>
         </div>
       </div>
