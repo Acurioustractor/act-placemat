@@ -22,18 +22,26 @@ const SECTIONS: NavSection[] = [
   { id: 'footer', label: 'Get Involved', icon: '🤝' },
 ];
 
+// Height of the Webflow/ACT navigation bar
+const WEBFLOW_NAV_HEIGHT = 64;
+
 export function YearReviewNavigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [isScrolled, setIsScrolled] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [navTop, setNavTop] = useState(WEBFLOW_NAV_HEIGHT);
 
-  // Track scroll position for nav background and back-to-top
+  // Track scroll position for nav background, position, and back-to-top
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-      setShowBackToTop(window.scrollY > 500);
+      const scrollY = window.scrollY;
+      setIsScrolled(scrollY > 50);
+      setShowBackToTop(scrollY > 500);
+      // Slide up as user scrolls past the Webflow nav
+      setNavTop(Math.max(0, WEBFLOW_NAV_HEIGHT - scrollY));
     };
+    handleScroll(); // Initial call
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -54,7 +62,7 @@ export function YearReviewNavigation() {
             }
           });
         },
-        { threshold: [0.3, 0.5, 0.7], rootMargin: '-10% 0px -40% 0px' }
+        { threshold: [0.3, 0.5, 0.7], rootMargin: '-140px 0px -40% 0px' } // Account for both navs (~140px total)
       );
 
       observer.observe(element);
@@ -67,7 +75,8 @@ export function YearReviewNavigation() {
   const scrollToSection = useCallback((id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      const offset = 80; // Account for fixed nav
+      // Account for both Webflow nav (64px) and Year Review nav (64px/56px)
+      const offset = WEBFLOW_NAV_HEIGHT + 70;
       const top = element.getBoundingClientRect().top + window.scrollY - offset;
       window.scrollTo({ top, behavior: 'smooth' });
     }
@@ -94,11 +103,12 @@ export function YearReviewNavigation() {
     <>
       {/* Desktop Navigation */}
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 hidden md:block transition-all duration-300 ${
+        className={`fixed left-0 right-0 z-50 hidden md:block transition-all duration-300 ${
           isScrolled
             ? 'bg-slate-950/90 backdrop-blur-xl border-b border-slate-800/50 shadow-lg'
-            : 'bg-transparent'
+            : 'bg-slate-950/60 backdrop-blur-sm'
         }`}
+        style={{ top: `${navTop}px` }}
       >
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between h-16">
@@ -141,11 +151,12 @@ export function YearReviewNavigation() {
 
       {/* Mobile Navigation Bar */}
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 md:hidden transition-all duration-300 ${
+        className={`fixed left-0 right-0 z-50 md:hidden transition-all duration-300 ${
           isScrolled
             ? 'bg-slate-950/95 backdrop-blur-xl border-b border-slate-800/50'
             : 'bg-slate-950/60 backdrop-blur-sm'
         }`}
+        style={{ top: `${navTop}px` }}
       >
         <div className="flex items-center justify-between h-14 px-4">
           {/* Logo */}
@@ -266,7 +277,10 @@ export function YearReviewNavigation() {
       </button>
 
       {/* Progress Bar */}
-      <div className="fixed top-0 left-0 right-0 z-[60] h-0.5 bg-slate-800/50">
+      <div
+        className="fixed left-0 right-0 z-[60] h-0.5 bg-slate-800/50"
+        style={{ top: `${navTop}px` }}
+      >
         <div
           className="h-full bg-gradient-to-r from-teal-500 via-teal-400 to-orange-400 transition-all duration-150"
           style={{
