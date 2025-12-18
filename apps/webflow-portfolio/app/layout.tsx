@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { WebflowLayout } from '../components/WebflowLayout';
+import { Providers } from './providers';
 
 export const metadata: Metadata = {
   title: 'ACT Project Portfolio',
@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <WebflowLayout>{children}</WebflowLayout>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f7a399;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#c47a6d;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#623d36;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#grad)"/>
+  <text x="600" y="280" font-family="system-ui, -apple-system, sans-serif" font-size="72" fill="white" fill-opacity="0.3" text-anchor="middle" font-weight="bold">GOODS.</text>
+  <text x="600" y="350" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="white" fill-opacity="0.6" text-anchor="middle">Quality Furniture for Every Home on Country</text>
+  <text x="600" y="420" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="white" fill-opacity="0.5" text-anchor="middle">Durable Beds • Indestructible Washing Machines • Essential Goods</text>
+  <text x="600" y="490" font-family="system-ui, -apple-system, sans-serif" font-size="20" fill="white" fill-opacity="0.4" text-anchor="middle">389 Assets | 363 Beds | 8 Communities Across NT, WA &amp; QLD</text>
+</svg>

@@ -1,17 +1,43 @@
 import type { NextConfig } from 'next';
 
+const isDev = process.env.NODE_ENV === 'development';
+const isVercel = process.env.VERCEL === '1';
+
 const nextConfig: NextConfig = {
   /* config options here */
-  // Configure for Webflow Cloud deployment with mount path /portfolio
-  basePath: '/portfolio',
-  // Note: assetPrefix removed for OpenNext Cloudflare compatibility
-  // OpenNext handles asset paths automatically with basePath
+  // Configure for deployment:
+  // - Vercel: no basePath needed (standalone domain/subdomain)
+  // - OpenNext/Cloudflare: use basePath for path-based routing
+  basePath: isDev || isVercel ? '' : '/portfolio',
 
-  // Enable standalone output for OpenNext Cloudflare
-  output: 'standalone',
+  // Enable standalone output only for OpenNext Cloudflare (not Vercel)
+  output: isDev || isVercel ? undefined : 'standalone',
 
   images: {
     domains: ['localhost'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.webflowusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'share.descript.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+    ],
+  },
+
+  // Vercel-specific optimizations
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
 };
 
