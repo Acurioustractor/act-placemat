@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Sprout, MapPin, Building2, Play, Volume2, VolumeX } from 'lucide-react';
+import { Sprout, MapPin, Building2, Volume2, VolumeX } from 'lucide-react';
 import type { RedevelopmentSite } from '../types/yearInReview';
 
 interface LandRedevelopmentShowcaseProps {
@@ -13,61 +13,6 @@ interface LandRedevelopmentShowcaseProps {
   introText?: string;
 }
 
-/**
- * Parse video URL and return embed info for various platforms
- * Prioritizes direct video links for better autoplay control
- */
-function parseVideoUrl(url: string): { type: 'direct' | 'descript' | 'youtube' | 'vimeo' | 'loom'; embedUrl: string; originalUrl: string } | null {
-  if (!url) return null;
-
-  // Direct video file (mp4, webm, etc.) - BEST for autoplay
-  if (url.match(/\.(mp4|webm|ogg|mov)(\?|$)/i) || url.includes('supabase.co/storage')) {
-    return { type: 'direct', embedUrl: url, originalUrl: url };
-  }
-
-  // YouTube - mute=1 and playsinline=1 enable mobile autoplay
-  const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/);
-  if (ytMatch) {
-    return {
-      type: 'youtube',
-      embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${ytMatch[1]}&playsinline=1&controls=1&modestbranding=1`,
-      originalUrl: url
-    };
-  }
-
-  // Vimeo - muted=1 and playsinline=1 enable mobile autoplay
-  const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-  if (vimeoMatch) {
-    return {
-      type: 'vimeo',
-      embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&muted=1&loop=1&playsinline=1&controls=1`,
-      originalUrl: url
-    };
-  }
-
-  // Descript - embed with autoplay (works better on desktop, may need interaction on mobile)
-  const descriptMatch = url.match(/share\.descript\.com\/(view|embed)\/([a-zA-Z0-9]+)/);
-  if (descriptMatch) {
-    return {
-      type: 'descript',
-      embedUrl: `https://share.descript.com/embed/${descriptMatch[2]}?autoplay=true&transcript=false`,
-      originalUrl: url
-    };
-  }
-
-  // Loom
-  const loomMatch = url.match(/loom\.com\/(share|embed)\/([a-zA-Z0-9]+)/);
-  if (loomMatch) {
-    return {
-      type: 'loom',
-      embedUrl: `https://www.loom.com/embed/${loomMatch[2]}?autoplay=1&hide_owner=true&hide_share=true&hide_title=true`,
-      originalUrl: url
-    };
-  }
-
-  // Unknown - try as direct
-  return { type: 'direct', embedUrl: url, originalUrl: url };
-}
 
 export function LandRedevelopmentShowcase({
   sites,
@@ -77,13 +22,12 @@ export function LandRedevelopmentShowcase({
 }: LandRedevelopmentShowcaseProps) {
   const [activeSite, setActiveSite] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(true); // Start muted for autoplay (required for mobile)
-  const [autoplayFailed, setAutoplayFailed] = useState(false); // Only show play button if autoplay fails
+  const [isMuted, setIsMuted] = useState(true);
+  const [videoError, setVideoError] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const currentSite = sites[activeSite];
-  const [videoError, setVideoError] = useState(false);
 
   // Auto-rotate through sites
   useEffect(() => {
@@ -97,21 +41,10 @@ export function LandRedevelopmentShowcase({
   // Reset video state when site changes
   useEffect(() => {
     setVideoError(false);
-    setAutoplayFailed(false);
-    setIsMuted(true); // Reset to muted for autoplay to work
-  }, [activeSite, currentSite.droneVideo]);
+    setIsMuted(true);
+  }, [activeSite]);
 
-  // Handle play button click (only shown if autoplay fails)
-  const handlePlayClick = useCallback(() => {
-    setAutoplayFailed(false);
-    if (videoRef.current) {
-      videoRef.current.muted = true; // Ensure muted for play to work
-      setIsMuted(true);
-      videoRef.current.play().catch(console.error);
-    }
-  }, []);
-
-  // Handle mute toggle for direct videos
+  // Handle mute toggle
   const handleMuteToggle = useCallback(() => {
     if (videoRef.current) {
       videoRef.current.muted = !videoRef.current.muted;
@@ -194,104 +127,37 @@ export function LandRedevelopmentShowcase({
         >
           {/* Hero Media Section */}
           <div className="relative h-[50vh] md:h-[60vh] overflow-hidden">
-            {(() => {
-              const videoInfo = currentSite.droneVideo ? parseVideoUrl(currentSite.droneVideo) : null;
-
-              // For non-direct videos (embeds), convert to direct video approach
-              // This shouldn't happen if using MP4s, but fallback to showing image
-              if (videoInfo && videoInfo.type !== 'direct') {
-                return (
-                  <div className="absolute inset-0" key={`video-container-${currentSite.id}`}>
-                    {currentSite.droneImage ? (
-                      <Image
-                        src={currentSite.droneImage}
-                        alt={`Aerial view of ${currentSite.location}`}
-                        fill
-                        sizes="100vw"
-                        className="object-cover"
-                        priority
-                      />
+            {/* Direct MP4 video - autoplay muted */}
+            {currentSite.droneVideo && (
+              <div className="absolute inset-0" key={`video-container-${currentSite.id}`}>
+                <video
+                  key={`video-${currentSite.id}-${activeSite}`}
+                  ref={videoRef}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="absolute inset-0 w-full h-full object-cover"
+                  onError={() => setVideoError(true)}
+                >
+                  <source src={currentSite.droneVideo} type="video/mp4" />
+                </video>
+                {/* Mute/Unmute button */}
+                {!videoError && (
+                  <button
+                    onClick={handleMuteToggle}
+                    className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors z-20"
+                    title={isMuted ? 'Unmute' : 'Mute'}
+                  >
+                    {isMuted ? (
+                      <VolumeX className="w-5 h-5 text-white" />
                     ) : (
-                      <div
-                        className="absolute inset-0"
-                        style={{
-                          background: `linear-gradient(135deg, ${currentSite.accentColor}40 0%, ${currentSite.accentColor}10 50%, transparent 100%)`
-                        }}
-                      />
+                      <Volume2 className="w-5 h-5 text-white" />
                     )}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <a
-                        href={videoInfo.originalUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-6 py-3 bg-white/20 backdrop-blur-md rounded-full text-white font-medium hover:bg-white/30 transition-all flex items-center gap-2"
-                      >
-                        <Play className="w-5 h-5 fill-white" />
-                        Watch Video
-                      </a>
-                    </div>
-                  </div>
-                );
-              }
-
-              if (videoInfo && videoInfo.type === 'direct') {
-                // Direct video file - best for autoplay control
-                return (
-                  <div className="absolute inset-0" key={`video-container-${currentSite.id}`}>
-                    <video
-                      key={`video-${currentSite.id}-${activeSite}`}
-                      ref={videoRef}
-                      src={videoInfo.embedUrl}
-                      autoPlay
-                      loop
-                      muted={isMuted}
-                      playsInline
-                      className="absolute inset-0 w-full h-full object-cover"
-                      onCanPlay={(e) => {
-                        // Video is ready - ensure it plays
-                        const video = e.currentTarget;
-                        // Must be muted for autoplay on mobile
-                        video.muted = true;
-                        setIsMuted(true);
-                        video.play().catch(() => {
-                          // Autoplay failed (very rare with muted video)
-                          setAutoplayFailed(true);
-                        });
-                      }}
-                      onError={() => setVideoError(true)}
-                    />
-                    {/* Play overlay - ONLY shown if autoplay fails */}
-                    {autoplayFailed && !videoError && (
-                      <button
-                        onClick={handlePlayClick}
-                        className="absolute inset-0 flex items-center justify-center bg-black/40 cursor-pointer z-10 group"
-                      >
-                        <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center group-hover:bg-white/30 group-hover:scale-110 transition-all">
-                          <Play className="w-10 h-10 md:w-12 md:h-12 text-white fill-white ml-1" />
-                        </div>
-                        <span className="absolute bottom-8 text-white/80 text-sm">Tap to play</span>
-                      </button>
-                    )}
-                    {/* Mute/Unmute button for direct videos - only show when video is playing */}
-                    {!autoplayFailed && !videoError && (
-                      <button
-                        onClick={handleMuteToggle}
-                        className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors z-20"
-                        title={isMuted ? 'Unmute' : 'Mute'}
-                      >
-                        {isMuted ? (
-                          <VolumeX className="w-5 h-5 text-white" />
-                        ) : (
-                          <Volume2 className="w-5 h-5 text-white" />
-                        )}
-                      </button>
-                    )}
-                  </div>
-                );
-              }
-
-              return null;
-            })()}
+                  </button>
+                )}
+              </div>
+            )}
             {!currentSite.droneVideo && currentSite.droneImage && (
               <Image
                 src={currentSite.droneImage}
