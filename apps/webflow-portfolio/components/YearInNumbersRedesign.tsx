@@ -319,7 +319,7 @@ function PlaylistSection({ tunes }: { tunes: TuneItem[] }) {
                   <div className="font-medium text-white truncate">{tune.title}</div>
                   <div className="text-sm text-slate-400 truncate">{tune.artist}</div>
                   {tune.whyWeLoveIt && (
-                    <div className="text-xs text-slate-500 mt-1 truncate">"{tune.whyWeLoveIt}"</div>
+                    <div className="text-xs text-slate-500 mt-1 truncate">&ldquo;{tune.whyWeLoveIt}&rdquo;</div>
                   )}
                 </div>
 
@@ -416,7 +416,7 @@ function ConcertsSection({ concerts }: { concerts: ConcertItem[] }) {
                   {concert.date}
                 </div>
                 {concert.highlight && (
-                  <div className="text-xs text-slate-500 mt-2 italic">"{concert.highlight}"</div>
+                  <div className="text-xs text-slate-500 mt-2 italic">&ldquo;{concert.highlight}&rdquo;</div>
                 )}
               </div>
 
@@ -503,7 +503,7 @@ function ArtGallerySection({ art }: { art: ArtItem[] }) {
         {art.some((a) => a.inspiration) && (
           <div className="mt-6 p-4 bg-gradient-to-r from-purple-500/10 to-transparent rounded-xl border-l-2 border-purple-500">
             <p className="text-sm text-slate-300 italic">
-              "{art.find((a) => a.inspiration)?.inspiration}"
+              &ldquo;{art.find((a) => a.inspiration)?.inspiration}&rdquo;
             </p>
             <p className="text-xs text-purple-400 mt-2">
               — {art.find((a) => a.inspiration)?.artist}
@@ -560,7 +560,7 @@ function FamilySection({ moments }: { moments: FamilyMoment[] }) {
       </div>
 
       <p className="text-sm text-slate-500 mt-6 text-center italic">
-        Because the work only matters when it's grounded in love
+        Because the work only matters when it&apos;s grounded in love
       </p>
     </div>
   );
