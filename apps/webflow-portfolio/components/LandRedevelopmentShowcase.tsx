@@ -77,12 +77,9 @@ export function LandRedevelopmentShowcase({
 }: LandRedevelopmentShowcaseProps) {
   const [activeSite, setActiveSite] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [videoPlaying, setVideoPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(true); // Start muted for autoplay
-  const [hasInteracted, setHasInteracted] = useState(false); // Track if user has tapped to play
-  const [showPlayOverlay, setShowPlayOverlay] = useState(true); // Show play button on mobile
+  const [isMuted, setIsMuted] = useState(true); // Start muted for autoplay (required for mobile)
+  const [autoplayFailed, setAutoplayFailed] = useState(false); // Only show play button if autoplay fails
   const videoRef = useRef<HTMLVideoElement>(null);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const currentSite = sites[activeSite];
@@ -97,26 +94,20 @@ export function LandRedevelopmentShowcase({
     return () => clearInterval(interval);
   }, [isPlaying, sites.length]);
 
+  // Reset video state when site changes
   useEffect(() => {
     setVideoError(false);
-    setVideoPlaying(true);
-    // Reset interaction state when site changes, but keep unmuted if user already unmuted
-    setShowPlayOverlay(!hasInteracted);
-  }, [activeSite, currentSite.droneVideo, hasInteracted]);
+    setAutoplayFailed(false);
+    setIsMuted(true); // Reset to muted for autoplay to work
+  }, [activeSite, currentSite.droneVideo]);
 
-  // Handle play button click
+  // Handle play button click (only shown if autoplay fails)
   const handlePlayClick = useCallback(() => {
-    setHasInteracted(true);
-    setShowPlayOverlay(false);
-
+    setAutoplayFailed(false);
     if (videoRef.current) {
+      videoRef.current.muted = true; // Ensure muted for play to work
+      setIsMuted(true);
       videoRef.current.play().catch(console.error);
-    }
-
-    // For iframes, we need to reload with autoplay after interaction
-    if (iframeRef.current) {
-      const src = iframeRef.current.src;
-      iframeRef.current.src = src;
     }
   }, []);
 
@@ -256,39 +247,45 @@ export function LandRedevelopmentShowcase({
                       muted={isMuted}
                       playsInline
                       className="absolute inset-0 w-full h-full object-cover"
-                      onLoadedData={(e) => {
+                      onCanPlay={(e) => {
+                        // Video is ready - ensure it plays
                         const video = e.currentTarget;
+                        // Must be muted for autoplay on mobile
+                        video.muted = true;
+                        setIsMuted(true);
                         video.play().catch(() => {
-                          setVideoError(true);
-                          setShowPlayOverlay(true);
+                          // Autoplay failed (very rare with muted video)
+                          setAutoplayFailed(true);
                         });
-                        setShowPlayOverlay(false);
                       }}
                       onError={() => setVideoError(true)}
                     />
-                    {/* Play overlay for direct video if autoplay fails */}
-                    {showPlayOverlay && !videoError && (
+                    {/* Play overlay - ONLY shown if autoplay fails */}
+                    {autoplayFailed && !videoError && (
                       <button
                         onClick={handlePlayClick}
-                        className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer z-10 group"
+                        className="absolute inset-0 flex items-center justify-center bg-black/40 cursor-pointer z-10 group"
                       >
                         <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center group-hover:bg-white/30 group-hover:scale-110 transition-all">
                           <Play className="w-10 h-10 md:w-12 md:h-12 text-white fill-white ml-1" />
                         </div>
+                        <span className="absolute bottom-8 text-white/80 text-sm">Tap to play</span>
                       </button>
                     )}
-                    {/* Mute/Unmute button for direct videos */}
-                    <button
-                      onClick={handleMuteToggle}
-                      className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors z-20"
-                      title={isMuted ? 'Unmute' : 'Mute'}
-                    >
-                      {isMuted ? (
-                        <VolumeX className="w-5 h-5 text-white" />
-                      ) : (
-                        <Volume2 className="w-5 h-5 text-white" />
-                      )}
-                    </button>
+                    {/* Mute/Unmute button for direct videos - only show when video is playing */}
+                    {!autoplayFailed && !videoError && (
+                      <button
+                        onClick={handleMuteToggle}
+                        className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors z-20"
+                        title={isMuted ? 'Unmute' : 'Mute'}
+                      >
+                        {isMuted ? (
+                          <VolumeX className="w-5 h-5 text-white" />
+                        ) : (
+                          <Volume2 className="w-5 h-5 text-white" />
+                        )}
+                      </button>
+                    )}
                   </div>
                 );
               }
