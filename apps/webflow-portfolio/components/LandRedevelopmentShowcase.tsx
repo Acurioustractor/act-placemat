@@ -21,8 +21,11 @@ function parseVideoUrl(url: string): { type: 'direct' | 'descript' | 'youtube' |
   // Descript: https://share.descript.com/view/ID or https://share.descript.com/embed/ID
   const descriptMatch = url.match(/share\.descript\.com\/(view|embed)\/([a-zA-Z0-9]+)/);
   if (descriptMatch) {
-    // Add autoplay and hide transcript for cleaner video experience
-    return { type: 'descript', embedUrl: `https://share.descript.com/embed/${descriptMatch[2]}?autoplay=true&transcript=false` };
+    // Add autoplay and hide transcript for seamless video experience
+    return {
+      type: 'descript',
+      embedUrl: `https://share.descript.com/embed/${descriptMatch[2]}?autoplay=1&transcript=false`
+    };
   }
 
   // YouTube
@@ -161,10 +164,11 @@ export function LandRedevelopmentShowcase({
 
               if (videoInfo && videoInfo.type !== 'direct') {
                 // Use iframe for embedded videos (Descript, YouTube, Vimeo, Loom)
-                // Scale up slightly to hide any iframe chrome/borders
+                // Key prop forces iframe recreation when site changes (essential for autoplay)
                 return (
-                  <div className="absolute inset-0 overflow-hidden">
+                  <div className="absolute inset-0 overflow-hidden" key={`video-container-${currentSite.id}`}>
                     <iframe
+                      key={`iframe-${currentSite.id}-${activeSite}`}
                       src={videoInfo.embedUrl}
                       className="absolute w-full h-full border-0"
                       style={{
@@ -175,7 +179,7 @@ export function LandRedevelopmentShowcase({
                         minWidth: '100%',
                         minHeight: '100%',
                       }}
-                      allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+                      allow="autoplay; fullscreen; picture-in-picture; encrypted-media; accelerometer; gyroscope"
                       allowFullScreen
                       title={`${currentSite.location} drone footage`}
                     />
@@ -184,9 +188,10 @@ export function LandRedevelopmentShowcase({
               }
 
               if (videoInfo && videoInfo.type === 'direct') {
-                // Direct video file
+                // Direct video file - key forces recreation on site change
                 return (
                   <video
+                    key={`video-${currentSite.id}-${activeSite}`}
                     ref={videoRef}
                     src={videoInfo.embedUrl}
                     autoPlay
@@ -194,6 +199,11 @@ export function LandRedevelopmentShowcase({
                     muted
                     playsInline
                     className="absolute inset-0 w-full h-full object-cover"
+                    onLoadedData={(e) => {
+                      // Ensure autoplay works by playing on load
+                      const video = e.currentTarget;
+                      video.play().catch(() => setVideoError(true));
+                    }}
                   />
                 );
               }

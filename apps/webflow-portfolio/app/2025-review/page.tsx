@@ -8,6 +8,7 @@ import { ProjectModal } from '../../components/ProjectModal';
 import { FeaturedProjectSection } from '../../components/FeaturedProjectSection';
 import { LandRedevelopmentShowcase } from '../../components/LandRedevelopmentShowcase';
 import { ProjectDiscovery } from '../../components/ProjectDiscovery';
+import { YearReviewNavigation } from '../../components/YearReviewNavigation';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 
@@ -208,11 +209,14 @@ export default function YearInReview2025() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+      {/* Navigation */}
+      <YearReviewNavigation />
+
       {/* Constellation Canvas - Fixed Background */}
       <ConstellationCanvas entries={allEntries} activeSeasonIndex={activeSeasonIndex} onNodeClick={(entry) => console.log('Clicked:', entry)} />
 
       {/* Hero Section */}
-      <section className="relative z-10 min-h-[80vh] flex flex-col items-center justify-center text-center px-6 pt-24 pb-16">
+      <section id="hero" className="relative z-10 min-h-[80vh] flex flex-col items-center justify-center text-center px-6 pt-24 pb-16">
         <div className="bg-slate-950/60 backdrop-blur-sm rounded-3xl px-8 py-12 md:px-16 md:py-16">
           <p className="text-teal-400 text-sm uppercase tracking-[0.3em] font-semibold mb-4 drop-shadow">A Curious Tractor</p>
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
@@ -237,16 +241,18 @@ export default function YearInReview2025() {
 
       {/* Year in Numbers - Reimagined */}
       {data && (
-        <section className="relative z-10 py-16 px-6">
+        <section id="numbers" className="relative z-10 py-16 px-6">
           <YearInNumbersRedesign metrics={data.metrics} curatedSettings={curated?.settings} />
         </section>
       )}
 
       {/* Project Discovery - Explore All Projects */}
-      <ProjectDiscovery className="relative z-10" />
+      <section id="projects">
+        <ProjectDiscovery className="relative z-10" />
+      </section>
 
       {/* Places Map */}
-      <section className="relative z-10 py-16 px-6">
+      <section id="places" className="relative z-10 py-16 px-6">
         <div className="max-w-6xl mx-auto">
           <PlacesMap
             onPlaceClick={(place) => console.log('Place clicked:', place)}
@@ -261,6 +267,7 @@ export default function YearInReview2025() {
           <div key={season.name}>
             {/* Season Timeline */}
             <section
+              id={season.name.toLowerCase()}
               ref={(el) => {
                 sectionRefs.current[index] = el;
               }}
@@ -291,7 +298,8 @@ export default function YearInReview2025() {
       </div>
 
       {/* Land Redevelopment Showcase - Finale after all seasons */}
-      <LandRedevelopmentShowcase
+      <section id="land">
+        <LandRedevelopmentShowcase
         sites={
           (curated?.settings?.redevelopmentSites?.length
             ? curated.settings.redevelopmentSites
@@ -300,7 +308,8 @@ export default function YearInReview2025() {
         title="Transforming Land, Building Community"
         subtitle="Our partners in place-based regeneration"
         introText="Across Townsville, Sydney, and Alice Springs, we've partnered with Traditional Owners and local organizations to transform land into thriving community spaces. These drone images capture the scale of what's possible when development is led by community."
-      />
+        />
+      </section>
 
       {/* Project Modal */}
       <ProjectModal
@@ -310,7 +319,7 @@ export default function YearInReview2025() {
       />
 
       {/* Footer CTA */}
-      <section className="relative z-10 py-24 px-6 text-center">
+      <section id="footer" className="relative z-10 py-24 px-6 text-center">
         <div className="max-w-2xl mx-auto bg-slate-900/60 backdrop-blur-sm rounded-3xl p-10">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 drop-shadow-lg">Looking Ahead to 2026</h2>
           <p className="text-slate-200 mb-8">
