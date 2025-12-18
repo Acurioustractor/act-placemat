@@ -1,8 +1,14 @@
 /**
  * Year in Review API Client
+ *
+ * Supports two data sources:
+ * 1. Direct Supabase queries (preferred for production)
+ * 2. Backend API (fallback, used in local development)
  */
 
 import type { YearInReviewData, CuratedData, TimelineEntry, LinkedInPost } from '../types/yearInReview';
+import { getCuratedEntriesFromSupabase, isSupabaseConfigured } from './yearInReviewSupabase';
+import curatedData2025 from '../data/curated-2025.json';
 
 // API base URL - adjust for production
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
@@ -42,13 +48,43 @@ export async function getMetrics(year: number = 2025) {
 
 /**
  * Fetch curated entries (admin-edited)
+ * Priority: Supabase -> Backend API -> Static bundled data
  */
 export async function getCuratedEntries(year: number = 2025): Promise<CuratedData> {
-  const res = await fetch(`${API_BASE}/api/year-in-review/${year}/curated`);
-  if (!res.ok) {
-    throw new Error(`Failed to fetch curated entries: ${res.statusText}`);
+  // Try Supabase first (fastest, direct DB access)
+  if (isSupabaseConfigured()) {
+    try {
+      const supabaseData = await getCuratedEntriesFromSupabase(year);
+      if (supabaseData.entries && supabaseData.entries.length > 0) {
+        console.log(`✅ Loaded ${supabaseData.entries.length} curated entries from Supabase`);
+        return supabaseData;
+      }
+    } catch (supabaseError) {
+      console.warn('Supabase query failed:', supabaseError);
+    }
   }
-  return res.json();
+
+  // Try backend API second
+  try {
+    const res = await fetch(`${API_BASE}/api/year-in-review/${year}/curated`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.entries && data.entries.length > 0) {
+        console.log(`✅ Loaded ${data.entries.length} curated entries from API`);
+        return data;
+      }
+    }
+  } catch (apiError) {
+    console.warn('Backend API failed:', apiError);
+  }
+
+  // Fall back to static bundled data (works in production without backend)
+  if (year === 2025 && curatedData2025?.entries?.length > 0) {
+    console.log(`✅ Loaded ${curatedData2025.entries.length} curated entries from static bundle`);
+    return curatedData2025 as CuratedData;
+  }
+
+  return { entries: [], lastUpdated: null };
 }
 
 /**
