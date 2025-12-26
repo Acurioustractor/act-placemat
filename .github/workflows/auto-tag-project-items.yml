@@ -1,0 +1,245 @@
+name: Auto-Tag Project Items
+
+on:
+  issues:
+    types: [opened]
+  pull_request:
+    types: [opened]
+  project_card:
+    types: [created]
+
+jobs:
+  auto-tag:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: read
+
+    steps:
+      - name: Auto-assign ACT Project field based on repository
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const PROJECT_ID = 'PVT_kwHOCOopjs4BLVik';
+            const ORG_NAME = 'Acurioustractor';
+
+            // Repository to ACT Project mapping
+            const REPO_TO_PROJECT = {
+              'empathy-ledger-v2': 'Empathy Ledger',
+              'justicehub-platform': 'JusticeHub',
+              'theharvest': 'The Harvest',
+              'act-farm': 'ACT Farm',
+              'act-placemat': 'ACT Placemat',
+              'goods-asset-tracker': 'Goods',  // Emphasized
+              'act-regenerative-studio': 'ACT Main',
+              'act-project-template': 'Cross-Project'
+            };
+
+            // Repository to default labels mapping
+            const REPO_TO_LABELS = {
+              'empathy-ledger-v2': ['empathy-ledger', 'storytelling'],
+              'justicehub-platform': ['justicehub', 'justice'],
+              'theharvest': ['harvest', 'community'],
+              'act-farm': ['act-farm', 'website'],
+              'act-placemat': ['placemat', 'mapping'],
+              'goods-asset-tracker': ['goods', 'asset-tracking', 'circular-economy'],  // Emphasized
+              'act-regenerative-studio': ['studio', 'infrastructure'],
+              'act-project-template': ['template', 'cross-project']
+            };
+
+            // Get the repository name
+            const repoName = context.payload.repository.name;
+            const issueNumber = context.payload.issue?.number || context.payload.pull_request?.number;
+            const isIssue = !!context.payload.issue;
+
+            console.log(`Processing ${isIssue ? 'issue' : 'PR'} #${issueNumber} from ${repoName}`);
+
+            // Get the ACT Project value for this repo
+            const actProjectValue = REPO_TO_PROJECT[repoName];
+            if (!actProjectValue) {
+              console.log(`No ACT Project mapping found for ${repoName}`);
+              return;
+            }
+
+            console.log(`Will assign ACT Project: ${actProjectValue}`);
+
+            // Step 1: Add issue/PR to project if not already added
+            let projectItemId = null;
+
+            // Check if already in project
+            const existingItemsQuery = `
+              query($org: String!, $projectNumber: Int!, $repoName: String!, $issueNumber: Int!) {
+                organization(login: $org) {
+                  projectV2(number: $projectNumber) {
+                    items(first: 100) {
+                      nodes {
+                        id
+                        content {
+                          ... on Issue {
+                            number
+                            repository {
+                              name
+                            }
+                          }
+                          ... on PullRequest {
+                            number
+                            repository {
+                              name
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            try {
+              const existingItems = await github.graphql(existingItemsQuery, {
+                org: ORG_NAME,
+                projectNumber: 1,
+                repoName: repoName,
+                issueNumber: issueNumber
+              });
+
+              const existingItem = existingItems.organization.projectV2.items.nodes.find(
+                item => item.content?.number === issueNumber &&
+                        item.content?.repository?.name === repoName
+              );
+
+              if (existingItem) {
+                projectItemId = existingItem.id;
+                console.log(`Item already in project: ${projectItemId}`);
+              }
+            } catch (error) {
+              console.log(`Could not check existing items: ${error.message}`);
+            }
+
+            // If not in project, add it
+            if (!projectItemId) {
+              const contentId = context.payload.issue?.node_id || context.payload.pull_request?.node_id;
+
+              const addToProjectMutation = `
+                mutation($projectId: ID!, $contentId: ID!) {
+                  addProjectV2ItemById(input: {
+                    projectId: $projectId
+                    contentId: $contentId
+                  }) {
+                    item {
+                      id
+                    }
+                  }
+                }
+              `;
+
+              try {
+                const addResult = await github.graphql(addToProjectMutation, {
+                  projectId: PROJECT_ID,
+                  contentId: contentId
+                });
+
+                projectItemId = addResult.addProjectV2ItemById.item.id;
+                console.log(`Added to project: ${projectItemId}`);
+              } catch (error) {
+                console.error(`Failed to add to project: ${error.message}`);
+                return;
+              }
+            }
+
+            // Step 2: Get the ACT Project field ID and option ID
+            const getFieldsQuery = `
+              query($projectId: ID!) {
+                node(id: $projectId) {
+                  ... on ProjectV2 {
+                    fields(first: 20) {
+                      nodes {
+                        ... on ProjectV2SingleSelectField {
+                          id
+                          name
+                          options {
+                            id
+                            name
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            const fieldsResult = await github.graphql(getFieldsQuery, {
+              projectId: PROJECT_ID
+            });
+
+            const actProjectField = fieldsResult.node.fields.nodes.find(
+              field => field.name === 'ACT Project'
+            );
+
+            if (!actProjectField) {
+              console.error('ACT Project field not found');
+              return;
+            }
+
+            const actProjectOption = actProjectField.options.find(
+              option => option.name === actProjectValue
+            );
+
+            if (!actProjectOption) {
+              console.error(`ACT Project option "${actProjectValue}" not found`);
+              return;
+            }
+
+            console.log(`Field ID: ${actProjectField.id}, Option ID: ${actProjectOption.id}`);
+
+            // Step 3: Update the ACT Project field
+            const updateFieldMutation = `
+              mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+                updateProjectV2ItemFieldValue(input: {
+                  projectId: $projectId
+                  itemId: $itemId
+                  fieldId: $fieldId
+                  value: { singleSelectOptionId: $optionId }
+                }) {
+                  projectV2Item {
+                    id
+                  }
+                }
+              }
+            `;
+
+            try {
+              await github.graphql(updateFieldMutation, {
+                projectId: PROJECT_ID,
+                itemId: projectItemId,
+                fieldId: actProjectField.id,
+                optionId: actProjectOption.id
+              });
+
+              console.log(`✅ Set ACT Project to: ${actProjectValue}`);
+            } catch (error) {
+              console.error(`Failed to update ACT Project field: ${error.message}`);
+            }
+
+            // Step 4: Auto-add repository-specific labels
+            const labelsToAdd = REPO_TO_LABELS[repoName] || [];
+
+            if (labelsToAdd.length > 0 && isIssue) {
+              try {
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  labels: labelsToAdd
+                });
+
+                console.log(`✅ Added labels: ${labelsToAdd.join(', ')}`);
+              } catch (error) {
+                console.log(`Could not add labels: ${error.message}`);
+              }
+            }
+
+            console.log('Auto-tagging complete!');
