@@ -20,7 +20,7 @@ jobs:
       - name: Auto-assign ACT Project field based on repository
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GH_PROJECT_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const PROJECT_ID = 'PVT_kwHOCOopjs4BLVik';
             const ORG_NAME = 'Acurioustractor';
