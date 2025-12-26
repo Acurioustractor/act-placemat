@@ -70,8 +70,8 @@ jobs:
 
             // Check if already in project
             const existingItemsQuery = `
-              query($org: String!, $projectNumber: Int!, $repoName: String!, $issueNumber: Int!) {
-                organization(login: $org) {
+              query($user: String!, $projectNumber: Int!, $repoName: String!, $issueNumber: Int!) {
+                user(login: $user) {
                   projectV2(number: $projectNumber) {
                     items(first: 100) {
                       nodes {
@@ -99,13 +99,13 @@ jobs:
 
             try {
               const existingItems = await github.graphql(existingItemsQuery, {
-                org: ORG_NAME,
+                user: ORG_NAME,  // Actually the user login, not org
                 projectNumber: 1,
                 repoName: repoName,
                 issueNumber: issueNumber
               });
 
-              const existingItem = existingItems.organization.projectV2.items.nodes.find(
+              const existingItem = existingItems.user.projectV2.items.nodes.find(
                 item => item.content?.number === issueNumber &&
                         item.content?.repository?.name === repoName
               );
