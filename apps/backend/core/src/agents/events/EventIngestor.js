@@ -7,7 +7,7 @@
 
 import { EventEmitter } from 'events';
 import { createSupabaseClient } from '../../config/supabase.js';
-import { Logger } from '../../utils/logger.js';
+import { logger } from '../../utils/logger.js';
 import { z } from 'zod';
 
 // Event schemas for validation

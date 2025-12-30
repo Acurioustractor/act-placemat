@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import type { Project, Place } from '../types/project'
 
 // Fix for default marker icons in React-Leaflet
 import icon from 'leaflet/dist/images/marker-icon.png'
@@ -17,23 +18,6 @@ const DefaultIcon = L.icon({
 })
 
 L.Marker.prototype.options.icon = DefaultIcon
-
-interface Place {
-  indigenousName: string
-  westernName?: string | null
-  displayName: string
-  map?: string | null
-  state?: string | null
-}
-
-interface Project {
-  id: string
-  name: string
-  relatedPlaces?: Place[]
-  coverImage?: string
-  description?: string
-  aiSummary?: string
-}
 
 interface MapMarker {
   lat: number

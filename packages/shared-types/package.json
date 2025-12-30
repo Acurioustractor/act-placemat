@@ -1,26 +1,29 @@
 {
   "name": "@act-placemat/shared-types",
   "version": "1.0.0",
-  "description": "Shared TypeScript types for ACT Placemat",
-  "main": "src/api.js",
-  "types": "src/api.d.ts",
+  "description": "Shared TypeScript types for ACT Placemat monorepo",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "exports": {
     ".": {
-      "import": "./src/api.js",
-      "require": "./src/api.js",
-      "types": "./src/api.d.ts"
+      "import": "./src/index.ts",
+      "types": "./src/index.ts"
     },
     "./api": {
-      "import": "./src/api.js",
-      "require": "./src/api.js",
-      "types": "./src/api.d.ts"
+      "import": "./src/api.ts",
+      "types": "./src/api.ts"
+    },
+    "./year-in-review": {
+      "import": "./src/year-in-review.ts",
+      "types": "./src/year-in-review.ts"
     }
   },
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "sync-types": "node scripts/sync-from-act-website.js"
   },
-  "keywords": ["types", "typescript", "api", "shared"],
+  "keywords": ["types", "typescript", "api", "shared", "act-ecosystem"],
   "author": "ACT Placemat Team",
   "license": "MIT",
   "devDependencies": {

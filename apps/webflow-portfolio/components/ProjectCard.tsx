@@ -124,7 +124,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
           {/* Summary */}
           {(project.aiSummary || project.description) && (
-            <p className="text-sm leading-relaxed text-gray-600 line-clamp-3 mt-auto">
+            <p className="text-sm leading-relaxed text-gray-600 mt-auto">
               {project.aiSummary || project.description}
             </p>
           )}

@@ -4,7 +4,9 @@ import { CommunityLaborValueCard } from './CommunityLaborValueCard'
 import { StorytellingScaleCard } from './StorytellingScaleCard'
 import { GrantDependencyIndicator } from './GrantDependencyIndicator'
 import { ProjectTypeBadge } from './ProjectTypeBadge'
+import { Card } from './ui/Card'
 import type { Project as FullProject } from '../types/project'
+import { getProjectStage, stageLabels } from '../utils/projectStage'
 
 interface ProjectDetailProps {
   projectId: string
@@ -14,13 +16,58 @@ interface ProjectDetailProps {
 // Use the full Project type from types/project.ts
 type Project = FullProject
 
+const STAGE_QUESTIONS: Record<string, string> = {
+  launch: 'What would make ACT unnecessary in the next 6 months?',
+  orbit: 'Who is taking full control this quarter and what do they need?',
+  cruising: 'What blockers remain before complete handover?',
+  landed: 'How are we resourcing this community to teach others?',
+  obsolete: 'Which new communities can reuse this blueprint?',
+}
+
+interface ResearchEntry {
+  id: string
+  source: string
+  summary?: string
+  url?: string
+  created_at: string
+}
+
+interface PairingEntry {
+  id: string
+  project_id: string
+  partner_project_id: string
+  reason?: string
+  similarity?: number
+}
+
+interface GeoAlertEntry {
+  id: string
+  region: string
+  severity: string
+  stage?: string
+  recommendation?: string
+  projects?: Array<{ name?: string; stage?: string }>
+  triggered_at: string
+}
+
 export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
   const [project, setProject] = useState<Project | null>(null)
+  const [allProjects, setAllProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
+  const [researchEntries, setResearchEntries] = useState<ResearchEntry[]>([])
+  const [pairings, setPairings] = useState<PairingEntry[]>([])
+  const [geoAlerts, setGeoAlerts] = useState<GeoAlertEntry[]>([])
+  const [intelligenceLoading, setIntelligenceLoading] = useState(true)
 
   useEffect(() => {
     loadProjectData()
   }, [projectId])
+
+  useEffect(() => {
+    if (project) {
+      fetchIntelligence(project)
+    }
+  }, [project])
 
   const loadProjectData = async () => {
     try {
@@ -28,13 +75,58 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
 
       // Load project details
       const projectsResponse = await api.getProjects()
-      const foundProject = projectsResponse.projects.find((p: Project) => p.id === projectId)
+      const list = projectsResponse.projects || []
+      const foundProject = list.find((p: Project) => p.id === projectId)
+      setAllProjects(list)
       setProject(foundProject || null)
 
     } catch (error) {
       console.error('Failed to load project data:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchIntelligence = async (project: Project) => {
+    try {
+      setIntelligenceLoading(true)
+      const [researchRes, pairingsRes, alertsRes] = await Promise.all([
+        fetch(`/api/intelligence/project-research/${project.id}`),
+        fetch(`/api/intelligence/project-pairings?project_id=${project.id}`),
+        fetch('/api/intelligence/geo-alerts'),
+      ])
+
+      if (researchRes.ok) {
+        const data = await researchRes.json()
+        setResearchEntries(data?.items || [])
+      } else {
+        setResearchEntries([])
+      }
+
+      if (pairingsRes.ok) {
+        const data = await pairingsRes.json()
+        setPairings(data?.items || [])
+      } else {
+        setPairings([])
+      }
+
+      if (alertsRes.ok) {
+        const data = await alertsRes.json()
+        const entries: GeoAlertEntry[] = data?.items || []
+        const filtered = entries.filter((alert) =>
+          (alert.projects || []).some((p) => p?.name?.toLowerCase().includes(project.name.toLowerCase())),
+        )
+        setGeoAlerts(filtered)
+      } else {
+        setGeoAlerts([])
+      }
+    } catch (error) {
+      console.error('Failed to load intelligence data', error)
+      setResearchEntries([])
+      setPairings([])
+      setGeoAlerts([])
+    } finally {
+      setIntelligenceLoading(false)
     }
   }
 
@@ -80,21 +172,25 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
   }
 
   // Handle places - they can be objects or strings (for backwards compatibility)
-  const rawPlaces = (project.relatedPlaces || []).filter(p => p && p !== '0' && p !== 0)
-  const places = rawPlaces.map(p => {
-    if (typeof p === 'string') {
-      return { indigenousName: p, westernName: null, displayName: p }
-    }
-    return p
-  })
+  const rawPlaces = ((project.relatedPlaces as unknown as any[]) || []).filter((p) => p)
+  const places = rawPlaces
+    .map((p) => {
+      if (typeof p === 'string') {
+        return { indigenousName: p, westernName: null, displayName: p }
+      }
+      return p
+    })
+    .filter((p) => p && (p.displayName || p.indigenousName))
 
-  const partners = (project.relatedOrganisations || []).filter(p => p && p !== '0' && p !== 0)
-  const people = (project.relatedPeople || []).filter(p => p && p !== '0' && p !== 0)
+  const partners = (project.relatedOrganisations || []).filter((p) => p && p !== '0')
+  const people = (project.relatedPeople || []).filter((p) => p && p !== '0')
   const themes = project.themes || project.tags || []
   const coreValues = Array.isArray(project.coreValues) ? project.coreValues : project.coreValues ? [project.coreValues] : []
 
   // Use location as fallback for places if we don't have place names
   const displayPlaces = places.length > 0 ? places : (project.location ? [{ indigenousName: project.location, westernName: null, displayName: project.location }] : [])
+  const projectStage = getProjectStage(project)
+  const stageQuestion = STAGE_QUESTIONS[projectStage]
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
@@ -155,6 +251,120 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
               <p className="text-clay-700 leading-relaxed whitespace-pre-wrap">
                 {project.aiSummary || project.description || 'This project is taking shape. More context coming soon.'}
               </p>
+            </div>
+          </section>
+
+          {/* Alignment */}
+          <section className="bg-white rounded-xl shadow-sm p-8">
+            <h2 className="text-2xl font-bold text-clay-900 mb-6">Alignment &amp; Focus</h2>
+            <div className="grid gap-6 md:grid-cols-3">
+              <Card padding="lg" className="bg-gradient-to-br from-brand-50 to-ocean-50">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-brand-600">Stage</p>
+                <p className="text-2xl font-bold text-clay-900 mt-2">{stageLabels[projectStage]}</p>
+                {stageQuestion && <p className="text-sm text-clay-700 mt-3">{stageQuestion}</p>}
+              </Card>
+              <Card padding="lg">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-clay-500">Autonomy &amp; Handover</p>
+                <p className="text-2xl font-bold text-ocean-700 mt-2">
+                  {project.autonomyScore !== undefined ? `${project.autonomyScore}/100` : 'Not set'}
+                </p>
+                <p className="text-sm text-clay-600 mt-2">
+                  Handover timeline: {project.handoverTimeline || 'Not documented'}
+                </p>
+              </Card>
+              <Card padding="lg">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-clay-500">Themes &amp; Area</p>
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {themes.length ? (
+                    themes.map((theme) => (
+                      <span key={theme} className="text-xs font-semibold px-3 py-1 rounded-full bg-brand-50 text-brand-800">
+                        {theme}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-xs text-clay-400">No themes tagged</span>
+                  )}
+                </div>
+                {project.area && <p className="text-sm text-clay-600 mt-3">Area: {project.area}</p>}
+              </Card>
+            </div>
+          </section>
+
+          {/* Intelligence signals */}
+          <section className="bg-white rounded-xl shadow-sm p-8">
+            <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
+              <h2 className="text-2xl font-bold text-clay-900">Intelligence Signals</h2>
+              {intelligenceLoading && <p className="text-sm text-clay-500">Refreshing...</p>}
+            </div>
+            <div className="grid gap-6 md:grid-cols-2">
+              <div>
+                <p className="text-sm font-semibold text-clay-900 mb-3">Research references</p>
+                <div className="space-y-3">
+                  {researchEntries.length ? (
+                    researchEntries.map((entry) => (
+                      <div key={entry.id} className="rounded-xl border border-clay-100 p-3">
+                        <p className="text-sm font-semibold text-clay-900">{entry.source}</p>
+                        <p className="text-xs text-clay-500 mb-2">
+                          {new Date(entry.created_at).toLocaleDateString()}
+                        </p>
+                        <p className="text-sm text-clay-700">{entry.summary || 'Research summary pending.'}</p>
+                        {entry.url && (
+                          <a
+                            href={entry.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-xs font-semibold text-brand-700 hover:underline"
+                          >
+                            View source
+                          </a>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-clay-500">No research annotations yet. Run the Research Agent to add some.</p>
+                  )}
+                </div>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-clay-900 mb-3">Mentor &amp; pairing suggestions</p>
+                <div className="space-y-3">
+                  {pairings.length ? (
+                    pairings.map((pair) => {
+                      const counterpartId = pair.project_id === project.id ? pair.partner_project_id : pair.project_id
+                      const counterpartName = allProjects.find((p) => p.id === counterpartId)?.name || counterpartId
+                      return (
+                        <div key={pair.id} className="rounded-xl border border-clay-100 p-3">
+                          <p className="text-sm font-semibold text-clay-900">{counterpartName}</p>
+                          <p className="text-xs text-clay-500">
+                            {pair.reason || 'Suggested collaboration opportunity'}
+                          </p>
+                          {typeof pair.similarity === 'number' && (
+                            <p className="text-xs text-clay-400">Similarity {Math.round(pair.similarity * 100)}%</p>
+                          )}
+                        </div>
+                      )
+                    })
+                  ) : (
+                    <p className="text-sm text-clay-500">No mentor matches yet. Run Pattern Hunter to generate suggestions.</p>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="mt-6 space-y-3">
+              <p className="text-sm font-semibold text-clay-900">Geo Sentinel alerts</p>
+              {geoAlerts.length ? (
+                geoAlerts.map((alert) => (
+                  <div key={alert.id} className="rounded-xl border border-clay-100 p-3">
+                    <p className="text-sm font-semibold text-clay-900">{alert.region}</p>
+                    <p className="text-xs text-clay-500">
+                      {alert.stage || 'Any stage'} • {alert.severity} severity
+                    </p>
+                    <p className="text-sm text-clay-700 mt-1">{alert.recommendation || 'Review Geo view for more context.'}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-clay-500">No active geo alerts for this project.</p>
+              )}
             </div>
           </section>
 

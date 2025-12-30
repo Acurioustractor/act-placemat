@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
-type MediaFileType = 'photo' | 'video' | 'document' | 'image';
+type MediaFileType = 'photo' | 'video' | 'document' | 'image' | 'video_link';
 
 interface MediaItem {
   id: string;
@@ -19,12 +19,42 @@ interface MediaItem {
   impact_themes?: string[];
   project_ids?: string[];
   created_at: string;
+  // Video link specific fields
+  platform?: 'youtube' | 'vimeo' | 'loom' | 'direct';
+  embed_url?: string;
+  video_id?: string;
+  link_type?: string;
+  link_id?: string;
 }
 
 interface NotionProject {
   id: string;
   name: string;
   status?: string;
+}
+
+// Get thumbnail for video platforms
+function getVideoThumbnail(item: MediaItem): string | null {
+  if (item.thumbnail_url) return item.thumbnail_url;
+
+  if (item.platform === 'youtube' && item.video_id) {
+    return `https://img.youtube.com/vi/${item.video_id}/mqdefault.jpg`;
+  }
+  if (item.platform === 'loom' && item.video_id) {
+    return `https://cdn.loom.com/sessions/thumbnails/${item.video_id}-with-play.gif`;
+  }
+  // Vimeo requires API call for thumbnail, so we'll show a placeholder
+  return null;
+}
+
+// Platform badge colors
+function getPlatformColor(platform?: string): string {
+  switch (platform) {
+    case 'youtube': return 'bg-red-500';
+    case 'loom': return 'bg-purple-500';
+    case 'vimeo': return 'bg-blue-500';
+    default: return 'bg-slate-500';
+  }
 }
 
 function uniqStrings(input: string[]): string[] {
@@ -78,7 +108,15 @@ export default function MediaLibraryPage() {
   const [editImpactThemes, setEditImpactThemes] = useState('');
   const [editAddProjectId, setEditAddProjectId] = useState('');
 
-  // Load media
+  // Add video link modal state
+  const [showAddVideoModal, setShowAddVideoModal] = useState(false);
+  const [newVideoUrl, setNewVideoUrl] = useState('');
+  const [newVideoTitle, setNewVideoTitle] = useState('');
+  const [newVideoDescription, setNewVideoDescription] = useState('');
+  const [newVideoProjectId, setNewVideoProjectId] = useState('');
+  const [addingVideo, setAddingVideo] = useState(false);
+
+  // Load media (including video links)
   const loadMedia = useCallback(async () => {
     try {
       setError(null);
@@ -87,11 +125,55 @@ export default function MediaLibraryPage() {
       params.set('limit', '200');
       if (search) params.set('search', search);
 
-      const res = await fetch(`${API_BASE}/api/year-in-review/2025/media/all?${params}`);
-      if (!res.ok) throw new Error('Failed to fetch media');
+      // Fetch both media items and video links in parallel
+      const [mediaRes, videosRes] = await Promise.all([
+        fetch(`${API_BASE}/api/year-in-review/2025/media/all?${params}`),
+        fetch(`${API_BASE}/api/year-in-review/2025/videos`)
+      ]);
 
-      const data = await res.json();
-      setMedia(data.media || []);
+      if (!mediaRes.ok) throw new Error('Failed to fetch media');
+
+      const mediaData = await mediaRes.json();
+      const mediaItems = mediaData.media || [];
+
+      // Transform video links to MediaItem format
+      let videoItems: MediaItem[] = [];
+      if (videosRes.ok) {
+        const videosData = await videosRes.json();
+        videoItems = (videosData.videos || []).map((v: any) => ({
+          id: `video-${v.id}`,
+          file_url: v.embed_url,
+          thumbnail_url: v.thumbnail_url,
+          file_type: 'video_link' as const,
+          title: v.title,
+          description: v.description,
+          created_at: v.created_at,
+          platform: v.platform,
+          embed_url: v.embed_url,
+          video_id: v.video_id,
+          link_type: v.link_type,
+          link_id: v.link_id,
+          // Map link_id to project_ids for filtering
+          project_ids: v.link_type === 'review_project' && v.link_id ? [v.link_id] : [],
+        }));
+      }
+
+      // Filter video items by search
+      if (search) {
+        const searchLower = search.toLowerCase();
+        videoItems = videoItems.filter(v =>
+          v.title?.toLowerCase().includes(searchLower) ||
+          v.description?.toLowerCase().includes(searchLower) ||
+          v.platform?.toLowerCase().includes(searchLower)
+        );
+      }
+
+      // Combine and sort by created_at
+      const combined = [...mediaItems, ...videoItems].sort((a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+
+      setMedia(combined);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load media');
     } finally {
@@ -144,11 +226,70 @@ export default function MediaLibraryPage() {
     return data.media as MediaItem;
   }, []);
 
+  // Update a video link
+  const updateVideoLink = useCallback(async (videoId: string, updates: { title?: string; description?: string; projectId?: string | null }) => {
+    const res = await fetch(`${API_BASE}/api/year-in-review/2025/videos/${videoId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates)
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body?.message || `Failed to update video (HTTP ${res.status})`);
+    }
+    return await res.json();
+  }, []);
+
+  // Add a new video link
+  const addVideoLink = useCallback(async () => {
+    if (!newVideoUrl.trim()) return;
+
+    setAddingVideo(true);
+    setError(null);
+
+    try {
+      const res = await fetch(`${API_BASE}/api/year-in-review/2025/videos`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url: newVideoUrl,
+          title: newVideoTitle || undefined,
+          description: newVideoDescription || undefined,
+          projectId: newVideoProjectId || undefined,
+        })
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body?.message || `Failed to add video (HTTP ${res.status})`);
+      }
+
+      // Reload media to show the new video
+      await loadMedia();
+
+      // Reset form
+      setNewVideoUrl('');
+      setNewVideoTitle('');
+      setNewVideoDescription('');
+      setNewVideoProjectId('');
+      setShowAddVideoModal(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to add video');
+    } finally {
+      setAddingVideo(false);
+    }
+  }, [newVideoUrl, newVideoTitle, newVideoDescription, newVideoProjectId, loadMedia]);
+
   // Filter media
   const filteredMedia = media.filter(item => {
     if (typeFilter !== 'all') {
       if (typeFilter === 'photo') {
         if (!(item.file_type === 'photo' || item.file_type === 'image')) return false;
+      } else if (typeFilter === 'video_link') {
+        if (item.file_type !== 'video_link') return false;
+      } else if (typeFilter === 'video') {
+        // Show both uploaded videos and video links
+        if (item.file_type !== 'video' && item.file_type !== 'video_link') return false;
       } else if (item.file_type !== typeFilter) {
         return false;
       }
@@ -240,23 +381,49 @@ export default function MediaLibraryPage() {
     setSaving(true);
     setError(null);
     try {
-      const manual_tags = parseCsv(editManualTags);
-      const impact_themes = parseCsv(editImpactThemes);
-      const existingProjects = selectedMedia.project_ids || [];
-      const project_ids = editAddProjectId ? uniqStrings([...existingProjects, editAddProjectId]) : existingProjects;
+      // Handle video links differently - they use a different API
+      if (selectedMedia.file_type === 'video_link') {
+        // Extract the real video ID from the prefixed ID (e.g., "video-123" -> "123")
+        const realVideoId = selectedMedia.id.replace(/^video-/, '');
+        const projectId = editAddProjectId || selectedMedia.project_ids?.[0] || null;
 
-      const updated = await updateMediaItem(selectedMedia.id, {
-        title: editTitle || undefined,
-        description: editDescription || undefined,
-        alt_text: editAltText || undefined,
-        manual_tags,
-        impact_themes,
-        project_ids
-      });
+        await updateVideoLink(realVideoId, {
+          title: editTitle || undefined,
+          description: editDescription || undefined,
+          projectId
+        });
 
-      setMedia(prev => prev.map(m => (m.id === updated.id ? updated : m)));
-      setSelectedMedia(updated);
-      setEditAddProjectId('');
+        // Update local state
+        const updatedItem: MediaItem = {
+          ...selectedMedia,
+          title: editTitle,
+          description: editDescription,
+          project_ids: projectId ? [projectId] : []
+        };
+
+        setMedia(prev => prev.map(m => (m.id === selectedMedia.id ? updatedItem : m)));
+        setSelectedMedia(updatedItem);
+        setEditAddProjectId('');
+      } else {
+        // Regular media item
+        const manual_tags = parseCsv(editManualTags);
+        const impact_themes = parseCsv(editImpactThemes);
+        const existingProjects = selectedMedia.project_ids || [];
+        const project_ids = editAddProjectId ? uniqStrings([...existingProjects, editAddProjectId]) : existingProjects;
+
+        const updated = await updateMediaItem(selectedMedia.id, {
+          title: editTitle || undefined,
+          description: editDescription || undefined,
+          alt_text: editAltText || undefined,
+          manual_tags,
+          impact_themes,
+          project_ids
+        });
+
+        setMedia(prev => prev.map(m => (m.id === updated.id ? updated : m)));
+        setSelectedMedia(updated);
+        setEditAddProjectId('');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save changes');
     } finally {
@@ -316,6 +483,15 @@ export default function MediaLibraryPage() {
                 </span>
               )}
               <button
+                onClick={() => setShowAddVideoModal(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-sm font-medium transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                Add Video Link
+              </button>
+              <button
                 onClick={loadMedia}
                 className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition-colors"
               >
@@ -348,7 +524,8 @@ export default function MediaLibraryPage() {
           >
             <option value="all">All Types</option>
             <option value="photo">Photos</option>
-            <option value="video">Videos</option>
+            <option value="video">All Videos</option>
+            <option value="video_link">Video Links (YouTube, Loom, etc.)</option>
             <option value="document">Documents</option>
           </select>
 
@@ -482,13 +659,43 @@ export default function MediaLibraryPage() {
                 </div>
 
                 {/* Thumbnail */}
-                <div className="aspect-square">
+                <div className="aspect-square relative">
                   {isPhotoFile(item) ? (
                     <img
                       src={item.thumbnail_url || item.file_url}
                       alt={item.alt_text || item.title || 'Media item'}
                       className="w-full h-full object-cover"
                     />
+                  ) : item.file_type === 'video_link' ? (
+                    <>
+                      {/* Video link thumbnail */}
+                      {getVideoThumbnail(item) ? (
+                        <img
+                          src={getVideoThumbnail(item)!}
+                          alt={item.title || 'Video thumbnail'}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center">
+                          <svg className="w-16 h-16 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
+                      )}
+                      {/* Play button overlay */}
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="w-12 h-12 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center">
+                          <svg className="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
+                      </div>
+                      {/* Platform badge */}
+                      <div className={`absolute top-2 right-2 px-2 py-0.5 rounded text-xs font-bold text-white ${getPlatformColor(item.platform)}`}>
+                        {item.platform?.toUpperCase() || 'VIDEO'}
+                      </div>
+                    </>
                   ) : item.file_type === 'video' ? (
                     <div className="w-full h-full bg-slate-700 flex items-center justify-center">
                       <svg className="w-12 h-12 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -510,7 +717,13 @@ export default function MediaLibraryPage() {
                   <p className="text-xs text-white truncate">
                     {item.title || 'Untitled'}
                   </p>
-                  {item.manual_tags && item.manual_tags.length > 0 && (
+                  {item.file_type === 'video_link' && item.project_ids && item.project_ids.length > 0 ? (
+                    <div className="flex gap-1 mt-1">
+                      <span className="px-1 py-0.5 bg-teal-700 rounded text-xs text-teal-200">
+                        {projects.find(p => p.id === item.project_ids![0])?.name || 'Tagged'}
+                      </span>
+                    </div>
+                  ) : item.manual_tags && item.manual_tags.length > 0 ? (
                     <div className="flex gap-1 mt-1">
                       {item.manual_tags.slice(0, 2).map((tag, i) => (
                         <span key={i} className="px-1 py-0.5 bg-slate-700 rounded text-xs text-slate-300">
@@ -518,7 +731,7 @@ export default function MediaLibraryPage() {
                         </span>
                       ))}
                     </div>
-                  )}
+                  ) : null}
                 </div>
               </div>
             ))}
@@ -544,6 +757,37 @@ export default function MediaLibraryPage() {
                   alt={selectedMedia.alt_text || selectedMedia.title || 'Media preview'}
                   className="w-full h-full object-contain"
                 />
+              ) : selectedMedia.file_type === 'video_link' ? (
+                // Embedded video for video links
+                <div className="w-full h-full relative">
+                  {selectedMedia.embed_url ? (
+                    <iframe
+                      src={selectedMedia.embed_url}
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center gap-4">
+                      {getVideoThumbnail(selectedMedia) ? (
+                        <img
+                          src={getVideoThumbnail(selectedMedia)!}
+                          alt={selectedMedia.title || 'Video thumbnail'}
+                          className="max-w-[80%] max-h-[80%] object-contain rounded-lg"
+                        />
+                      ) : (
+                        <svg className="w-24 h-24 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      )}
+                    </div>
+                  )}
+                  {/* Platform badge */}
+                  <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold text-white ${getPlatformColor(selectedMedia.platform)}`}>
+                    {selectedMedia.platform?.toUpperCase() || 'VIDEO'}
+                  </div>
+                </div>
               ) : selectedMedia.file_type === 'video' ? (
                 <video
                   src={selectedMedia.file_url}
@@ -581,14 +825,28 @@ export default function MediaLibraryPage() {
                       <p className="text-slate-400">{selectedMedia.description}</p>
                     )}
                   </div>
-                  <a
-                    href={selectedMedia.file_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="shrink-0 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-sm transition-colors"
-                  >
-                    Open File
-                  </a>
+                  {selectedMedia.file_type === 'video_link' ? (
+                    <a
+                      href={selectedMedia.embed_url || selectedMedia.file_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={`shrink-0 flex items-center gap-2 px-3 py-2 text-white rounded-lg text-sm transition-colors ${getPlatformColor(selectedMedia.platform)} hover:opacity-90`}
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                      Watch on {selectedMedia.platform?.charAt(0).toUpperCase()}{selectedMedia.platform?.slice(1) || 'Video'}
+                    </a>
+                  ) : (
+                    <a
+                      href={selectedMedia.file_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="shrink-0 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-sm transition-colors"
+                    >
+                      Open File
+                    </a>
+                  )}
                 </div>
               </div>
 
@@ -642,9 +900,11 @@ export default function MediaLibraryPage() {
 
               {/* URL display */}
               <div>
-                <label className="block text-sm text-slate-400 mb-1">File URL</label>
+                <label className="block text-sm text-slate-400 mb-1">
+                  {selectedMedia.file_type === 'video_link' ? 'Video URL' : 'File URL'}
+                </label>
                 <div className="p-3 bg-slate-800 rounded-lg text-xs text-slate-400 font-mono break-all">
-                  {selectedMedia.file_url}
+                  {selectedMedia.file_type === 'video_link' ? (selectedMedia.embed_url || selectedMedia.file_url) : selectedMedia.file_url}
                 </div>
               </div>
 
@@ -652,7 +912,11 @@ export default function MediaLibraryPage() {
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-slate-500">Type:</span>
-                  <span className="ml-2 text-slate-300">{selectedMedia.file_type || (isPhotoFile(selectedMedia) ? 'photo' : 'unknown')}</span>
+                  <span className="ml-2 text-slate-300">
+                    {selectedMedia.file_type === 'video_link'
+                      ? `Video Link (${selectedMedia.platform || 'unknown'})`
+                      : selectedMedia.file_type || (isPhotoFile(selectedMedia) ? 'photo' : 'unknown')}
+                  </span>
                 </div>
                 <div>
                   <span className="text-slate-500">Added:</span>
@@ -693,7 +957,9 @@ export default function MediaLibraryPage() {
               {/* Edit metadata */}
               <div className="pt-4 border-t border-slate-800 space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-semibold text-white">Edit Metadata</h4>
+                  <h4 className="text-sm font-semibold text-white">
+                    {selectedMedia.file_type === 'video_link' ? 'Edit Video Details' : 'Edit Metadata'}
+                  </h4>
                   <button
                     onClick={saveSelectedMediaEdits}
                     disabled={saving}
@@ -703,82 +969,251 @@ export default function MediaLibraryPage() {
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs text-slate-400 mb-1">Title</label>
-                    <input
-                      value={editTitle}
-                      onChange={(e) => setEditTitle(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-teal-500 focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-slate-400 mb-1">Alt Text</label>
-                    <input
-                      value={editAltText}
-                      onChange={(e) => setEditAltText(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-teal-500 focus:outline-none"
-                    />
-                  </div>
-                </div>
+                {selectedMedia.file_type === 'video_link' ? (
+                  <>
+                    {/* Video link edit fields - simpler form */}
+                    <div>
+                      <label className="block text-xs text-slate-400 mb-1">Title</label>
+                      <input
+                        value={editTitle}
+                        onChange={(e) => setEditTitle(e.target.value)}
+                        className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-teal-500 focus:outline-none"
+                      />
+                    </div>
 
-                <div>
-                  <label className="block text-xs text-slate-400 mb-1">Description</label>
-                  <textarea
-                    value={editDescription}
-                    onChange={(e) => setEditDescription(e.target.value)}
-                    rows={3}
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-teal-500 focus:outline-none resize-none"
-                  />
-                </div>
+                    <div>
+                      <label className="block text-xs text-slate-400 mb-1">Description</label>
+                      <textarea
+                        value={editDescription}
+                        onChange={(e) => setEditDescription(e.target.value)}
+                        rows={3}
+                        className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-teal-500 focus:outline-none resize-none"
+                      />
+                    </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs text-slate-400 mb-1">Tags</label>
-                    <input
-                      value={editManualTags}
-                      onChange={(e) => setEditManualTags(e.target.value)}
-                      placeholder="comma, separated, tags"
-                      className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-teal-500 focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-slate-400 mb-1">Impact Themes</label>
-                    <input
-                      value={editImpactThemes}
-                      onChange={(e) => setEditImpactThemes(e.target.value)}
-                      placeholder="comma, separated, themes"
-                      className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-teal-500 focus:outline-none"
-                    />
-                  </div>
-                </div>
+                    <div>
+                      <label className="block text-xs text-slate-400 mb-1">Link to Project</label>
+                      <select
+                        value={editAddProjectId || selectedMedia.project_ids?.[0] || ''}
+                        onChange={(e) => setEditAddProjectId(e.target.value)}
+                        className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-teal-500 focus:outline-none"
+                      >
+                        <option value="">No project</option>
+                        {projects.map(p => (
+                          <option key={p.id} value={p.id}>{p.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Regular media edit fields */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs text-slate-400 mb-1">Title</label>
+                        <input
+                          value={editTitle}
+                          onChange={(e) => setEditTitle(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-teal-500 focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-slate-400 mb-1">Alt Text</label>
+                        <input
+                          value={editAltText}
+                          onChange={(e) => setEditAltText(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-teal-500 focus:outline-none"
+                        />
+                      </div>
+                    </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-end">
-                  <div>
-                    <label className="block text-xs text-slate-400 mb-1">Add Project</label>
-                    <select
-                      value={editAddProjectId}
-                      onChange={(e) => setEditAddProjectId(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-teal-500 focus:outline-none"
+                    <div>
+                      <label className="block text-xs text-slate-400 mb-1">Description</label>
+                      <textarea
+                        value={editDescription}
+                        onChange={(e) => setEditDescription(e.target.value)}
+                        rows={3}
+                        className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-teal-500 focus:outline-none resize-none"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs text-slate-400 mb-1">Tags</label>
+                        <input
+                          value={editManualTags}
+                          onChange={(e) => setEditManualTags(e.target.value)}
+                          placeholder="comma, separated, tags"
+                          className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-teal-500 focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-slate-400 mb-1">Impact Themes</label>
+                        <input
+                          value={editImpactThemes}
+                          onChange={(e) => setEditImpactThemes(e.target.value)}
+                          placeholder="comma, separated, themes"
+                          className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-teal-500 focus:outline-none"
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Add Project dropdown - only for regular media */}
+                {selectedMedia.file_type !== 'video_link' && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-end">
+                    <div>
+                      <label className="block text-xs text-slate-400 mb-1">Add Project</label>
+                      <select
+                        value={editAddProjectId}
+                        onChange={(e) => setEditAddProjectId(e.target.value)}
+                        className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-teal-500 focus:outline-none"
+                      >
+                        <option value="">Select project…</option>
+                        {projects.map(p => (
+                          <option key={p.id} value={p.id}>{p.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <button
+                      onClick={() => copyUrl(selectedMedia.id, 'id')}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        copySuccess === 'id'
+                          ? 'bg-teal-600 text-white'
+                          : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                      }`}
                     >
-                      <option value="">Select project…</option>
-                      {projects.map(p => (
-                        <option key={p.id} value={p.id}>{p.name}</option>
-                      ))}
-                    </select>
+                      {copySuccess === 'id' ? 'Copied!' : 'Copy Media ID'}
+                    </button>
                   </div>
-                  <button
-                    onClick={() => copyUrl(selectedMedia.id, 'id')}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      copySuccess === 'id'
-                        ? 'bg-teal-600 text-white'
-                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                    }`}
-                  >
-                    {copySuccess === 'id' ? 'Copied!' : 'Copy Media ID'}
-                  </button>
-                </div>
+                )}
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Video Link Modal */}
+      {showAddVideoModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          onClick={() => setShowAddVideoModal(false)}
+        >
+          <div
+            className="bg-slate-900 rounded-2xl max-w-lg w-full border border-slate-700"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-purple-600/20 rounded-lg">
+                  <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-white">Add Video Link</h3>
+              </div>
+              <button
+                onClick={() => setShowAddVideoModal(false)}
+                className="p-2 text-slate-400 hover:text-white transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Form */}
+            <div className="p-6 space-y-4">
+              <p className="text-sm text-slate-400">
+                Add a video from YouTube, Vimeo, or Loom. The URL will be automatically parsed.
+              </p>
+
+              {/* Video URL */}
+              <div>
+                <label className="block text-sm text-slate-300 mb-2">Video URL *</label>
+                <input
+                  type="url"
+                  value={newVideoUrl}
+                  onChange={(e) => setNewVideoUrl(e.target.value)}
+                  placeholder="https://www.youtube.com/watch?v=... or https://loom.com/share/..."
+                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-purple-500 focus:outline-none"
+                  autoFocus
+                />
+              </div>
+
+              {/* Title */}
+              <div>
+                <label className="block text-sm text-slate-300 mb-2">Title (optional)</label>
+                <input
+                  type="text"
+                  value={newVideoTitle}
+                  onChange={(e) => setNewVideoTitle(e.target.value)}
+                  placeholder="Video title"
+                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-purple-500 focus:outline-none"
+                />
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-sm text-slate-300 mb-2">Description (optional)</label>
+                <textarea
+                  value={newVideoDescription}
+                  onChange={(e) => setNewVideoDescription(e.target.value)}
+                  placeholder="What's this video about?"
+                  rows={3}
+                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-purple-500 focus:outline-none resize-none"
+                />
+              </div>
+
+              {/* Project */}
+              <div>
+                <label className="block text-sm text-slate-300 mb-2">Link to Project (optional)</label>
+                <select
+                  value={newVideoProjectId}
+                  onChange={(e) => setNewVideoProjectId(e.target.value)}
+                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-purple-500 focus:outline-none"
+                >
+                  <option value="">No project</option>
+                  {projects.map(p => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Supported platforms */}
+              <div className="flex items-center gap-3 text-xs text-slate-500">
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                  YouTube
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                  Loom
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                  Vimeo
+                </span>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-end gap-3 p-6 border-t border-slate-800">
+              <button
+                onClick={() => setShowAddVideoModal(false)}
+                className="px-4 py-2 text-slate-300 hover:text-white transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={addVideoLink}
+                disabled={!newVideoUrl.trim() || addingVideo}
+                className="px-6 py-2 bg-purple-600 hover:bg-purple-500 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-lg font-medium transition-colors"
+              >
+                {addingVideo ? 'Adding...' : 'Add Video'}
+              </button>
             </div>
           </div>
         </div>

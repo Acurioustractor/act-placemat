@@ -157,11 +157,13 @@ export interface Storyteller {
 }
 
 export interface Place {
-  indigenousName: string
+  indigenousName?: string
   westernName?: string | null
   displayName: string
-  map?: string  // "lat,lng"
-  state?: string
+  map?: string | null  // "lat,lng"
+  state?: string | null
+  lat?: number | null
+  lng?: number | null
 }
 
 // Enhanced Project interface
@@ -171,11 +173,18 @@ export interface Project {
   name: string
   title?: string
   description?: string
+  summary?: string
   aiSummary?: string
   status?: string
   coverImage?: string | null
+  cover_url?: string | null
+  coverImageUrl?: string | null
   organization?: string
   area?: string
+  places?: Array<{ name: string }>
+  organizations?: Array<{ name: string }>
+  healthScore?: number
+  beautifulObsolescenceScore?: number
 
   // PROJECT TYPE CLASSIFICATION
   projectType?: ProjectType
@@ -214,6 +223,8 @@ export interface Project {
 
   // Location & Place
   location?: string
+  latitude?: number | null
+  longitude?: number | null
   relatedPlaces?: Place[]
 
   // Relationships

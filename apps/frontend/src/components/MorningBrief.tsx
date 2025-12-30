@@ -1,22 +1,9 @@
 import { useState, useEffect, useMemo } from 'react'
-import { resolveApiUrl } from '../config/env'
+import { api } from '../services/api'
 import { Card } from './ui/Card'
 import { Pill } from './ui/Pill'
 import ProjectsMap from './ProjectsMap'
-
-interface Project {
-  id: string
-  name: string
-  status?: string
-  themes?: string[]
-  deadline?: string
-  revenueActual?: number | null
-  revenuePotential?: number | null
-  storytellerCount?: number
-  partnerCount?: number
-  relatedOrganisations?: Array<any>
-  relatedPlaces?: Array<{ displayName?: string; indigenousName?: string }>
-}
+import type { Project } from '../types/project'
 
 export function MorningBrief() {
   const [projects, setProjects] = useState<Project[]>([])
@@ -29,11 +16,7 @@ export function MorningBrief() {
   const fetchProjects = async () => {
     setLoading(true)
     try {
-      const response = await fetch(resolveApiUrl('/api/real/projects'))
-      if (!response.ok) {
-        throw new Error(`API returned ${response.status}`)
-      }
-      const data = await response.json()
+      const data = await api.getProjects()
       setProjects(data.projects || [])
     } catch (error) {
       console.error('Failed to fetch projects:', error)

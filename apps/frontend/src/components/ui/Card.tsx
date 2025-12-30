@@ -1,4 +1,4 @@
-import type { PropsWithChildren, ReactNode } from 'react'
+import type { MouseEventHandler, PropsWithChildren, ReactNode } from 'react'
 
 interface CardProps {
   className?: string
@@ -7,6 +7,7 @@ interface CardProps {
   footer?: ReactNode
   hover?: boolean
   variant?: 'default' | 'soft' | 'bordered' | 'solid'
+  onClick?: MouseEventHandler<HTMLDivElement>
 }
 
 export function Card({
@@ -17,6 +18,7 @@ export function Card({
   footer,
   hover = false,
   variant = 'default',
+  onClick,
 }: PropsWithChildren<CardProps>) {
   const paddingClass = {
     none: 'p-0',
@@ -40,13 +42,14 @@ export function Card({
     variantClasses[variant],
     paddingClass,
     hoverClasses,
+    onClick ? 'cursor-pointer' : '',
     className,
   ]
     .filter(Boolean)
     .join(' ')
 
   return (
-    <div className={classes}>
+    <div className={classes} onClick={onClick}>
       {header && <div className="mb-6">{header}</div>}
       <div>{children}</div>
       {footer && <div className="mt-8 pt-6 border-t border-clay-200">{footer}</div>}

@@ -7,13 +7,12 @@
 
 import { Router } from 'express';
 import { createSupabaseClient } from '../config/supabase.js';
-import { Logger } from '../utils/logger.js';
+import { logger } from '../utils/logger.js';
 import archiver from 'archiver';
 import { Parser } from 'json2csv';
 import { format, startOfQuarter, endOfQuarter, subDays } from 'date-fns';
 
 const router = Router();
-const logger = new Logger('ReportsAPI');
 const supabase = createSupabaseClient();
 
 /**

@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { VideoEmbed } from './VideoEmbed';
-import type { ContentBlock, VideoPlatform } from '../types/yearInReview';
+import { VideoErrorBoundary } from './VideoErrorBoundary';
+import type { ContentBlock } from '../types/yearInReview';
 
 interface ContentBlockRendererProps {
   blocks: ContentBlock[];
@@ -262,12 +263,14 @@ function VideoBlock({ data }: { data: ContentBlock['data'] }) {
 
   return (
     <figure>
-      <VideoEmbed
-        platform={data.platform || 'direct'}
-        embedUrl={data.videoUrl}
-        title={data.videoTitle}
-        className="shadow-lg"
-      />
+      <VideoErrorBoundary>
+        <VideoEmbed
+          platform={data.platform || 'direct'}
+          embedUrl={data.videoUrl}
+          title={data.videoTitle}
+          className="shadow-lg"
+        />
+      </VideoErrorBoundary>
       {data.caption && (
         <figcaption className="mt-3 text-center text-slate-400 text-sm italic">
           {data.caption}

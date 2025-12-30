@@ -16,6 +16,7 @@ import {
 import {
   getReviewProjects,
   createReviewProject,
+  updateReviewProject,
   linkMedia,
   getVideos,
   addVideo,
@@ -49,6 +50,99 @@ import type {
 const SEASONS = ['Planting', 'Growing', 'Harvesting', 'Resting'];
 const SEASON_COLORS = ['#59c3c3', '#ffa857', '#f7a399', '#d8d8f6'];
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
+// Helper to extract platform and videoId from embed URL
+function parseVideoUrl(embedUrl: string): { platform: string; videoId: string | null } {
+  if (!embedUrl) return { platform: 'direct', videoId: null };
+
+  // YouTube patterns
+  // youtube.com/watch?v=VIDEO_ID
+  // youtube.com/embed/VIDEO_ID
+  // youtu.be/VIDEO_ID
+  const youtubeMatch = embedUrl.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  if (youtubeMatch) {
+    return { platform: 'youtube', videoId: youtubeMatch[1] };
+  }
+
+  // Loom patterns
+  // loom.com/share/VIDEO_ID
+  // loom.com/embed/VIDEO_ID
+  const loomMatch = embedUrl.match(/loom\.com\/(?:share|embed)\/([a-zA-Z0-9]+)/);
+  if (loomMatch) {
+    return { platform: 'loom', videoId: loomMatch[1] };
+  }
+
+  // Vimeo patterns
+  // vimeo.com/VIDEO_ID
+  // player.vimeo.com/video/VIDEO_ID
+  const vimeoMatch = embedUrl.match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/);
+  if (vimeoMatch) {
+    return { platform: 'vimeo', videoId: vimeoMatch[1] };
+  }
+
+  // Descript patterns
+  // share.descript.com/view/VIDEO_ID
+  // share.descript.com/embed/VIDEO_ID
+  const descriptMatch = embedUrl.match(/share\.descript\.com\/(?:view|embed)\/([a-zA-Z0-9]+)/);
+  if (descriptMatch) {
+    return { platform: 'descript', videoId: descriptMatch[1] };
+  }
+
+  // Direct video files
+  if (embedUrl.match(/\.(mp4|webm|ogg|mov|m4v)($|\?|#)/i)) {
+    return { platform: 'direct', videoId: null };
+  }
+
+  return { platform: 'unknown', videoId: null };
+}
+
+// Helper to get proper embed URL for iframe (handles Descript /view/ vs /embed/)
+function getProperEmbedUrl(embedUrl: string): string {
+  if (!embedUrl) return '';
+  // Descript URLs need /embed/ not /view/ for iframe embedding
+  if (embedUrl.includes('share.descript.com/view/')) {
+    return embedUrl.replace('/view/', '/embed/');
+  }
+  // Loom URLs need /embed/ not /share/
+  if (embedUrl.includes('loom.com/share/')) {
+    return embedUrl.replace('/share/', '/embed/');
+  }
+  return embedUrl;
+}
+
+// Helper to get video thumbnail URL - parses from embedUrl
+function getVideoThumbnailUrl(embedUrl: string, existingThumbnail?: string): string | null {
+  if (existingThumbnail) return existingThumbnail;
+  if (!embedUrl) return null;
+
+  const { platform, videoId } = parseVideoUrl(embedUrl);
+  if (!videoId) return null;
+
+  switch (platform) {
+    case 'youtube':
+      return `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+    case 'loom':
+      return `https://cdn.loom.com/sessions/thumbnails/${videoId}-with-play.gif`;
+    case 'descript':
+    case 'vimeo':
+      // These platforms don't have public thumbnail APIs
+      // Will use branded placeholder instead
+      return null;
+    default:
+      return null;
+  }
+}
+
+// Platform badge colors for video library
+function getVideoPlatformColor(platform?: string): string {
+  switch (platform) {
+    case 'youtube': return 'bg-red-500';
+    case 'loom': return 'bg-purple-500';
+    case 'vimeo': return 'bg-blue-500';
+    case 'descript': return 'bg-teal-500';
+    default: return 'bg-slate-500';
+  }
+}
 
 type TabType =
   | 'entries'
@@ -124,12 +218,14 @@ function YearInReviewAdminInner() {
     introText: string;
     featuredProjects: FeaturedProjectsBySeason;
     redevelopmentSites: RedevelopmentSite[];
+    deletedEntryIds: string[];
   }>({
     heroTitle: 'Growing Curious',
     heroSubtitle: 'Our Journey Through the 2025 Seasons',
     introText: '',
     featuredProjects: {},
     redevelopmentSites: cloneRedevelopmentSites(),
+    deletedEntryIds: [],
   });
 
   // LinkedIn upload state
@@ -259,19 +355,23 @@ function YearInReviewAdminInner() {
         const curatedIds = new Set(curatedData.entries.map((c) => c.id));
 
         // Start with curated entries (preserves deletions)
-        const curatedEntriesWithProjects = curatedData.entries.map((c) => {
-          const project = projectsData.find((p: ReviewProject) => p.timelineEntryId === c.id);
-          return {
-            ...c,
-            hasProjectPage: !!project,
-            projectSlug: project?.slug,
-          };
-        });
+        const deletedIds = new Set((curatedData.settings?.deletedEntryIds as string[]) || []);
+
+        const curatedEntriesWithProjects = curatedData.entries
+          .filter((c) => !deletedIds.has(c.id))
+          .map((c) => {
+            const project = projectsData.find((p: ReviewProject) => p.timelineEntryId === c.id);
+            return {
+              ...c,
+              hasProjectPage: !!project,
+              projectSlug: project?.slug,
+            };
+          });
 
         // Find truly NEW entries from Notion that aren't in curated data yet
         const newEntries = yearData.timeline.flatMap((season) =>
           season.entries
-            .filter((e) => !curatedIds.has(e.id))
+            .filter((e) => !curatedIds.has(e.id) && !deletedIds.has(e.id))
             .map((e) => {
               const project = projectsData.find((p: ReviewProject) => p.timelineEntryId === e.id);
               return {
@@ -339,14 +439,17 @@ function YearInReviewAdminInner() {
   }, []);
 
   // Save curated entries
-  const handleSave = useCallback(async () => {
-    setSaving(true);
-    try {
+  const handleSave = useCallback(
+    async (overrides?: { entries?: TimelineEntry[]; settings?: Record<string, unknown> }) => {
+      setSaving(true);
+      try {
+        const entriesToSave = overrides?.entries ?? entries;
+        const settingsToSave = overrides?.settings ?? settings;
       await saveCuratedEntries(2025, {
-        entries,
-        settings,
+        entries: entriesToSave,
+        settings: settingsToSave,
       });
-      const currentState = JSON.stringify({ entries, settings });
+      const currentState = JSON.stringify({ entries: entriesToSave, settings: settingsToSave });
       setLastSavedState(currentState);
       setHasUnsavedChanges(false);
       toast.success('Changes saved successfully');
@@ -629,6 +732,42 @@ function YearInReviewAdminInner() {
     });
   };
 
+  // Sync featured status to database when a project is added/removed from featured
+  const syncFeaturedStatus = async (slug: string, isFeatured: boolean) => {
+    try {
+      await updateReviewProject(2025, slug, { isFeatured });
+      // Update local state
+      setProjects(prev => prev.map(p =>
+        p.slug === slug ? { ...p, isFeatured } : p
+      ));
+    } catch (err) {
+      console.error('Failed to sync featured status:', err);
+    }
+  };
+
+  // Handle featured project selection with database sync
+  const handleFeaturedProjectChange = async (seasonIndex: number, newSlug: string) => {
+    // Get the old slug before updating
+    const oldSlug = settings.featuredProjects?.[seasonIndex]?.slug;
+
+    // Update the settings
+    upsertFeaturedProject(seasonIndex, { slug: newSlug });
+    if (newSlug) autofillFeaturedFromProject(seasonIndex, newSlug);
+
+    // Sync featured status to database
+    if (oldSlug && oldSlug !== newSlug) {
+      // Check if oldSlug is still featured in another season
+      const stillFeatured = Object.entries(settings.featuredProjects || {})
+        .some(([idx, fp]) => parseInt(idx) !== seasonIndex && fp.slug === oldSlug);
+      if (!stillFeatured) {
+        syncFeaturedStatus(oldSlug, false);
+      }
+    }
+    if (newSlug) {
+      syncFeaturedStatus(newSlug, true);
+    }
+  };
+
   // Create project page for entry
   const handleCreateProject = async (entry: TimelineEntry) => {
     try {
@@ -765,7 +904,10 @@ function YearInReviewAdminInner() {
       if (!confirm(`Delete "${entry.title}"? This cannot be undone.`)) return;
       try {
         await deleteManualEntry(2025, entry.id);
-        setEntries(prev => prev.filter(e => e.id !== entry.id));
+        const newEntries = entries.filter((e) => e.id !== entry.id);
+        setEntries(newEntries);
+        await handleSave({ entries: newEntries });
+        toast.success(`Deleted "${entry.title}"`);
         // Close sidebar if this entry was open
         if (selectedEntryForDetail?.id === entry.id) {
           setSelectedEntryForDetail(null);
@@ -775,9 +917,17 @@ function YearInReviewAdminInner() {
         toast.error('Failed to delete entry');
       }
     } else {
-      // Source entries (notion/gmail/linkedin) - just exclude them
-      if (!confirm(`Exclude "${entry.title}" from the timeline?`)) return;
-      updateEntry(entry.id, { included: false });
+      // Source entries (notion/gmail/linkedin) - mark as excluded/deleted from timeline
+      if (!confirm(`Delete "${entry.title}" from the timeline? It can be restored by re-including it later.`)) return;
+      const newEntries = entries.map((e) => (e.id === entry.id ? { ...e, included: false } : e));
+      const updatedSettings = {
+        ...settings,
+        deletedEntryIds: Array.from(new Set([...(settings.deletedEntryIds || []), entry.id]))
+      };
+      setEntries(newEntries);
+      setSettings(updatedSettings);
+      await handleSave({ entries: newEntries, settings: updatedSettings });
+      toast.success(`Deleted "${entry.title}"`);
     }
   };
 
@@ -800,8 +950,9 @@ function YearInReviewAdminInner() {
       }
     }
 
-    // Remove ALL excluded entries from state (will be saved to curated.json)
-    setEntries(prev => prev.filter(e => e.included !== false));
+    const newEntries = entries.filter(e => e.included !== false);
+    setEntries(newEntries);
+    await handleSave({ entries: newEntries });
     toast.success(`Deleted ${excludedEntries.length} excluded entries`);
   };
 
@@ -1281,7 +1432,7 @@ function YearInReviewAdminInner() {
               </svg>
             </button>
             <button
-              onClick={handleSave}
+              onClick={() => handleSave()}
               disabled={saving}
               className={`font-semibold px-6 py-2 rounded-lg transition-colors ${
                 hasUnsavedChanges
@@ -1700,7 +1851,7 @@ function YearInReviewAdminInner() {
                                 : 'bg-slate-700 text-slate-500 hover:bg-red-600/20 hover:text-red-400'
                             }`}
                           >
-                            {entry.source === 'manual' ? '🗑️ Delete' : '✕ Exclude'}
+                            🗑️ Delete
                           </button>
                         </div>
 
@@ -1865,7 +2016,7 @@ function YearInReviewAdminInner() {
                                         : 'bg-slate-700 text-slate-500 hover:bg-red-600/20 hover:text-red-400'
                                     }`}
                                   >
-                                    {entry.source === 'manual' ? '🗑️ Delete' : '✕ Exclude'}
+                              🗑️ Delete
                                   </button>
                                 </div>
 
@@ -2162,7 +2313,7 @@ function YearInReviewAdminInner() {
 
         <div className="mt-6">
           <button
-            onClick={handleSave}
+            onClick={() => handleSave()}
             disabled={saving}
             className="bg-teal-500 hover:bg-teal-400 disabled:bg-slate-600 text-slate-900 font-semibold px-6 py-3 rounded-lg transition-colors"
           >
@@ -2250,10 +2401,20 @@ function YearInReviewAdminInner() {
               </div>
             ) : (
               <div className="space-y-3 mb-8">
-                <h3 className="text-lg font-semibold text-white mb-3">Your Project Pages ({projects.length})</h3>
-                {projects
-                  .filter(p => !projectSearchTerm || p.title.toLowerCase().includes(projectSearchTerm.toLowerCase()))
-                  .map((project) => (
+                {/* Get slugs of projects that are featured in the Featured Projects tab */}
+                {(() => {
+                  const featuredSlugs = new Set(
+                    Object.values(settings.featuredProjects || {})
+                      .map(fp => fp.slug)
+                      .filter(Boolean)
+                  );
+                  const nonFeaturedProjects = projects.filter(p => !featuredSlugs.has(p.slug));
+                  return (
+                    <>
+                      <h3 className="text-lg font-semibold text-white mb-3">Your Project Pages ({nonFeaturedProjects.length})</h3>
+                      {nonFeaturedProjects
+                        .filter(p => !projectSearchTerm || p.title.toLowerCase().includes(projectSearchTerm.toLowerCase()))
+                        .map((project) => (
                   <div
                     key={project.id}
                     className={`flex items-center gap-4 p-4 bg-slate-800 rounded-lg ${
@@ -2301,23 +2462,39 @@ function YearInReviewAdminInner() {
 
                     {/* Actions */}
                     <div className="flex items-center gap-2">
-                      <a
-                        href={`/2025-review/admin/projects/${project.slug}`}
-                        className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-medium transition-colors"
-                      >
-                        Edit
-                      </a>
-                      <a
-                        href={`/2025-review/${project.slug}`}
-                        target="_blank"
-                        className="px-3 py-2 text-slate-400 hover:text-white transition-colors"
-                        title="Preview"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                      </a>
+                      {project.isFeatured ? (
+                        // Featured projects go to their dedicated Year in Review page
+                        <a
+                          href={`/2025-review/${project.slug}`}
+                          className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                          </svg>
+                          View Featured Page
+                        </a>
+                      ) : (
+                        // Regular projects go to the admin editor
+                        <>
+                          <a
+                            href={`/2025-review/admin/projects/${project.slug}`}
+                            className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-medium transition-colors"
+                          >
+                            Edit
+                          </a>
+                          <a
+                            href={`/2025-review/${project.slug}`}
+                            target="_blank"
+                            className="px-3 py-2 text-slate-400 hover:text-white transition-colors"
+                            title="Preview"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          </a>
+                        </>
+                      )}
                       <button
                         onClick={() => deleteProject(project.id, project.slug)}
                         disabled={projectsLoading}
@@ -2330,7 +2507,10 @@ function YearInReviewAdminInner() {
                       </button>
                     </div>
                   </div>
-                ))}
+                        ))}
+                    </>
+                  );
+                })()}
               </div>
             )}
 
@@ -2652,22 +2832,17 @@ function YearInReviewAdminInner() {
                       </div>
                       <div className="flex items-center gap-2">
                         {fp.slug && (
-                          <>
-                            <a
-                              href={`/2025-review/${fp.slug}?preview=true`}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition-colors"
-                            >
-                              Preview →
-                            </a>
-                            <a
-                              href={`/2025-review/admin/projects/${fp.slug}`}
-                              className="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition-colors"
-                            >
-                              Edit Page →
-                            </a>
-                          </>
+                          <a
+                            href={`/2025-review/${fp.slug}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="px-3 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                            </svg>
+                            View Featured Page →
+                          </a>
                         )}
                       </div>
                     </div>
@@ -2707,11 +2882,7 @@ function YearInReviewAdminInner() {
                           <label className="block text-sm font-medium text-slate-400 mb-2">Project Page</label>
                           <select
                             value={fp.slug}
-                            onChange={(e) => {
-                              const slug = e.target.value;
-                              upsertFeaturedProject(seasonIndex, { slug });
-                              if (slug) autofillFeaturedFromProject(seasonIndex, slug);
-                            }}
+                            onChange={(e) => handleFeaturedProjectChange(seasonIndex, e.target.value)}
                             className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-teal-500"
                           >
                             <option value="">None</option>
@@ -2730,7 +2901,10 @@ function YearInReviewAdminInner() {
                               Autofill from page
                             </button>
                             <button
-                              onClick={() => upsertFeaturedProject(seasonIndex, { slug: '', title: '', subtitle: '', description: '', tags: [], heroImage: undefined })}
+                              onClick={() => {
+                                handleFeaturedProjectChange(seasonIndex, '');
+                                upsertFeaturedProject(seasonIndex, { title: '', subtitle: '', description: '', tags: [], heroImage: undefined });
+                              }}
                               className="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition-colors"
                             >
                               Reset
@@ -2819,7 +2993,7 @@ function YearInReviewAdminInner() {
 
             <div className="mt-8">
               <button
-                onClick={handleSave}
+                onClick={() => handleSave()}
                 disabled={saving}
                 className="bg-teal-500 hover:bg-teal-400 disabled:bg-slate-600 text-slate-900 font-semibold px-6 py-3 rounded-lg transition-colors"
               >
@@ -3168,36 +3342,49 @@ function YearInReviewAdminInner() {
                 <p className="text-slate-500 text-sm mt-1">Add Loom, YouTube, or Vimeo videos</p>
               </div>
             ) : (
-              <div className="grid gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {videos
                   .filter((video: any) => {
                     if (!videoProjectFilter) return true;
                     if (videoProjectFilter === 'untagged') return !video.project_id;
                     return video.project_id === videoProjectFilter;
                   })
-                  .map((video) => (
-                  <div key={video.id} className="bg-slate-800 rounded-xl overflow-hidden">
+                  .map((video) => {
+                    const { platform: detectedPlatform } = parseVideoUrl(video.embedUrl);
+                    const thumbnailUrl = getVideoThumbnailUrl(video.embedUrl, video.thumbnailUrl);
+                    return (
+                  <div key={video.id} className="bg-slate-800 rounded-xl overflow-hidden group">
                     {editingVideoId === video.id ? (
-                      // Editing mode
-                      <div className="p-4 space-y-4">
-                        <div className="flex items-center gap-4">
-                          <div className="w-24 h-16 rounded bg-slate-700 flex items-center justify-center flex-shrink-0">
-                            {video.thumbnailUrl ? (
-                              <img src={video.thumbnailUrl} alt="" className="w-full h-full object-cover rounded" />
-                            ) : (
-                              <span className="text-2xl">
-                                {video.platform === 'youtube' ? '▶️' : video.platform === 'loom' ? '🔴' : '🎬'}
-                              </span>
-                            )}
+                      // Editing mode with video preview
+                      <div className="space-y-4">
+                        {/* Video Preview */}
+                        <div className="relative aspect-video bg-slate-900">
+                          <iframe
+                            src={getProperEmbedUrl(video.embedUrl)}
+                            className="absolute inset-0 w-full h-full"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                          {/* Platform badge */}
+                          <div className={`absolute top-3 left-3 px-2 py-1 rounded text-xs font-bold text-white ${getVideoPlatformColor(detectedPlatform)}`}>
+                            {detectedPlatform.toUpperCase()}
                           </div>
-                          <div className="flex-1">
+                        </div>
+
+                        {/* Edit form */}
+                        <div className="p-4 space-y-3">
+                          <div>
+                            <label className="block text-xs text-slate-400 mb-1">Title</label>
                             <input
                               type="text"
                               value={editVideoTitle}
                               onChange={(e) => setEditVideoTitle(e.target.value)}
                               placeholder="Video title"
-                              className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-teal-500 mb-2"
+                              className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-teal-500"
                             />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-slate-400 mb-1">Description</label>
                             <textarea
                               value={editVideoDescription}
                               onChange={(e) => setEditVideoDescription(e.target.value)}
@@ -3206,104 +3393,122 @@ function YearInReviewAdminInner() {
                               className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-teal-500 resize-none"
                             />
                           </div>
-                        </div>
-                        {/* Project selector */}
-                        <div>
-                          <label className="block text-sm text-slate-400 mb-1">Link to Project</label>
-                          <select
-                            value={editVideoProjectId}
-                            onChange={(e) => setEditVideoProjectId(e.target.value)}
-                            className="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-teal-500"
-                          >
-                            <option value="">No project</option>
-                            {notionProjects.map((p) => (
-                              <option key={p.id} value={p.id}>{p.name}</option>
-                            ))}
-                          </select>
-                        </div>
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={cancelEditingVideo}
-                            className="px-4 py-2 text-slate-400 hover:text-white transition-colors"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            onClick={handleUpdateVideo}
-                            disabled={videoSaving}
-                            className="px-4 py-2 bg-teal-600 hover:bg-teal-500 disabled:bg-slate-600 text-white rounded-lg font-medium transition-colors"
-                          >
-                            {videoSaving ? 'Saving...' : 'Save Changes'}
-                          </button>
+                          <div>
+                            <label className="block text-xs text-slate-400 mb-1">Link to Project</label>
+                            <select
+                              value={editVideoProjectId}
+                              onChange={(e) => setEditVideoProjectId(e.target.value)}
+                              className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-teal-500"
+                            >
+                              <option value="">No project</option>
+                              {notionProjects.map((p) => (
+                                <option key={p.id} value={p.id}>{p.name}</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="flex items-center justify-end gap-2 pt-2">
+                            <button
+                              onClick={cancelEditingVideo}
+                              className="px-4 py-2 text-slate-400 hover:text-white transition-colors"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onClick={handleUpdateVideo}
+                              disabled={videoSaving}
+                              className="px-4 py-2 bg-teal-600 hover:bg-teal-500 disabled:bg-slate-600 text-white rounded-lg font-medium transition-colors"
+                            >
+                              {videoSaving ? 'Saving...' : 'Save'}
+                            </button>
+                          </div>
                         </div>
                       </div>
                     ) : (
-                      // Display mode
-                      <div className="flex items-center gap-4 p-4">
-                        <div className="w-24 h-16 rounded bg-slate-700 flex items-center justify-center flex-shrink-0">
-                          {video.thumbnailUrl ? (
-                            <img src={video.thumbnailUrl} alt="" className="w-full h-full object-cover rounded" />
-                          ) : (
-                            <span className="text-2xl">
-                              {video.platform === 'youtube' ? '▶️' : video.platform === 'loom' ? '🔴' : '🎬'}
+                      // Display mode with video preview
+                      <>
+                        {/* Video Preview */}
+                        <div className="relative aspect-video bg-slate-900">
+                          <iframe
+                            src={getProperEmbedUrl(video.embedUrl)}
+                            className="absolute inset-0 w-full h-full pointer-events-none"
+                            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            loading="lazy"
+                          />
+
+                          {/* Platform badge */}
+                          <div className={`absolute top-3 left-3 px-2 py-1 rounded text-xs font-bold text-white ${getVideoPlatformColor(detectedPlatform)} z-10`}>
+                            {detectedPlatform.toUpperCase()}
+                          </div>
+
+                          {/* Featured star */}
+                          {video.isFeatured && (
+                            <div className="absolute top-3 right-3 z-10">
+                              <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Info */}
+                        <div className="p-3">
+                          <h4 className="font-medium text-white truncate">{video.title || 'Untitled video'}</h4>
+                          {video.description && (
+                            <p className="text-sm text-slate-400 truncate mt-1">{video.description}</p>
+                          )}
+                          {(video as any).project_id && (
+                            <span className="inline-block mt-2 text-xs px-2 py-0.5 bg-purple-500/20 text-purple-400 rounded">
+                              {notionProjects.find(p => p.id === (video as any).project_id)?.name || 'Project'}
                             </span>
                           )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium truncate">{video.title || 'Untitled video'}</p>
-                            {video.isFeatured && (
-                              <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">Featured</span>
-                            )}
+
+                          {/* Actions */}
+                          <div className="flex items-center justify-end gap-1 mt-3 pt-3 border-t border-slate-700">
+                            <button
+                              onClick={() => toggleVideoFeatured(video.id, video.isFeatured || false)}
+                              className={`p-2 transition-colors ${video.isFeatured ? 'text-yellow-400' : 'text-slate-400 hover:text-yellow-400'}`}
+                              title={video.isFeatured ? 'Remove from featured' : 'Mark as featured'}
+                            >
+                              <svg className="w-5 h-5" fill={video.isFeatured ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => startEditingVideo(video)}
+                              className="p-2 text-slate-400 hover:text-teal-400 transition-colors"
+                              title="Edit video"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                              </svg>
+                            </button>
+                            <a
+                              href={video.embedUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="p-2 text-slate-400 hover:text-blue-400 transition-colors"
+                              title="Open video"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
+                            </a>
+                            <button
+                              onClick={() => handleDeleteVideo(video.id)}
+                              className="p-2 text-slate-400 hover:text-red-400 transition-colors"
+                              title="Delete video"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <p className="text-sm text-slate-400">{video.platform}</p>
-                            {(video as any).project_id && (
-                              <span className="text-xs px-2 py-0.5 bg-purple-500/20 text-purple-400 rounded">
-                                {notionProjects.find(p => p.id === (video as any).project_id)?.name || 'Project'}
-                              </span>
-                            )}
-                          </div>
-                          {video.description && (
-                            <p className="text-sm text-slate-500 truncate mt-1">{video.description}</p>
-                          )}
                         </div>
-                        <div className="flex items-center gap-1">
-                          {/* Featured toggle */}
-                          <button
-                            onClick={() => toggleVideoFeatured(video.id, video.isFeatured || false)}
-                            className={`p-2 transition-colors ${video.isFeatured ? 'text-yellow-400' : 'text-slate-400 hover:text-yellow-400'}`}
-                            title={video.isFeatured ? 'Remove from featured' : 'Mark as featured'}
-                          >
-                            <svg className="w-5 h-5" fill={video.isFeatured ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                            </svg>
-                          </button>
-                          {/* Edit button */}
-                          <button
-                            onClick={() => startEditingVideo(video)}
-                            className="p-2 text-slate-400 hover:text-teal-400 transition-colors"
-                            title="Edit video"
-                          >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                          </button>
-                          {/* Delete button */}
-                          <button
-                            onClick={() => handleDeleteVideo(video.id)}
-                            className="p-2 text-slate-400 hover:text-red-400 transition-colors"
-                            title="Delete video"
-                          >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
+                      </>
                     )}
                   </div>
-                ))}
+                    );
+                  })}
               </div>
             )}
           </div>
@@ -3432,7 +3637,7 @@ function YearInReviewAdminInner() {
               </div>
 
               <button
-                onClick={handleSave}
+                onClick={() => handleSave()}
                 disabled={saving}
                 className="bg-teal-500 hover:bg-teal-400 disabled:bg-slate-600 text-slate-900 font-semibold px-6 py-3 rounded-lg transition-colors"
               >

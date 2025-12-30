@@ -1,0 +1,109 @@
+================================================================================
+SUBSCRIPTION TRACKER MIGRATION - SIMPLE INSTRUCTIONS
+================================================================================
+
+You need to apply this migration file to your Supabase database:
+  /Users/benknight/Code/ACT Placemat/apps/backend/subscription-tracker/migrations/20260101000000_subscription_tracker.sql
+
+The migration has already been copied to:
+  /Users/benknight/Code/ACT Placemat/supabase/migrations/20260101000000_subscription_tracker.sql
+
+================================================================================
+OPTION 1: Ask someone with Supabase Dashboard access
+================================================================================
+
+If someone can access https://supabase.com/dashboard/project/tednluwflfhxyucgwigh/sql/new:
+
+1. Have them open the SQL Editor
+2. Send them the migration file
+3. Have them paste and run it
+
+================================================================================
+OPTION 2: Get the database password and use psql
+================================================================================
+
+You need the Postgres database password. This is different from API keys.
+
+To get the password:
+  1. Someone with dashboard access needs to go to:
+     https://supabase.com/dashboard/project/tednluwflfhxyucgwigh/settings/database
+
+  2. Under "Connection parameters", copy the "Database password"
+     OR click "Reset Database Password" if needed
+
+  3. Send you the password securely
+
+Once you have the password:
+
+  export SUPABASE_DB_PASSWORD='the_password_they_send_you'
+  cd "/Users/benknight/Code/ACT Placemat"
+  ./scripts/apply-migration-psql.sh
+
+================================================================================
+OPTION 3: Use Node.js with the database password
+================================================================================
+
+Same as Option 2, but use Node.js instead of psql:
+
+  export SUPABASE_DB_PASSWORD='the_password_they_send_you'
+  cd "/Users/benknight/Code/ACT Placemat"
+  node scripts/execute-migration-direct.mjs
+
+================================================================================
+WHY THE SUPABASE CLI DOESN'T WORK DIRECTLY
+================================================================================
+
+The `supabase db push --linked` command tries to apply ALL migrations in order.
+There's an error in an older migration (20240101000000_all_in_one_contacts.sql)
+that blocks the process before it reaches the subscription tracker migration.
+
+The error is: "function uuid_generate_v4() does not exist"
+
+This is why we need to apply just the subscription tracker migration directly.
+
+================================================================================
+VERIFICATION
+================================================================================
+
+After migration is applied, verify with:
+
+  node scripts/verify-subscription-tables.mjs
+
+Expected tables:
+  ✅ discovered_subscriptions
+  ✅ subscription_receipts
+  ✅ rd_activity_log
+  ✅ subscription_analytics
+
+================================================================================
+FILES READY TO USE
+================================================================================
+
+✅ Migration file: apps/backend/subscription-tracker/migrations/20260101000000_subscription_tracker.sql
+✅ Copied to: supabase/migrations/20260101000000_subscription_tracker.sql
+✅ Shell script: scripts/apply-migration-psql.sh
+✅ Node script: scripts/execute-migration-direct.mjs
+✅ Verification: scripts/verify-subscription-tables.mjs
+✅ Full guide: APPLY_MIGRATION.md
+
+================================================================================
+QUICK REFERENCE
+================================================================================
+
+Database Connection Info:
+  Host: aws-0-ap-southeast-2.pooler.supabase.com
+  Port: 5432
+  Database: postgres
+  User: postgres.tednluwflfhxyucgwigh
+  Password: [Need from dashboard]
+
+Supabase Dashboard:
+  https://supabase.com/dashboard/project/tednluwflfhxyucgwigh
+
+SQL Editor:
+  https://supabase.com/dashboard/project/tednluwflfhxyucgwigh/sql/new
+
+Database Settings:
+  https://supabase.com/dashboard/project/tednluwflfhxyucgwigh/settings/database
+
+================================================================================

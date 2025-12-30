@@ -2,27 +2,31 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import { Youtube } from 'lucide-react';
 import {
-  Users,
-  MessageCircle,
-  Plane,
-  Globe,
-  Heart,
-  Sprout,
-  Handshake,
-  BookOpen,
-  Calendar,
-  Coffee,
-  Moon,
-  Sunrise,
-  Music,
-  MapPin,
-  ExternalLink,
-  Play,
-  Sparkles,
-  Ticket,
-  Youtube,
-} from 'lucide-react';
+  CommunityCircle,
+  YarningCircle,
+  WorldPath,
+  Heartland,
+  RootedSprout,
+  ConnectionWeb,
+  StorySpiral,
+  Campfire,
+  NightSky,
+  DawnRays,
+  Songlines,
+  PlaceSeed,
+  OutwardArrow,
+  Sparkle,
+  LiveMusic,
+  SeasonMarker,
+  JourneyPath,
+  BrewCup,
+  FlightPath,
+  GlobeMarker,
+  TicketStub,
+  HeartHands,
+} from './icons/ACTIcons';
 import type { YearMetrics, TuneItem, ConcertItem, ArtItem, FamilyMoment, TripItem, CuratedData } from '../types/yearInReview';
 
 interface YearInNumbersProps {
@@ -129,7 +133,7 @@ function JourneyVisualization({ km, countries, isVisible }: { km: number; countr
         </div>
         <div className="text-center">
           <div className="flex items-center justify-center gap-2 text-3xl sm:text-4xl md:text-5xl font-bold text-orange-400">
-            <Globe className="w-6 h-6 sm:w-8 sm:h-8" />
+            <WorldPath className="w-6 h-6 sm:w-8 sm:h-8" />
             {countries}
           </div>
           <div className="text-sm text-slate-400 mt-1">countries visited</div>
@@ -152,53 +156,71 @@ function ConnectionsNetwork({ people, conversations, partnerships, introductions
 
   return (
     <div className="grid md:grid-cols-2 gap-6">
-      {/* People Engaged - Main stat */}
-      <div className="bg-gradient-to-br from-teal-500/10 to-transparent rounded-2xl p-6 border border-teal-500/20">
-        <div className="flex items-start justify-between mb-4">
-          <div className="p-3 rounded-xl bg-teal-500/20">
-            <Users className="w-6 h-6 text-teal-400" />
-          </div>
-          <Sparkles className="w-5 h-5 text-teal-400/50" />
-        </div>
-        <div className="text-5xl font-bold text-white mb-2 tabular-nums">{displayPeople}</div>
-        <div className="text-teal-400 font-medium">People Engaged</div>
-        <div className="text-sm text-slate-400 mt-2">
-          Every number is a name, a story, a connection
-        </div>
-      </div>
+      {/* People Engaged - Main stat with organic styling */}
+      <div className="relative rounded-2xl p-6 overflow-hidden group">
+        {/* Organic background pattern */}
+        <div className="absolute inset-0 bg-gradient-to-br from-teal-900/40 via-slate-900 to-slate-900" />
+        <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full blur-2xl transform translate-x-8 -translate-y-8" />
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-teal-600/5 rounded-full blur-xl" />
 
-      {/* Conversations */}
-      <div className="bg-gradient-to-br from-orange-500/10 to-transparent rounded-2xl p-6 border border-orange-500/20">
-        <div className="flex items-start justify-between mb-4">
-          <div className="p-3 rounded-xl bg-orange-500/20">
-            <MessageCircle className="w-6 h-6 text-orange-400" />
+        <div className="relative">
+          <div className="flex items-start justify-between mb-4">
+            <CommunityCircle className="w-10 h-10 text-teal-400" />
+            <Sparkle className="w-5 h-5 text-teal-400/40" />
+          </div>
+          <div className="text-5xl font-bold text-white mb-2 tabular-nums">{displayPeople}</div>
+          <div className="text-teal-400 font-medium">People Engaged</div>
+          <div className="text-sm text-slate-400 mt-2">
+            Every number is a name, a story, a connection
           </div>
         </div>
-        <div className="text-5xl font-bold text-white mb-2 tabular-nums">{displayConvos}</div>
-        <div className="text-orange-400 font-medium">Conversations Had</div>
-        <div className="text-sm text-slate-400 mt-2">
-          Deep listening, shared understanding
+      </div>
+
+      {/* Conversations - Yarning circle style */}
+      <div className="relative rounded-2xl p-6 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-900/30 via-slate-900 to-slate-900" />
+        <div className="absolute top-1/2 left-1/2 w-48 h-48 bg-amber-500/5 rounded-full blur-2xl transform -translate-x-1/2 -translate-y-1/2" />
+
+        <div className="relative">
+          <div className="mb-4">
+            <YarningCircle className="w-10 h-10 text-amber-400" />
+          </div>
+          <div className="text-5xl font-bold text-white mb-2 tabular-nums">{displayConvos}</div>
+          <div className="text-amber-400 font-medium">Yarning Circles</div>
+          <div className="text-sm text-slate-400 mt-2">
+            Deep listening, shared understanding
+          </div>
         </div>
       </div>
 
-      {/* Partnerships & Introductions - smaller cards */}
-      <div className="bg-slate-800/50 rounded-2xl p-5 border border-slate-700/50 flex items-center gap-4">
-        <div className="p-3 rounded-xl bg-purple-500/20">
-          <Handshake className="w-5 h-5 text-purple-400" />
+      {/* Partnerships - Connection web style with network pulse */}
+      <div className="relative rounded-2xl p-5 overflow-hidden flex items-center gap-4 group cursor-pointer">
+        <div className="absolute inset-0 bg-slate-800/60 transition-colors group-hover:bg-slate-800/80" />
+        {/* Network pulse rings */}
+        <div className="absolute left-8 top-1/2 -translate-y-1/2 w-16 h-16 rounded-full border border-purple-500/0 group-hover:border-purple-500/30 group-hover:scale-[2.5] transition-all duration-700 ease-out" />
+        <div className="absolute left-8 top-1/2 -translate-y-1/2 w-16 h-16 rounded-full border border-purple-500/0 group-hover:border-purple-500/20 group-hover:scale-[3.5] transition-all duration-1000 ease-out delay-100" />
+
+        <div className="relative z-10 transition-transform group-hover:rotate-12 duration-300">
+          <ConnectionWeb className="w-10 h-10 text-purple-400 group-hover:text-purple-300 transition-colors" />
         </div>
-        <div>
-          <div className="text-3xl font-bold text-white">{partnerships}</div>
-          <div className="text-sm text-slate-400">Partnerships Formed</div>
+        <div className="relative z-10">
+          <div className="text-3xl font-bold text-white group-hover:text-purple-100 transition-colors">{partnerships}</div>
+          <div className="text-sm text-slate-400 group-hover:text-purple-300/70 transition-colors">Partnerships Woven</div>
         </div>
       </div>
 
-      <div className="bg-slate-800/50 rounded-2xl p-5 border border-slate-700/50 flex items-center gap-4">
-        <div className="p-3 rounded-xl bg-pink-500/20">
-          <Heart className="w-5 h-5 text-pink-400" />
+      {/* Introductions - Heartland style with warm glow */}
+      <div className="relative rounded-2xl p-5 overflow-hidden flex items-center gap-4 group cursor-pointer">
+        <div className="absolute inset-0 bg-slate-800/60 transition-colors group-hover:bg-slate-800/80" />
+        {/* Heart warmth glow */}
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 w-20 h-20 bg-rose-500/0 rounded-full blur-2xl group-hover:bg-rose-500/30 transition-all duration-500" />
+
+        <div className="relative z-10 transition-transform group-hover:scale-110 duration-300">
+          <Heartland className="w-10 h-10 text-rose-400 group-hover:text-rose-300 transition-colors" />
         </div>
-        <div>
-          <div className="text-3xl font-bold text-white">{introductions}</div>
-          <div className="text-sm text-slate-400">Introductions Made</div>
+        <div className="relative z-10">
+          <div className="text-3xl font-bold text-white group-hover:text-rose-100 transition-colors">{introductions}</div>
+          <div className="text-sm text-slate-400 group-hover:text-rose-300/70 transition-colors">Introductions Made</div>
         </div>
       </div>
     </div>
@@ -216,59 +238,101 @@ function CommunityImpact({ communities, projects, milestones, isVisible }: {
 
   return (
     <div className="relative">
-      {/* Main community stat */}
+      {/* Main community stat - organic centered design */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-3 bg-gradient-to-r from-teal-500/20 via-teal-500/10 to-transparent px-8 py-4 rounded-full border border-teal-500/30">
-          <Sprout className="w-8 h-8 text-teal-400" />
-          <div>
-            <div className="text-4xl font-bold text-teal-400 tabular-nums">{displayCommunities}</div>
-            <div className="text-sm text-slate-300">Communities Reached</div>
-          </div>
+        <div className="inline-flex flex-col items-center">
+          <RootedSprout className="w-12 h-12 text-teal-400 mb-3" />
+          <div className="text-5xl font-bold text-teal-400 tabular-nums">{displayCommunities}</div>
+          <div className="text-sm text-slate-300 mt-2">Communities Rooted</div>
+          <div className="w-16 h-px bg-gradient-to-r from-transparent via-teal-500/50 to-transparent mt-4" />
         </div>
       </div>
 
-      {/* Project stats */}
+      {/* Project stats - varied card sizes */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-slate-800/50 rounded-xl p-4 text-center border border-slate-700/50">
-          <div className="text-2xl font-bold text-white">{projects}</div>
-          <div className="text-xs text-slate-400 mt-1">Projects Active</div>
-        </div>
-        <div className="bg-slate-800/50 rounded-xl p-4 text-center border border-slate-700/50">
-          <div className="text-2xl font-bold text-white">{milestones}</div>
-          <div className="text-xs text-slate-400 mt-1">Milestones Hit</div>
-        </div>
-        <div className="bg-slate-800/50 rounded-xl p-4 text-center border border-slate-700/50">
-          <div className="flex items-center justify-center gap-1">
-            <BookOpen className="w-4 h-4 text-slate-400" />
-            <span className="text-2xl font-bold text-white">47</span>
+        <div className="relative rounded-xl p-4 text-center overflow-hidden group">
+          <div className="absolute inset-0 bg-slate-800/40" />
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-500/50 via-teal-400/30 to-transparent" />
+          <div className="relative">
+            <div className="text-2xl font-bold text-white">{projects}</div>
+            <div className="text-xs text-slate-400 mt-1">Projects Growing</div>
           </div>
-          <div className="text-xs text-slate-400 mt-1">Stories Captured</div>
+        </div>
+        <div className="relative rounded-xl p-4 text-center overflow-hidden">
+          <div className="absolute inset-0 bg-slate-800/40" />
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500/50 via-amber-400/30 to-transparent" />
+          <div className="relative">
+            <div className="text-2xl font-bold text-white">{milestones}</div>
+            <div className="text-xs text-slate-400 mt-1">Milestones Passed</div>
+          </div>
+        </div>
+        <div className="relative rounded-xl p-4 text-center overflow-hidden">
+          <div className="absolute inset-0 bg-slate-800/40" />
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500/50 via-purple-400/30 to-transparent" />
+          <div className="relative flex flex-col items-center">
+            <StorySpiral className="w-5 h-5 text-purple-400 mb-1" />
+            <span className="text-2xl font-bold text-white">47</span>
+            <div className="text-xs text-slate-400 mt-1">Stories Captured</div>
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-// Behind The Scenes - Cozy stats with better icons
+// Behind The Scenes - Cozy stats with unique organic hover effects
 function BehindTheScenes({ tea, lateNights, sunrises }: { tea: number; lateNights: number; sunrises: number }) {
-  const stats = [
-    { icon: Coffee, value: tea, label: 'Cups of Coffee', color: 'amber', bg: 'from-amber-900/30 to-amber-950/20' },
-    { icon: Moon, value: lateNights, label: 'Late Nights', color: 'indigo', bg: 'from-indigo-900/30 to-indigo-950/20' },
-    { icon: Sunrise, value: sunrises, label: 'Sunrises Missed', color: 'orange', bg: 'from-orange-900/30 to-orange-950/20' },
-  ];
-
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-      {stats.map(({ icon: Icon, value, label, color, bg }) => (
-        <div
-          key={label}
-          className={`bg-gradient-to-br ${bg} rounded-2xl p-4 sm:p-5 text-center border border-${color}-800/30 hover:border-${color}-700/50 transition-all hover:scale-[1.02]`}
-        >
-          <Icon className={`w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 sm:mb-3 text-${color}-400`} />
-          <div className={`text-xl sm:text-2xl font-bold text-${color}-400`}>{value.toLocaleString()}</div>
-          <div className="text-xs text-slate-400 mt-1">{label}</div>
+      {/* Cups of Coffee/Tea - steam rising effect on hover */}
+      <div className="relative bg-gradient-to-br from-amber-900/30 to-amber-950/20 rounded-2xl p-4 sm:p-5 text-center border border-amber-800/30 hover:border-amber-600/50 transition-all group overflow-hidden cursor-pointer">
+        {/* Steam wisps that rise on hover */}
+        <div className="absolute top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          <div className="w-px h-6 bg-gradient-to-t from-amber-400/40 to-transparent animate-pulse" style={{ animationDelay: '0ms' }} />
         </div>
-      ))}
+        <div className="absolute top-6 left-[45%] opacity-0 group-hover:opacity-70 transition-opacity duration-700 delay-100">
+          <div className="w-px h-8 bg-gradient-to-t from-amber-300/30 to-transparent animate-pulse" style={{ animationDelay: '200ms' }} />
+        </div>
+        <div className="absolute top-7 left-[55%] opacity-0 group-hover:opacity-50 transition-opacity duration-600 delay-200">
+          <div className="w-px h-5 bg-gradient-to-t from-amber-400/20 to-transparent animate-pulse" style={{ animationDelay: '400ms' }} />
+        </div>
+        <div className="absolute top-0 right-0 w-16 h-16 bg-amber-500/10 rounded-full blur-xl transform translate-x-4 -translate-y-4 group-hover:bg-amber-500/25 transition-colors duration-500" />
+        <BrewCup className="relative z-10 w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 sm:mb-3 text-amber-400 group-hover:text-amber-300 transition-colors" />
+        <div className="text-xl sm:text-2xl font-bold text-amber-400 group-hover:text-amber-300 transition-colors">{tea.toLocaleString()}</div>
+        <div className="text-xs text-slate-400 mt-1">Cups of Warmth</div>
+      </div>
+
+      {/* Late Nights - stars twinkling effect on hover */}
+      <div className="relative bg-gradient-to-br from-indigo-900/30 to-indigo-950/20 rounded-2xl p-4 sm:p-5 text-center border border-indigo-800/30 hover:border-indigo-600/50 transition-all group overflow-hidden cursor-pointer">
+        {/* Stars that twinkle on hover */}
+        <div className="absolute inset-0 opacity-20 group-hover:opacity-100 transition-opacity duration-500">
+          <div className="absolute top-2 left-3 w-1.5 h-1.5 bg-indigo-200 rounded-full group-hover:animate-ping" style={{ animationDuration: '2s' }} />
+          <div className="absolute top-4 right-6 w-1 h-1 bg-white rounded-full group-hover:animate-pulse" />
+          <div className="absolute bottom-6 left-8 w-1 h-1 bg-indigo-300 rounded-full group-hover:animate-ping" style={{ animationDuration: '3s', animationDelay: '500ms' }} />
+          <div className="absolute top-8 right-4 w-0.5 h-0.5 bg-white rounded-full group-hover:animate-pulse" style={{ animationDelay: '300ms' }} />
+          <div className="absolute bottom-4 right-8 w-1 h-1 bg-indigo-200 rounded-full group-hover:animate-ping" style={{ animationDuration: '2.5s', animationDelay: '700ms' }} />
+        </div>
+        {/* Moon glow effect */}
+        <div className="absolute top-4 right-4 w-8 h-8 bg-indigo-400/0 rounded-full blur-lg group-hover:bg-indigo-400/30 transition-all duration-700" />
+        <NightSky className="relative z-10 w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 sm:mb-3 text-indigo-400 group-hover:text-indigo-300 transition-colors" />
+        <div className="text-xl sm:text-2xl font-bold text-indigo-400 group-hover:text-indigo-300 transition-colors">{lateNights.toLocaleString()}</div>
+        <div className="text-xs text-slate-400 mt-1">Late Nights</div>
+      </div>
+
+      {/* Sunrises Missed - dawn rays expanding effect */}
+      <div className="relative bg-gradient-to-br from-orange-900/30 to-orange-950/20 rounded-2xl p-4 sm:p-5 text-center border border-orange-800/30 hover:border-orange-600/50 transition-all group overflow-hidden cursor-pointer">
+        {/* Rising sun glow that expands */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-12 bg-gradient-to-t from-orange-500/20 to-transparent rounded-t-full group-hover:h-20 group-hover:w-32 group-hover:from-orange-400/30 transition-all duration-700" />
+        {/* Horizon line */}
+        <div className="absolute bottom-6 left-4 right-4 h-px bg-gradient-to-r from-transparent via-orange-500/30 to-transparent group-hover:via-orange-400/60 transition-colors duration-500" />
+        {/* Ray beams on hover */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-1 h-0 bg-gradient-to-t from-orange-400/50 to-transparent group-hover:h-6 transition-all duration-500 delay-100" />
+        <div className="absolute bottom-8 left-[40%] w-1 h-0 bg-gradient-to-t from-orange-300/40 to-transparent group-hover:h-4 transition-all duration-500 delay-200 rotate-[-20deg]" />
+        <div className="absolute bottom-8 left-[60%] w-1 h-0 bg-gradient-to-t from-orange-300/40 to-transparent group-hover:h-4 transition-all duration-500 delay-200 rotate-[20deg]" />
+        <DawnRays className="relative z-10 w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 sm:mb-3 text-orange-400 group-hover:text-orange-300 transition-colors" />
+        <div className="text-xl sm:text-2xl font-bold text-orange-400 group-hover:text-orange-300 transition-colors">{sunrises.toLocaleString()}</div>
+        <div className="text-xs text-slate-400 mt-1">Sunrises Missed</div>
+      </div>
     </div>
   );
 }
@@ -285,7 +349,7 @@ function PlaylistSection({ tunes }: { tunes: TuneItem[] }) {
       <div className="relative">
         <div className="flex items-center gap-4 mb-6">
           <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#1DB954] to-[#169c46] flex items-center justify-center shadow-lg shadow-[#1DB954]/30">
-            <Music className="w-7 h-7 text-white" />
+            <Songlines className="w-7 h-7 text-white" />
           </div>
           <div>
             <h3 className="text-xl font-bold text-white">Tunes That Got Us Through</h3>
@@ -301,8 +365,10 @@ function PlaylistSection({ tunes }: { tunes: TuneItem[] }) {
             return (
               <div
                 key={i}
-                className="flex items-center gap-4 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all group"
+                className="flex items-center gap-4 p-3 rounded-xl bg-white/5 hover:bg-[#1DB954]/10 transition-all group cursor-pointer relative overflow-hidden"
               >
+                {/* Sound wave visualization on hover */}
+                <div className="absolute left-0 bottom-0 h-1 w-0 group-hover:w-full bg-gradient-to-r from-[#1DB954]/60 to-[#1DB954]/20 transition-all duration-500" />
                 {/* Track number or album art */}
                 <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 relative">
                   {tune.albumArt ? (
@@ -375,7 +441,7 @@ function ConcertsSection({ concerts }: { concerts: ConcertItem[] }) {
       <div className="relative">
         <div className="flex items-center gap-4 mb-6">
           <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center shadow-lg shadow-pink-500/30">
-            <Ticket className="w-7 h-7 text-white" />
+            <TicketStub className="w-7 h-7 text-white" />
           </div>
           <div>
             <h3 className="text-xl font-bold text-white">Live Shows</h3>
@@ -387,11 +453,14 @@ function ConcertsSection({ concerts }: { concerts: ConcertItem[] }) {
           {concerts.map((concert, i) => (
             <div
               key={i}
-              className="relative flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-pink-500/10 via-transparent to-transparent border border-pink-500/20 hover:border-pink-400/40 transition-all group overflow-hidden"
+              className="relative flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-pink-500/10 via-transparent to-transparent border border-pink-500/20 hover:border-pink-400/50 transition-all group overflow-hidden cursor-pointer"
             >
+              {/* Stage spotlight effect on hover */}
+              <div className="absolute inset-0 bg-gradient-to-b from-pink-500/0 via-transparent to-pink-500/0 group-hover:from-pink-500/10 group-hover:to-transparent transition-all duration-500" />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-0 group-hover:h-full bg-gradient-to-b from-white/5 to-transparent transition-all duration-700 blur-xl" />
               {/* Ticket stub perforated edge effect */}
-              <div className="absolute left-0 top-0 bottom-0 w-1 bg-pink-500/30" />
-              <div className="absolute left-1 top-2 bottom-2 border-l-2 border-dashed border-slate-700" />
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-pink-500/30 group-hover:bg-pink-400/60 transition-colors" />
+              <div className="absolute left-1 top-2 bottom-2 border-l-2 border-dashed border-slate-700 group-hover:border-pink-600/50 transition-colors" />
 
               {/* Concert image or icon */}
               <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 ml-2 relative">
@@ -399,7 +468,7 @@ function ConcertsSection({ concerts }: { concerts: ConcertItem[] }) {
                   <Image src={concert.image} alt={concert.artist} fill className="object-cover" />
                 ) : (
                   <div className="absolute inset-0 bg-gradient-to-br from-pink-600/30 to-purple-600/20 flex items-center justify-center">
-                    <Music className="w-6 h-6 text-pink-400" />
+                    <LiveMusic className="w-6 h-6 text-pink-400" />
                   </div>
                 )}
               </div>
@@ -409,10 +478,10 @@ function ConcertsSection({ concerts }: { concerts: ConcertItem[] }) {
                 <div className="font-bold text-white text-lg">{concert.artist}</div>
                 <div className="text-sm text-pink-400">{concert.venue}</div>
                 <div className="flex items-center gap-2 text-xs text-slate-400 mt-1">
-                  <MapPin className="w-3 h-3" />
+                  <PlaceSeed className="w-3 h-3" />
                   {concert.city}
                   <span className="mx-1">•</span>
-                  <Calendar className="w-3 h-3" />
+                  <SeasonMarker className="w-3 h-3" />
                   {concert.date}
                 </div>
                 {concert.highlight && (
@@ -436,78 +505,131 @@ function ConcertsSection({ concerts }: { concerts: ConcertItem[] }) {
   );
 }
 
-// Art & Thinkers Section - List format
+// Art & Thinkers Section - Full-width Gallery celebrating diverse creative influences
 function ArtGallerySection({ art }: { art: ArtItem[] }) {
   if (!art || art.length === 0) return null;
 
+  // Find the piece with inspiration for the featured quote
+  const featuredPiece = art.find((a) => a.inspiration);
+
   return (
-    <div className="bg-gradient-to-br from-purple-900/20 via-slate-900/80 to-slate-900 rounded-3xl p-8 border border-purple-500/20 overflow-hidden relative">
-      {/* Background accent */}
-      <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl" />
+    <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-purple-950/20 rounded-3xl overflow-hidden relative w-full max-w-full">
+      {/* Creative pattern background */}
+      <div className="absolute inset-0 opacity-[0.02]" style={{
+        backgroundImage: `radial-gradient(circle, #a855f7 1px, transparent 1px)`,
+        backgroundSize: '24px 24px',
+      }} />
 
-      <div className="relative">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
-            <Sparkles className="w-7 h-7 text-white" />
-          </div>
-          <div>
-            <h3 className="text-xl font-bold text-white">Art & Thinkers</h3>
-            <p className="text-sm text-slate-400">Ideas that shaped our year</p>
+      <div className="relative p-6 md:p-10">
+        {/* Header - Art & Thinkers */}
+        <div className="text-center mb-8">
+          <div className="inline-block">
+            <p className="text-[10px] uppercase tracking-[0.4em] text-purple-400/60 mb-2">Creative Influences</p>
+            <h3 className="text-3xl md:text-4xl font-light text-white tracking-wide">Art & Thinkers</h3>
+            <div className="h-px w-24 mx-auto mt-4 bg-gradient-to-r from-transparent via-purple-400/50 to-transparent" />
+            <p className="text-xs text-slate-400 mt-4 max-w-md mx-auto italic">
+              The artists, musicians, and visionaries who shaped our thinking this year
+            </p>
           </div>
         </div>
 
-        {/* List format */}
-        <div className="space-y-3">
-          {art.map((piece, i) => (
-            <div
-              key={i}
-              className="flex items-center gap-4 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all group"
-            >
-              {/* Image or icon */}
-              <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 relative">
-                {piece.image ? (
-                  <Image src={piece.image} alt={piece.title} fill className="object-cover" />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-purple-600/30 to-pink-600/20 flex items-center justify-center">
-                    <Sparkles className="w-5 h-5 text-purple-400" />
+        {/* Masonry Gallery - True masonry with varied heights */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 auto-rows-min">
+          {art.map((piece, i) => {
+            const ratio = piece.aspectRatio ?? 0.75;
+
+            return (
+              <div key={i} className="group relative">
+                <div className="rounded-xl overflow-hidden bg-slate-800 shadow-2xl shadow-black/30 ring-1 ring-purple-900/20">
+                  <div
+                    className="relative w-full"
+                    style={{ paddingBottom: `${ratio * 100}%` }}
+                  >
+                    {piece.image ? (
+                      <>
+                        <Image
+                          src={piece.image}
+                          alt={piece.title}
+                          fill
+                          sizes="(max-width: 768px) 50vw, 33vw"
+                          className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                        {/* Vignette overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-purple-900/10 opacity-50 group-hover:opacity-70 transition-opacity" />
+                      </>
+                    ) : (
+                      <div
+                        className="absolute inset-0"
+                        style={{
+                          background: `linear-gradient(${135 + i * 30}deg,
+                            #7c3aed20,
+                            #6d28d915,
+                            #4c1d9510)`,
+                        }}
+                      >
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/10 flex items-center justify-center">
+                            <Sparkle className="w-8 h-8 text-purple-400/40" />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Title overlay - always visible at bottom */}
+                    <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/90 via-black/60 to-transparent">
+                      <p className="text-white font-medium text-sm leading-tight">{piece.title}</p>
+                      <p className="text-purple-300/70 text-xs mt-1">{piece.artist}</p>
+                    </div>
+
+                    {/* Link button */}
+                    {piece.link && (
+                      <a
+                        href={piece.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-purple-600/80 hover:scale-110"
+                        title="View on artist website"
+                      >
+                        <OutwardArrow className="w-4 h-4 text-white" />
+                      </a>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
-
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <div className="font-medium text-white">{piece.title}</div>
-                <div className="text-sm text-purple-400">{piece.artist}</div>
-                {piece.medium && (
-                  <div className="text-xs text-slate-500 mt-0.5">{piece.medium}</div>
-                )}
-              </div>
-
-              {/* Link if available */}
-              {piece.link && (
-                <a
-                  href={piece.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-8 h-8 rounded-full bg-purple-500/20 hover:bg-purple-500/40 flex items-center justify-center transition-colors flex-shrink-0"
-                  title="View more"
-                >
-                  <ExternalLink className="w-4 h-4 text-purple-400" />
-                </a>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        {/* Featured inspiration quote */}
-        {art.some((a) => a.inspiration) && (
-          <div className="mt-6 p-4 bg-gradient-to-r from-purple-500/10 to-transparent rounded-xl border-l-2 border-purple-500">
-            <p className="text-sm text-slate-300 italic">
-              &ldquo;{art.find((a) => a.inspiration)?.inspiration}&rdquo;
-            </p>
-            <p className="text-xs text-purple-400 mt-2">
-              — {art.find((a) => a.inspiration)?.artist}
-            </p>
+        {/* Featured quote */}
+        {featuredPiece && (
+          <div className="mt-10 relative max-w-2xl mx-auto">
+            <div className="absolute -left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-500/60 via-purple-500/30 to-transparent rounded-full" />
+            <div className="pl-8 pr-4">
+              <svg className="w-8 h-8 text-purple-500/30 mb-3" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+              </svg>
+              <p className="text-slate-200 text-lg leading-relaxed italic">
+                {featuredPiece.inspiration}
+              </p>
+              <div className="mt-4 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-purple-900/30 flex items-center justify-center">
+                  <Sparkle className="w-5 h-5 text-purple-400" />
+                </div>
+                <div>
+                  <p className="text-purple-400 text-sm font-medium">{featuredPiece.artist}</p>
+                  {featuredPiece.link && (
+                    <a
+                      href={featuredPiece.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-slate-500 hover:text-purple-400 transition-colors flex items-center gap-1"
+                    >
+                      Learn More <OutwardArrow className="w-3 h-3" />
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -523,7 +645,7 @@ function FamilySection({ moments }: { moments: FamilyMoment[] }) {
     <div className="bg-gradient-to-br from-rose-900/20 via-slate-900/80 to-slate-900 rounded-3xl p-8 border border-rose-500/20">
       <div className="flex items-center gap-4 mb-6">
         <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-rose-500 to-pink-500 flex items-center justify-center shadow-lg shadow-rose-500/30">
-          <Heart className="w-7 h-7 text-white" />
+          <HeartHands className="w-7 h-7 text-white" />
         </div>
         <div>
           <h3 className="text-xl font-bold text-white">Family & Friends Time</h3>
@@ -543,14 +665,14 @@ function FamilySection({ moments }: { moments: FamilyMoment[] }) {
               </div>
             ) : (
               <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-rose-500/20 to-pink-500/10 flex items-center justify-center flex-shrink-0">
-                <Heart className="w-6 h-6 text-rose-400" />
+                <HeartHands className="w-6 h-6 text-rose-400" />
               </div>
             )}
             <div className="flex-1">
               <p className="text-white">{moment.description}</p>
               {moment.date && (
                 <p className="text-sm text-rose-400 mt-1 flex items-center gap-1">
-                  <Calendar className="w-3 h-3" />
+                  <SeasonMarker className="w-3 h-3" />
                   {moment.date}
                 </p>
               )}
@@ -566,77 +688,119 @@ function FamilySection({ moments }: { moments: FamilyMoment[] }) {
   );
 }
 
-// International Trips - Passport Stamps Style
+// International Trips - Travel Journal Style
 function TripsSection({ trips }: { trips: TripItem[] }) {
   if (!trips || trips.length === 0) return null;
 
   return (
-    <div className="bg-gradient-to-br from-blue-900/20 via-slate-900/80 to-slate-900 rounded-3xl p-8 border border-blue-500/20 overflow-hidden relative">
-      {/* World map background pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }} />
-      </div>
+    <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950/30 rounded-3xl overflow-hidden relative">
+      {/* Subtle paper texture */}
+      <div className="absolute inset-0 opacity-[0.015]" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+      }} />
 
-      <div className="relative">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
-            <Plane className="w-7 h-7 text-white" />
+      <div className="relative p-8">
+        {/* Header - Journal style */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-3 mb-2">
+            <div className="w-8 h-px bg-gradient-to-r from-transparent to-blue-400/50" />
+            <FlightPath className="w-5 h-5 text-blue-400" />
+            <div className="w-8 h-px bg-gradient-to-l from-transparent to-blue-400/50" />
           </div>
-          <div>
-            <h3 className="text-xl font-bold text-white">Miles From Home</h3>
-            <p className="text-sm text-slate-400">Learning from communities worldwide</p>
+          <h3 className="text-2xl font-light text-white tracking-wide">Miles From Home</h3>
+          <p className="text-xs text-slate-500 mt-2 italic">Learning from communities worldwide</p>
+        </div>
+
+        {/* Journey path visualization */}
+        <div className="relative mb-6">
+          <div className="absolute top-6 left-6 right-6 h-px bg-gradient-to-r from-blue-500/30 via-cyan-500/30 to-blue-500/30" />
+          <div className="flex justify-between px-2">
+            {trips.map((trip, i) => (
+              <div key={i} className="relative flex flex-col items-center">
+                <div className="w-12 h-12 rounded-full bg-slate-800 border-2 border-blue-500/40 flex items-center justify-center text-2xl shadow-lg shadow-blue-500/10 z-10">
+                  {trip.flag || '🌍'}
+                </div>
+                <div className="mt-2 text-center">
+                  <p className="text-xs font-medium text-white">{trip.destination}</p>
+                  <p className="text-[10px] text-blue-400/70">{trip.country}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Passport stamps grid */}
-        <div className="grid md:grid-cols-3 gap-4">
+        {/* Trip cards - Journal entries */}
+        <div className="space-y-4">
           {trips.map((trip, i) => (
             <div
               key={i}
-              className="relative group"
+              className="group relative"
             >
-              {/* Stamp-style card */}
-              <div
-                className="rounded-xl overflow-hidden border-2 border-dashed border-blue-500/30 bg-slate-800/50 p-4 hover:border-blue-400/50 transition-all hover:scale-[1.02]"
-                style={{
-                  transform: `rotate(${i % 2 === 0 ? -1 : 1}deg)`,
-                }}
-              >
-                {/* Flag and location */}
-                <div className="flex items-center gap-3 mb-3">
-                  <span className="text-4xl">{trip.flag || '🌍'}</span>
-                  <div>
-                    <div className="font-bold text-white">{trip.destination}</div>
-                    <div className="text-xs text-blue-400 uppercase tracking-wider">{trip.country}</div>
+              {/* Card with torn paper effect */}
+              <div className="relative bg-slate-800/40 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-700/50 hover:border-blue-500/30 transition-all duration-300">
+                {/* Decorative left border */}
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 via-cyan-500 to-blue-500 opacity-50" />
+
+                <div className="p-5 pl-6">
+                  <div className="flex items-start gap-4">
+                    {/* Flag + Location */}
+                    <div className="flex-shrink-0">
+                      <div className="relative">
+                        <span className="text-4xl drop-shadow-lg">{trip.flag || '🌍'}</span>
+                        {/* Passport stamp effect */}
+                        <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-blue-500/20 border border-blue-500/40 flex items-center justify-center">
+                          <PlaceSeed className="w-2.5 h-2.5 text-blue-400" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 mb-1">
+                        <h4 className="text-lg font-semibold text-white">{trip.destination}</h4>
+                        <span className="text-xs text-blue-400/60 uppercase tracking-wider">{trip.country}</span>
+                      </div>
+
+                      {/* Purpose - like a journal entry */}
+                      <p className="text-slate-300 text-sm leading-relaxed mb-3">
+                        {trip.purpose}
+                      </p>
+
+                      {/* Highlights - photo tags style */}
+                      {trip.highlights && trip.highlights.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {trip.highlights.map((h, j) => (
+                            <span
+                              key={j}
+                              className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/20 hover:bg-blue-500/20 transition-colors"
+                            >
+                              <span className="w-1 h-1 rounded-full bg-blue-400" />
+                              {h}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Trip image if available */}
+                    {trip.image && (
+                      <div className="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden relative ring-2 ring-white/10">
+                        <Image src={trip.image} alt={trip.destination} fill className="object-cover" />
+                      </div>
+                    )}
                   </div>
-                </div>
-
-                {/* Purpose */}
-                <p className="text-sm text-slate-300 mb-3">{trip.purpose}</p>
-
-                {/* Highlights as stamps */}
-                {trip.highlights && trip.highlights.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {trip.highlights.map((h, j) => (
-                      <span
-                        key={j}
-                        className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30"
-                      >
-                        {h}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                {/* Decorative stamp mark */}
-                <div className="absolute top-2 right-2 w-8 h-8 rounded-full border-2 border-blue-500/30 flex items-center justify-center opacity-50">
-                  <MapPin className="w-4 h-4 text-blue-400" />
                 </div>
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Decorative footer */}
+        <div className="mt-8 text-center">
+          <div className="inline-flex items-center gap-2 text-slate-500 text-xs">
+            <GlobeMarker className="w-3.5 h-3.5" />
+            <span className="italic">Every mile a lesson, every community a teacher</span>
+          </div>
         </div>
       </div>
     </div>
@@ -701,20 +865,54 @@ export function YearInNumbersRedesign({ metrics, curatedSettings }: YearInNumber
 
   const defaultArt: ArtItem[] = curatedSettings?.inspiringArt || metrics.inspiringArt || [
     {
-      title: "Earth's Creation",
-      artist: 'Emily Kame Kngwarreye',
-      medium: 'Acrylic on canvas',
-      inspiration: 'Connection to land is everything - every dot, every line tells a story of Country.',
+      title: 'Starman',
+      artist: 'David Bowie',
+      medium: 'Performance portrait',
+      image: '/images/art/Bowie.jpg',
+      inspiration: "I don't know where I'm going from here, but I promise it won't be boring.",
+      aspectRatio: 0.5625,
     },
     {
-      title: 'Water Dreaming',
-      artist: 'Clifford Possum Tjapaltjarri',
-      medium: 'Synthetic polymer on canvas',
+      title: 'Cave of Quiet Light',
+      artist: 'Nick Cave',
+      medium: 'Photography & reflection',
+      image: '/images/art/Cave.avif',
+      inspiration: 'Stillness and raw emotion that keep us honest.',
+      aspectRatio: 0.5625,
     },
     {
-      title: 'Ngapa Jukurrpa',
-      artist: 'Judy Watson Napangardi',
-      medium: 'Acrylic on linen',
+      title: 'Persistence of Memory',
+      artist: 'Salvador Dalí',
+      medium: 'Surrealist oil study',
+      image: '/images/art/Dali.jpeg',
+      inspiration: 'Dreamscapes and the fluidity of time.',
+      aspectRatio: 0.7493333333333333,
+    },
+    {
+      title: 'Visionary Thinker',
+      artist: 'David Unaipon',
+      medium: 'Portrait',
+      image: '/images/art/David Unaipon.webp',
+      inspiration: 'First Nations inventor and storyteller—genius already lives here.',
+      link: 'https://en.wikipedia.org/wiki/David_Unaipon',
+      aspectRatio: 1,
+    },
+    {
+      title: 'Abstract Gradient',
+      artist: 'Gerhard Richter',
+      medium: 'Oil on canvas',
+      image: '/images/art/Gerhard.webp',
+      inspiration: 'Blurring the boundaries between memory and reality.',
+      aspectRatio: 1.134,
+    },
+    {
+      title: 'Palm Island Sovereignty',
+      artist: 'Uncle Allan – Palm Island Art',
+      medium: 'Acrylic on board',
+      image: 'https://cdn.prod.website-files.com/689e3bfaae680c28030c9cc1/689e5dfcfa94de9dbc8b5acb_UA_paintings8.jpg',
+      inspiration: 'Stories of reef life and cultural sovereignty continue to guide every stroke.',
+      link: 'https://burrgumanbarraart.com',
+      aspectRatio: 1.11476,
     },
   ];
 
@@ -780,11 +978,44 @@ export function YearInNumbersRedesign({ metrics, curatedSettings }: YearInNumber
   ];
 
   return (
-    <div ref={containerRef} className="max-w-6xl mx-auto space-y-12">
-      {/* Header */}
-      <div className="text-center">
-        <p className="text-teal-400 text-sm uppercase tracking-[0.3em] font-semibold mb-4">2025 Impact</p>
+    <div ref={containerRef} className="space-y-12 relative">
+      <div className="max-w-6xl mx-auto space-y-12 relative">
+        {/* Organic background decoration - hand-drawn style curves */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.03]">
+        <svg className="absolute top-20 -left-20 w-64 h-64" viewBox="0 0 200 200" fill="none" stroke="#CC7A22">
+          <path d="M10 100 Q50 30 100 50 Q150 70 180 20" strokeWidth="2" strokeLinecap="round" />
+          <path d="M20 150 Q70 100 120 130 Q170 160 190 110" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+        <svg className="absolute top-40 -right-16 w-48 h-48" viewBox="0 0 200 200" fill="none" stroke="#7D9A6E">
+          <path d="M180 30 Q130 80 150 140 Q170 180 120 190" strokeWidth="2" strokeLinecap="round" />
+          <circle cx="150" cy="140" r="3" fill="#7D9A6E" />
+        </svg>
+        <svg className="absolute bottom-40 -left-10 w-32 h-32" viewBox="0 0 100 100" fill="none" stroke="#C2704A">
+          <path d="M10 50 Q30 20 50 40 Q70 60 90 30" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      </div>
+
+      {/* Header - with organic underline */}
+      <div className="text-center relative">
+        <p className="text-amber-400 text-sm uppercase tracking-[0.3em] font-semibold mb-4">2025 Impact</p>
         <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">The Year in Numbers</h2>
+        {/* Hand-drawn style underline */}
+        <svg className="w-48 h-4 mx-auto mb-4" viewBox="0 0 200 20" fill="none">
+          <path
+            d="M10 10 Q50 5 100 12 Q150 18 190 8"
+            stroke="url(#headerUnderline)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            className="animate-draw-path"
+          />
+          <defs>
+            <linearGradient id="headerUnderline" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#CC7A22" />
+              <stop offset="50%" stopColor="#C2704A" />
+              <stop offset="100%" stopColor="#7D9A6E" />
+            </linearGradient>
+          </defs>
+        </svg>
         <p className="text-slate-400 max-w-2xl mx-auto">
           Numbers tell part of the story. The connections behind them tell the rest.
         </p>
@@ -824,17 +1055,54 @@ export function YearInNumbersRedesign({ metrics, curatedSettings }: YearInNumber
         <BehindTheScenes tea={metrics.cupsOfTea} lateNights={metrics.lateNights} sunrises={metrics.sunrisesMissed} />
       </div>
 
-      {/* Divider */}
-      <div className="flex items-center gap-4 py-8">
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent" />
-        <Sparkles className="w-5 h-5 text-slate-600" />
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent" />
+      {/* Organic Divider - hand-drawn style */}
+      <div className="relative py-12">
+        <svg className="w-full h-8" viewBox="0 0 800 32" preserveAspectRatio="xMidYMid meet" fill="none">
+          {/* Organic wavy line */}
+          <path
+            d="M0 16 Q100 8 200 16 Q300 24 400 16 Q500 8 600 16 Q700 24 800 16"
+            stroke="url(#dividerGradient)"
+            strokeWidth="1"
+            strokeLinecap="round"
+            opacity="0.4"
+          />
+          {/* Decorative dots along the path */}
+          <circle cx="200" cy="16" r="2" fill="#CC7A22" opacity="0.6" />
+          <circle cx="400" cy="16" r="3" fill="#C2704A" opacity="0.8" />
+          <circle cx="600" cy="16" r="2" fill="#7D9A6E" opacity="0.6" />
+          <defs>
+            <linearGradient id="dividerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="transparent" />
+              <stop offset="30%" stopColor="#CC7A22" />
+              <stop offset="50%" stopColor="#C2704A" />
+              <stop offset="70%" stopColor="#7D9A6E" />
+              <stop offset="100%" stopColor="transparent" />
+            </linearGradient>
+          </defs>
+        </svg>
+        {/* Central sparkle */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+          <Sparkle className="w-6 h-6 text-amber-500/60" />
+        </div>
       </div>
 
-      {/* What Kept Us Grounded */}
-      <div className="text-center mb-8">
+      {/* What Kept Us Grounded - with organic decorative elements */}
+      <div className="text-center mb-8 relative">
+        {/* Decorative leaves/sprouts on sides */}
+        <svg className="absolute left-8 top-0 w-12 h-12 opacity-20" viewBox="0 0 48 48" fill="none" stroke="#7D9A6E">
+          <path d="M24 44 Q20 30 28 20 Q36 10 24 4" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M24 44 Q28 32 22 24 Q16 16 24 4" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+        <svg className="absolute right-8 top-0 w-12 h-12 opacity-20 scale-x-[-1]" viewBox="0 0 48 48" fill="none" stroke="#7D9A6E">
+          <path d="M24 44 Q20 30 28 20 Q36 10 24 4" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M24 44 Q28 32 22 24 Q16 16 24 4" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
         <h3 className="text-2xl font-bold text-white mb-2">What Kept Us Grounded</h3>
         <p className="text-slate-400">Work is only as meaningful as the life that surrounds it</p>
+        {/* Organic underline */}
+        <svg className="w-32 h-3 mx-auto mt-3" viewBox="0 0 128 12" fill="none">
+          <path d="M4 6 Q32 2 64 8 Q96 12 124 6" stroke="#C2704A" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
+        </svg>
       </div>
 
       {/* Cultural sections - Music row */}
@@ -843,14 +1111,19 @@ export function YearInNumbersRedesign({ metrics, curatedSettings }: YearInNumber
         <ConcertsSection concerts={defaultConcerts} />
       </div>
 
-      {/* Cultural sections - Other */}
-      <div className="grid md:grid-cols-2 gap-6">
-        <ArtGallerySection art={defaultArt} />
-        <TripsSection trips={defaultTrips} />
       </div>
 
-      {/* Family section - full width */}
-      <FamilySection moments={defaultMoments} />
+      <div className="w-full px-4 sm:px-6 md:px-10">
+        <ArtGallerySection art={defaultArt} />
+      </div>
+
+      <div className="max-w-6xl mx-auto space-y-12 relative">
+        {/* International Trips - Full width */}
+        <TripsSection trips={defaultTrips} />
+
+        {/* Family section - full width */}
+        <FamilySection moments={defaultMoments} />
+      </div>
     </div>
   );
 }

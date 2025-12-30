@@ -1339,7 +1339,9 @@ export function DashboardLanding() {
                 <div className="mt-2 text-sm">
                   <p className="font-semibold text-ocean-800">{secondaryInsight.title}</p>
                   <p className="mt-1 text-ocean-700">{secondaryInsight.description}</p>
-                  <p className="mt-2 text-xs text-ocean-600">Queue status: {intelligenceOverview?.metrics?.community_priority_queue ?? 'pending'}</p>
+                  <p className="mt-2 text-xs text-ocean-600">
+                    Queue status: {String(intelligenceOverview?.metrics?.community_priority_queue ?? 'pending')}
+                  </p>
                 </div>
               ) : (
                 <p className="mt-2 text-xs text-ocean-700">Connect AI queue to surface new features in flight and community feedback themes.</p>

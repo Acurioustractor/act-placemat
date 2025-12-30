@@ -1,0 +1,980 @@
+# Projects created since 2025-01-01
+
+**Total:** 61 projects
+
+> Showing Notion fields: status, lead, dates, area, themes/tags, funding numbers, supporters/partners, milestone, summary, Notion link.
+
+## ACT stop, revive, thrive in Bali
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-10-21T18:51:00.000Z
+- Last edited: 2025-10-24T06:49:00.000Z
+- Area: Decentralised Power
+- Themes: Operations
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: The event will take place from November 15th to 21st, with discussions on project goals and personal preferences regarding vacation days. Key questions include desired outcomes, focus areas, and how to maximize support during the stay.
+- Notion: https://www.notion.so/ACT-stop-revive-thrive-in-Bali-293ebcf981cf80ba91f0df938854052b
+## Travelling women’s car | Cultural preservation and survival for future generations to come 
+
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-09-18T08:57:00.000Z
+- Last edited: 2025-10-23T06:03:00.000Z
+- Area: Creativity
+- Themes: Storytelling, Economic Freedom
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-10-11
+- Summary: A project led by Talia Liddle aims to preserve Iljiljarri songlines through a mobile cultural hub, the Travelling Women’s Car, which requires funding for a Toyota Troop Carrier and equipment. The initiative focuses on recording sacred songs, dances, and oral histories with the help of senior women, ensuring cultural knowledge is maintained for future generations. The total budget sought is $150,000, with an emphasis on community involvement and cultural protocols.
+- Notion: https://www.notion.so/Travelling-women-s-car-Cultural-preservation-and-survival-for-future-generations-to-come-272ebcf981cf80e494edf3d030aa1c44
+## Travelling women’s car | Cultural preservation - draft
+- Status: Ideation 🌀
+- Lead: Not set
+- Created: 2025-09-25T09:43:00.000Z
+- Last edited: 2025-10-22T21:52:00.000Z
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: Talia Liddle seeks support to purchase a Toyota Troop Carrier for cultural preservation efforts, specifically to safeguard the Iljiljarri songlines at risk of being lost. The vehicle will serve as a mobile cultural hub to access remote sites and facilitate the recording of sacred songs and oral histories. Talia emphasizes the urgency of the project and the importance of practicing culture, advocating for donations to help fulfill this vision.
+- Notion: https://www.notion.so/Travelling-women-s-car-Cultural-preservation-draft-279ebcf981cf8063b171d0f90e416ebb
+## PICC Station Precinct
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-08-18T08:20:00.000Z
+- Last edited: 2025-10-22T21:51:00.000Z
+- Area: Creativity
+- Themes: Indigenous, Health and wellbeing, Youth Justice
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-10-31
+- Summary: PICC holds a 30-year lease on a historically significant site previously managed for youth services, now in poor condition. Plans include developing youth-focused programs, workshops, and accommodation options, with potential funding from federal government initiatives. Immediate actions involve forming an advisory group, cleaning the site, and exploring funding opportunities, while long-term goals aim to establish a regional hub for youth training and manufacturing, linking Palm Island and Townsville.
+- Notion: https://www.notion.so/PICC-Station-Precinct-253ebcf981cf80e8a8a8d5dc42530cc5
+## JusticeHub
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-01-12T10:30:00.000Z
+- Last edited: 2025-10-21T02:40:00.000Z
+- Area: Decentralised Power
+- Themes: Youth Justice
+- Tags: Collaboration, Storytelling
+- Funding string: $3900K actual, 500000K potential
+- Incoming: actual $3900, potential $500000
+- Revenue: actual $0, potential $100000
+- Budget: $3900
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-10-23
+- Summary: JusticeHub aims to prototype a community-owned center for local justice initiatives, emphasizing community ownership, co-design with Indigenous partners, and sustainable funding pathways. The project focuses on empowering Indigenous-led initiatives, establishing a decentralized platform for collaboration, and mobilizing resources to support grassroots programs. Key commitments include transparent documentation, respect for cultural protocols, and measuring success based on community-defined outcomes.
+- Notion: https://www.notion.so/JusticeHub-179ebcf981cf8005ad63d2a736280011
+## Dad.Lab.25
+- Status: Active 🔥
+- Lead: Nicholas Marchesi
+- Created: 2025-06-01T02:32:00.000Z
+- Last edited: 2025-10-20T08:02:00.000Z
+- Area: Creativity
+- Themes: Health and wellbeing
+- Funding string: $0K actual, 5000K potential
+- Incoming: actual $0, potential $5000
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-10-31
+- Summary: Dad.Lab is a transformative retreat for fathers in Australia, focusing on connection, learning, and growth through nature and collaborative problem-solving. The first event successfully engaged participants in activities that fostered vulnerability, shared experiences, and actionable commitments. Key themes included mental health, parenting challenges, and balancing personal and family life. Feedback highlighted effective facilitation and venue, while suggesting improvements in pacing and activity clarity. Future recommendations include expanding knowledge circles, enhancing follow-up connections, and incorporating new elements like travel coordination and physical activities.
+- Notion: https://www.notion.so/Dad-Lab-25-205ebcf981cf80afb1e6e00d58785606
+## NFP leaders interview project
+- Status: Active 🔥
+- Lead: Nicholas Marchesi
+- Created: 2025-07-19T02:22:00.000Z
+- Last edited: 2025-10-10T23:44:00.000Z
+- Area: Radical Humility
+- Themes: Indigenous, Health and wellbeing, Global community
+- Tags: Collaboration, Research, Strategy
+- Funding string: $0K actual, 100000K potential
+- Incoming: actual $0, potential $100000
+- Revenue: actual $0, potential $100000
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-08-18
+- Summary: A collaborative research initiative aims to enhance the wellbeing of NFP leaders and social entrepreneurs in Australia, addressing critical challenges they face. The project involves multiple phases, including research design, data collection, analysis, and recommendations, with a focus on identifying support gaps and developing evidence-based solutions. Key partners include Bond University and ACT, with a funding target of $100K from the Ford Foundation. The initiative seeks to create accessible resources and establish a foundation for larger-scale research and sector development initiatives.
+- Notion: https://www.notion.so/NFP-leaders-interview-project-235ebcf981cf8172b0eeccf0ebb01fd3
+## Fairfax & PLACE tech 
+- Status: Not set
+- Lead: Not set
+- Created: 2025-09-25T20:27:00.000Z
+- Last edited: 2025-10-06T00:59:00.000Z
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: Prepare for the November workshop by creating a stakeholder list, gathering existing artifacts, and defining platform hypotheses and success measures. The agenda includes mapping the ecosystem, identifying personas and their pain points, formulating user needs, generating "How might we" statements, and prioritizing initiatives. Roles include facilitator, mapper, scribe, timekeeper, and decider, with expected outputs such as a stakeholder map, prioritized user needs, and a 90-day plan.
+- Notion: https://www.notion.so/Fairfax-PLACE-tech-279ebcf981cf80409e15ee19c87d04d9
+## SMART Connect
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-08-31T09:47:00.000Z
+- Last edited: 2025-10-03T20:42:00.000Z
+- Area: Truth-Telling
+- Themes: Storytelling, Operations, Innovation
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-09-30
+- Summary: The project is called SMART Connect, led by Benjamin Knight, with a status of active and a next milestone set for September 30, 2025. Core values include truth-telling, and the themes focus on innovation, operations, and storytelling.
+- Notion: https://www.notion.so/SMART-Connect-260ebcf981cf80239896d136e5084773
+## Active Projects Overview 🌱
+- Status: Not set
+- Lead: Not set
+- Created: 2025-09-28T07:18:00.000Z
+- Last edited: 2025-09-28T07:31:00.000Z
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: Overview of community-led initiatives focusing on addressing urgent needs in First Nations communities, including manufacturing essential goods, documenting resilience stories, empowering Indigenous youth through justice programs, and fostering cultural healing. Key projects include community-owned manufacturing for household goods, storytelling initiatives post-storm, youth justice platforms, and various cultural regeneration efforts aimed at sustainability and community empowerment.
+- Notion: https://www.notion.so/Active-Projects-Overview-99448c88f3144ee8a49303b4d51e1e48
+## Murrup + ACT
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-09-24T22:46:00.000Z
+- Last edited: 2025-09-25T20:38:00.000Z
+- Area: Creativity
+- Themes: Health and wellbeing, Indigenous, Storytelling
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-11-11
+- Summary: The project focuses on health, wellbeing, and Indigenous storytelling, with an active status and a milestone set for November 11, 2025. The email discusses attendance at events, scheduling a meeting on November 11 or November 21, and exploring topics like hairdressing services, pop-up libraries, and the role of AI in cultural alignment for Yolngu culture.
+- Notion: https://www.notion.so/Murrup-ACT-278ebcf981cf8065a0e5cbbd65d3e8d1
+## 10x10 Community Capital Leadership Retreat
+- Status: Not set
+- Lead: Not set
+- Created: 2025-09-07T23:01:00.000Z
+- Last edited: 2025-09-24T02:53:00.000Z
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: The retreat aims to foster genuine connections, trust, and peer learning among Community Capital founders through a practical experience centered on themes such as connection, care, vulnerability, and contribution. The program includes activities like silent walks, fire-side sharing, collaborative cooking, and creating artifacts like a Community Cookbook and Collective Candle to sustain connections post-retreat. Success criteria focus on meaningful new connections and actionable peer-learning outcomes, with logistics managed to ensure a smooth experience.
+- Notion: https://www.notion.so/10x10-Community-Capital-Leadership-Retreat-267ebcf981cf80b8ad56d7c0ee509fcf
+## Contained
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-07-06T23:34:00.000Z
+- Last edited: 2025-09-18T01:54:00.000Z
+- Area: Truth-Telling
+- Themes: Youth Justice
+- Funding string: $0K actual, 10000K potential
+- Incoming: actual $0, potential $10000
+- Revenue: actual $0, potential $0
+- Budget: $30000
+- Total funding: $30000
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-09-01
+- Summary: An art-based youth justice initiative aims to challenge perceptions of youth justice through creative expression and truth-telling narratives, addressing themes of isolation and containment. The project seeks to disrupt harmful stereotypes and amplify authentic voices from young people with lived experiences in the justice system, while connecting art with broader justice reform movements. Key commitments include centering these voices, fostering authentic dialogue, and developing transferable artistic methodologies for community-led storytelling.
+- Notion: https://www.notion.so/Contained-228ebcf981cf809e8368f9dae2a41129
+## Regional Arts Fellowship
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-09-05T10:47:00.000Z
+- Last edited: 2025-09-10T03:00:00.000Z
+- Themes: Art, Health and wellbeing
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $45000
+- Total funding: $45000
+- Supporters: 0; Partners: 0
+- Summary: The project, led by Benjamin Knight and Nicholas Marchesi, is currently active and focuses on the themes of art, health, and wellbeing.
+- Notion: https://www.notion.so/Regional-Arts-Fellowship-265ebcf981cf802bbb31fe479e378f01
+## PICC Elders' trip to Hull River in October
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-09-01T21:02:00.000Z
+- Last edited: 2025-09-10T02:59:00.000Z
+- Area: Truth-Telling
+- Themes: Indigenous, Storytelling, Art
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $60000
+- Total funding: $60000
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-09-05
+- Summary: The trip to Hull River in October is led by Benjamin Knight, focusing on themes of art, Indigenous culture, and storytelling. The project is active with a milestone set for September 5, 2025, and emphasizes the core value of truth-telling.
+- Notion: https://www.notion.so/PICC-Elders-trip-to-Hull-River-in-October-261ebcf981cf8009b935d0224f7ae130
+## Go big // Funding ACT
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-08-19T21:06:00.000Z
+- Last edited: 2025-09-10T02:59:00.000Z
+- Area: Creativity
+- Themes: Economic Freedom, Storytelling, Operations
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-09-04
+- Summary: A $10 million initiative aims to transform Australia's communities through three acts: establishing micro-factories to create local goods, a digital platform for justice reform, and a global exchange for Indigenous youth. The project emphasizes community ownership and sustainability, with a vision for lasting impact and cultural revolution, while drawing inspiration from successful global movements that emerged from adversity.
+- Notion: https://www.notion.so/Go-big-Funding-ACT-254ebcf981cf805aa2a6ed1903eb67ad
+## Wilya Janta Communications
+- Status: Ideation 🌀
+- Lead: Benjamin Knight
+- Created: 2025-05-15T00:33:00.000Z
+- Last edited: 2025-09-10T02:58:00.000Z
+- Area: Truth-Telling
+- Themes: Indigenous, Economic Freedom, Storytelling
+- Tags: Storytelling
+- Funding string: $0K actual, 45000K potential
+- Incoming: actual $0, potential $45000
+- Revenue: actual $40000, potential $45000
+- Budget: $45000
+- Total funding: $45000
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-07-14
+- Summary: Wilya Janta Communications is an Indigenous-led initiative focused on creating community-owned storytelling infrastructure that respects cultural sovereignty and generates economic opportunities. The project aims to train community members as story coaches, establish cultural review protocols, and create a digital platform for storytelling. It emphasizes breaking colonial media patterns, providing economic benefits through content creation, and ensuring community control over narratives. The initiative plans to transition to full community ownership of the storytelling systems while documenting a replicable model for other Aboriginal communities.
+- Notion: https://www.notion.so/Wilya-Janta-Communications-1f4ebcf981cf80c59b67de30812aeee4
+## The Shed
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-06-17T05:11:00.000Z
+- Last edited: 2025-09-10T02:58:00.000Z
+- Area: Decentralised Power
+- Themes: Health and wellbeing
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-10-16
+- Summary: Project led by Benjamin Knight focuses on health and wellbeing with a status of active. The next milestone is set for October 16, 2025, and it currently has no revenue potential or actual revenue.
+- Notion: https://www.notion.so/The-Shed-215ebcf981cf8086a781fa9df2559a13
+## The Double Disadvantage: Supporting Young People with Disabilities in Queensland's Justice System
+- Status: Ideation 🌀
+- Lead: Benjamin Knight
+- Created: 2025-05-19T21:25:00.000Z
+- Last edited: 2025-09-10T02:58:00.000Z
+- Area: Truth-Telling
+- Themes: Youth Justice
+- Tags: Health, Empathy Ledger, justice
+- Funding string: $0K actual, 100000K potential
+- Incoming: actual $0, potential $100000
+- Revenue: actual $0, potential $100000
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: Nearly 50% of young people in Queensland's youth justice system have disabilities, leading to poorer life outcomes. The report outlines a framework to improve support by addressing identification, coordination, and transition gaps, while leveraging successful international models. It emphasizes the need for a human-centered approach and cross-sector partnerships to enhance outcomes and reduce recidivism, ultimately aiming to transform the lives of vulnerable youth with disabilities.
+- Notion: https://www.notion.so/The-Double-Disadvantage-Supporting-Young-People-with-Disabilities-in-Queensland-s-Justice-System-1f8ebcf981cf8070a502c5e9059a3c67
+## The Confessional
+- Status: Active 🔥
+- Lead: Nicholas Marchesi
+- Created: 2025-07-07T03:48:00.000Z
+- Last edited: 2025-09-10T02:58:00.000Z
+- Area: Truth-Telling
+- Themes: Art, Storytelling
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $5000
+- Total funding: $5000
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-10-15
+- Summary: An innovative mobile art therapy initiative transforms a horse trailer into a sacred space for healing and truth-telling, making mental health support accessible in underserved communities. It encourages participants to share their stories in a judgment-free environment, using art as a therapeutic tool while ensuring anonymity and safety. The project aims to reach remote areas, provide immediate support during crises, and offer an alternative to traditional therapy settings.
+- Notion: https://www.notion.so/The-Confessional-229ebcf981cf8004b7eefe9a9683c75a
+## MingaMinga Rangers
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-07-26T02:09:00.000Z
+- Last edited: 2025-09-10T02:58:00.000Z
+- Area: Creativity
+- Themes: Indigenous, Health and wellbeing, Economic Freedom
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-09-26
+- Summary: Project MingaMinga Rangers focuses on creativity, with a status of active and a next milestone set for September 26, 2025. The project emphasizes themes of economic freedom, health and wellbeing, and indigenous values.
+- Notion: https://www.notion.so/MingaMinga-Rangers-23cebcf981cf8007bcd2ca49d1256719
+## SXSW 2025
+- Status: Ideation 🌀
+- Lead: Benjamin Knight
+- Created: 2025-03-07T10:12:00.000Z
+- Last edited: 2025-09-10T02:57:00.000Z
+- Area: Truth-Telling
+- Themes: Storytelling
+- Tags: Storytelling, Experience
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: The proposal outlines an immersive experience for SXSW Sydney 2025, focusing on storytelling and youth justice. It includes a 60-minute panel featuring Traditional Owners and young people discussing their experiences with the justice system, interactive installations like a confessional booth and a hacked payphone for voicemails, and engaging visual portraits that represent the duality of navigating different worlds. The aim is to democratize wisdom and foster ongoing dialogue about justice and belonging, aligning with SXSW's vision of cultural exchange and innovation.
+- Notion: https://www.notion.so/SXSW-2025-1afebcf981cf80fd9595f8b28698e128
+## SMART Recovery
+- Status: Ideation 🌀
+- Lead: Benjamin Knight
+- Created: 2025-02-03T11:48:00.000Z
+- Last edited: 2025-09-10T02:57:00.000Z
+- Area: Creativity
+- Themes: Health and wellbeing, Storytelling, Operations
+- Tags: Health, Storytelling
+- Funding string: $120000K actual, 200000K potential
+- Incoming: actual $120000, potential $200000
+- Revenue: actual $0, potential $0
+- Budget: $120000
+- Total funding: $50000
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-09-02
+- Summary: SMART Recovery aims to transform addiction recovery in Australia by expanding from 350 to 1,000 peer support meetings, launching a digital platform for 24/7 support, and utilizing storytelling to reduce stigma. The initiative addresses a critical need for accessible recovery resources for 500,000 Australians, emphasizing community-led change and integration with healthcare systems. Key commitments include capturing diverse recovery stories and achieving household name recognition by 2027.
+- Notion: https://www.notion.so/SMART-Recovery-18febcf981cf800c9f79e44c2e9728ba
+## SMART HCP GP Uplift Project 
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-01-30T23:23:00.000Z
+- Last edited: 2025-09-10T02:57:00.000Z
+- Area: Creativity
+- Themes: Health and wellbeing
+- Funding string: $0K actual, 20000K potential
+- Incoming: actual $0, potential $20000
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-09-21
+- Summary: The project aims to enhance GP awareness of SMART Recovery, addressing a critical gap where only 16 out of 545 surveyed GPs are familiar with it. It involves a multi-phase approach including targeted education campaigns, distribution of physical kits with referral tools, and digital integration for streamlined referral processes. The initiative seeks to reduce the 12-18 year delay in seeking addiction help by embedding SMART Recovery into primary healthcare, with a budget of $30,000 allocated for development and a presence planned at the GPCE conference in Sydney.
+- Notion: https://www.notion.so/SMART-HCP-GP-Uplift-Project-bb7eeeca72aa43c9adc5e29cec34d9b7
+## QFCC Empathy Ledger
+- Status: Ideation 🌀
+- Lead: Benjamin Knight
+- Created: 2025-04-16T07:20:00.000Z
+- Last edited: 2025-09-10T02:57:00.000Z
+- Area: Decentralised Power
+- Themes: Youth Justice, Storytelling
+- Tags: Storytelling, Collaboration
+- Funding string: $50000K actual, 100000K potential
+- Incoming: actual $50000, potential $100000
+- Revenue: actual $0, potential $50000
+- Budget: $50000
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: The Queensland Family and Child Commission (QFCC) focuses on amplifying youth voices through various initiatives, including a Youth Summit and the Youth Advocate Network. A partnership with A Curious Tractor aims to create a youth voice database that ensures young people maintain ownership of their stories. The project emphasizes meaningful engagement, ethical story sharing, and alignment with data sovereignty principles, particularly for First Nations youth, to influence policy and practice effectively.
+- Notion: https://www.notion.so/QFCC-Empathy-Ledger-1d7ebcf981cf80758112d0809ea7b64c
+## Project Her Self design
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-05-29T04:44:00.000Z
+- Last edited: 2025-09-10T02:57:00.000Z
+- Area: Truth-Telling
+- Themes: Storytelling
+- Tags: Storytelling, Experience, Design
+- Funding string: $0K actual, 1500K potential
+- Incoming: actual $0, potential $1500
+- Revenue: actual $1500, potential $1500
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-09-17
+- Summary: Project is active with a focus on storytelling, led by Benjamin Knight. It has a revenue potential of A$1,500 and a next milestone date set for September 17, 2025. Core values emphasize truth-telling.
+- Notion: https://www.notion.so/Project-Her-Self-design-202ebcf981cf80638125f6c0b23e22ed
+## OS Playground 
+- Status: Ideation 🌀
+- Lead: Benjamin Knight
+- Created: 2025-03-09T22:26:00.000Z
+- Last edited: 2025-09-10T02:57:00.000Z
+- Area: Decentralised Power
+- Themes: Storytelling
+- Tags: Health, Digital Experience, Research
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: The project aims to create a Remote Laundry Demand Register and Best Product Selector to identify suitable laundry solutions for remote communities in Australia. It involves researching community needs, developing a structured decision-making tool, and ensuring effective service delivery by coordinating between Orange Sky and AIG. Key components include data collection, a decision matrix for scoring community requests, and a phased implementation plan for testing and rollout. The initiative seeks to improve health and hygiene outcomes in underserved communities by providing access to laundry services while avoiding duplication of efforts.
+- Notion: https://www.notion.so/OS-Playground-1b1ebcf981cf80f688a4d4f3e22d5d79
+## Orange Sky Empathy Ledger Project Repository - review
+- Status: Transferred ✅
+- Lead: Benjamin Knight
+- Created: 2025-06-21T21:10:00.000Z
+- Last edited: 2025-09-10T02:57:00.000Z
+- Area: Truth-Telling
+- Themes: Storytelling
+- Funding string: $0K actual, 40000K potential
+- Incoming: actual $0, potential $40000
+- Revenue: actual $0, potential $40000
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-07-28
+- Summary: The Empathy Ledger project successfully collected 108 stories, focusing on ethical storytelling and participant engagement. Key achievements include the development of a comprehensive technical infrastructure, including an Airtable database and consent management tools. While the project met story collection targets, challenges remain regarding the implementation of a compensation model and the need for a systematic feedback loop for storytellers. The project manager emphasized the importance of quality over quantity in storytelling and expressed enthusiasm for future opportunities to enhance volunteer engagement and storytelling processes.
+- Notion: https://www.notion.so/Orange-Sky-Empathy-Ledger-Project-Repository-review-219ebcf981cf80499bffe17b58792c96
+## MMEIC - Justice Projects
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-01-12T06:47:00.000Z
+- Last edited: 2025-09-10T02:57:00.000Z
+- Area: Radical Humility
+- Themes: Youth Justice, Indigenous, Storytelling
+- Tags: Storytelling, Collaboration
+- Funding string: $5000K actual, 50000K potential
+- Incoming: actual $5000, potential $50000
+- Revenue: actual $1000, potential $30000
+- Budget: $5000
+- Total funding: $1000
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-09-10
+- Summary: The project aims to support Indigenous-led justice reinvestment initiatives on Stradbroke Island through storytelling and cultural healing programs. It emphasizes community ownership, cultural protocols, and advocacy for policy influence, with a focus on creating alternatives to incarceration for local youth. Key stakeholders include MMEIC and community leaders, with a vision for sustainable pathways and transformative connections to Country.
+- Notion: https://www.notion.so/MMEIC-Justice-Projects-179ebcf981cf80bea071d6a6d13c821a
+## Maningrida - Justice Reinvestment
+- Status: Ideation 🌀
+- Lead: Benjamin Knight
+- Created: 2025-05-02T21:27:00.000Z
+- Last edited: 2025-09-10T02:57:00.000Z
+- Area: Decentralised Power
+- Themes: Youth Justice, Indigenous, Storytelling
+- Tags: Storytelling
+- Funding string: $0K actual, 50000K potential
+- Incoming: actual $0, potential $50000
+- Revenue: actual $0, potential $20000
+- Budget: $30000
+- Total funding: $30000
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-09-15
+- Summary: Nja-marléya's Indigenous-led justice reinvestment initiative aims to prevent youth justice contact through culturally appropriate storytelling and community-controlled impact measurement. The project has secured federal funding, emphasizes data sovereignty, and involves collaboration with various community and government partners. Key phases include establishing an impact measurement system, documenting outcomes for advocacy, and creating a replication framework for other Indigenous initiatives. Commitments include community control over storytelling and respect for cultural protocols.
+- Notion: https://www.notion.so/Maningrida-Justice-Reinvestment-1e7ebcf981cf80389969ccc7fb897b43
+## JusticeHub - Centre of Excellence
+- Status: Ideation 🌀
+- Lead: Benjamin Knight
+- Created: 2025-02-20T10:07:00.000Z
+- Last edited: 2025-09-10T02:55:00.000Z
+- Area: Decentralised Power
+- Themes: Youth Justice
+- Tags: justice
+- Funding string: $3900K actual, 500000K potential
+- Incoming: actual $3900, potential $500000
+- Revenue: actual $0, potential $100000
+- Budget: $3900
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: The Youth Justice Centre of Excellence aims to transform youth justice in Australia by prioritizing healing-centered justice over punitive incarceration. It focuses on culturally grounded, trauma-informed rehabilitation, leveraging Indigenous governance and community-led practices to support young people, particularly Indigenous youth. The initiative seeks to redefine youth justice, emphasizing restorative practices and community reintegration, while serving as a national model for systemic change and policy influence.
+- Notion: https://www.notion.so/JusticeHub-Centre-of-Excellence-1a0ebcf981cf8016859cdc3443aed8d5
+## June's Patch
+- Status: Active 🔥
+- Lead: Nicholas Marchesi
+- Created: 2025-07-06T20:25:00.000Z
+- Last edited: 2025-09-10T02:55:00.000Z
+- Area: Radical Humility
+- Themes: Health and wellbeing
+- Funding string: $0K actual, 100000K potential
+- Incoming: actual $0, potential $100000
+- Revenue: actual $0, potential $0
+- Budget: $30000
+- Total funding: $30000
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-11-01
+- Summary: The initiative aims to enhance healthcare worker wellbeing in Queensland through nature prescriptions and therapeutic gardens, addressing mental health crises exacerbated by isolation and burnout. It includes partnerships with local organizations, evidence-based research, and a phased approach to community ownership of garden sites. The program emphasizes accessible participation, cultural safety, and sustainable practices, with a goal of creating a self-sustaining network of therapeutic gardens for healthcare professionals.
+- Notion: https://www.notion.so/June-s-Patch-228ebcf981cf80419b47ff1845d97e43
+## Fishers Oysters 
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-01-14T02:20:00.000Z
+- Last edited: 2025-09-10T02:55:00.000Z
+- Area: Decentralised Power
+- Themes: Youth Justice, Economic Freedom
+- Tags: Empathy Ledger, Concept
+- Funding string: $0K actual, 50000K potential
+- Incoming: actual $0, potential $50000
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-09-12
+- Summary: The project aims to reclaim and restore Moreton Bay's oyster industry through Indigenous-led aquaculture, emphasizing cultural resilience and ecological justice. Key elements include a cultural-first approach, community ownership, and regenerative aquaculture practices. The initiative addresses urgent cultural reclamation and ecological crises while creating economic sovereignty for Traditional Owners. The project will progress through phases, ultimately achieving self-sustaining community control and documenting cultural knowledge for future generations.
+- Notion: https://www.notion.so/Fishers-Oysters-17bebcf981cf801b9a06edf3f35bf7f4
+## Empathy Ledger
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-01-26T05:48:00.000Z
+- Last edited: 2025-09-10T02:55:00.000Z
+- Area: Truth-Telling
+- Themes: Storytelling
+- Tags: Storytelling
+- Funding string: $40000K actual, 500000K potential
+- Incoming: actual $40000, potential $500000
+- Revenue: actual $0, potential $100000
+- Budget: $40000
+- Total funding: $65000
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-09-10
+- Summary: The project aims to amplify the voices of marginalized communities through ethical storytelling, utilizing technology to collect and share their experiences. It focuses on restoring dignity, fostering empathy, and driving systemic change by transforming stories into actionable insights for policy reform. The initiative involves partnerships with community organizations, adherence to ethical guidelines, and a phased approach to community ownership of the platform, ultimately envisioning a society where every story shapes policies and perceptions.
+- Notion: https://www.notion.so/Empathy-Ledger-187ebcf981cf8032a28fdb8b76442ecd
+## DGR Community category application
+- Status: Sunsetting 🌅
+- Lead: Benjamin Knight
+- Created: 2025-02-27T20:20:00.000Z
+- Last edited: 2025-09-10T02:55:00.000Z
+- Area: Decentralised Power
+- Themes: Operations
+- Tags: justice, Collaboration
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: A Kind Tractor is applying for DGR Community Charity endorsement to enhance support for grassroots justice initiatives, provide training programs, and facilitate philanthropic funding. The organization aligns with DGR criteria through its community-centric mission, structured training programs, support platforms for grassroots organizations, and commitment to governance standards, aiming to scale support and increase funding opportunities for community-led justice solutions.
+- Notion: https://www.notion.so/DGR-Community-category-application-1a7ebcf981cf80a5ad5be18bc94cd918
+## Deadly Homes and Gardens 
+- Status: Ideation 🌀
+- Lead: Nicholas Marchesi
+- Created: 2025-01-14T02:21:00.000Z
+- Last edited: 2025-09-10T02:55:00.000Z
+- Area: Radical Humility
+- Themes: Health and wellbeing
+- Tags: Health, Concept, Strategy
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: Project focused on health and wellbeing with a theme of radical humility, currently in the ideation phase, with no revenue or incoming potential reported.
+- Notion: https://www.notion.so/Deadly-Homes-and-Gardens-17bebcf981cf8099bd1be0a57351a5b7
+## Custodian Economy
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-04-16T07:08:00.000Z
+- Last edited: 2025-09-10T02:55:00.000Z
+- Area: Decentralised Power
+- Themes: Youth Justice, Health and wellbeing
+- Tags: Health, Experience, Strategy
+- Funding string: $0K actual, 20000K potential
+- Incoming: actual $0, potential $20000
+- Revenue: actual $0, potential $20000
+- Budget: $50000
+- Total funding: $50000
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-08-29
+- Summary: The initiative aims to create sustainable employment pathways for Indigenous youth through a "custodian economy" model, prioritizing connection, safety, and learning opportunities before job-readiness. It addresses the youth justice crisis, employment barriers, and seeks to empower Indigenous communities through self-determined economic solutions. The approach emphasizes a stabilisation-first strategy, practical activity-based learning, and community partnerships, with the goal of breaking cycles of disadvantage and fostering generational change.
+- Notion: https://www.notion.so/Custodian-Economy-1d7ebcf981cf808ba394f2e547d6ee6c
+## Bimberi - Holiday Programs
+- Status: Ideation 🌀
+- Lead: Benjamin Knight
+- Created: 2025-02-03T21:53:00.000Z
+- Last edited: 2025-09-10T02:54:00.000Z
+- Area: Truth-Telling
+- Themes: Youth Justice
+- Tags: Collaboration, Storytelling
+- Funding string: $10000K actual, 10000K potential
+- Incoming: actual $10000, potential $10000
+- Revenue: actual $0, potential $0
+- Budget: $10000
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: The project aims to empower Indigenous-led initiatives in Australia by providing governance support, mobilizing resources, and fostering community-led solutions. Key objectives include developing governance toolkits, launching a digital collaboration platform, and securing funding for grassroots initiatives. Engagement with community partners through workshops and storytelling is emphasized to amplify voices and share impactful narratives. Current focus areas include onboarding partners, finalizing governance toolkits, and developing a knowledge-sharing platform, while addressing challenges such as funding access and technical setup.
+- Notion: https://www.notion.so/Bimberi-Holiday-Programs-18febcf981cf80f5bb14dc8229b66f4e
+## BCV: Regenerative Conservation
+- Status: Ideation 🌀
+- Lead: Benjamin Knight
+- Created: 2025-05-10T10:12:00.000Z
+- Last edited: 2025-09-10T02:54:00.000Z
+- Area: Decentralised Power
+- Themes: Health and wellbeing
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: Black Cockatoo Valley aims to integrate conservation, community wealth, and sustainable business through a partnership model, creating a large nature refuge and eco-cottages that fund conservation efforts while providing employment opportunities. The project emphasizes a self-reinforcing cycle where eco-tourism enhances conservation and community prosperity. Current efforts focus on land acquisition and legal frameworks, with a vision for a healing retreat that aligns with local values and community living. The property market analysis indicates strong demand for premium acreage, with a focus on conservation and lifestyle, suggesting a positive outlook for future growth.
+- Notion: https://www.notion.so/BCV-Regenerative-Conservation-1efebcf981cf8095b838ffb37e5ae474
+## BG Fit
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-02-03T21:54:00.000Z
+- Last edited: 2025-09-10T02:53:00.000Z
+- Area: Decentralised Power
+- Themes: Youth Justice
+- Tags: Empathy Ledger, Health, justice
+- Funding string: $30000K actual, 50000K potential
+- Incoming: actual $30000, potential $50000
+- Revenue: actual $20000, potential $20000
+- Budget: $30000
+- Total funding: $77000
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-09-19
+- Summary: Indigenous-led youth empowerment program combining fitness, cultural connection, and healing to disrupt the punitive youth justice cycle in Mount Isa and Doomadgee. The initiative aims to empower Indigenous youth through culturally grounded fitness and mentorship, addressing the overrepresentation of Indigenous youth in the justice system. The program includes pre-camp fitness sessions, annual on-country camps, and post-camp recovery, fostering resilience and cultural identity. Key partnerships with local Elders, police, and community organizations support its goals, with a vision for full community ownership by 2027.
+- Notion: https://www.notion.so/BG-Fit-18febcf981cf80fea738fe374e01cd08
+## BCV Reforest 
+- Status: Ideation 🌀
+- Lead: Nicholas Marchesi
+- Created: 2025-02-18T10:27:00.000Z
+- Last edited: 2025-09-10T02:53:00.000Z
+- Area: Creativity
+- Themes: Health and wellbeing
+- Tags: Health, Living, Connected
+- Funding string: $0K actual, 200000K potential
+- Incoming: actual $0, potential $200000
+- Revenue: actual $0, potential $100000
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: The Black Cockatoo Valley Conservation Project aims to create a large connected nature refuge on the Sunshine Coast through community-driven conservation and regenerative finance. Key objectives include protecting and expanding the area, developing a sustainable revenue model through eco-tourism, engaging local communities and Indigenous custodians, and establishing a governance framework. The project plans to secure conservation agreements, restore habitats for threatened species, and explore funding through grants, donations, and carbon credit schemes to ensure long-term sustainability.
+- Notion: https://www.notion.so/BCV-Reforest-19eebcf981cf8036b172e07c944f438b
+## Barkly Backbone
+- Status: Ideation 🌀
+- Lead: Benjamin Knight
+- Created: 2025-07-07T03:33:00.000Z
+- Last edited: 2025-09-10T02:53:00.000Z
+- Area: Truth-Telling
+- Themes: Storytelling
+- Funding string: $0K actual, 50000K potential
+- Incoming: actual $0, potential $50000
+- Revenue: actual $0, potential $50000
+- Budget: $50000
+- Total funding: $50000
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-07-10
+- Summary: Community-led storytelling initiative in Tennant Creek aims to amplify local voices and disrupt colonial narratives through sustainable infrastructure. The project emphasizes community control over narratives, with a focus on truth-telling and reconciliation. By July 2026, ownership will fully transfer to community partners, ensuring no extractive practices and open-source accessibility for other communities.
+- Notion: https://www.notion.so/Barkly-Backbone-229ebcf981cf80f1a053e6b8cd3b0362
+## AIME
+- Status: Transferred ✅
+- Lead: Benjamin Knight
+- Created: 2025-04-19T01:28:00.000Z
+- Last edited: 2025-09-10T02:53:00.000Z
+- Area: Radical Humility
+- Themes: Indigenous, Global community
+- Tags: Collaboration, Storytelling
+- Funding string: $80000K actual, 0K potential
+- Incoming: actual $80000, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $80000
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: Project focuses on radical humility and community engagement, with a budget of A$80,000. Key elements include prioritizing community needs, decentralizing power, and incorporating creativity. The project emphasizes alignment with core values, progress tracking, and impact assessment, along with a structured approach to community partnerships and resource management.
+- Notion: https://www.notion.so/AIME-1daebcf981cf809fb0faf297c464e192
+## ACT Notion / Tool Audit {Farm Plan} 
+- Status: Ideation 🌀
+- Lead: Nicholas Marchesi
+- Created: 2025-06-13T21:51:00.000Z
+- Last edited: 2025-09-10T02:53:00.000Z
+- Area: Creativity
+- Themes: Operations
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: The objective is to create a consistent and simple knowledge database using Notion, focusing on accuracy and repeatability. Key results include knowing where information is stored, refining usage, and maintaining up-to-date templates. The approach involves a simplified structure with four main database tables, capturing raw ideas, specific projects, tasks, and additional resources like contacts and tools. Emphasis is placed on nurturing ideas and connecting knowledge effectively.
+- Notion: https://www.notion.so/ACT-Notion-Tool-Audit-Farm-Plan-211ebcf981cf807ba02fcc3ea9711c05
+## ACT business set up
+- Status: Internal
+- Lead: Benjamin Knight
+- Created: 2025-05-31T00:50:00.000Z
+- Last edited: 2025-09-10T02:53:00.000Z
+- Area: Decentralised Power
+- Themes: Economic Freedom
+- Tags: Collaboration, Storytelling
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: A Curious Tractor (ACT) is a regenerative innovation ecosystem focused on empowering marginalized communities, particularly First Nations, through community-led initiatives. It proposes a dual-entity structure combining a not-for-profit entity with a mission-locked trading arm to ensure both social impact and financial sustainability. Key projects include the Empathy Ledger for ethical storytelling, Black Cockatoo Valley for land regeneration, Goods for circular economy products, and JusticeHub for grassroots justice solutions. ACT emphasizes deep listening, co-design, and community ownership while aiming for equitable profit-sharing and sustainable growth.
+- Notion: https://www.notion.so/ACT-business-set-up-204ebcf981cf80f4a3c9fb18b904b2cb
+## A Curious Tractor Conservation Collective (ACT-CC)
+- Status: Internal
+- Lead: Nicholas Marchesi
+- Created: 2025-05-16T05:28:00.000Z
+- Last edited: 2025-09-10T02:53:00.000Z
+- Area: Decentralised Power
+- Themes: Storytelling, Economic Freedom, Health and wellbeing
+- Tags: Storytelling, Health, Living
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: The Black Cockatoo Valley Regenerative Ecosystem is a transformative conservation initiative in Queensland, integrating economic viability with ecological restoration across 117 hectares. It features luxury eco-cottages, a community hub, and aims to create jobs while supporting threatened species. The project emphasizes a regenerative model, showcasing that conservation can be profitable and beneficial for communities. Key partners include A Curious Tractor, Blue Summit, a philanthropist, and the Knight family, each contributing to a sustainable ecosystem that fosters collaboration and resilience.
+- Notion: https://www.notion.so/A-Curious-Tractor-Conservation-Collective-ACT-CC-1f5ebcf981cf8096a353fd4d60bfd3d9
+## Designing for Obsolescence
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-07-13T20:34:00.000Z
+- Last edited: 2025-09-10T02:52:00.000Z
+- Area: Creativity
+- Themes: Art
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-10-31
+- Summary: The manifesto advocates for designing systems that intentionally create obsolescence for social entrepreneurs, empowering communities to take ownership and solve their own problems. It critiques the social innovation industrial complex for fostering dependency and emphasizes the importance of transferring knowledge and expertise to communities. Success is measured by how unnecessary the creator becomes, promoting community-led solutions over external interventions, while challenging the mythology of scaling impact as a form of colonialism. The approach encourages depth in relationships and local context rather than broad reach, aiming for genuine community empowerment and self-determination.
+- Notion: https://www.notion.so/Designing-for-Obsolescence-22febcf981cf800ab4a5ce2fa870a03d
+## Oonchiumpa
+- Status: Active 🔥
+- Lead: Nicholas Marchesi
+- Created: 2025-04-13T22:46:00.000Z
+- Last edited: 2025-09-03T02:44:00.000Z
+- Area: Truth-Telling
+- Themes: Youth Justice
+- Tags: justice
+- Funding string: $0K actual, 50000K potential
+- Incoming: actual $0, potential $50000
+- Revenue: actual $0, potential $50000
+- Budget: $100000
+- Total funding: $100000
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-09-16
+- Summary: The project aims to create transformative pathways for at-risk Aboriginal youth in Central Australia through culturally grounded healing and empowerment. It addresses urgent needs due to rising youth crises, system failures, and the risk of losing cultural knowledge. The approach includes traditional healing, holistic support across various wellbeing domains, and community-led governance. The vision is for Aboriginal youth to confidently navigate both cultural and contemporary worlds, reclaim their heritage, and become community leaders, ultimately leading to a self-sustaining Aboriginal-led youth support system.
+- Notion: https://www.notion.so/Oonchiumpa-1d4ebcf981cf80a28c12e5c56d78de10
+## Uncle Allan Palm Island Art
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-09-01T07:46:00.000Z
+- Last edited: 2025-09-03T02:42:00.000Z
+- Area: Creativity
+- Themes: Art, Storytelling
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-09-09
+- Summary: Uncle Allan is an Aboriginal artist from Palm Island, creating paintings inspired by reef life and Dreaming stories. His mission is to keep culture strong by sharing stories, teaching art, and guiding the next generation. A digital platform has been established to showcase his work, support his aspirations as an artist in residence, and promote cultural education and economic opportunities. This project empowers cultural sovereignty and aims to bridge traditional and contemporary artistic expressions while supporting the continuity of important cultural practices.
+- Notion: https://www.notion.so/Uncle-Allan-Palm-Island-Art-261ebcf981cf807ca602c1fb446853ff
+## PICC Photo Kiosk / Server
+- Status: Active 🔥
+- Lead: Nicholas Marchesi
+- Created: 2025-07-12T02:11:00.000Z
+- Last edited: 2025-09-03T02:41:00.000Z
+- Area: Decentralised Power
+- Themes: Storytelling, Economic Freedom, Indigenous
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $40000
+- Budget: $60000
+- Total funding: $60000
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-09-26
+- Summary: The project aims to establish a community-controlled photo kiosk and local server on Palm Island to preserve cultural heritage and provide affordable photography services. It addresses urgent needs for digital sovereignty, practical service gaps, and youth engagement through technical skills training. The initiative includes a historical archive project, partnerships with local authorities and photographers, and a phased implementation plan for community ownership and operational capacity.
+- Notion: https://www.notion.so/PICC-Photo-Kiosk-Server-22eebcf981cf8002abe6d81960ea19da
+## PICC Annual Report
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-07-12T02:11:00.000Z
+- Last edited: 2025-09-03T02:41:00.000Z
+- Area: Decentralised Power
+- Themes: Storytelling, Indigenous
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $70000
+- Total funding: $70000
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-12-17
+- Summary: The project, led by Benjamin Knight, focuses on decentralized power and storytelling, with an active status and a next milestone set for December 17, 2025. Key components include a project brief, alignment template, impact stories, and a knowledge repository for documentation.
+- Notion: https://www.notion.so/PICC-Annual-Report-22eebcf981cf808fbad4f9e0a6640252
+## PICC - Storm Stories
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-01-11T05:31:00.000Z
+- Last edited: 2025-09-03T02:41:00.000Z
+- Area: Decentralised Power
+- Themes: Health and wellbeing, Indigenous
+- Tags: Health, Storytelling
+- Funding string: $5000K actual, 100000K potential
+- Incoming: actual $5000, potential $100000
+- Revenue: actual $50000, potential $80000
+- Budget: $5000
+- Total funding: $60000
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-10-24
+- Summary: The project aims to document Palm Island community stories of resilience following the February 2025 storm, emphasizing community-controlled storytelling to counter deficit narratives and promote healing. It involves collecting over 60 stories, creating a permanent database, and ensuring cultural protocols are respected. The initiative is supported by various partners and focuses on preserving community knowledge and fostering ongoing storytelling capacity for future generations.
+- Notion: https://www.notion.so/PICC-Storm-Stories-178ebcf981cf801c8815fb32a9259a1c
+## Goods.
+- Status: Active 🔥
+- Lead: Nicholas Marchesi
+- Created: 2025-01-10T12:22:00.000Z
+- Last edited: 2025-09-03T02:40:00.000Z
+- Area: Decentralised Power
+- Themes: Health and wellbeing, Indigenous
+- Tags: Health, Product
+- Funding string: $150000K actual, 400000K potential
+- Incoming: actual $150000, potential $400000
+- Revenue: actual $50000, potential $50000
+- Budget: $150000
+- Total funding: $550000
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-09-02
+- Summary: Community-led initiative delivering essential goods to First Nations communities, focusing on culturally designed, durable products. Aims to address urgent needs for household items while promoting local manufacturing and empowerment. Goals include scaling production, establishing community-owned facilities, and ensuring health and social benefits through improved living conditions. The project emphasizes self-determination, sustainability, and collaboration with community leaders.
+- Notion: https://www.notion.so/Goods-177ebcf981cf805fb111f407079f9794
+## Diagrama
+- Status: Active 🔥
+- Lead: Benjamin Knight
+- Created: 2025-01-12T23:16:00.000Z
+- Last edited: 2025-09-03T02:39:00.000Z
+- Area: Decentralised Power
+- Themes: Youth Justice
+- Tags: Storytelling, Collaboration
+- Funding string: $50000K actual, 100000K potential
+- Incoming: actual $50000, potential $100000
+- Revenue: actual $0, potential $100000
+- Budget: $50000
+- Total funding: $50000
+- Supporters: 0; Partners: 0
+- Next milestone: 2025-09-13
+- Summary: Iniciativa internacional de transferencia de conocimientos en justicia juvenil que apoya la expansión de la Fundación Diagrama de España en Australia, adaptando su modelo de detención terapéutica. Se enfoca en la transferencia ética y culturalmente apropiada del modelo, priorizando el liderazgo indígena y la propiedad comunitaria. La crisis del sistema de justicia juvenil en Australia, especialmente para los jóvenes indígenas, requiere una transformación urgente, y el modelo de Diagrama ofrece alternativas terapéuticas. La implementación se llevará a cabo con un enfoque en la construcción de relaciones y adaptación cultural, con la meta de que para 2027, la comunidad indígena dirija completamente la implementación.
+- Notion: https://www.notion.so/Diagrama-179ebcf981cf807695f2e39db7b980a5
+## RPPP Stream Two: Precinct delivery
+- Status: Ideation 🌀
+- Lead: Not set
+- Created: 2025-08-17T01:04:00.000Z
+- Last edited: 2025-08-25T07:45:00.000Z
+- Area: Decentralised Power
+- Themes: Economic Freedom, Operations
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: The Australian Government's $400 million regional Precincts and Partnerships Program (rPPP) aims to support transformative investments in regional areas through a partnership approach. It includes two streams: Stream One for planning and development grants of $500,000 to $5 million, and Stream Two for delivery grants of $5 million to $50 million. Projects must focus on hard infrastructure, demonstrate community and government partnerships, and be construction-ready by March 2027. Applications are open to various entities, including local governments and not-for-profits, and must be located outside Greater Capital City Statistical Areas.
+- Notion: https://www.notion.so/RPPP-Stream-Two-Precinct-delivery-252ebcf981cf80c99d3fcc1d2d507982
+## SAF Foundation Master 
+- Status: Transferred ✅
+- Lead: Nicholas Marchesi
+- Created: 2025-02-07T21:13:00.000Z
+- Last edited: 2025-08-11T03:07:00.000Z
+- Area: Decentralised Power
+- Themes: Operations
+- Tags: Strategy, Client Led, Collaboration
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: Core values emphasize decentralized power, with project lead Nicholas Marchesi. The project has been transferred, showing no revenue potential or actual incoming funds. Planning resources and meeting notes are linked for further reference.
+- Notion: https://www.notion.so/SAF-Foundation-Master-193ebcf981cf803b9654d30f06ef0c63
+##  Global Laundry Alliance (GLA)
+- Status: Transferred ✅
+- Lead: Nicholas Marchesi
+- Created: 2025-03-22T07:32:00.000Z
+- Last edited: 2025-08-07T11:59:00.000Z
+- Area: Decentralised Power
+- Themes: Global community
+- Tags: Empathy Ledger, Collaboration
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: The Global Laundry Alliance aims to transform laundry access into a fundamental human right, emphasizing dignity for individuals lacking clean clothing. The initiative focuses on empowering women and girls, supporting those experiencing homelessness and displacement, and collaborating with community organizations and philanthropic partners. Key strategies include co-designing solutions with affected populations, amplifying their voices, and recognizing laundry access as essential for social participation and dignity. The alliance seeks to create systemic change through storytelling, policy advocacy, and innovative community-driven solutions.
+- Notion: https://www.notion.so/Global-Laundry-Alliance-GLA-1beebcf981cf8084a98bf35cd859f20b
+## YAC story and action
+- Status: Sunsetting 🌅
+- Lead: Nicholas Marchesi
+- Created: 2025-04-17T06:53:00.000Z
+- Last edited: 2025-07-12T04:46:00.000Z
+- Area: Truth-Telling
+- Themes: Storytelling
+- Tags: Storytelling, Empathy Ledger, Digital Experience
+- Funding string: $20000K actual, 50000K potential
+- Incoming: actual $20000, potential $50000
+- Revenue: actual $0, potential $40000
+- Budget: $20000
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: The project focuses on storytelling and empathy for youth, aiming to capture their stories through interviews and a digital platform, while exploring funding and resource allocation for effective advocacy and engagement. Key initiatives include developing an analysis dashboard and an Empathy Ledger for sharing youth narratives securely.
+- Notion: https://www.notion.so/YAC-story-and-action-1d8ebcf981cf8048b850c088451f2aed
+## Westpac Summit 2025 
+- Status: Sunsetting 🌅
+- Lead: Nicholas Marchesi
+- Created: 2025-03-24T15:11:00.000Z
+- Last edited: 2025-07-12T04:46:00.000Z
+- Area: Creativity
+- Themes: Storytelling
+- Tags: Storytelling, Design, Event
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: Westpac Summit 2025 focuses on storytelling with a theme of creativity, led by Nicholas Marchesi. The project is sunsetting with no revenue or incoming potential, and it is based in a national lab. Links to designs and project management tools are provided.
+- Notion: https://www.notion.so/Westpac-Summit-2025-1c0ebcf981cf809cbb26de8700c2e190
+## TOMNET
+- Status: Sunsetting 🌅
+- Lead: Benjamin Knight
+- Created: 2025-02-03T21:47:00.000Z
+- Last edited: 2025-07-12T04:46:00.000Z
+- Area: Truth-Telling
+- Themes: Storytelling
+- Tags: Storytelling, Health
+- Funding string: $20000K actual, 20000K potential
+- Incoming: actual $20000, potential $20000
+- Revenue: actual $0, potential $0
+- Budget: $20000
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: TOMNET aims to support older men in regional Australia through storytelling, peer-led connections, and community engagement, transforming retirement into a meaningful chapter of life while addressing social isolation and mental health challenges.
+- Notion: https://www.notion.so/TOMNET-18febcf981cf807cb66cc16f0a000a93
+## SEFA Partnership
+- Status: Ideation 🌀
+- Lead: Benjamin Knight
+- Created: 2025-01-25T08:55:00.000Z
+- Last edited: 2025-07-12T00:50:00.000Z
+- Area: Decentralised Power
+- Themes: Economic Freedom
+- Tags: Business, Strategy
+- Funding string: $0K actual, 0K potential
+- Incoming: actual $0, potential $0
+- Revenue: actual $0, potential $0
+- Budget: $0
+- Total funding: $0
+- Supporters: 0; Partners: 0
+- Summary: The project focuses on decentralized power and economic freedom, emphasizing community partnership and alignment with core values like radical humility and creativity as disruption. Key components include stakeholder engagement, progress tracking, and impact assessment, with a commitment to community-led initiatives and adaptive strategies for ongoing improvement.
+- Notion: https://www.notion.so/SEFA-Partnership-186ebcf981cf8013acaed006836d094c

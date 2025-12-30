@@ -33,12 +33,23 @@ import cors from 'cors';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import notionService from './core/src/services/notionService.js';
 import gmailService from './core/src/services/gmailService.js';
+import xeroTokenManager from './core/src/services/xeroTokenManager.js';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
+
+// =============================================
+// API v1 - Standardized Routes (NEW)
+// =============================================
+import v1Router from './core/src/api/v1/index.js';
+app.use('/api/v1', v1Router);
+
+// Subscription Tracker API - AI-powered subscription discovery (V1)
+import subscriptionTrackerRoutes from './subscription-tracker/routes/v1/subscriptions.js';
+app.use('/api/v1/subscriptions', subscriptionTrackerRoutes);
 
 // Financial Automation Webhooks
 import financialWebhooksRouter from './core/src/api/events/financialWebhooks.js';
@@ -55,6 +66,10 @@ integrationMonitoringRoutes(app);
 // Gmail Intelligence Sync API
 import gmailIntelligenceSyncRoutes from './core/src/api/gmailIntelligenceSync.js';
 gmailIntelligenceSyncRoutes(app);
+
+// Xero OAuth Authentication
+import xeroAuthRouter from './core/src/api/xeroAuth.js';
+app.use('/api/xero', xeroAuthRouter);
 
 // Xero Intelligence Sync API
 import xeroIntelligenceSyncRoutes from './core/src/api/xeroIntelligenceSync.js';
@@ -1096,6 +1111,12 @@ if (process.env.VERCEL !== '1') {
     console.log('   📧  /api/v2/gmail/messages (Query messages)');
     console.log('   📧  /api/v2/gmail/contacts (Discovered contacts)');
     console.log('🔥 NO SPAM - SMART CACHING');
+
+    // Start Xero auto token refresh
+    if (process.env.XERO_REFRESH_TOKEN) {
+      xeroTokenManager.startBackgroundRefresh();
+      console.log('💰 Xero token auto-refresh: Active (every 45 minutes)');
+    }
 
     // Business agent scheduler temporarily disabled (missing dependencies)
     console.log('');

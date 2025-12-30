@@ -8,7 +8,7 @@
 
 import { createSupabaseClient } from '../../config/supabase.js';
 import { MultiProviderAI } from '../../services/multiProviderAI.js';
-import { Logger } from '../../utils/logger.js';
+import { logger } from '../../utils/logger.js';
 
 export class BaseAgent {
   constructor(config = {}) {

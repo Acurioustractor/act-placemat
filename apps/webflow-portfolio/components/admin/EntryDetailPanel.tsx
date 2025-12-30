@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { BookOpen, Mail, Briefcase, Pencil, FileText } from 'lucide-react';
 import type { TimelineEntry, MediaItem, VideoEmbed, ReviewProject } from '../../types/yearInReview';
 import { generateTimelineDescription } from '../../lib/yearInReviewApi';
 
@@ -140,17 +141,18 @@ export function EntryDetailPanel({
   };
 
   const getSourceIcon = (source: string) => {
+    const iconClass = 'w-4 h-4';
     switch (source) {
       case 'notion':
-        return '📚';
+        return <BookOpen className={iconClass} />;
       case 'gmail':
-        return '📧';
+        return <Mail className={iconClass} />;
       case 'linkedin':
-        return '💼';
+        return <Briefcase className={iconClass} />;
       case 'manual':
-        return '✏️';
+        return <Pencil className={iconClass} />;
       default:
-        return '📝';
+        return <FileText className={iconClass} />;
     }
   };
 

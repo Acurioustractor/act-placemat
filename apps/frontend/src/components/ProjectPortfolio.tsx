@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ProjectCard } from './ProjectCard';
-import { Project } from '../types/project';
+import type { Project } from '../types/project';
 import { THEME_COLORS } from '../constants/themeColors';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';

@@ -830,35 +830,54 @@
     ],
     "inspiringArt": [
       {
-        "title": "Abstract Paintings",
-        "artist": "Gerhard Richter",
-        "medium": "Oil on canvas",
-        "inspiration": "The blur between photography and painting, memory and reality"
-      },
-      {
-        "title": "Burruguman Barra Art",
-        "artist": "Uncle Allan - Palm Island",
-        "medium": "Indigenous Art",
-        "inspiration": "Connection to Country, story-telling through art",
-        "link": "https://burrgumanbarraart.com/"
-      },
-      {
-        "title": "Art & Music",
-        "artist": "Nick Cave",
-        "medium": "Music, Ceramics, Writing",
-        "inspiration": "Raw emotion, grief transformed into beauty"
-      },
-      {
         "title": "Starman",
         "artist": "David Bowie",
-        "medium": "Music & Performance",
-        "inspiration": "Constant reinvention and fearless creativity"
+        "medium": "Performance portrait",
+        "inspiration": "I don't know where I'm going from here, but I promise it won't be boring.",
+        "image": "/images/art/Bowie.jpg",
+        "aspectRatio": 0.5625
+      },
+      {
+        "title": "Cave of Quiet Light",
+        "artist": "Nick Cave",
+        "medium": "Photography & reflection",
+        "inspiration": "Stillness and raw emotion that keep us honest.",
+        "image": "/images/art/Cave.avif",
+        "aspectRatio": 0.5625
       },
       {
         "title": "Persistence of Memory",
         "artist": "Salvador Dalí",
-        "medium": "Surrealist Art",
-        "inspiration": "Dreamscapes and the fluidity of time"
+        "medium": "Surrealist oil study",
+        "inspiration": "Dreamscapes and the fluidity of time.",
+        "image": "/images/art/Dali.jpeg",
+        "aspectRatio": 0.7493333333333333
+      },
+      {
+        "title": "Visionary Thinker",
+        "artist": "David Unaipon",
+        "medium": "Portrait",
+        "inspiration": "First Nations inventor and storyteller—genius already lives here.",
+        "link": "https://en.wikipedia.org/wiki/David_Unaipon",
+        "image": "/images/art/David Unaipon.webp",
+        "aspectRatio": 1
+      },
+      {
+        "title": "Abstract Gradient",
+        "artist": "Gerhard Richter",
+        "medium": "Oil on canvas",
+        "inspiration": "Blurring the boundaries between memory and reality.",
+        "image": "/images/art/Gerhard.webp",
+        "aspectRatio": 1.134
+      },
+      {
+        "title": "Palm Island Sovereignty",
+        "artist": "Uncle Allan – Palm Island Art",
+        "medium": "Acrylic on board",
+        "inspiration": "Stories of reef life and cultural sovereignty continue to guide every stroke.",
+        "link": "https://burrgumanbarraart.com",
+        "image": "https://cdn.prod.website-files.com/689e3bfaae680c28030c9cc1/689e5dfcfa94de9dbc8b5acb_UA_paintings8.jpg",
+        "aspectRatio": 1.11476
       }
     ],
     "familyMoments": [

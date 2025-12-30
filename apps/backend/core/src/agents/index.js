@@ -9,7 +9,7 @@ import { getAgentOrchestrator } from './events/AgentOrchestrator.js';
 import { getEventIngestor } from './events/EventIngestor.js';
 import { getNotificationBus } from '../services/notificationBus.js';
 import { PolicyStore } from './base/PolicyStore.js';
-import { Logger } from '../utils/logger.js';
+import { logger } from '../utils/logger.js';
 
 // Import agents
 import { ReceiptCodingAgent } from './financial/ReceiptCodingAgent.js';
@@ -20,8 +20,6 @@ import { CashflowForecastAgent } from './financial/CashflowForecastAgent.js';
 import { RDGrantsAgent } from './research/RDGrantsAgent.js';
 import { SpendGuardAgent } from './compliance/SpendGuardAgent.js';
 import { BoardPackAgent } from './reporting/BoardPackAgent.js';
-
-const logger = new Logger('AgentSystem');
 
 /**
  * Initialize the AI Agent System

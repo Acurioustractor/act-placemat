@@ -1,4 +1,5 @@
 import { resolveApiUrl } from '../config/env'
+import type { Project } from '../types/project'
 
 export interface DirectionFinanceSummary {
   status: string
@@ -260,19 +261,47 @@ export class ApiService {
 
   // Real Projects - From Notion databases
   async getDashboardProjects(limit: number = 100) {
-    const result = await this.request<{ success: boolean; count: number; projects: Record<string, unknown>[] }>(
+    const result = await this.request<{ success: boolean; count: number; projects: unknown[] }>(
       '/api/real/projects'
     )
 
     // Return projects in the expected format for compatibility
     if (result.success && result.projects) {
       // Map backend fields to frontend expectations (title -> name)
-      const mappedProjects = result.projects.map(p => ({
-        ...p,
-        name: (p as any).name || p.title || 'Untitled Project',
-        // Keep title as well for compatibility
-        title: p.title || (p as any).name || 'Untitled Project'
-      }))
+      const mappedProjects: Project[] = result.projects.map((raw, index) => {
+        const p = (raw ?? {}) as any
+        const name = p.name || p.title || 'Untitled Project'
+        const id = String(
+          p.id ??
+            p.project_id ??
+            p.notionId ??
+            p.notion_id ??
+            p.notionIdShort ??
+            p.notion_id_short ??
+            p.slug ??
+            name ??
+            index,
+        )
+
+        const coverUrl =
+          p.cover_url ??
+          p.coverUrl ??
+          p.coverImageUrl ??
+          p.cover_image_url ??
+          p.coverImage ??
+          p.cover_image ??
+          null
+
+        return {
+          ...(p as Record<string, unknown>),
+          id,
+          name,
+          title: p.title || name,
+          cover_url: p.cover_url ?? coverUrl,
+          coverImageUrl: p.coverImageUrl ?? coverUrl,
+          coverImage: p.coverImage ?? coverUrl ?? null,
+        } as Project
+      })
 
       // Limit the results if needed (increased default to 100 to show all projects)
       const projects = mappedProjects.slice(0, limit)

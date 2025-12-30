@@ -89,11 +89,9 @@ export function ProjectsTable({ projects, onSelectProject }: ProjectsTableProps)
                       <div className="text-sm font-medium text-clay-900">
                         {project.name}
                       </div>
-                      {project.projectLead && (
+                      {(project.lead || project.projectLead?.name) && (
                         <div className="text-xs text-clay-500">
-                          {typeof project.projectLead === 'object' && project.projectLead.name
-                            ? project.projectLead.name
-                            : project.lead || project.projectLead}
+                          {project.lead || project.projectLead?.name}
                         </div>
                       )}
                     </div>

@@ -56,7 +56,7 @@ export interface TimelineEntry {
 
   // Video embed (from review_videos)
   heroVideoUrl?: string;
-  heroVideoPlatform?: 'loom' | 'youtube' | 'vimeo' | 'direct';
+  heroVideoPlatform?: VideoPlatform;
   heroVideoTitle?: string;
 
   // Project page link
@@ -133,6 +133,7 @@ export interface ArtItem {
   medium?: string;
   inspiration?: string;
   link?: string;
+  aspectRatio?: number;
 }
 
 export interface FamilyMoment {
@@ -178,6 +179,13 @@ export interface CuratedData {
     introText?: string;
     featuredProjects?: Record<number, FeaturedSeasonProject>;
     redevelopmentSites?: RedevelopmentSite[];
+    deletedEntryIds?: string[];
+    // Cultural & personal sections
+    favouriteTunes?: TuneItem[];
+    concertsAttended?: ConcertItem[];
+    inspiringArt?: ArtItem[];
+    familyMoments?: FamilyMoment[];
+    internationalTrips?: TripItem[];
   };
   lastUpdated: string | null;
 }
@@ -261,7 +269,7 @@ export interface ConstellationParticle {
 // =============================================
 
 export type ContentBlockType = 'paragraph' | 'heading' | 'image' | 'gallery' | 'video' | 'quote' | 'callout' | 'divider' | 'stats';
-export type VideoPlatform = 'loom' | 'youtube' | 'vimeo' | 'direct';
+export type VideoPlatform = 'loom' | 'youtube' | 'vimeo' | 'direct' | 'descript' | 'unknown';
 
 export interface ContentBlock {
   id: string;
@@ -309,6 +317,15 @@ export interface ReviewProject {
   description?: string;  // Main description text
   tags?: string[];       // Tags for filtering
   season?: string;       // Planting, Growing, Harvesting, Resting
+
+  // Additional project fields
+  aiSummary?: string;    // AI-generated summary
+  projectLead?: {        // Project lead information
+    name: string;
+    role?: string;
+    avatar?: string;
+  };
+  lead?: string;         // Simple lead name (legacy)
 
   // Hero section
   heroImageId?: string;

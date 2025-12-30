@@ -1,0 +1,202 @@
+[
+  {
+    "id": "txn_001",
+    "tenant_id": "test-tenant-123",
+    "contact_name": "Netflix",
+    "total_amount": 19.99,
+    "transaction_date": "2024-10-15",
+    "direction": "expense",
+    "category": "Entertainment",
+    "description": "Netflix Monthly Subscription"
+  },
+  {
+    "id": "txn_002",
+    "tenant_id": "test-tenant-123",
+    "contact_name": "Netflix",
+    "total_amount": 19.99,
+    "transaction_date": "2024-11-15",
+    "direction": "expense",
+    "category": "Entertainment",
+    "description": "Netflix Monthly Subscription"
+  },
+  {
+    "id": "txn_003",
+    "tenant_id": "test-tenant-123",
+    "contact_name": "Netflix",
+    "total_amount": 19.99,
+    "transaction_date": "2024-12-15",
+    "direction": "expense",
+    "category": "Entertainment",
+    "description": "Netflix Monthly Subscription"
+  },
+  {
+    "id": "txn_004",
+    "tenant_id": "test-tenant-123",
+    "contact_name": "GitHub Inc",
+    "total_amount": 7.00,
+    "transaction_date": "2024-10-20",
+    "direction": "expense",
+    "category": "Software",
+    "description": "GitHub Team Subscription"
+  },
+  {
+    "id": "txn_005",
+    "tenant_id": "test-tenant-123",
+    "contact_name": "GitHub Inc",
+    "total_amount": 7.00,
+    "transaction_date": "2024-11-20",
+    "direction": "expense",
+    "category": "Software",
+    "description": "GitHub Team Subscription"
+  },
+  {
+    "id": "txn_006",
+    "tenant_id": "test-tenant-123",
+    "contact_name": "GitHub Inc",
+    "total_amount": 7.00,
+    "transaction_date": "2024-12-20",
+    "direction": "expense",
+    "category": "Software",
+    "description": "GitHub Team Subscription"
+  },
+  {
+    "id": "txn_007",
+    "tenant_id": "test-tenant-123",
+    "contact_name": "Dropbox",
+    "total_amount": 119.88,
+    "transaction_date": "2024-01-01",
+    "direction": "expense",
+    "category": "Storage",
+    "description": "Dropbox Plus Annual Subscription"
+  },
+  {
+    "id": "txn_008",
+    "tenant_id": "test-tenant-123",
+    "contact_name": "Adobe Systems",
+    "total_amount": 54.99,
+    "transaction_date": "2024-10-10",
+    "direction": "expense",
+    "category": "Design Software",
+    "description": "Adobe Creative Cloud All Apps"
+  },
+  {
+    "id": "txn_009",
+    "tenant_id": "test-tenant-123",
+    "contact_name": "Adobe Systems",
+    "total_amount": 54.99,
+    "transaction_date": "2024-11-10",
+    "direction": "expense",
+    "category": "Design Software",
+    "description": "Adobe Creative Cloud All Apps"
+  },
+  {
+    "id": "txn_010",
+    "tenant_id": "test-tenant-123",
+    "contact_name": "Adobe Systems",
+    "total_amount": 54.99,
+    "transaction_date": "2024-12-10",
+    "direction": "expense",
+    "category": "Design Software",
+    "description": "Adobe Creative Cloud All Apps"
+  },
+  {
+    "id": "txn_011",
+    "tenant_id": "test-tenant-123",
+    "contact_name": "Notion Labs Inc",
+    "total_amount": 10.00,
+    "transaction_date": "2024-10-05",
+    "direction": "expense",
+    "category": "Productivity",
+    "description": "Notion Plus Workspace"
+  },
+  {
+    "id": "txn_012",
+    "tenant_id": "test-tenant-123",
+    "contact_name": "Notion Labs Inc",
+    "total_amount": 10.00,
+    "transaction_date": "2024-11-05",
+    "direction": "expense",
+    "category": "Productivity",
+    "description": "Notion Plus Workspace"
+  },
+  {
+    "id": "txn_013",
+    "tenant_id": "test-tenant-123",
+    "contact_name": "Notion Labs Inc",
+    "total_amount": 10.00,
+    "transaction_date": "2024-12-05",
+    "direction": "expense",
+    "category": "Productivity",
+    "description": "Notion Plus Workspace"
+  },
+  {
+    "id": "txn_014",
+    "tenant_id": "test-tenant-123",
+    "contact_name": "Random Office Supplies",
+    "total_amount": 245.00,
+    "transaction_date": "2024-11-15",
+    "direction": "expense",
+    "category": "Office",
+    "description": "One-time office supplies purchase"
+  },
+  {
+    "id": "txn_015",
+    "tenant_id": "test-tenant-123",
+    "contact_name": "Spotify AB",
+    "total_amount": 11.99,
+    "transaction_date": "2024-10-25",
+    "direction": "expense",
+    "category": "Entertainment",
+    "description": "Spotify Premium Subscription"
+  },
+  {
+    "id": "txn_016",
+    "tenant_id": "test-tenant-123",
+    "contact_name": "Spotify AB",
+    "total_amount": 11.99,
+    "transaction_date": "2024-11-25",
+    "direction": "expense",
+    "category": "Entertainment",
+    "description": "Spotify Premium Subscription"
+  },
+  {
+    "id": "txn_017",
+    "tenant_id": "test-tenant-123",
+    "contact_name": "Spotify AB",
+    "total_amount": 11.99,
+    "transaction_date": "2024-12-25",
+    "direction": "expense",
+    "category": "Entertainment",
+    "description": "Spotify Premium Subscription"
+  },
+  {
+    "id": "txn_018",
+    "tenant_id": "test-tenant-123",
+    "contact_name": "LinkedIn Corporation",
+    "total_amount": 29.99,
+    "transaction_date": "2024-10-01",
+    "direction": "expense",
+    "category": "Professional Development",
+    "description": "LinkedIn Premium Career"
+  },
+  {
+    "id": "txn_019",
+    "tenant_id": "test-tenant-123",
+    "contact_name": "LinkedIn Corporation",
+    "total_amount": 29.99,
+    "transaction_date": "2024-11-01",
+    "direction": "expense",
+    "category": "Professional Development",
+    "description": "LinkedIn Premium Career"
+  },
+  {
+    "id": "txn_020",
+    "tenant_id": "test-tenant-123",
+    "contact_name": "LinkedIn Corporation",
+    "total_amount": 29.99,
+    "transaction_date": "2024-12-01",
+    "direction": "expense",
+    "category": "Professional Development",
+    "description": "LinkedIn Premium Career"
+  }
+]

@@ -32,8 +32,38 @@ How-to guides and setup instructions:
 Current project status and progress:
 - [Current.md](Status/Current.md) - Living document of current state
 
-### 🗄️ [Archive/](Archive/)
-Historical documents and completed features
+### 🔧 [Setup/](Setup/)
+Setup & configuration guides:
+- [GOOGLE_WORKSPACE_SETUP_GUIDE.md](Setup/GOOGLE_WORKSPACE_SETUP_GUIDE.md) - Google Workspace service account setup
+- [OAUTH_MULTI_ACCOUNT_SETUP.md](Setup/OAUTH_MULTI_ACCOUNT_SETUP.md) - OAuth multi-account setup
+- [EXA_SETUP_GUIDE.md](Setup/EXA_SETUP_GUIDE.md) - Exa AI integration
+- [WEBFLOW_CLOUD_GITHUB_SETUP.md](Setup/WEBFLOW_CLOUD_GITHUB_SETUP.md) - Webflow deployment
+- [SYSTEM_ACCESS_GUIDE.md](Setup/SYSTEM_ACCESS_GUIDE.md) - System access overview
+- [USER_TRAINING_GUIDE.md](Setup/USER_TRAINING_GUIDE.md) - End-user training
+
+### 🔗 [Integration/](Integration/)
+System integration documentation:
+- [SUBSCRIPTION_TRACKER_ECOSYSTEM_ALIGNMENT.md](Integration/SUBSCRIPTION_TRACKER_ECOSYSTEM_ALIGNMENT.md) - Subscription tracker alignment
+- [ACT_ECOSYSTEM_INTEGRATION_STRATEGY.md](Integration/ACT_ECOSYSTEM_INTEGRATION_STRATEGY.md) - Integration strategy
+- [LINKEDIN_INTEGRATION_COMPLETE.md](Integration/LINKEDIN_INTEGRATION_COMPLETE.md) - LinkedIn integration
+- [MULTI_SITE_ALIGNMENT_REPORT.md](Integration/MULTI_SITE_ALIGNMENT_REPORT.md) - Multi-site alignment
+
+### 💻 [Development/](Development/)
+Development & design documentation:
+- [WORLD_CLASS_BUSINESS_AGENT_CRM_DESIGN.md](Development/WORLD_CLASS_BUSINESS_AGENT_CRM_DESIGN.md) - CRM design
+- [WORLD_CLASS_UI_UX_DESIGN.md](Development/WORLD_CLASS_UI_UX_DESIGN.md) - UI/UX patterns
+- [BUSINESS_GROWTH_STRATEGY_2025.md](Development/BUSINESS_GROWTH_STRATEGY_2025.md) - Growth strategy
+- [TECHNICAL_DEBT_REVIEW.md](Development/TECHNICAL_DEBT_REVIEW.md) - Technical debt
+
+### 🗄️ [Migration/](Migration/)
+Database migration guides:
+- [QUICK_MIGRATION_GUIDE.md](Migration/QUICK_MIGRATION_GUIDE.md) - Quick migration steps
+- [MIGRATION_STATUS.md](Migration/MIGRATION_STATUS.md) - Current migration status
+
+### 📦 [Archive/](Archive/)
+Historical documents and completed features:
+- [FINAL_SYSTEM_SUMMARY.md](Archive/FINAL_SYSTEM_SUMMARY.md) - System completion summary
+- [ACT_PLATFORM_READY_TO_USE.md](Archive/ACT_PLATFORM_READY_TO_USE.md) - Platform ready status
 
 ---
 
@@ -43,6 +73,10 @@ Historical documents and completed features
 
 **Understanding the system?** → [Architecture/SystemArchitecture.md](Architecture/SystemArchitecture.md)
 
+**Setting up Google Workspace?** → [Setup/GOOGLE_WORKSPACE_SETUP_GUIDE.md](Setup/GOOGLE_WORKSPACE_SETUP_GUIDE.md)
+
+**Subscription tracker alignment?** → [Integration/SUBSCRIPTION_TRACKER_ECOSYSTEM_ALIGNMENT.md](Integration/SUBSCRIPTION_TRACKER_ECOSYSTEM_ALIGNMENT.md)
+
 **Setting up AI?** → [Guides/CloudAISetup.md](Guides/CloudAISetup.md)
 
 **Current status?** → [Status/Current.md](Status/Current.md)
@@ -51,4 +85,4 @@ Historical documents and completed features
 
 ---
 
-**Last Updated**: 2025-10-05
+**Last Updated**: 2025-12-30

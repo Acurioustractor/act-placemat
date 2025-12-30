@@ -1,0 +1,16 @@
+# Python AI Dependencies for Subscription Tracker
+# Install with: pip install -r requirements.txt
+
+# OCR (Optical Character Recognition)
+pytesseract>=0.3.13
+pdf2image>=1.17.0
+Pillow>=10.4.0
+
+# NER (Named Entity Recognition)
+transformers>=4.47.0
+torch>=2.5.0
+
+# Note: Also requires system installation of tesseract-ocr
+# macOS: brew install tesseract
+# Ubuntu: sudo apt-get install tesseract-ocr
+# Windows: Download from https://github.com/UB-Mannheim/tesseract/wiki

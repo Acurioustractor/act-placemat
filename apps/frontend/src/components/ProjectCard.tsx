@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Project } from '../types/project';
+import type { Project } from '../types/project';
 import { THEME_COLORS, THEME_ICONS } from '../constants/themeColors';
 
 interface ProjectCardProps {

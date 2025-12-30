@@ -27,6 +27,9 @@ interface ComplianceItem {
   action: string
   daysRemaining?: number
   priority?: string
+  title?: string
+  message?: string
+  deadline?: string
 }
 
 interface Opportunity {

@@ -467,10 +467,21 @@ export function CommunityProjects() {
     loadInsights()
 
     // Check for project URL parameter
-    const params = new URLSearchParams(window.location.search)
-    const projectParam = params.get('project')
-    if (projectParam) {
-      setSelectedProjectId(projectParam)
+    const syncFromUrl = () => {
+      const params = new URLSearchParams(window.location.search)
+      const projectParam = params.get('project')
+      if (projectParam) {
+        setSelectedProjectId(projectParam)
+      }
+    }
+
+    syncFromUrl()
+    const handleTabChange = () => syncFromUrl()
+    window.addEventListener('tab-change', handleTabChange)
+    window.addEventListener('popstate', handleTabChange)
+    return () => {
+      window.removeEventListener('tab-change', handleTabChange)
+      window.removeEventListener('popstate', handleTabChange)
     }
   }, [])
 
@@ -1050,9 +1061,9 @@ function ActiveProjectCard({
   const themes = project.themes || project.tags || []
 
   // Partners and places for context - filter out any invalid values
-  const partners = (project.relatedOrganisations || []).filter(p => p && p !== '0' && p !== 0)
+  const partners = (project.relatedOrganisations || []).filter((p) => p && p !== '0')
   const rawPlaces = (project.relatedPlaces || []).filter(p => p && p.indigenousName)
-  const people = (project.relatedPeople || []).filter(p => p && p !== '0' && p !== 0)
+  const people = (project.relatedPeople || []).filter((p) => p && p !== '0')
 
   // Places are already objects with proper structure
   const places = rawPlaces
@@ -1236,9 +1247,9 @@ function ProjectCard({
     ? [project.coreValues]
     : []
 
-  const partners = (project.relatedOrganisations || []).filter(p => p && p !== '0' && p !== 0)
+  const partners = (project.relatedOrganisations || []).filter((p) => p && p !== '0')
   const rawPlaces = (project.relatedPlaces || []).filter(p => p && p.indigenousName)
-  const people = (project.relatedPeople || []).filter(p => p && p !== '0' && p !== 0)
+  const people = (project.relatedPeople || []).filter((p) => p && p !== '0')
   const relationshipPillars = Array.isArray(project.relationshipPillars)
     ? project.relationshipPillars.slice(0, 3)
     : []

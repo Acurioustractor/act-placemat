@@ -9,10 +9,9 @@ import { XeroClient } from 'xero-node';
 import Redis from 'ioredis';
 import crypto from 'crypto';
 import { getEventIngestor } from '../agents/events/EventIngestor.js';
-import { Logger } from '../utils/logger.js';
+import { logger } from '../utils/logger.js';
 import { createSupabaseClient } from '../config/supabase.js';
 
-const logger = new Logger('XeroAgentIntegration');
 
 export class XeroAgentIntegration {
   constructor() {

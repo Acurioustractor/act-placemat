@@ -470,7 +470,7 @@ export function OutreachTasks({ initialCreateDefaults = null, onClearInitialCrea
           onAction={() => openCreateForm()}
         />
       ) : (
-        <Card padding="0">
+        <Card padding="none">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-clay-200 text-sm">
               <thead className="bg-clay-50 text-xs uppercase tracking-wide text-clay-500">

@@ -10,24 +10,30 @@ import { NeedsDashboard } from './components/NeedsDashboard'
 import { CommunicationsLog } from './components/CommunicationsLog'
 import { InfrastructureDataCollector } from './components/InfrastructureDataCollector'
 import { DirectionScorecard } from './components/DirectionScorecard'
+import { MovementLineage } from './components/MovementLineage'
+import { VisualisationsHub } from './components/VisualisationsHub'
+import ACTBusinessAgent from './components/ACTBusinessAgent'
+import WorldClassCRM from './components/WorldClassCRM'
+import EnhancedBusinessAgent from './components/EnhancedBusinessAgent'
+import EnhancedCRM from './components/EnhancedCRM'
+import SimpleBusinessAgent from './components/SimpleBusinessAgent'
+import SimpleCRM from './components/SimpleCRM'
+import BulkEnrichmentManager from './components/BulkEnrichmentManager'
+import { SubscriptionDashboard } from './components/subscriptions/SubscriptionDashboard'
 
 function App() {
-  const [activeTab, setActiveTab] = useState('morning-brief')
+  const [activeTab, setActiveTab] = useState('simple-agent')
   const [aiChatOpen, setAiChatOpen] = useState(false)
   const [agentPrefill, setAgentPrefill] = useState<string | null>(null)
 
-  // ✅ NEW INTELLIGENCE-FOCUSED TABS
+  // ✅ CLEAN, WORKING NAVIGATION
   const tabs = [
-    { id: 'about', name: 'About ACT', icon: '🚜', description: 'What is A Curious Tractor?' },
-    { id: 'direction', name: 'Direction', icon: '🧭', description: 'Company-wide scorecard' },
-    { id: 'needs', name: 'Needs', icon: '🚨', description: 'Urgent project needs detected' },
-    { id: 'communications', name: 'Communications', icon: '✉️', description: 'Gmail + Calendar evidence' },
-    { id: 'morning-brief', name: 'Morning Brief', icon: '🌅', description: 'Daily intelligence digest' },
-    { id: 'contacts', name: 'Contacts', icon: '🤝', description: '20K relationship network' },
-    { id: 'projects', name: 'Projects', icon: '🏘️', description: 'Portfolio & Beautiful Obsolescence tracking' },
-    { id: 'impact-data', name: 'Impact Data', icon: '📊', description: 'Add infrastructure metrics to projects' },
-    { id: 'opportunities', name: 'Opportunities', icon: '💎', description: 'AI-powered grant discovery' },
-    { id: 'research', name: 'Research', icon: '🌱', description: 'Curious Tractor deep dives' },
+    { id: 'simple-agent', name: 'AI Business Agent', icon: '🤖', description: 'Ask questions, get intelligent answers' },
+    { id: 'simple-crm', name: 'CRM System', icon: '🏢', description: 'Contact intelligence & AI enrichment' },
+    { id: 'bulk-enrichment', name: 'Bulk Enrichment', icon: '🔄', description: 'Enrich all 20K contacts with AI' },
+    { id: 'subscriptions', name: 'Subscriptions', icon: '💳', description: 'Track & manage subscriptions' },
+    { id: 'projects', name: 'Projects', icon: '🎯', description: 'Portfolio & Beautiful Obsolescence' },
+    { id: 'about', name: 'About ACT', icon: '🚜', description: 'Mission & values' },
   ]
 
   // 🔜 COMING SOON (Ready to build when you say go)
@@ -49,6 +55,18 @@ function App() {
     if (tabParam && tabs.some((tab) => tab.id === tabParam)) {
       setActiveTab(tabParam)
     }
+
+    const handleTabChange = (event: Event) => {
+      if (event instanceof CustomEvent && typeof event.detail === 'string') {
+        const newParams = new URLSearchParams(event.detail)
+        const tab = newParams.get('tab')
+        if (tab && tabs.some((item) => item.id === tab)) {
+          setActiveTab(tab)
+        }
+      }
+    }
+    window.addEventListener('tab-change', handleTabChange)
+    return () => window.removeEventListener('tab-change', handleTabChange)
   }, [])
 
   useEffect(() => {
@@ -114,16 +132,12 @@ function App() {
       </nav>
 
       <main>
-        {activeTab === 'about' && <AboutACT />}
-        {activeTab === 'direction' && <DirectionScorecard onAskAgent={handleAskAgent} />}
-        {activeTab === 'needs' && <NeedsDashboard />}
-        {activeTab === 'communications' && <CommunicationsLog />}
-        {activeTab === 'morning-brief' && <MorningBrief />}
-        {activeTab === 'contacts' && <ContactIntelligenceHub />}
+        {activeTab === 'simple-agent' && <SimpleBusinessAgent />}
+        {activeTab === 'simple-crm' && <SimpleCRM />}
+        {activeTab === 'bulk-enrichment' && <BulkEnrichmentManager />}
+        {activeTab === 'subscriptions' && <SubscriptionDashboard tenantId="786af1ed-e3ce-42fc-9ea9-ddf3447d79d0" />}
         {activeTab === 'projects' && <CommunityProjects />}
-        {activeTab === 'impact-data' && <InfrastructureDataCollector />}
-        {activeTab === 'opportunities' && <Opportunities />}
-        {activeTab === 'research' && <CuriousTractorResearch />}
+        {activeTab === 'about' && <AboutACT />}
       </main>
 
       {/* AI Agent Chat Sidebar */}

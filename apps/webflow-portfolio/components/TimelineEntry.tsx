@@ -1,9 +1,25 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { formatDate, getSourceIcon, getTypeColor } from '../lib/yearInReviewApi';
+import { Mail, BookOpen, Briefcase, FileText, Heart, MessageCircle } from 'lucide-react';
+import { formatDate, getTypeColor } from '../lib/yearInReviewApi';
 import { VideoEmbed, parseVideoUrl } from './VideoEmbed';
 import type { TimelineEntry } from '../types/yearInReview';
+
+// Elegant source icons using Lucide
+function SourceIcon({ source, className }: { source: string; className?: string }) {
+  const iconClass = className || 'w-5 h-5';
+  switch (source) {
+    case 'gmail':
+      return <Mail className={iconClass} />;
+    case 'notion':
+      return <BookOpen className={iconClass} />;
+    case 'linkedin':
+      return <Briefcase className={iconClass} />;
+    default:
+      return <FileText className={iconClass} />;
+  }
+}
 
 interface TimelineEntryCardProps {
   entry: TimelineEntry;
@@ -135,12 +151,12 @@ export function TimelineEntryCard({ entry, index, seasonColor, onClick }: Timeli
         <div className="relative flex flex-wrap items-start justify-between gap-3 mb-4">
           <div className="flex flex-wrap items-center gap-2 md:gap-3">
             {/* Source icon with tooltip */}
-            <span
-              className="text-xl md:text-2xl transition-transform duration-300 group-hover:scale-110"
+            <div
+              className="p-1.5 rounded-lg bg-slate-700/50 text-slate-300 transition-all duration-300 group-hover:scale-110 group-hover:bg-slate-600/50"
               title={`From ${entry.source}`}
             >
-              {getSourceIcon(entry.source)}
-            </span>
+              <SourceIcon source={entry.source} className="w-4 h-4" />
+            </div>
 
             {/* Date pill */}
             <span
@@ -333,14 +349,14 @@ export function TimelineEntryCard({ entry, index, seasonColor, onClick }: Timeli
               </span>
             )}
             {entry.metadata.likes !== undefined && (
-              <span className="flex items-center gap-1.5">
-                <span>❤️</span>
+              <span className="flex items-center gap-1.5 text-rose-400">
+                <Heart className="w-4 h-4" />
                 <span>{entry.metadata.likes}</span>
               </span>
             )}
             {entry.metadata.comments !== undefined && (
-              <span className="flex items-center gap-1.5">
-                <span>💬</span>
+              <span className="flex items-center gap-1.5 text-blue-400">
+                <MessageCircle className="w-4 h-4" />
                 <span>{entry.metadata.comments}</span>
               </span>
             )}

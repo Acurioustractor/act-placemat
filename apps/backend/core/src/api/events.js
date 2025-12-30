@@ -7,11 +7,10 @@
 
 import { Router } from 'express';
 import { getEventIngestor } from '../agents/events/EventIngestor.js';
-import { Logger } from '../utils/logger.js';
+import { logger } from '../utils/logger.js';
 import crypto from 'crypto';
 
 const router = Router();
-const logger = new Logger('EventAPI');
 const eventIngestor = getEventIngestor();
 
 /**

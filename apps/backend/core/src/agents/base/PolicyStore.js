@@ -6,9 +6,9 @@
  */
 
 import { readFile, writeFile } from 'fs/promises';
-import { parse, stringify } from 'js-yaml';
+import yaml from 'js-yaml';
 import { z } from 'zod';
-import { Logger } from '../../utils/logger.js';
+import { logger } from '../../utils/logger.js';
 import { createSupabaseClient } from '../../config/supabase.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -102,7 +102,7 @@ export class PolicyStore {
       // Try to load from file
       const yamlContent = await this.loadFromFile();
       if (yamlContent) {
-        this.policy = parse(yamlContent);
+        this.policy = yaml.load(yamlContent);
         this.validatePolicy();
         this.lastLoaded = new Date();
         this.logger.info('Policy loaded from file');
@@ -175,7 +175,7 @@ export class PolicyStore {
       this.validatePolicy();
       
       // Save to file
-      const yamlContent = stringify(this.policy, { indent: 2 });
+      const yamlContent = yaml.dump(this.policy, { indent: 2 });
       await writeFile(this.policyPath, yamlContent, 'utf8');
       
       // Save to database

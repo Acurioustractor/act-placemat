@@ -7,7 +7,7 @@
 
 import { EventEmitter } from 'events';
 import { createSupabaseClient } from '../config/supabase.js';
-import { Logger } from '../utils/logger.js';
+import { logger } from '../utils/logger.js';
 import nodemailer from 'nodemailer';
 import axios from 'axios';
 

@@ -1,0 +1,29 @@
+{
+  "name": "@act/gmail-workspace-mcp",
+  "version": "1.0.0",
+  "description": "MCP Server for Gmail Workspace Intelligence - ACT Email scanning and financial document extraction",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "keywords": [
+    "mcp",
+    "gmail",
+    "workspace",
+    "financial",
+    "intelligence"
+  ],
+  "author": "A Curious Tractor",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "googleapis": "^144.0.0",
+    "@anthropic-ai/sdk": "^0.32.1",
+    "zod": "^3.24.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -432,7 +432,7 @@ function transformProject(data: any): ReviewProject {
     heroVideoUrl: data.hero_video_url,
     heroVideoType: data.hero_video_type,
     heroCaption: data.hero_caption,
-    contentBlocks: data.content_blocks || [],
+    contentBlocks: normalizeContentBlocks(data.content_blocks),
     isFeatured: data.is_featured || false,
     featuredOrder: data.featured_order,
     isPublished: data.is_published || false,
@@ -444,6 +444,20 @@ function transformProject(data: any): ReviewProject {
     gallery: data.gallery?.map(transformMediaItem),
     videos: data.videos?.map(transformVideoEmbed)
   };
+}
+
+function normalizeContentBlocks(raw: any): ContentBlock[] {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw === 'string') {
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
 }
 
 function transformMediaItem(data: any): MediaItem {

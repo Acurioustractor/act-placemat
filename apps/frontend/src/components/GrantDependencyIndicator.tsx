@@ -3,9 +3,10 @@ import type { GrantDependencyMetrics } from '../types/project'
 interface GrantDependencyIndicatorProps {
   metrics: GrantDependencyMetrics
   compact?: boolean
+  projectName?: string
 }
 
-export function GrantDependencyIndicator({ metrics, compact = false }: GrantDependencyIndicatorProps) {
+export function GrantDependencyIndicator({ metrics, compact = false, projectName }: GrantDependencyIndicatorProps) {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-AU', {
       style: 'currency',
@@ -69,7 +70,9 @@ export function GrantDependencyIndicator({ metrics, compact = false }: GrantDepe
     <div className="rounded-xl border border-clay-200 bg-white p-6 shadow-sm">
       <div className="mb-4 flex items-start justify-between">
         <div>
-          <h3 className="text-xl font-bold text-clay-900">Path to Market Viability</h3>
+          <h3 className="text-xl font-bold text-clay-900">
+            {projectName ? `${projectName}: Path to Market Viability` : 'Path to Market Viability'}
+          </h3>
           <p className="text-sm text-clay-600 mt-1">
             Moving from grant dependency to sustainable market economics
           </p>

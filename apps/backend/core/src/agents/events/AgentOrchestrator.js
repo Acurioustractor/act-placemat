@@ -7,7 +7,7 @@
 
 import { getEventIngestor } from './EventIngestor.js';
 import { PolicyStore } from '../base/PolicyStore.js';
-import { Logger } from '../../utils/logger.js';
+import { logger } from '../../utils/logger.js';
 import { createSupabaseClient } from '../../config/supabase.js';
 
 export class AgentOrchestrator {

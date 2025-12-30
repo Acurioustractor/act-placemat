@@ -6,6 +6,19 @@ import { ProjectCard } from './ProjectCard';
 import { Project, getProjects } from '../lib/api';
 import { THEME_COLORS } from '../constants/themeColors';
 
+// Elegant minimal tractor icon
+function TractorIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M5 15V11a2 2 0 012-2h6l2 4h2a2 2 0 012 2v2" />
+      <path d="M9 9V6a1 1 0 011-1h2a1 1 0 011 1v3" />
+      <circle cx="7" cy="17" r="3" />
+      <circle cx="17" cy="17" r="2" />
+      <path d="M10 17h5" />
+    </svg>
+  );
+}
+
 export function ProjectGrid() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -16,9 +29,7 @@ export function ProjectGrid() {
   useEffect(() => {
     getProjects()
       .then(data => {
-        // Filter to only show Active projects for public view
-        const activeProjects = data.filter(p => p.status === 'Active 🔥');
-        setProjects(activeProjects);
+        setProjects(data);
         setLoading(false);
       })
       .catch(err => {
@@ -64,9 +75,9 @@ export function ProjectGrid() {
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          className="text-6xl mb-4"
+          className="mb-4"
         >
-          🚜
+          <TractorIcon className="w-16 h-16 text-gray-700" />
         </motion.div>
         <p className="text-lg text-gray-600">Loading projects from Notion...</p>
       </div>

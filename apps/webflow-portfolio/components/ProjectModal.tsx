@@ -1,9 +1,25 @@
 'use client';
 
 import { useEffect, useCallback, useState } from 'react';
-import { formatDate, getSourceIcon, getTypeColor } from '../lib/yearInReviewApi';
-import { parseVideoUrl } from './VideoEmbed';
+import { Heart, MessageCircle, Mail, BookOpen, Briefcase, FileText } from 'lucide-react';
+import { formatDate, getTypeColor } from '../lib/yearInReviewApi';
+import { VideoEmbed, parseVideoUrl } from './VideoEmbed';
 import type { TimelineEntry } from '../types/yearInReview';
+
+// Elegant source icons using Lucide
+function SourceIcon({ source, className }: { source: string; className?: string }) {
+  const iconClass = className || 'w-4 h-4';
+  switch (source) {
+    case 'gmail':
+      return <Mail className={iconClass} />;
+    case 'notion':
+      return <BookOpen className={iconClass} />;
+    case 'linkedin':
+      return <Briefcase className={iconClass} />;
+    default:
+      return <FileText className={iconClass} />;
+  }
+}
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -177,38 +193,29 @@ export function ProjectModal({ entry, onClose, seasonColor = '#59c3c3' }: Projec
 
         {/* Media Section */}
         {hasMedia && (
-          <div className="relative aspect-video bg-slate-800 rounded-t-3xl overflow-hidden">
+          <div className="relative bg-slate-800 rounded-t-3xl overflow-hidden">
             {video ? (
-              video.platform === 'direct' ? (
-                <video
-                  src={video.embedUrl}
-                  controls
-                  className="w-full h-full object-cover"
-                  poster={imageUrl}
-                />
-              ) : (
-                <iframe
-                  src={video.embedUrl}
-                  title={video.title || entry.title}
-                  className="absolute inset-0 w-full h-full"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              )
-            ) : imageUrl ? (
-              <img
-                src={imageUrl}
-                alt={entry.title}
-                className="w-full h-full object-cover"
+              <VideoEmbed
+                platform={video.platform}
+                embedUrl={video.embedUrl}
+                title={video.title || entry.title}
+                thumbnail={imageUrl}
+                className="rounded-t-3xl"
               />
+            ) : imageUrl ? (
+              <div className="relative aspect-video">
+                <img
+                  src={imageUrl}
+                  alt={entry.title}
+                  className="w-full h-full object-cover"
+                />
+                {/* Gradient overlay - only on images */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent pointer-events-none" />
+              </div>
             ) : null}
 
-            {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent" />
-
             {/* Type badge overlay */}
-            <div className="absolute bottom-4 left-6">
+            <div className="absolute bottom-4 left-6 z-10 pointer-events-none">
               <span
                 className="px-3 py-1 rounded-full text-sm font-semibold uppercase tracking-wide backdrop-blur-sm"
                 style={{ backgroundColor: `${getTypeColor(entry.type)}80`, color: '#fff' }}
@@ -223,9 +230,12 @@ export function ProjectModal({ entry, onClose, seasonColor = '#59c3c3' }: Projec
         <div className="p-6 md:p-8">
           {/* Header */}
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-2xl" title={`From ${entry.source}`}>
-              {getSourceIcon(entry.source)}
-            </span>
+            <div
+              className="p-2 rounded-lg bg-slate-700/50 text-slate-300"
+              title={`From ${entry.source}`}
+            >
+              <SourceIcon source={entry.source} className="w-5 h-5" />
+            </div>
             <span
               className="px-3 py-1 rounded-full text-sm font-medium"
               style={{ backgroundColor: `${seasonColor}30`, color: seasonColor }}
@@ -296,14 +306,14 @@ export function ProjectModal({ entry, onClose, seasonColor = '#59c3c3' }: Projec
                 </div>
               )}
               {entry.metadata.likes !== undefined && (
-                <div className="flex items-center gap-1 text-slate-400">
-                  <span>❤️</span>
+                <div className="flex items-center gap-1.5 text-rose-400">
+                  <Heart className="w-4 h-4" />
                   <span>{entry.metadata.likes} likes</span>
                 </div>
               )}
               {entry.metadata.comments !== undefined && (
-                <div className="flex items-center gap-1 text-slate-400">
-                  <span>💬</span>
+                <div className="flex items-center gap-1.5 text-blue-400">
+                  <MessageCircle className="w-4 h-4" />
                   <span>{entry.metadata.comments} comments</span>
                 </div>
               )}

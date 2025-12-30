@@ -79,6 +79,8 @@
     "frontend:logs": "tail -f /tmp/act_frontend.log",
     "start:dev": "bash scripts/dev-start-all.sh",
     "stop:dev": "npm run frontend:stop && npm run backend:stop",
+    "review": "bash scripts/review-frontend.sh",
+    "review:stop": "bash scripts/stop-review.sh",
     "env:backup": "tools/development/env-backup.sh backup",
     "env:backup:list": "tools/development/env-backup.sh list",
     "env:backup:restore": "tools/development/env-backup.sh restore",

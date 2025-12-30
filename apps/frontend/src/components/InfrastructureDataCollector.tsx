@@ -7,7 +7,12 @@ import { GrantDependencyIndicator } from './GrantDependencyIndicator'
 import { ProjectTypeBadge } from './ProjectTypeBadge'
 import type { Project, CommunityLaborMetrics, StorytellingMetrics, GrantDependencyMetrics } from '../types/project'
 
-type ProjectType = 'infrastructure-building' | 'justice-innovation' | 'storytelling-platform' | 'community-enterprise' | 'Mixed'
+type CollectorProjectType =
+  | NonNullable<Project['projectType']>
+  | 'justice-innovation'
+  | 'storytelling-platform'
+  | 'community-enterprise'
+  | 'Mixed'
 
 interface DataCollectorProps {
   onComplete?: () => void
@@ -20,7 +25,7 @@ export function InfrastructureDataCollector({ onComplete }: DataCollectorProps) 
   const [saving, setSaving] = useState(false)
 
   // Form state
-  const [projectType, setProjectType] = useState<ProjectType | ''>('')
+  const [projectType, setProjectType] = useState<CollectorProjectType | ''>('')
   const [youngPeopleCount, setYoungPeopleCount] = useState('')
   const [youngPeopleHours, setYoungPeopleHours] = useState('')
   const [communityMembersCount, setCommunityMembersCount] = useState('')
@@ -62,7 +67,7 @@ export function InfrastructureDataCollector({ onComplete }: DataCollectorProps) 
     setSelectedProject(project)
 
     // Pre-fill existing data if available
-    setProjectType(project.projectType || '')
+    setProjectType((project.projectType as CollectorProjectType) || '')
 
     if (project.communityLaborMetrics) {
       const clm = project.communityLaborMetrics
@@ -135,20 +140,22 @@ export function InfrastructureDataCollector({ onComplete }: DataCollectorProps) 
     const actual = parseInt(actualCost) || 0
 
     return {
-      youngPeople: youngPeopleCount ? {
+      youngPeople: {
         count: parseInt(youngPeopleCount) || 0,
-        hoursContributed: parseInt(youngPeopleHours) || 0
-      } : undefined,
-      communityMembers: communityMembersCount ? {
+        hoursContributed: parseInt(youngPeopleHours) || 0,
+      },
+      communityMembers: {
         count: parseInt(communityMembersCount) || 0,
-        hoursContributed: parseInt(communityMembersHours) || 0
-      } : undefined,
-      livedExperience: livedExpCount ? {
+        hoursContributed: parseInt(communityMembersHours) || 0,
+      },
+      livedExperience: {
         count: parseInt(livedExpCount) || 0,
         hoursContributed: parseInt(livedExpHours) || 0,
-        description: livedExpDescription
-      } : undefined,
-      skillsTransferred: skills.length > 0 ? skills : undefined,
+        description: livedExpDescription || undefined,
+      },
+      unskilledLabor: { count: 0, hoursContributed: 0 },
+      skilledLabor: { count: 0, hoursContributed: 0 },
+      skillsTransferred: skills,
       contractorEquivalentCost: contractorEquiv,
       actualCost: actual,
       communityValueCreated: contractorEquiv - actual,
@@ -160,11 +167,27 @@ export function InfrastructureDataCollector({ onComplete }: DataCollectorProps) 
   const buildStorytellingMetrics = (): StorytellingMetrics | null => {
     if (!activeStorytellers && !totalReach) return null
 
+    const active = parseInt(activeStorytellers) || 0
+    const captured = parseInt(storiesCaptured) || 0
+    const currentReach = parseInt(totalReach) || 0
+    const potential = parseInt(potentialReach) || 0
+
+    const potentialStorytellers = active
+    const storyOpportunities = Math.max(captured, 0)
+    const trainingGap = Math.max(potentialStorytellers - active, 0)
+    const captureRate = storyOpportunities > 0 ? captured / storyOpportunities : 0
+    const averageStoryReach = captured > 0 ? Math.round(currentReach / captured) : 0
+
     return {
-      activeStorytellers: parseInt(activeStorytellers) || 0,
-      totalCurrentReach: parseInt(totalReach) || 0,
-      potentialReach: parseInt(potentialReach) || 0,
-      storiesCaptured: parseInt(storiesCaptured) || 0
+      activeStorytellers: active,
+      storiesCaptured: captured,
+      potentialStorytellers,
+      storyOpportunities,
+      trainingGap,
+      captureRate,
+      averageStoryReach,
+      totalCurrentReach: currentReach,
+      potentialReach: potential,
     }
   }
 
@@ -393,7 +416,7 @@ export function InfrastructureDataCollector({ onComplete }: DataCollectorProps) 
               <h2 className="text-xl font-bold text-clay-900 mb-4">Project Type</h2>
               <select
                 value={projectType}
-                onChange={(e) => setProjectType(e.target.value as ProjectType)}
+                onChange={(e) => setProjectType(e.target.value as CollectorProjectType)}
                 className="w-full rounded-lg border border-clay-200 bg-white px-4 py-2 text-clay-900"
               >
                 <option value="">Choose type...</option>

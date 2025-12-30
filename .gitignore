@@ -137,3 +137,6 @@ tmp/
 apps/backend/google-tokens.json
 apps/backend/core/.gmail_tokens.json
 apps/backend/.gmail_tokens.json
+subscription-tracker/config/service-account.json
+apps/backend/subscription-tracker/config/service-account.json
+apps/backend/.gmail_tokens.json

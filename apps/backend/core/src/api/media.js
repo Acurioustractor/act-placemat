@@ -136,6 +136,86 @@ router.get('/items/:id', async (req, res) => {
   }
 });
 
+// Update media item
+router.put('/items/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      title,
+      description,
+      alt_text,
+      manual_tags,
+      impact_themes,
+      project_ids,
+      story_ids
+    } = req.body;
+
+    const updates = {};
+    if (title !== undefined) updates.title = title;
+    if (description !== undefined) updates.description = description;
+    if (alt_text !== undefined) updates.alt_text = alt_text;
+    if (manual_tags !== undefined) updates.manual_tags = manual_tags;
+    if (impact_themes !== undefined) updates.impact_themes = impact_themes;
+    if (project_ids !== undefined) updates.project_ids = project_ids;
+    if (story_ids !== undefined) updates.story_ids = story_ids;
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ error: 'No updates provided' });
+    }
+
+    const { data, error } = await supabase
+      .from('media_items')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    if (!data) {
+      return res.status(404).json({ error: 'Media item not found' });
+    }
+
+    res.json({
+      success: true,
+      media: data
+    });
+
+  } catch (error) {
+    console.error('Error updating media item:', error);
+    res.status(500).json({
+      error: 'Failed to update media item',
+      message: error.message
+    });
+  }
+});
+
+// Delete media item
+router.delete('/items/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { error } = await supabase
+      .from('media_items')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+
+    res.json({
+      success: true,
+      message: 'Media item deleted'
+    });
+
+  } catch (error) {
+    console.error('Error deleting media item:', error);
+    res.status(500).json({
+      error: 'Failed to delete media item',
+      message: error.message
+    });
+  }
+});
+
 // Upload new media item
 router.post('/upload', upload.single('file'), async (req, res) => {
   try {
@@ -301,9 +381,7 @@ router.get('/collections', async (req, res) => {
     let query = supabase
       .from('media_collections')
       .select(`
-        *,
-        cover_media:cover_image_id(file_url, thumbnail_url, alt_text),
-        media_count:collection_media(count)
+        *
       `)
       .eq('public_visible', true)
       .order('created_at', { ascending: false });

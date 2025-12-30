@@ -52,7 +52,7 @@ export function NeedsDashboard() {
     try {
       setLoading(true);
       const data = await api.getProjectNeeds();
-      setNeeds(data);
+      setNeeds(data as NeedsResponse);
       setError(null);
     } catch (err) {
       setError('Failed to load project needs');

@@ -1,0 +1,25 @@
+#!/bin/bash
+# Quick Year Review dev launcher
+# Usage: ./yr [open]
+
+cd "$(dirname "$0")"
+
+# Kill anything on our ports
+lsof -ti:4000,5175 | xargs kill -9 2>/dev/null
+
+# Start backend
+cd apps/backend && PORT=4000 node server.js &
+
+# Start frontend (always clean)
+cd ../webflow-portfolio && npm run dev:year-review &
+
+sleep 4
+
+echo ""
+echo "Year Review ready:"
+echo "  Admin: http://localhost:5175/2025-review/admin"
+echo ""
+
+[[ "$1" == "open" ]] && open "http://localhost:5175/2025-review/admin"
+
+wait

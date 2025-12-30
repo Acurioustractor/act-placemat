@@ -1,10 +1,24 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Sprout, MapPin, Building2, Volume2, VolumeX } from 'lucide-react';
+import { MapPin, Building2, Volume2, VolumeX } from 'lucide-react';
 import type { RedevelopmentSite } from '../types/yearInReview';
+
+// Direct MP4 URL for the drone video (the API sometimes returns Descript URLs which don't work as <video src>)
+const DRONE_VIDEO_MP4 = 'https://tednluwflfhxyucgwigh.supabase.co/storage/v1/object/public/photos/community/mounty-drone-sydney.mp4';
+
+// Get the video URL - use direct MP4 if available, otherwise check if the URL is a direct video file
+function getVideoUrl(droneVideo: string | undefined): string | null {
+  if (!droneVideo) return null;
+  // If it's already an MP4/video file URL, use it
+  if (droneVideo.includes('.mp4') || droneVideo.includes('.webm') || droneVideo.includes('.mov')) {
+    return droneVideo;
+  }
+  // For non-video URLs (like Descript share pages), use our known MP4
+  return DRONE_VIDEO_MP4;
+}
 
 interface LandRedevelopmentShowcaseProps {
   sites: RedevelopmentSite[];
@@ -21,34 +35,72 @@ export function LandRedevelopmentShowcase({
   introText = 'Across Australia, we\'ve worked alongside First Nations communities and local partners to revitalize land and create spaces that honor both heritage and future generations.',
 }: LandRedevelopmentShowcaseProps) {
   const [activeSite, setActiveSite] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isAutoRotating, setIsAutoRotating] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
-  const [videoError, setVideoError] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isVideoLoading, setIsVideoLoading] = useState(true);
+  const [needsUserInteraction, setNeedsUserInteraction] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const currentSite = sites[activeSite];
 
   // Auto-rotate through sites
   useEffect(() => {
-    if (!isPlaying) return;
+    if (!isAutoRotating) return;
     const interval = setInterval(() => {
       setActiveSite((prev) => (prev + 1) % sites.length);
     }, 8000);
     return () => clearInterval(interval);
-  }, [isPlaying, sites.length]);
+  }, [isAutoRotating, sites.length]);
 
-  // Reset video state when site changes
+  // Reset loading state when site changes
   useEffect(() => {
-    setVideoError(false);
-    setIsMuted(true);
-  }, [activeSite]);
+    setIsVideoLoading(true);
+    setNeedsUserInteraction(false);
+  }, [currentSite.id]);
 
-  // Handle mute toggle
-  const handleMuteToggle = useCallback(() => {
-    if (videoRef.current) {
-      videoRef.current.muted = !videoRef.current.muted;
-      setIsMuted(videoRef.current.muted);
+  // Try to play the video - called when video has enough data
+  const attemptPlay = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = true;
+    const playPromise = video.play();
+    if (playPromise) {
+      playPromise
+        .then(() => {
+          setNeedsUserInteraction(false);
+          setIsVideoLoading(false);
+        })
+        .catch(() => {
+          // Autoplay was prevented - need user interaction
+          setNeedsUserInteraction(true);
+          setIsVideoLoading(false);
+        });
+    }
+  }, []);
+
+  // Manual play when user taps
+  const handleManualPlay = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = true; // Ensure muted
+    video.play()
+      .then(() => {
+        setNeedsUserInteraction(false);
+      })
+      .catch((err) => {
+        console.error('Manual play failed:', err);
+      });
+  }, []);
+
+  // Toggle mute/unmute
+  const toggleMute = useCallback(() => {
+    const video = videoRef.current;
+    if (video) {
+      video.muted = !video.muted;
+      setIsMuted(video.muted);
     }
   }, []);
 
@@ -94,7 +146,7 @@ export function LandRedevelopmentShowcase({
               key={site.id}
               onClick={() => {
                 setActiveSite(idx);
-                setIsPlaying(false);
+                setIsAutoRotating(false);
               }}
               className={`group relative px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base transition-all duration-300 ${
                 idx === activeSite
@@ -110,7 +162,7 @@ export function LandRedevelopmentShowcase({
                 />
               )}
               {/* Progress indicator for active */}
-              {idx === activeSite && isPlaying && (
+              {idx === activeSite && isAutoRotating && (
                 <div className="absolute bottom-0 left-0 h-0.5 bg-white/50 rounded-full animate-progress" />
               )}
             </button>
@@ -127,38 +179,82 @@ export function LandRedevelopmentShowcase({
         >
           {/* Hero Media Section */}
           <div className="relative h-[50vh] md:h-[60vh] overflow-hidden">
-            {/* Direct MP4 video - autoplay muted */}
-            {currentSite.droneVideo && (
-              <div className="absolute inset-0" key={`video-container-${currentSite.id}`}>
-                <video
-                  key={`video-${currentSite.id}-${activeSite}`}
-                  ref={videoRef}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="absolute inset-0 w-full h-full object-cover"
-                  onError={() => setVideoError(true)}
-                >
-                  <source src={currentSite.droneVideo} type="video/mp4" />
-                </video>
-                {/* Mute/Unmute button */}
-                {!videoError && (
-                  <button
-                    onClick={handleMuteToggle}
-                    className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors z-20"
-                    title={isMuted ? 'Unmute' : 'Mute'}
-                  >
-                    {isMuted ? (
-                      <VolumeX className="w-5 h-5 text-white" />
-                    ) : (
-                      <Volume2 className="w-5 h-5 text-white" />
-                    )}
-                  </button>
-                )}
-              </div>
-            )}
-            {!currentSite.droneVideo && currentSite.droneImage && (
+            {/* Drone video - use direct MP4 */}
+            {(() => {
+              const videoUrl = getVideoUrl(currentSite.droneVideo);
+              if (!videoUrl) return null;
+
+              return (
+                <>
+                  {isVideoLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-slate-900 z-10">
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="w-12 h-12 border-4 border-slate-600 border-t-teal-500 rounded-full animate-spin" />
+                        <span className="text-slate-400 text-sm">Loading drone footage...</span>
+                      </div>
+                    </div>
+                  )}
+
+                  <video
+                    key={videoUrl}
+                    ref={videoRef}
+                    src={videoUrl}
+                    poster={currentSite.droneImage}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    preload="auto"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    onLoadedData={() => setIsVideoLoading(false)}
+                    onCanPlay={attemptPlay}
+                    onPlaying={() => {
+                      setIsVideoLoading(false);
+                      setNeedsUserInteraction(false);
+                    }}
+                    onError={() => setIsVideoLoading(false)}
+                  />
+
+                  {!needsUserInteraction && !isVideoLoading && (
+                    <button
+                      type="button"
+                      className="absolute bottom-6 right-6 p-3 bg-black/60 hover:bg-black/80 backdrop-blur-sm rounded-full text-white transition-all z-20 group"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleMute();
+                      }}
+                      aria-label={isMuted ? 'Unmute video' : 'Mute video'}
+                    >
+                      {isMuted ? (
+                        <VolumeX className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                      ) : (
+                        <Volume2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                      )}
+                    </button>
+                  )}
+
+                  {needsUserInteraction && (
+                    <button
+                      type="button"
+                      className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/40 transition-colors z-20"
+                      onClick={handleManualPlay}
+                      aria-label="Play drone video"
+                    >
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
+                          <svg className="w-8 h-8 text-slate-900 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
+                        <span className="text-white font-semibold">Tap to play drone footage</span>
+                      </div>
+                    </button>
+                  )}
+                </>
+              );
+            })()}
+            {!getVideoUrl(currentSite.droneVideo) && currentSite.droneImage && (
+              /* Drone image fallback */
               <Image
                 src={currentSite.droneImage}
                 alt={`Aerial view of ${currentSite.location}`}
@@ -167,22 +263,6 @@ export function LandRedevelopmentShowcase({
                 className="object-cover"
                 priority
               />
-            )}
-            {!currentSite.droneVideo && !currentSite.droneImage && (
-              /* Placeholder with animated gradient */
-              <div
-                className="absolute inset-0"
-                style={{
-                  background: `linear-gradient(135deg, ${currentSite.accentColor}30 0%, ${currentSite.accentColor}10 50%, transparent 100%)`
-                }}
-              >
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <Sprout className="w-16 h-16 mx-auto mb-4 text-slate-500" />
-                    <p className="text-slate-400">Drone footage coming soon</p>
-                  </div>
-                </div>
-              </div>
             )}
 
             {/* Overlay gradient */}
@@ -329,7 +409,7 @@ export function LandRedevelopmentShowcase({
               key={site.id}
               onClick={() => {
                 setActiveSite(idx);
-                setIsPlaying(false);
+                setIsAutoRotating(false);
                 containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }}
               className={`group p-4 sm:p-6 rounded-2xl text-left transition-all duration-300 ${

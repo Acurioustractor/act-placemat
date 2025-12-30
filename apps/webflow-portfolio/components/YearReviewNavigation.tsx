@@ -1,25 +1,50 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, type ComponentType, type SVGProps } from 'react';
 import { Menu, X, ChevronUp } from 'lucide-react';
+import {
+  TractorMini,
+  RootedSprout,
+  StorySpiral,
+  PlaceSeed,
+  PlowLines,
+  DawnRays,
+  Campfire,
+  NightSky,
+  CountryLines,
+  CommunityCircle,
+  Sparkle,
+} from './icons/ACTIcons';
+
+// Earth tone palette
+const earthTones = {
+  terracotta: '#C2704A',
+  ochre: '#CC7A22',
+  sage: '#7D9A6E',
+  clay: '#A0785A',
+  sand: '#D4B896',
+};
+
+type IconComponent = ComponentType<{ className?: string }>;
 
 interface NavSection {
   id: string;
   label: string;
-  icon?: string;
+  icon: IconComponent;
+  seasonColor?: string;
 }
 
 const SECTIONS: NavSection[] = [
-  { id: 'hero', label: 'Intro', icon: '🌱' },
-  { id: 'numbers', label: 'Year in Numbers', icon: '📊' },
-  { id: 'projects', label: 'Projects', icon: '🔍' },
-  { id: 'places', label: 'Places', icon: '🗺️' },
-  { id: 'planting', label: 'Planting', icon: '🌿' },
-  { id: 'growing', label: 'Growing', icon: '☀️' },
-  { id: 'harvesting', label: 'Harvesting', icon: '🌾' },
-  { id: 'resting', label: 'Resting', icon: '❄️' },
-  { id: 'land', label: 'Land Projects', icon: '🏗️' },
-  { id: 'footer', label: 'Get Involved', icon: '🤝' },
+  { id: 'hero', label: 'Intro', icon: TractorMini },
+  { id: 'numbers', label: 'Year in Numbers', icon: StorySpiral },
+  { id: 'projects', label: 'Projects', icon: RootedSprout },
+  { id: 'places', label: 'Places', icon: PlaceSeed },
+  { id: 'planting', label: 'Planting', icon: PlowLines, seasonColor: earthTones.sage },
+  { id: 'growing', label: 'Growing', icon: DawnRays, seasonColor: earthTones.ochre },
+  { id: 'harvesting', label: 'Harvesting', icon: Campfire, seasonColor: earthTones.terracotta },
+  { id: 'resting', label: 'Resting', icon: NightSky, seasonColor: '#6366f1' },
+  { id: 'land', label: 'Land Projects', icon: CountryLines },
+  { id: 'footer', label: 'Get Involved', icon: CommunityCircle },
 ];
 
 export function YearReviewNavigation() {
@@ -102,36 +127,39 @@ export function YearReviewNavigation() {
       >
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between h-16">
-            {/* Logo/Brand */}
+            {/* Logo/Brand - ACT tractor with earth tone hover */}
             <button
               onClick={() => scrollToSection('hero')}
-              className="flex items-center gap-2 text-white font-semibold hover:text-teal-400 transition-colors"
+              className="flex items-center gap-2 text-white font-semibold transition-colors group"
+              style={{ ['--hover-color' as string]: earthTones.ochre }}
             >
-              <span className="text-xl">🚜</span>
-              <span className="text-sm tracking-wide">2025 Review</span>
+              <TractorMini className="w-6 h-6 group-hover:text-amber-400 transition-colors" />
+              <span className="text-sm tracking-wide group-hover:text-amber-200 transition-colors">2025 Review</span>
             </button>
 
-            {/* Navigation Links */}
+            {/* Navigation Links - with earth tone accents */}
             <div className="flex items-center gap-1">
-              {SECTIONS.slice(1, -1).map(({ id, label }) => (
+              {SECTIONS.slice(1, -1).map(({ id, label, seasonColor }) => (
                 <button
                   key={id}
                   onClick={() => scrollToSection(id)}
                   className={`px-3 py-2 text-sm rounded-lg transition-all duration-200 ${
                     activeSection === id
-                      ? 'text-teal-400 bg-teal-400/10'
+                      ? 'text-amber-300 bg-amber-400/10'
                       : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
                   }`}
+                  style={activeSection === id && seasonColor ? { color: seasonColor, backgroundColor: `${seasonColor}15` } : undefined}
                 >
                   {label}
                 </button>
               ))}
             </div>
 
-            {/* CTA Button */}
+            {/* CTA Button - earth tone styling */}
             <button
               onClick={() => scrollToSection('footer')}
-              className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-900 text-sm font-semibold rounded-full transition-colors"
+              className="px-4 py-2 text-white text-sm font-semibold rounded-full transition-all hover:scale-105"
+              style={{ backgroundColor: earthTones.terracotta }}
             >
               Get Involved
             </button>
@@ -148,12 +176,12 @@ export function YearReviewNavigation() {
         }`}
       >
         <div className="flex items-center justify-between h-14 px-4">
-          {/* Logo */}
+          {/* Logo - ACT tractor */}
           <button
             onClick={() => scrollToSection('hero')}
             className="flex items-center gap-2 text-white font-semibold"
           >
-            <span className="text-lg">🚜</span>
+            <TractorMini className="w-5 h-5 text-amber-400" />
             <span className="text-xs tracking-wide">2025</span>
           </button>
 
@@ -193,10 +221,10 @@ export function YearReviewNavigation() {
             isOpen ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'
           }`}
         >
-          {/* Header */}
-          <div className="flex items-center justify-between h-14 px-4 border-b border-slate-800/50">
+          {/* Header - ACT branding */}
+          <div className="flex items-center justify-between h-14 px-4 border-b border-amber-900/30">
             <span className="text-white font-semibold flex items-center gap-2">
-              <span className="text-lg">🚜</span>
+              <TractorMini className="w-5 h-5 text-amber-400" />
               A Curious Tractor
             </span>
             <button
@@ -208,23 +236,28 @@ export function YearReviewNavigation() {
             </button>
           </div>
 
-          {/* Navigation Links */}
+          {/* Navigation Links - with ACT icons and season colors */}
           <div className="flex-1 overflow-y-auto py-8 px-6">
             <div className="space-y-2">
-              {SECTIONS.map(({ id, label, icon }, index) => (
+              {SECTIONS.map(({ id, label, icon: Icon, seasonColor }, index) => (
                 <button
                   key={id}
                   onClick={() => scrollToSection(id)}
                   className={`w-full flex items-center gap-4 px-4 py-4 rounded-2xl text-left transition-all duration-300 ${
                     activeSection === id
-                      ? 'bg-teal-500/20 text-teal-400 border border-teal-500/30'
+                      ? 'border'
                       : 'text-slate-300 hover:bg-slate-800/50 hover:text-white border border-transparent'
                   }`}
                   style={{
                     transitionDelay: isOpen ? `${index * 50}ms` : '0ms',
+                    ...(activeSection === id ? {
+                      backgroundColor: `${seasonColor || earthTones.ochre}20`,
+                      color: seasonColor || earthTones.ochre,
+                      borderColor: `${seasonColor || earthTones.ochre}40`,
+                    } : {}),
                   }}
                 >
-                  <span className="text-2xl">{icon}</span>
+                  <Icon className="w-6 h-6" />
                   <div>
                     <span className="text-lg font-medium block">{label}</span>
                     {id.match(/planting|growing|harvesting|resting/) && (
@@ -232,21 +265,22 @@ export function YearReviewNavigation() {
                     )}
                   </div>
                   {activeSection === id && (
-                    <div className="ml-auto w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
+                    <Sparkle className="ml-auto w-4 h-4 animate-pulse" style={{ color: seasonColor || earthTones.ochre }} />
                   )}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="p-6 border-t border-slate-800/50">
+          {/* Footer - ACT styled */}
+          <div className="p-6 border-t border-amber-900/30">
             <p className="text-center text-slate-500 text-xs mb-4">
               A Curious Tractor &copy; 2025
             </p>
             <button
               onClick={() => scrollToSection('footer')}
-              className="w-full py-4 bg-teal-500 hover:bg-teal-400 text-slate-900 font-semibold rounded-2xl transition-colors"
+              className="w-full py-4 text-white font-semibold rounded-2xl transition-all hover:scale-[1.02]"
+              style={{ backgroundColor: earthTones.terracotta }}
             >
               Get Involved
             </button>
@@ -254,23 +288,25 @@ export function YearReviewNavigation() {
         </div>
       </div>
 
-      {/* Back to Top Button */}
+      {/* Back to Top Button - earth tone styling */}
       <button
         onClick={scrollToTop}
-        className={`fixed bottom-6 right-6 z-40 p-3 bg-slate-800/90 hover:bg-slate-700 text-white rounded-full shadow-lg backdrop-blur-sm transition-all duration-300 ${
+        className={`fixed bottom-6 right-6 z-40 p-3 text-white rounded-full shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-110 ${
           showBackToTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
         }`}
+        style={{ backgroundColor: earthTones.clay }}
         aria-label="Back to top"
       >
         <ChevronUp className="w-5 h-5" />
       </button>
 
-      {/* Progress Bar */}
-      <div className="fixed top-0 left-0 right-0 z-[60] h-0.5 bg-slate-800/50">
+      {/* Progress Bar - earth tone gradient */}
+      <div className="fixed top-0 left-0 right-0 z-[60] h-1 bg-slate-900/80">
         <div
-          className="h-full bg-gradient-to-r from-teal-500 via-teal-400 to-orange-400 transition-all duration-150"
+          className="h-full transition-all duration-300"
           style={{
             width: `${(SECTIONS.findIndex((s) => s.id === activeSection) / (SECTIONS.length - 1)) * 100}%`,
+            background: `linear-gradient(90deg, ${earthTones.sage} 0%, ${earthTones.ochre} 40%, ${earthTones.terracotta} 70%, #6366f1 100%)`,
           }}
         />
       </div>

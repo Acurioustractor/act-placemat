@@ -54,6 +54,30 @@ const supabaseConfigured = Boolean(
 );
 
 export async function getCuratedEntries(year: number = 2025): Promise<CuratedData> {
+  // Prefer backend API (it reflects the curated file we edit)
+  try {
+    const res = await fetch(`${API_BASE}/api/year-in-review/${year}/curated`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.entries && data.entries.length > 0) {
+        console.log(`✅ Loaded ${data.entries.length} curated entries from API`);
+        if (year === 2025 && curatedData2025?.settings) {
+          data.settings = {
+            ...data.settings,
+            favouriteTunes: curatedData2025.settings.favouriteTunes,
+            concertsAttended: curatedData2025.settings.concertsAttended,
+            inspiringArt: curatedData2025.settings.inspiringArt,
+            familyMoments: curatedData2025.settings.familyMoments,
+            internationalTrips: curatedData2025.settings.internationalTrips,
+          };
+        }
+        return data;
+      }
+    }
+  } catch (apiError) {
+    console.warn('Backend API failed:', apiError);
+  }
+
   if (supabaseConfigured) {
     try {
       const { getCuratedEntriesFromSupabase } = await import('./yearInReviewSupabase');
@@ -67,21 +91,7 @@ export async function getCuratedEntries(year: number = 2025): Promise<CuratedDat
     }
   }
 
-  // Try backend API second
-  try {
-    const res = await fetch(`${API_BASE}/api/year-in-review/${year}/curated`);
-    if (res.ok) {
-      const data = await res.json();
-      if (data.entries && data.entries.length > 0) {
-        console.log(`✅ Loaded ${data.entries.length} curated entries from API`);
-        return data;
-      }
-    }
-  } catch (apiError) {
-    console.warn('Backend API failed:', apiError);
-  }
-
-  // Fall back to static bundled data (works in production without backend)
+  // Fall back to static bundle
   if (year === 2025 && curatedData2025?.entries?.length > 0) {
     console.log(`✅ Loaded ${curatedData2025.entries.length} curated entries from static bundle`);
     return curatedData2025 as CuratedData;

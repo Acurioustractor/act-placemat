@@ -1,0 +1,82 @@
+[
+  {
+    "id": "msg_001",
+    "subject": "Your Netflix subscription receipt for December",
+    "from": "billing@netflix.com <billing@netflix.com>",
+    "snippet": "Thank you for your monthly payment of $19.99. Your Netflix subscription will automatically renew on January 15, 2025.",
+    "internalDate": "1702512000000",
+    "attachmentCount": 1
+  },
+  {
+    "id": "msg_002",
+    "subject": "GitHub - Your monthly invoice",
+    "from": "noreply@github.com <noreply@github.com>",
+    "snippet": "Your GitHub Team subscription payment of $7.00 has been processed. Invoice attached.",
+    "internalDate": "1702598400000",
+    "attachmentCount": 1
+  },
+  {
+    "id": "msg_003",
+    "subject": "Dropbox Annual Renewal Notice",
+    "from": "no-reply@dropbox.com <no-reply@dropbox.com>",
+    "snippet": "Your Dropbox Plus annual subscription will auto-renew for $119.88 on January 1, 2025.",
+    "internalDate": "1701302400000",
+    "attachmentCount": 0
+  },
+  {
+    "id": "msg_004",
+    "subject": "Adobe Creative Cloud - Monthly Receipt",
+    "from": "message@adobe.com <message@adobe.com>",
+    "snippet": "Receipt for your Adobe Creative Cloud All Apps subscription: $54.99. Your next billing date is January 10, 2025.",
+    "internalDate": "1702252800000",
+    "attachmentCount": 1
+  },
+  {
+    "id": "msg_005",
+    "subject": "Notion - Payment Confirmation",
+    "from": "team@notion.so <team@notion.so>",
+    "snippet": "Your Notion Plus workspace subscription for $10.00 has been renewed. Thank you for using Notion!",
+    "internalDate": "1702425600000",
+    "attachmentCount": 0
+  },
+  {
+    "id": "msg_006",
+    "subject": "Amazon Prime Membership Renewal",
+    "from": "auto-confirm@amazon.com <auto-confirm@amazon.com>",
+    "snippet": "Your Amazon Prime membership will auto-renew for $14.99 on your next billing date.",
+    "internalDate": "1702339200000",
+    "attachmentCount": 0
+  },
+  {
+    "id": "msg_007",
+    "subject": "Order Confirmation #12345 - One-time Purchase",
+    "from": "orders@shop.com <orders@shop.com>",
+    "snippet": "Thank you for your purchase of Widget XYZ for $49.99. Your order will ship soon.",
+    "internalDate": "1702684800000",
+    "attachmentCount": 0
+  },
+  {
+    "id": "msg_008",
+    "subject": "Spotify Premium - Monthly Billing",
+    "from": "noreply@spotify.com <noreply@spotify.com>",
+    "snippet": "Your Spotify Premium subscription payment of $11.99 was successful. Enjoy ad-free music!",
+    "internalDate": "1702771200000",
+    "attachmentCount": 1
+  },
+  {
+    "id": "msg_009",
+    "subject": "LinkedIn Premium Renewal",
+    "from": "messages-noreply@linkedin.com <messages-noreply@linkedin.com>",
+    "snippet": "Your LinkedIn Premium Career subscription has been renewed for $29.99/month.",
+    "internalDate": "1702857600000",
+    "attachmentCount": 0
+  },
+  {
+    "id": "msg_010",
+    "subject": "Receipt - Utilities Payment",
+    "from": "billing@utilities.com <billing@utilities.com>",
+    "snippet": "Receipt for your monthly electricity bill: $125.50. Due date: January 20, 2025.",
+    "internalDate": "1702944000000",
+    "attachmentCount": 1
+  }
+]
