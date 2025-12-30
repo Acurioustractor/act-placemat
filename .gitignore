@@ -140,3 +140,10 @@ apps/backend/.gmail_tokens.json
 subscription-tracker/config/service-account.json
 apps/backend/subscription-tracker/config/service-account.json
 apps/backend/.gmail_tokens.json
+
+# IDE and Editor Files
+.cursor/
+.cursorrules
+*.cursor
+.vscode/settings.json
+.vscode/launch.json
