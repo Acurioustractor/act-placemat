@@ -147,3 +147,7 @@ apps/backend/.gmail_tokens.json
 *.cursor
 .vscode/settings.json
 .vscode/launch.json
+
+# Test files
+apps/backend/test-*.js
+apps/backend/wait-*.js
