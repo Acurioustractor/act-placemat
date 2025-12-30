@@ -151,3 +151,4 @@ apps/backend/.gmail_tokens.json
 # Test files
 apps/backend/test-*.js
 apps/backend/wait-*.js
+screen.png
