@@ -115,6 +115,93 @@ export interface OutstandingInvoicesResponse {
   };
 }
 
+export interface PaymentCalendarItem {
+  id: string;
+  tenant_id: string;
+  vendor: string;
+  amount: number;
+  currency: string;
+  account_email: string;
+  next_payment_date: string;
+  days_until_due: number;
+  payment_pattern_confidence: number;
+  subscription_frequency: string;
+  urgency: 'overdue' | 'due_today' | 'due_soon' | 'upcoming';
+}
+
+export interface PaymentCalendarResponse {
+  all: PaymentCalendarItem[];
+  byUrgency: {
+    overdue: PaymentCalendarItem[];
+    due_today: PaymentCalendarItem[];
+    due_soon: PaymentCalendarItem[];
+    upcoming: PaymentCalendarItem[];
+  };
+  counts: {
+    overdue: number;
+    due_today: number;
+    due_soon: number;
+    upcoming: number;
+    total: number;
+  };
+}
+
+export interface CostByAccount {
+  tenant_id: string;
+  account_email: string;
+  subscription_count: number;
+  annual_cost: number;
+  avg_amount: number;
+  min_amount: number;
+  max_amount: number;
+}
+
+export interface CostByAccountResponse {
+  accounts: CostByAccount[];
+  totals: {
+    totalSubscriptions: number;
+    totalAnnualCost: number;
+  };
+  avgCostPerAccount: number;
+}
+
+export interface CostByVendor {
+  name: string;
+  cost: number;
+  subscriptionCount: number;
+}
+
+export interface CostByVendorResponse {
+  vendors: CostByVendor[];
+  totalCost: number;
+  topVendor: CostByVendor | null;
+}
+
+export interface ConsolidationProgressItem {
+  tenant_id: string;
+  account_email: string;
+  consolidation_status: string;
+  subscription_count: number;
+  annual_value: number;
+}
+
+export interface ConsolidationProgressResponse {
+  progress: ConsolidationProgressItem[];
+  summary: {
+    totalSubscriptions: number;
+    completedSubscriptions: number;
+    progressPercentage: number;
+    targetAccount: string;
+  };
+}
+
+export interface UpdateConsolidationParams {
+  id: string;
+  status?: string;
+  notes?: string;
+  vendorContactEmail?: string;
+}
+
 // ============================================================================
 // Subscription API Client
 // ============================================================================
@@ -240,6 +327,68 @@ class SubscriptionAPI {
   async getOutstanding(tenantId: string): Promise<OutstandingInvoicesResponse> {
     const query = this.buildQueryString({ tenantId });
     return this.fetchApi<OutstandingInvoicesResponse>(`/outstanding?${query}`);
+  }
+
+  /**
+   * Get payment calendar with upcoming due dates
+   */
+  async getPaymentCalendar(tenantId: string): Promise<PaymentCalendarResponse> {
+    const query = this.buildQueryString({ tenantId });
+    return this.fetchApi<PaymentCalendarResponse>(`/payment-calendar?${query}`);
+  }
+
+  /**
+   * Get subscription costs aggregated by email account
+   */
+  async getCostByAccount(tenantId: string): Promise<CostByAccountResponse> {
+    const query = this.buildQueryString({ tenantId });
+    return this.fetchApi<CostByAccountResponse>(`/cost-by-account?${query}`);
+  }
+
+  /**
+   * Get subscription costs aggregated by vendor
+   */
+  async getCostByVendor(
+    tenantId: string,
+    limit?: number
+  ): Promise<CostByVendorResponse> {
+    const query = this.buildQueryString({ tenantId, limit });
+    return this.fetchApi<CostByVendorResponse>(`/cost-by-vendor?${query}`);
+  }
+
+  /**
+   * Get consolidation workflow progress
+   */
+  async getConsolidationProgress(
+    tenantId: string
+  ): Promise<ConsolidationProgressResponse> {
+    const query = this.buildQueryString({ tenantId });
+    return this.fetchApi<ConsolidationProgressResponse>(
+      `/consolidation-progress?${query}`
+    );
+  }
+
+  /**
+   * Update consolidation status for a subscription
+   */
+  async updateConsolidationStatus(
+    params: UpdateConsolidationParams
+  ): Promise<Subscription> {
+    const { id, ...body } = params;
+    return this.fetchApi<Subscription>(`/${id}/consolidation`, {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    });
+  }
+
+  /**
+   * Update subscription details (status, tags, category, notes, etc.)
+   */
+  async update(id: string, updates: Partial<Subscription>): Promise<Subscription> {
+    return this.fetchApi<Subscription>(`/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updates),
+    });
   }
 }
 

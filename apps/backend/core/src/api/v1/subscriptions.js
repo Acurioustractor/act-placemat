@@ -50,11 +50,13 @@ router.get('/', async (req, res) => {
       });
     }
 
-    // Build query
+    // Build query - filter for quality subscriptions only
     let query = supabase
-      .from('discovered_subscriptions')
+      .from('email_financial_documents')
       .select('*', { count: 'exact' })
       .eq('tenant_id', tenantId)
+      .eq('is_subscription', true)
+      .gte('data_quality_score', 6)  // Only show quality score >= 6 (filters out forwarded emails, person names, etc)
       .range(parseInt(offset), parseInt(offset) + parseInt(limit) - 1)
       .order(sortBy, { ascending: sortOrder === 'asc' });
 
@@ -120,10 +122,11 @@ router.get('/:id', async (req, res) => {
     }
 
     const { data, error } = await supabase
-      .from('discovered_subscriptions')
+      .from('email_financial_documents')
       .select('*')
       .eq('id', id)
       .eq('tenant_id', tenantId)
+      .eq('is_subscription', true)
       .single();
 
     if (error) {
@@ -201,10 +204,11 @@ router.patch('/:id', async (req, res) => {
     filteredUpdates.updated_at = new Date().toISOString();
 
     const { data, error } = await supabase
-      .from('discovered_subscriptions')
+      .from('email_financial_documents')
       .update(filteredUpdates)
       .eq('id', id)
       .eq('tenant_id', tenantId)
+      .eq('is_subscription', true)
       .select()
       .single();
 
@@ -564,9 +568,10 @@ router.get('/analytics/summary', async (req, res) => {
 
     // Get all subscriptions
     const { data: subscriptions, error } = await supabase
-      .from('discovered_subscriptions')
+      .from('email_financial_documents')
       .select('*')
       .eq('tenant_id', tenantId)
+      .eq('is_subscription', true)
       .eq('status', 'active');
 
     if (error) {

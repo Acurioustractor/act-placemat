@@ -16,6 +16,7 @@ export interface Subscription {
   amount: number | null;
   currency: string;
   frequency: SubscriptionFrequency;
+  subscription_frequency?: 'monthly' | 'quarterly' | 'yearly' | 'weekly' | 'daily'; // From email_financial_documents
 
   // Status
   status: SubscriptionStatus;
@@ -31,6 +32,25 @@ export interface Subscription {
   gmail_message_id?: string;
   xero_contact_id?: string;
   notion_page_id?: string;
+
+  // Email account tracking (from email_financial_documents)
+  account_email?: string;
+
+  // Payment prediction fields (from email_financial_documents)
+  next_payment_date?: string;
+  last_payment_date?: string;
+  payment_day_of_month?: number;
+  payment_pattern_confidence?: number;
+
+  // Consolidation tracking (from email_financial_documents)
+  target_account_email?: string;
+  consolidation_status?: 'not_started' | 'vendor_contacted' | 'awaiting_confirmation' | 'completed' | 'skipped';
+  vendor_contact_email?: string;
+  consolidation_notes?: string;
+
+  // Categorization and tagging
+  category?: 'saas' | 'infrastructure' | 'design' | 'marketing' | 'communication' | 'productivity' | 'development' | 'business' | 'entertainment' | 'other';
+  tags?: string[];
 
   // Metadata
   metadata?: {

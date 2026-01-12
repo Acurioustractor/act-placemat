@@ -215,9 +215,13 @@ router.get('/', validateQuery(SubscriptionListQuerySchema), async (req, res) => 
   try {
     const { tenantId, limit, offset, minConfidence, sortBy, sortOrder } = req.query;
 
+    console.log('[V1 SUBSCRIPTIONS API] GET / route called');
+
     const gmail = await getGmailService();
     const supabaseClient = getSupabase();
     const detector = new SubscriptionDetector(gmail, supabaseClient);
+
+    console.log('[V1 SUBSCRIPTIONS API] Calling detector.listSubscriptions');
 
     const results = await detector.listSubscriptions({
       tenantId,
@@ -227,6 +231,8 @@ router.get('/', validateQuery(SubscriptionListQuerySchema), async (req, res) => 
       sortBy,
       sortOrder
     });
+
+    console.log('[V1 SUBSCRIPTIONS API] Results:', { total: results.total, returned: results.items?.length });
 
     const processingTime = Date.now() - startTime;
 

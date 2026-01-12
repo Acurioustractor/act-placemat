@@ -362,10 +362,13 @@ export class SubscriptionDetector {
       throw new Error('Supabase client not initialized - cannot query database');
     }
 
+    console.log('[SUBSCRIPTION DETECTOR] Querying email_financial_documents table with is_subscription=true');
+
     let query = this.supabase
-      .from('discovered_subscriptions')
+      .from('email_financial_documents')
       .select('*', { count: 'exact' })
       .eq('tenant_id', tenantId)
+      .eq('is_subscription', true)
       .range(offset, offset + limit - 1)
       .order(sortBy, { ascending: sortOrder === 'asc' });
 
@@ -399,10 +402,11 @@ export class SubscriptionDetector {
     }
 
     const { data, error } = await this.supabase
-      .from('discovered_subscriptions')
+      .from('email_financial_documents')
       .select('*')
       .eq('id', id)
       .eq('tenant_id', tenantId)
+      .eq('is_subscription', true)
       .single();
 
     if (error) {

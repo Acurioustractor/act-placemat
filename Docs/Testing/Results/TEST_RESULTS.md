@@ -111,7 +111,7 @@ curl http://localhost:3100/api/status
 
 | Service | Status | Key Present |
 |---------|--------|-------------|
-| Anthropic Claude | ✅ ACTIVE | sk-ant-api03-... |
+| Anthropic Claude | ✅ ACTIVE | sk-ant-api03-...... |
 | OpenAI GPT-4 | ✅ ACTIVE | sk-proj-c-... |
 | Perplexity | ✅ ACTIVE | pplx-7r8R2dT0... |
 | Notion | ✅ CONFIGURED | ntn_633000104478... |

@@ -114,19 +114,26 @@ export class MultiAccountScanner {
   /**
    * Create authenticated Gmail client for specific user via impersonation
    * Uses service account with domain-wide delegation
+   *
+   * IMPORTANT: Must use JWT auth for Gmail API (not GoogleAuth class)
+   * Reference: https://github.com/googleapis/google-api-nodejs-client/issues/2322
    */
   async getGmailClient(userEmail) {
     try {
       const credentials = JSON.parse(readFileSync(this.serviceAccountPath, 'utf8'));
 
-      const auth = new google.auth.GoogleAuth({
-        credentials,
+      // Create JWT client directly (required for Gmail API)
+      const jwtClient = new google.auth.JWT({
+        email: credentials.client_email,
+        key: credentials.private_key,
         scopes: this.scopes,
         subject: userEmail  // Impersonate this user
       });
 
-      const authClient = await auth.getClient();
-      return google.gmail({ version: 'v1', auth: authClient });
+      // Authorize the JWT client
+      await jwtClient.authorize();
+
+      return google.gmail({ version: 'v1', auth: jwtClient });
     } catch (error) {
       console.error(`[Multi-Account] Failed to authenticate as ${userEmail}:`, error.message);
       throw error;

@@ -108,10 +108,11 @@ app.get('/api/xero/callback', async (req, res) => {
       }
     });
 
+    let connections = null;
     if (!connectionsResponse.ok) {
       console.error(`\n⚠️  Could not fetch connections: ${connectionsResponse.status}`);
     } else {
-      const connections = await connectionsResponse.json();
+      connections = await connectionsResponse.json();
       if (connections && connections.length > 0) {
         const tenantId = connections[0].tenantId;
         console.log(`\n✅ Connected to tenant: ${connections[0].tenantName}`);
@@ -126,8 +127,9 @@ app.get('/api/xero/callback', async (req, res) => {
       }
     }
 
-    // Update .env file
-    if (!process.env.XERO_TENANT_ID || !connections) {
+    // Update .env file (fallback if no connections)
+    if (!connections || connections.length === 0) {
+      console.log('\n⚠️  No tenant connections found, saving tokens only');
       updateEnvFile({
         XERO_ACCESS_TOKEN: tokenData.access_token,
         XERO_REFRESH_TOKEN: tokenData.refresh_token

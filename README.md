@@ -26,6 +26,17 @@ open http://localhost:5175
 
 **📖 Detailed Guide**: [Docs/00-Getting-Started/Quick-Start.md](./Docs/00-Getting-Started/Quick-Start.md)
 
+### 💰 Xero Mastery Sprint (January 2026)
+
+Master Xero features to unlock $40K+ R&D tax credits and maximize tax efficiency:
+
+- **🚀 [Xero Quick Start Guide](./XERO_QUICK_START.md)** - Everything you need to start Week 1
+- **📘 [Week 1 Complete Guide](./docs/WEEK1_COMPLETE_GUIDE.md)** - Self-guided lessons (no AI needed!)
+- **📊 [4-Week Playbook](./docs/XERO_MASTERY_GUIDE.md)** - Complete mastery curriculum
+- **🤖 [Xero Expert MCP](./mcp-servers/xero-expert/)** - Always-available Xero assistant
+
+**Week 1 Goal**: 80%+ auto-categorization rate | **Year 1 ROI**: $57K-$85K (400-800%)
+
 ---
 
 ## 🏗️ System Architecture

@@ -8,15 +8,21 @@ import {
   useSubscriptions,
   useDiscoverSubscriptions,
   useSubscriptionSummary,
+  useUpdateSubscription,
 } from '../../hooks/useSubscriptions';
 import MigrationDashboard from './MigrationDashboard';
+import { PaymentTimeline } from './PaymentTimeline';
+import { CostBreakdownCharts } from './CostBreakdownCharts';
+import { ConsolidationTracker } from './ConsolidationTracker';
 
 interface SubscriptionDashboardProps {
   tenantId: string;
 }
 
+type TabView = 'overview' | 'timeline' | 'costs' | 'consolidation' | 'migration';
+
 export const SubscriptionDashboard: React.FC<SubscriptionDashboardProps> = ({ tenantId }) => {
-  const [activeView, setActiveView] = useState<'overview' | 'migration'>('overview');
+  const [activeView, setActiveView] = useState<TabView>('overview');
   const [minConfidence, setMinConfidence] = useState<number | undefined>(undefined);
   const [sortBy, setSortBy] = useState<'confidence' | 'vendor' | 'amount' | 'created_at'>('confidence');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
@@ -34,10 +40,21 @@ export const SubscriptionDashboard: React.FC<SubscriptionDashboardProps> = ({ te
   const { data: summaryData } = useSubscriptionSummary(tenantId);
 
   const discoverMutation = useDiscoverSubscriptions();
+  const updateMutation = useUpdateSubscription();
 
   // Extract data from responses
   const subscriptions = listData?.subscriptions || [];
   const analytics = summaryData?.analytics;
+
+  // Handle subscription updates
+  const handleUpdateSubscription = async (id: string, updates: Partial<Subscription>) => {
+    try {
+      await updateMutation.mutateAsync({ id, updates });
+      alert('✅ Subscription updated successfully!');
+    } catch (error) {
+      alert(`❌ Update failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
 
   // Run discovery scan
   const handleScan = () => {
@@ -99,10 +116,10 @@ export const SubscriptionDashboard: React.FC<SubscriptionDashboardProps> = ({ te
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex gap-2 border-b border-gray-200">
+      <div className="flex gap-2 border-b border-gray-200 overflow-x-auto">
         <button
           onClick={() => setActiveView('overview')}
-          className={`px-6 py-3 font-medium transition-colors ${
+          className={`px-6 py-3 font-medium transition-colors whitespace-nowrap ${
             activeView === 'overview'
               ? 'text-blue-600 border-b-2 border-blue-600'
               : 'text-gray-600 hover:text-gray-900'
@@ -111,20 +128,56 @@ export const SubscriptionDashboard: React.FC<SubscriptionDashboardProps> = ({ te
           📊 Overview
         </button>
         <button
+          onClick={() => setActiveView('timeline')}
+          className={`px-6 py-3 font-medium transition-colors whitespace-nowrap ${
+            activeView === 'timeline'
+              ? 'text-blue-600 border-b-2 border-blue-600'
+              : 'text-gray-600 hover:text-gray-900'
+          }`}
+        >
+          📅 Payment Timeline
+        </button>
+        <button
+          onClick={() => setActiveView('costs')}
+          className={`px-6 py-3 font-medium transition-colors whitespace-nowrap ${
+            activeView === 'costs'
+              ? 'text-blue-600 border-b-2 border-blue-600'
+              : 'text-gray-600 hover:text-gray-900'
+          }`}
+        >
+          💰 Cost Analysis
+        </button>
+        <button
+          onClick={() => setActiveView('consolidation')}
+          className={`px-6 py-3 font-medium transition-colors whitespace-nowrap ${
+            activeView === 'consolidation'
+              ? 'text-blue-600 border-b-2 border-blue-600'
+              : 'text-gray-600 hover:text-gray-900'
+          }`}
+        >
+          📧 Consolidation
+        </button>
+        <button
           onClick={() => setActiveView('migration')}
-          className={`px-6 py-3 font-medium transition-colors ${
+          className={`px-6 py-3 font-medium transition-colors whitespace-nowrap ${
             activeView === 'migration'
               ? 'text-blue-600 border-b-2 border-blue-600'
               : 'text-gray-600 hover:text-gray-900'
           }`}
         >
-          📧 Email Migration
+          🔄 Email Migration
         </button>
       </div>
 
       {/* Render active view */}
       {activeView === 'migration' ? (
         <MigrationDashboard />
+      ) : activeView === 'timeline' ? (
+        <PaymentTimeline tenantId={tenantId} />
+      ) : activeView === 'costs' ? (
+        <CostBreakdownCharts tenantId={tenantId} />
+      ) : activeView === 'consolidation' ? (
+        <ConsolidationTracker tenantId={tenantId} />
       ) : (
         <>
 
@@ -250,6 +303,7 @@ export const SubscriptionDashboard: React.FC<SubscriptionDashboardProps> = ({ te
                   <SubscriptionRow
                     key={subscription.id || subscription.vendor}
                     subscription={subscription}
+                    onUpdate={handleUpdateSubscription}
                   />
                 ))
               )}

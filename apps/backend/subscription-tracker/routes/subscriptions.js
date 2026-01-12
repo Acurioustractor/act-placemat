@@ -190,12 +190,24 @@ router.get('/', async (req, res) => {
 
     const { tenantId, status, limit, offset, sortBy } = validation.data;
 
+    // Query email_financial_documents table (contains Gmail-discovered subscriptions)
     let query = getSupabase()
-      .from('discovered_subscriptions')
+      .from('email_financial_documents')
       .select('*', { count: 'exact' })
       .eq('tenant_id', tenantId)
-      .range(offset, offset + limit - 1)
-      .order(sortBy, { ascending: false });
+      .eq('is_subscription', true)
+      .range(offset, offset + limit - 1);
+
+    // Sort by appropriate field
+    if (sortBy === 'confidence') {
+      query = query.order('confidence', { ascending: false });
+    } else if (sortBy === 'amount') {
+      query = query.order('amount', { ascending: false });
+    } else if (sortBy === 'vendor') {
+      query = query.order('vendor', { ascending: true });
+    } else {
+      query = query.order('created_at', { ascending: false });
+    }
 
     if (status !== 'all') {
       query = query.eq('status', status);
@@ -238,8 +250,8 @@ router.get('/', async (req, res) => {
  */
 router.get('/:id', async (req, res) => {
   try {
-    const { data, error } = await getSupabase()
-      .from('discovered_subscriptions')
+    const { data, error} = await getSupabase()
+      .from('email_financial_documents')
       .select('*')
       .eq('id', req.params.id)
       .single();
@@ -306,7 +318,7 @@ router.patch('/:id', async (req, res) => {
     );
 
     const { data, error } = await getSupabase()
-      .from('discovered_subscriptions')
+      .from('email_financial_documents')
       .update(updates)
       .eq('id', req.params.id)
       .select()
@@ -351,7 +363,7 @@ router.patch('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const { data, error } = await getSupabase()
-      .from('discovered_subscriptions')
+      .from('email_financial_documents')
       .delete()
       .eq('id', req.params.id)
       .select()
@@ -648,6 +660,426 @@ function groupByStatus(subscriptions) {
     return acc;
   }, {});
 }
+
+/**
+ * GET /api/v1/subscriptions/payment-calendar
+ * Get payment timeline with upcoming due dates
+ *
+ * Returns subscriptions grouped by urgency (overdue, due_today, due_soon, upcoming)
+ */
+router.get('/payment-calendar', async (req, res) => {
+  try {
+    const { tenantId } = req.query;
+    if (!tenantId) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'MISSING_TENANT_ID', message: 'tenantId is required' }
+      });
+    }
+
+    const { data, error } = await getSupabase()
+      .from('subscription_payment_calendar')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .order('next_payment_date', { ascending: true });
+
+    if (error) throw error;
+
+    // Group by urgency for easier frontend rendering
+    const groupedByUrgency = {
+      overdue: [],
+      due_today: [],
+      due_soon: [],
+      upcoming: []
+    };
+
+    (data || []).forEach(payment => {
+      if (groupedByUrgency[payment.urgency]) {
+        groupedByUrgency[payment.urgency].push(payment);
+      }
+    });
+
+    return res.json({
+      success: true,
+      data: {
+        all: data || [],
+        byUrgency: groupedByUrgency,
+        counts: {
+          overdue: groupedByUrgency.overdue.length,
+          due_today: groupedByUrgency.due_today.length,
+          due_soon: groupedByUrgency.due_soon.length,
+          upcoming: groupedByUrgency.upcoming.length,
+          total: data?.length || 0
+        }
+      },
+      meta: {
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    console.error('[Payment Calendar] Error:', error);
+    return res.status(500).json({
+      success: false,
+      error: {
+        code: 'PAYMENT_CALENDAR_ERROR',
+        message: 'Failed to fetch payment calendar',
+        details: error.message
+      }
+    });
+  }
+});
+
+/**
+ * GET /api/v1/subscriptions/cost-by-account
+ * Get subscription costs aggregated by email account
+ */
+router.get('/cost-by-account', async (req, res) => {
+  try {
+    const { tenantId } = req.query;
+    if (!tenantId) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'MISSING_TENANT_ID', message: 'tenantId is required' }
+      });
+    }
+
+    const { data, error } = await getSupabase()
+      .from('subscription_cost_by_account')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .order('annual_cost', { ascending: false });
+
+    if (error) throw error;
+
+    // Calculate totals
+    const totals = (data || []).reduce((acc, account) => {
+      acc.totalSubscriptions += account.subscription_count || 0;
+      acc.totalAnnualCost += account.annual_cost || 0;
+      return acc;
+    }, { totalSubscriptions: 0, totalAnnualCost: 0 });
+
+    return res.json({
+      success: true,
+      data: {
+        accounts: data || [],
+        totals,
+        avgCostPerAccount: data?.length > 0 ? totals.totalAnnualCost / data.length : 0
+      },
+      meta: {
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    console.error('[Cost by Account] Error:', error);
+    return res.status(500).json({
+      success: false,
+      error: {
+        code: 'COST_BY_ACCOUNT_ERROR',
+        message: 'Failed to fetch cost by account',
+        details: error.message
+      }
+    });
+  }
+});
+
+/**
+ * GET /api/v1/subscriptions/cost-by-vendor
+ * Get subscription costs aggregated by vendor
+ */
+router.get('/cost-by-vendor', async (req, res) => {
+  try {
+    const { tenantId, limit } = req.query;
+    if (!tenantId) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'MISSING_TENANT_ID', message: 'tenantId is required' }
+      });
+    }
+
+    const { data, error } = await getSupabase()
+      .from('email_financial_documents')
+      .select('vendor, amount, subscription_frequency')
+      .eq('tenant_id', tenantId)
+      .eq('is_subscription', true);
+
+    if (error) throw error;
+
+    // Calculate annual cost and group by vendor
+    const byVendor = (data || []).reduce((acc, sub) => {
+      const annual = sub.subscription_frequency === 'monthly'
+        ? (sub.amount || 0) * 12
+        : sub.subscription_frequency === 'quarterly'
+        ? (sub.amount || 0) * 4
+        : sub.subscription_frequency === 'weekly'
+        ? (sub.amount || 0) * 52
+        : (sub.amount || 0);  // yearly or unknown
+
+      if (!acc[sub.vendor]) {
+        acc[sub.vendor] = { name: sub.vendor, cost: 0, subscriptionCount: 0 };
+      }
+      acc[sub.vendor].cost += annual;
+      acc[sub.vendor].subscriptionCount++;
+      return acc;
+    }, {});
+
+    const vendors = Object.values(byVendor)
+      .sort((a, b) => b.cost - a.cost)
+      .slice(0, limit ? parseInt(limit) : undefined);
+
+    const totalCost = vendors.reduce((sum, v) => sum + v.cost, 0);
+
+    return res.json({
+      success: true,
+      data: {
+        vendors,
+        totalCost,
+        topVendor: vendors[0] || null
+      },
+      meta: {
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    console.error('[Cost by Vendor] Error:', error);
+    return res.status(500).json({
+      success: false,
+      error: {
+        code: 'COST_BY_VENDOR_ERROR',
+        message: 'Failed to fetch cost by vendor',
+        details: error.message
+      }
+    });
+  }
+});
+
+/**
+ * PATCH /api/v1/subscriptions/:id/consolidation
+ * Update consolidation status for a subscription
+ */
+router.patch('/:id/consolidation', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, notes, vendorContactEmail } = req.body;
+
+    // Validate status
+    const validStatuses = ['not_started', 'vendor_contacted', 'awaiting_confirmation', 'completed', 'skipped'];
+    if (status && !validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'INVALID_STATUS',
+          message: `Status must be one of: ${validStatuses.join(', ')}`
+        }
+      });
+    }
+
+    const updates = {};
+    if (status) updates.consolidation_status = status;
+    if (notes !== undefined) updates.consolidation_notes = notes;
+    if (vendorContactEmail !== undefined) updates.vendor_contact_email = vendorContactEmail;
+
+    const { data, error } = await getSupabase()
+      .from('email_financial_documents')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    if (!data) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          code: 'SUBSCRIPTION_NOT_FOUND',
+          message: `Subscription ${id} not found`
+        }
+      });
+    }
+
+    return res.json({
+      success: true,
+      data,
+      meta: {
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    console.error('[Consolidation Update] Error:', error);
+    return res.status(500).json({
+      success: false,
+      error: {
+        code: 'CONSOLIDATION_UPDATE_ERROR',
+        message: 'Failed to update consolidation status',
+        details: error.message
+      }
+    });
+  }
+});
+
+/**
+ * GET /api/v1/subscriptions/consolidation-progress
+ * Get consolidation workflow progress
+ */
+router.get('/consolidation-progress', async (req, res) => {
+  try {
+    const { tenantId } = req.query;
+    if (!tenantId) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'MISSING_TENANT_ID', message: 'tenantId is required' }
+      });
+    }
+
+    const { data, error } = await getSupabase()
+      .from('consolidation_progress')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .order('account_email', { ascending: true });
+
+    if (error) throw error;
+
+    // Calculate overall progress
+    const totals = (data || []).reduce((acc, item) => {
+      acc.totalSubscriptions += item.subscription_count || 0;
+      if (item.consolidation_status === 'completed') {
+        acc.completedSubscriptions += item.subscription_count || 0;
+      }
+      return acc;
+    }, { totalSubscriptions: 0, completedSubscriptions: 0 });
+
+    const progressPercentage = totals.totalSubscriptions > 0
+      ? Math.round((totals.completedSubscriptions / totals.totalSubscriptions) * 100)
+      : 0;
+
+    return res.json({
+      success: true,
+      data: {
+        progress: data || [],
+        summary: {
+          ...totals,
+          progressPercentage,
+          targetAccount: 'accounts@act.place'
+        }
+      },
+      meta: {
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    console.error('[Consolidation Progress] Error:', error);
+    return res.status(500).json({
+      success: false,
+      error: {
+        code: 'CONSOLIDATION_PROGRESS_ERROR',
+        message: 'Failed to fetch consolidation progress',
+        details: error.message
+      }
+    });
+  }
+});
+
+/**
+ * PATCH /api/v1/subscriptions/:id
+ * Update subscription details (status, tags, category, notes, etc.)
+ */
+router.patch('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+
+    // Validate status if provided
+    if (updates.status) {
+      const validStatuses = ['active', 'canceled', 'paused', 'pending_review'];
+      if (!validStatuses.includes(updates.status)) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'INVALID_STATUS',
+            message: `Status must be one of: ${validStatuses.join(', ')}`
+          }
+        });
+      }
+    }
+
+    // Validate category if provided
+    if (updates.category) {
+      const validCategories = ['saas', 'infrastructure', 'design', 'marketing', 'communication', 'productivity', 'development', 'business', 'entertainment', 'other'];
+      if (!validCategories.includes(updates.category)) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'INVALID_CATEGORY',
+            message: `Category must be one of: ${validCategories.join(', ')}`
+          }
+        });
+      }
+    }
+
+    // Validate frequency if provided
+    if (updates.subscription_frequency) {
+      const validFrequencies = ['monthly', 'quarterly', 'yearly', 'weekly', 'daily'];
+      if (!validFrequencies.includes(updates.subscription_frequency)) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'INVALID_FREQUENCY',
+            message: `Frequency must be one of: ${validFrequencies.join(', ')}`
+          }
+        });
+      }
+    }
+
+    // Build update object (only include provided fields)
+    const updateFields = {};
+    if (updates.vendor !== undefined) updateFields.vendor = updates.vendor;
+    if (updates.amount !== undefined) updateFields.amount = updates.amount;
+    if (updates.subscription_frequency !== undefined) updateFields.subscription_frequency = updates.subscription_frequency;
+    if (updates.status !== undefined) updateFields.status = updates.status;
+    if (updates.category !== undefined) updateFields.category = updates.category;
+    if (updates.tags !== undefined) updateFields.tags = updates.tags;
+    if (updates.notes !== undefined) updateFields.notes = updates.notes;
+    if (updates.cancel_reason !== undefined) updateFields.cancel_reason = updates.cancel_reason;
+
+    // Update in database
+    const { data, error } = await getSupabase()
+      .from('email_financial_documents')
+      .update(updateFields)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    if (!data) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          code: 'SUBSCRIPTION_NOT_FOUND',
+          message: `Subscription ${id} not found`
+        }
+      });
+    }
+
+    return res.json({
+      success: true,
+      data,
+      meta: {
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    console.error('[Subscription Update] Error:', error);
+    return res.status(500).json({
+      success: false,
+      error: {
+        code: 'UPDATE_ERROR',
+        message: 'Failed to update subscription',
+        details: error.message
+      }
+    });
+  }
+});
 
 /**
  * R&D Documentation Export

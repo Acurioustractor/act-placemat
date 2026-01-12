@@ -152,3 +152,6 @@ apps/backend/.gmail_tokens.json
 apps/backend/test-*.js
 apps/backend/wait-*.js
 screen.png
+.claude/settings.local.json
+.env.backup*
+*.local.json

@@ -334,6 +334,10 @@ app.use('/api/v2/connections', connectionDiscoveryRoutes);
 // Mount Contact Intelligence API
 app.use('/api/contact-intelligence', contactIntelligenceRoutes);
 
+// Enriched Contacts API - Exa.ai powered contact enrichment
+import enrichedContactsRouter from './routes/enriched-contacts.js';
+app.use('/api/enriched-contacts', enrichedContactsRouter);
+
 // Proper caching with no spam
 let projectsCache = {
   data: [],

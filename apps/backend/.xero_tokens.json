@@ -1,0 +1,70 @@
+{
+  "access_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjFDQUY4RTY2NzcyRDZEQzAyOEQ2NzI2RkQwMjYxNTgxNTcwRUZDMTkiLCJ0eXAiOiJKV1QiLCJ4NXQiOiJISy1PWm5jdGJjQW8xbkp2MENZVmdWY09fQmsifQ.eyJuYmYiOjE3NTkyMDExNDksImV4cCI6MTc1OTIwMjk0OSwiaXNzIjoiaHR0cHM6Ly9pZGVudGl0eS54ZXJvLmNvbSIsImF1ZCI6Imh0dHBzOi8vaWRlbnRpdHkueGVyby5jb20vcmVzb3VyY2VzIiwiY2xpZW50X2lkIjoiNUVGMzg1QjA4RkZGNDE1OTlDNDU2RjdCNTUxMTg3NzYiLCJzdWIiOiI5OTk0OWFmZDIwYjc1Y2ZlOTk4NjEyYzFjMjUwODRkMCIsImF1dGhfdGltZSI6MTc1OTIwMTEwOCwieGVyb191c2VyaWQiOiJlMDMwMjUxMi1hMzVhLTQ0ZGYtYjJkZS0xOWFhYTdmODYyMjciLCJnbG9iYWxfc2Vzc2lvbl9pZCI6IjcyMzlkYTc1MDlmZTRkYzNiYjFlNzZiZWUyMDIxZjM2Iiwic2lkIjoiNzIzOWRhNzUwOWZlNGRjM2JiMWU3NmJlZTIwMjFmMzYiLCJhdXRoZW50aWNhdGlvbl9ldmVudF9pZCI6IjQ1NWJjNDkyLTRiOTUtNDc0OC1iNTVmLTM0YTA0MmMwZWRmOCIsImp0aSI6IjM2MzAwNTMxRTcwMUM0NUQ1RkNGQjQ2MjMxNUU2N0IwIiwic2NvcGUiOlsiYWNjb3VudGluZy5jb250YWN0cy5yZWFkIiwiYWNjb3VudGluZy5zZXR0aW5ncy5yZWFkIiwiYWNjb3VudGluZy5yZXBvcnRzLnJlYWQiLCJhY2NvdW50aW5nLnRyYW5zYWN0aW9ucy5yZWFkIiwiYWNjb3VudGluZy5idWRnZXRzLnJlYWQiLCJvZmZsaW5lX2FjY2VzcyJdLCJhbXIiOlsicHdkIiwibWZhIiwiZW1sIl19.ImC7H0PSTaougrmLI03YmdpZA2NaIS2d3uGEw2E-oMoH_luKeOYYZcNrGx3Os8vMtjKBi3IH9N7MhRx-r3u02GOxk2pRvWROuuljKgNHergyErdBEVGOM7m7sZDvbEB4LcbWXsamNof2hAVtwga2AzXZbizLCyimDizJld0wSPsjrGTaR_ta9t85PU7Lkx-JoNlT33fFDzJkOaPArk1lGlJVfbRRAuL3btQdD0Bg87eHeK-IyBCIFWjgd2TkAspkR6NJoJarThjUANMw4yKVQ01lhBTMkM8crC4hq73Mbr8wawlC_TWBCCT41aOOdeD4TJg9IpMcbOgaYfdZ6LXnMw",
+  "expires_at": 1759202949,
+  "token_type": "Bearer",
+  "refresh_token": "KZ8FZBFDKUzk5e51uPQ-ot8QdIBSwjazxMFfoTrQa7w",
+  "scope": "accounting.contacts.read accounting.transactions.read accounting.settings.read accounting.reports.read offline_access accounting.budgets.read",
+  "tenants": [
+    {
+      "id": "728b1909-1b86-414a-bd1c-c5c79dc24dd5",
+      "authEventId": "f58ab04d-7694-47ee-aa5f-e2efaa0dffac",
+      "tenantId": "786af1ed-e3ce-42fc-9ea9-ddf3447d79d0",
+      "tenantType": "ORGANISATION",
+      "tenantName": "Nicholas Marchesi",
+      "createdDateUtc": "2025-08-08T01:36:21.1514360",
+      "updatedDateUtc": "2025-08-08T01:36:21.1528140",
+      "orgData": {
+        "organisationID": "786af1ed-e3ce-42fc-9ea9-ddf3447d79d0",
+        "aPIKey": "T55S9AMHNGYUZ9CTBMTE3XMZFPQ6SV",
+        "name": "Nicholas Marchesi",
+        "legalName": "Nicholas Marchesi",
+        "paysTax": true,
+        "version": "AU",
+        "organisationType": "INDIVIDUAL",
+        "baseCurrency": "AUD",
+        "countryCode": "AU",
+        "isDemoCompany": false,
+        "organisationStatus": "ACTIVE",
+        "registrationNumber": "21591780066",
+        "financialYearEndDay": 30,
+        "financialYearEndMonth": 6,
+        "salesTaxBasis": "CASH",
+        "salesTaxPeriod": "QUARTERLY1",
+        "defaultSalesTax": "Tax Exclusive",
+        "defaultPurchasesTax": "Tax Inclusive",
+        "periodLockDate": "2023-06-30T00:00:00.000Z",
+        "endOfYearLockDate": "2023-06-30T00:00:00.000Z",
+        "createdDateUTC": "2022-03-15T23:25:54.000Z",
+        "timezone": "AUSEASTERNSTANDARDTIME",
+        "organisationEntityType": "INDIVIDUAL",
+        "shortCode": "!S0rpB",
+        "_class": "GROW",
+        "edition": "BUSINESS",
+        "lineOfBusiness": "Video Production Services",
+        "addresses": [
+          {
+            "addressType": "POBOX",
+            "addressLine1": "17 Dover St",
+            "city": "ALBION",
+            "region": "QLD",
+            "postalCode": "4010",
+            "country": "Australia",
+            "attentionTo": ""
+          },
+          {
+            "addressType": "STREET",
+            "addressLine1": "17 Dover St",
+            "city": "ALBION",
+            "region": "QLD",
+            "postalCode": "4010",
+            "country": "Australia",
+            "attentionTo": ""
+          }
+        ],
+        "phones": [],
+        "externalLinks": [],
+        "paymentTerms": {}
+      }
+    }
+  ]
+}

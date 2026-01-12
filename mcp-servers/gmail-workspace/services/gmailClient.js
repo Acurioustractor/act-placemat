@@ -21,6 +21,10 @@ export class GmailClient {
   /**
    * Get authenticated Gmail client for a specific user
    * Uses service account with domain-wide delegation to impersonate user
+   *
+   * IMPORTANT: Gmail API requires JWT-based auth, not GoogleAuth class
+   * This is due to Google's enhanced security requirements for sensitive APIs
+   * Using GoogleAuth causes "Precondition check failed" error
    */
   async getGmailClient(userEmail) {
     // Return cached client if exists
@@ -32,19 +36,22 @@ export class GmailClient {
       // Load service account credentials
       const credentials = JSON.parse(readFileSync(this.serviceAccountPath, 'utf8'));
 
-      // Create JWT auth with impersonation
-      const auth = new google.auth.GoogleAuth({
-        credentials,
+      // Create JWT client directly (required for Gmail API)
+      // Reference: https://github.com/googleapis/google-api-nodejs-client/issues/2322
+      const jwtClient = new google.auth.JWT({
+        email: credentials.client_email,
+        key: credentials.private_key,
         scopes: this.scopes,
         subject: userEmail  // Impersonate this user via domain-wide delegation
       });
 
-      const authClient = await auth.getClient();
+      // Authorize the JWT client
+      await jwtClient.authorize();
 
-      // Create Gmail API client
+      // Create Gmail API client with JWT auth
       const gmail = google.gmail({
         version: 'v1',
-        auth: authClient
+        auth: jwtClient
       });
 
       // Cache for future use

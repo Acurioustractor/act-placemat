@@ -20,6 +20,8 @@ import SimpleBusinessAgent from './components/SimpleBusinessAgent'
 import SimpleCRM from './components/SimpleCRM'
 import BulkEnrichmentManager from './components/BulkEnrichmentManager'
 import { SubscriptionDashboard } from './components/subscriptions/SubscriptionDashboard'
+import EnrichedContactsDashboard from './components/EnrichedContactsDashboard'
+import { ProjectMatchesDashboard } from './components/intelligence/ProjectMatchesDashboard'
 
 function App() {
   const [activeTab, setActiveTab] = useState('simple-agent')
@@ -29,7 +31,9 @@ function App() {
   // ✅ CLEAN, WORKING NAVIGATION
   const tabs = [
     { id: 'simple-agent', name: 'AI Business Agent', icon: '🤖', description: 'Ask questions, get intelligent answers' },
+    { id: 'intelligence', name: 'Intelligence Hub', icon: '🧠', description: 'Project matches & polymaths' },
     { id: 'simple-crm', name: 'CRM System', icon: '🏢', description: 'Contact intelligence & AI enrichment' },
+    { id: 'enriched-contacts', name: 'Enriched Contacts', icon: '✨', description: 'Exa-enriched strategic contacts' },
     { id: 'bulk-enrichment', name: 'Bulk Enrichment', icon: '🔄', description: 'Enrich all 20K contacts with AI' },
     { id: 'subscriptions', name: 'Subscriptions', icon: '💳', description: 'Track & manage subscriptions' },
     { id: 'projects', name: 'Projects', icon: '🎯', description: 'Portfolio & Beautiful Obsolescence' },
@@ -133,8 +137,10 @@ function App() {
 
       <main>
         {activeTab === 'simple-agent' && <SimpleBusinessAgent />}
+        {activeTab === 'intelligence' && <ProjectMatchesDashboard />}
         {activeTab === 'simple-crm' && <SimpleCRM />}
         {activeTab === 'bulk-enrichment' && <BulkEnrichmentManager />}
+        {activeTab === 'enriched-contacts' && <EnrichedContactsDashboard />}
         {activeTab === 'subscriptions' && <SubscriptionDashboard tenantId="786af1ed-e3ce-42fc-9ea9-ddf3447d79d0" />}
         {activeTab === 'projects' && <CommunityProjects />}
         {activeTab === 'about' && <AboutACT />}

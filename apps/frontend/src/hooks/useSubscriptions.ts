@@ -24,6 +24,11 @@ export const subscriptionKeys = {
   analytics: () => [...subscriptionKeys.all, 'analytics'] as const,
   summary: (tenantId: string) => [...subscriptionKeys.analytics(), 'summary', tenantId] as const,
   outstanding: (tenantId: string) => [...subscriptionKeys.analytics(), 'outstanding', tenantId] as const,
+  paymentCalendar: (tenantId: string) => [...subscriptionKeys.analytics(), 'payment-calendar', tenantId] as const,
+  costByAccount: (tenantId: string) => [...subscriptionKeys.analytics(), 'cost-by-account', tenantId] as const,
+  costByVendor: (tenantId: string) => [...subscriptionKeys.analytics(), 'cost-by-vendor', tenantId] as const,
+  consolidation: () => [...subscriptionKeys.all, 'consolidation'] as const,
+  consolidationProgress: (tenantId: string) => [...subscriptionKeys.consolidation(), 'progress', tenantId] as const,
 };
 
 // ============================================================================
@@ -116,5 +121,103 @@ export function useOutstandingInvoices(tenantId: string, enabled = true) {
     queryFn: () => subscriptionApi.getOutstanding(tenantId),
     enabled: enabled && !!tenantId,
     staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+}
+
+// ============================================================================
+// Payment Calendar
+// ============================================================================
+
+export function usePaymentCalendar(tenantId: string, enabled = true) {
+  return useQuery({
+    queryKey: subscriptionKeys.paymentCalendar(tenantId),
+    queryFn: () => subscriptionApi.getPaymentCalendar(tenantId),
+    enabled: enabled && !!tenantId,
+    staleTime: 1000 * 60 * 5, // 5 minutes - refresh to keep urgency classification current
+  });
+}
+
+// ============================================================================
+// Cost Analysis
+// ============================================================================
+
+export function useCostByAccount(tenantId: string, enabled = true) {
+  return useQuery({
+    queryKey: subscriptionKeys.costByAccount(tenantId),
+    queryFn: () => subscriptionApi.getCostByAccount(tenantId),
+    enabled: enabled && !!tenantId,
+    staleTime: 1000 * 60 * 10, // 10 minutes
+  });
+}
+
+export function useCostByVendor(tenantId: string, limit?: number, enabled = true) {
+  return useQuery({
+    queryKey: [...subscriptionKeys.costByVendor(tenantId), limit],
+    queryFn: () => subscriptionApi.getCostByVendor(tenantId, limit),
+    enabled: enabled && !!tenantId,
+    staleTime: 1000 * 60 * 10, // 10 minutes
+  });
+}
+
+// ============================================================================
+// Consolidation Tracking
+// ============================================================================
+
+export function useConsolidationProgress(tenantId: string, enabled = true) {
+  return useQuery({
+    queryKey: subscriptionKeys.consolidationProgress(tenantId),
+    queryFn: () => subscriptionApi.getConsolidationProgress(tenantId),
+    enabled: enabled && !!tenantId,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+}
+
+export function useUpdateConsolidationStatus() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (params: {
+      id: string;
+      status?: string;
+      notes?: string;
+      vendorContactEmail?: string;
+    }) => subscriptionApi.updateConsolidationStatus(params),
+    onSuccess: (data, variables) => {
+      // Invalidate consolidation queries
+      queryClient.invalidateQueries({
+        queryKey: subscriptionKeys.consolidation(),
+      });
+      // Invalidate the specific subscription detail
+      queryClient.invalidateQueries({
+        queryKey: subscriptionKeys.detail(variables.id),
+      });
+    },
+  });
+}
+
+// ============================================================================
+// Update Subscription
+// ============================================================================
+
+export function useUpdateSubscription() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, updates }: { id: string; updates: Partial<import('../types/subscription').Subscription> }) =>
+      subscriptionApi.update(id, updates),
+    onSuccess: (data, variables) => {
+      // Invalidate lists to refresh with new data
+      queryClient.invalidateQueries({
+        queryKey: subscriptionKeys.lists(),
+      });
+      // Invalidate the specific subscription detail
+      queryClient.invalidateQueries({
+        queryKey: subscriptionKeys.detail(variables.id),
+      });
+      // Invalidate analytics in case status/amount changed
+      queryClient.invalidateQueries({
+        queryKey: subscriptionKeys.analytics(),
+      });
+    },
   });
 }
