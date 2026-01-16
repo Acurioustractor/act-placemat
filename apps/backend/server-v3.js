@@ -37,9 +37,6 @@ import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 // Import v3 APIs
 import businessAgentRoutes from './core/src/api/v3/businessAgent.js';
 import crmSystemRoutes from './core/src/api/v3/crmSystem.js';
-import bulkEnrichmentRoutes from './core/src/api/v3/bulkEnrichment.js';
-import projectAlignmentRoutes from './core/src/api/v3/projectAlignment.js';
-import projectAlignmentService from './core/src/services/projectAlignmentService.js';
 
 // Import existing APIs (maintain backward compatibility)
 import notionService from './core/src/services/notionService.js';
@@ -75,22 +72,7 @@ import googleAuthRoutes from './core/src/api/googleAuth.js';
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// Enhanced CORS configuration for frontend
-app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:5174', 
-    'http://localhost:5175',
-    'http://localhost:5176',
-    'http://localhost:5177',
-    'http://localhost:5178',
-    'http://localhost:5179',
-    'http://localhost:3000'
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(cors());
 app.use(express.json());
 
 // Supabase configuration
@@ -139,58 +121,7 @@ businessAgentRoutes(app);
 // CRM System v3 - World-Class Contact Management
 crmSystemRoutes(app);
 
-// Bulk Enrichment v3 - Mass Contact Intelligence
-bulkEnrichmentRoutes(app);
-
-// Project Alignment v3 - Backend project ↔ contact intelligence
-projectAlignmentRoutes(app);
-
 console.log('✅ v3 APIs initialized successfully');
-
-// =============================================================================
-// AUTOMATED INTELLIGENCE JOBS
-// =============================================================================
-
-const ENABLE_ALIGNMENT_REFRESH =
-  (process.env.ENABLE_ALIGNMENT_REFRESH ?? 'true').toLowerCase() !== 'false';
-const ALIGNMENT_REFRESH_INTERVAL_MIN =
-  parseInt(process.env.ALIGNMENT_REFRESH_INTERVAL_MIN ?? '180', 10); // default 3 hours
-
-if (ENABLE_ALIGNMENT_REFRESH) {
-  const intervalMs = Math.max(15, ALIGNMENT_REFRESH_INTERVAL_MIN) * 60 * 1000;
-
-  const runAlignmentRefresh = async () => {
-    try {
-      console.log('⏱️  Auto alignment refresh started (research=deep)…');
-      const status = await projectAlignmentService.refreshAll({
-        enableResearch: true,
-        researchDepth: 'deep',
-        projectsLimit: 8,
-        contactsLimit: 250,
-        minScore: 35,
-      });
-      console.log(
-        `✅ Auto alignment refresh complete (${status.alignmentCount} matches, last run ${status.lastAlignmentRun})`
-      );
-    } catch (error) {
-      console.error('❌ Auto alignment refresh failed:', error.message);
-    } finally {
-      scheduleNextRun();
-    }
-  };
-
-  const scheduleNextRun = () => {
-    console.log(
-      `🕒 Next auto alignment refresh in ${Math.round(intervalMs / 60000)} minutes`
-    );
-    setTimeout(runAlignmentRefresh, intervalMs);
-  };
-
-  // Kick off shortly after startup to avoid blocking boot logs
-  setTimeout(runAlignmentRefresh, 30 * 1000);
-} else {
-  console.log('⏸️  Auto alignment refresh disabled via ENABLE_ALIGNMENT_REFRESH=false');
-}
 
 // =============================================================================
 // EXISTING APIs - Maintain Backward Compatibility

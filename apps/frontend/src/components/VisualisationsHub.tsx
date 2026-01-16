@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import type { ReactElement } from 'react'
 import { Card } from './ui/Card'
 import type { Project } from '../types/project'
 import { ProjectConstellation } from './ProjectConstellation'
@@ -12,7 +11,7 @@ interface VisualisationConfig {
   id: string
   name: string
   description: string
-  render: (actions?: { onProjectSelect: (project: Project) => void }) => ReactElement
+  render: (actions?: { onProjectSelect: (project: Project) => void }) => JSX.Element
 }
 
 const VISUALISATIONS: VisualisationConfig[] = [

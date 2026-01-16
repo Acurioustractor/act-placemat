@@ -12,32 +12,26 @@ import { InfrastructureDataCollector } from './components/InfrastructureDataColl
 import { DirectionScorecard } from './components/DirectionScorecard'
 import { MovementLineage } from './components/MovementLineage'
 import { VisualisationsHub } from './components/VisualisationsHub'
-import ACTBusinessAgent from './components/ACTBusinessAgent'
-import WorldClassCRM from './components/WorldClassCRM'
-import EnhancedBusinessAgent from './components/EnhancedBusinessAgent'
-import EnhancedCRM from './components/EnhancedCRM'
-import SimpleBusinessAgent from './components/SimpleBusinessAgent'
-import SimpleCRM from './components/SimpleCRM'
-import BulkEnrichmentManager from './components/BulkEnrichmentManager'
-import { SubscriptionDashboard } from './components/subscriptions/SubscriptionDashboard'
-import EnrichedContactsDashboard from './components/EnrichedContactsDashboard'
-import { ProjectMatchesDashboard } from './components/intelligence/ProjectMatchesDashboard'
 
 function App() {
-  const [activeTab, setActiveTab] = useState('simple-agent')
+  const [activeTab, setActiveTab] = useState('morning-brief')
   const [aiChatOpen, setAiChatOpen] = useState(false)
   const [agentPrefill, setAgentPrefill] = useState<string | null>(null)
 
-  // ✅ CLEAN, WORKING NAVIGATION
+  // ✅ NEW INTELLIGENCE-FOCUSED TABS
   const tabs = [
-    { id: 'simple-agent', name: 'AI Business Agent', icon: '🤖', description: 'Ask questions, get intelligent answers' },
-    { id: 'intelligence', name: 'Intelligence Hub', icon: '🧠', description: 'Project matches & polymaths' },
-    { id: 'simple-crm', name: 'CRM System', icon: '🏢', description: 'Contact intelligence & AI enrichment' },
-    { id: 'enriched-contacts', name: 'Enriched Contacts', icon: '✨', description: 'Exa-enriched strategic contacts' },
-    { id: 'bulk-enrichment', name: 'Bulk Enrichment', icon: '🔄', description: 'Enrich all 20K contacts with AI' },
-    { id: 'subscriptions', name: 'Subscriptions', icon: '💳', description: 'Track & manage subscriptions' },
-    { id: 'projects', name: 'Projects', icon: '🎯', description: 'Portfolio & Beautiful Obsolescence' },
-    { id: 'about', name: 'About ACT', icon: '🚜', description: 'Mission & values' },
+    { id: 'about', name: 'About ACT', icon: '🚜', description: 'What is A Curious Tractor?' },
+    { id: 'direction', name: 'Direction', icon: '🧭', description: 'Company-wide scorecard' },
+    { id: 'lineage', name: 'Lineage', icon: '🌀', description: 'Movement history & guardrails' },
+    { id: 'needs', name: 'Needs', icon: '🚨', description: 'Urgent project needs detected' },
+    { id: 'communications', name: 'Communications', icon: '✉️', description: 'Gmail + Calendar evidence' },
+    { id: 'morning-brief', name: 'Morning Brief', icon: '🌅', description: 'Daily intelligence digest' },
+    { id: 'contacts', name: 'Contacts', icon: '🤝', description: '20K relationship network' },
+    { id: 'projects', name: 'Projects', icon: '🏘️', description: 'Portfolio & Beautiful Obsolescence tracking' },
+    { id: 'visualisations', name: 'Visualisations', icon: '🛰️', description: 'Constellation, explorer, geo map' },
+    { id: 'impact-data', name: 'Impact Data', icon: '📊', description: 'Add infrastructure metrics to projects' },
+    { id: 'opportunities', name: 'Opportunities', icon: '💎', description: 'AI-powered grant discovery' },
+    { id: 'research', name: 'Research', icon: '🌱', description: 'Curious Tractor deep dives' },
   ]
 
   // 🔜 COMING SOON (Ready to build when you say go)
@@ -136,14 +130,18 @@ function App() {
       </nav>
 
       <main>
-        {activeTab === 'simple-agent' && <SimpleBusinessAgent />}
-        {activeTab === 'intelligence' && <ProjectMatchesDashboard />}
-        {activeTab === 'simple-crm' && <SimpleCRM />}
-        {activeTab === 'bulk-enrichment' && <BulkEnrichmentManager />}
-        {activeTab === 'enriched-contacts' && <EnrichedContactsDashboard />}
-        {activeTab === 'subscriptions' && <SubscriptionDashboard tenantId="786af1ed-e3ce-42fc-9ea9-ddf3447d79d0" />}
-        {activeTab === 'projects' && <CommunityProjects />}
         {activeTab === 'about' && <AboutACT />}
+        {activeTab === 'direction' && <DirectionScorecard onAskAgent={handleAskAgent} />}
+        {activeTab === 'lineage' && <MovementLineage />}
+        {activeTab === 'needs' && <NeedsDashboard />}
+        {activeTab === 'communications' && <CommunicationsLog />}
+        {activeTab === 'morning-brief' && <MorningBrief />}
+        {activeTab === 'contacts' && <ContactIntelligenceHub />}
+        {activeTab === 'projects' && <CommunityProjects />}
+        {activeTab === 'visualisations' && <VisualisationsHub />}
+        {activeTab === 'impact-data' && <InfrastructureDataCollector />}
+        {activeTab === 'opportunities' && <Opportunities />}
+        {activeTab === 'research' && <CuriousTractorResearch />}
       </main>
 
       {/* AI Agent Chat Sidebar */}

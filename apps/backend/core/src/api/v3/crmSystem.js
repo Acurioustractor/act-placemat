@@ -45,19 +45,22 @@ class ACTCRMSystem {
         id,
         first_name,
         last_name,
-        current_company,
-        current_position,
+        company,
+        position,
+        industry,
         location,
-        email_address,
+        email,
+        phone,
         linkedin_url,
-        imported_at,
+        connection_degree,
+        created_at,
         updated_at
       `)
       .order('updated_at', { ascending: false });
 
     // Apply filters
     if (search) {
-      query = query.or(`first_name.ilike.%${search}%,last_name.ilike.%${search}%,current_company.ilike.%${search}%`);
+      query = query.or(`first_name.ilike.%${search}%,last_name.ilike.%${search}%,company.ilike.%${search}%`);
     }
 
     if (industry) {
@@ -65,14 +68,14 @@ class ACTCRMSystem {
     }
 
     if (company) {
-      query = query.ilike('current_company', `%${company}%`);
+      query = query.ilike('company', `%${company}%`);
     }
 
     if (hasEmail !== null) {
       if (hasEmail) {
-        query = query.not('email_address', 'is', null);
+        query = query.not('email', 'is', null);
       } else {
-        query = query.is('email_address', null);
+        query = query.is('email', null);
       }
     }
 
@@ -90,9 +93,6 @@ class ACTCRMSystem {
         return {
           ...contact,
           fullName: `${contact.first_name} ${contact.last_name}`,
-          company: contact.current_company,
-          position: contact.current_position,
-          email: contact.email_address,
           intelligence
         };
       })
@@ -176,7 +176,7 @@ Provide analysis in JSON format:
 
     try {
       const response = await this.anthropic.messages.create({
-        model: 'claude-3-haiku-20240307',
+        model: 'claude-3-5-sonnet-20241022',
         max_tokens: 1500,
         messages: [{
           role: 'user',

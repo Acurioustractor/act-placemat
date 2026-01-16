@@ -24,9 +24,6 @@ class ACTBusinessAgent {
       auth: process.env.NOTION_TOKEN
     });
     
-    // Initialize all methods first
-    this.initializeMethods();
-    
     // Agent capabilities
     this.capabilities = {
       // Core Intelligence
@@ -49,56 +46,6 @@ class ACTBusinessAgent {
       projectMatching: this.projectMatching.bind(this),
       outreachStrategy: this.outreachStrategy.bind(this)
     };
-  }
-
-  /**
-   * Initialize all methods to prevent binding errors
-   */
-  initializeMethods() {
-    // Core Intelligence methods
-    if (!this.decisionSupport) {
-      this.decisionSupport = async (context) => {
-        return {
-          recommendations: [],
-          confidence: 0.8,
-          reasoning: 'Decision support analysis based on current context'
-        };
-      };
-    }
-
-    if (!this.financialForecasting) {
-      this.financialForecasting = async () => {
-        return {
-          cashFlow: { current: 0, projected: 0 },
-          runway: '6 months',
-          recommendations: ['Monitor cash flow closely']
-        };
-      };
-    }
-
-    if (!this.storytellingOpportunities) {
-      this.storytellingOpportunities = async () => {
-        return [];
-      };
-    }
-
-    if (!this.contactEnrichment) {
-      this.contactEnrichment = async (contactId) => {
-        return await this.enrichContact(contactId);
-      };
-    }
-
-    if (!this.projectMatching) {
-      this.projectMatching = async (contactId) => {
-        return await this.matchContactToProjects({ id: contactId });
-      };
-    }
-
-    if (!this.outreachStrategy) {
-      this.outreachStrategy = async (contactId) => {
-        return this.generateOutreachStrategy({ id: contactId }, null);
-      };
-    }
   }
 
   /**
@@ -244,7 +191,7 @@ class ACTBusinessAgent {
   /**
    * Contact Enrichment - World-class contact intelligence
    */
-  async enrichContact(contactId) {
+  async contactEnrichment(contactId) {
     const { data: contact } = await this.supabase
       .from('linkedin_contacts')
       .select('*')
@@ -257,7 +204,7 @@ class ACTBusinessAgent {
     
     // AI-powered enrichment
     const enrichment = await this.anthropic.messages.create({
-      model: 'claude-3-haiku-20240307',
+      model: 'claude-3-5-sonnet-20241022',
       max_tokens: 1000,
       messages: [{
         role: 'user',
@@ -290,7 +237,7 @@ Provide:
   async analyzeQueryIntent(query) {
     // Use AI to understand query intent
     const response = await this.anthropic.messages.create({
-      model: 'claude-3-haiku-20240307',
+      model: 'claude-3-5-sonnet-20241022',
       max_tokens: 200,
       messages: [{
         role: 'user',
@@ -358,10 +305,10 @@ Your role:
 Available data: ${JSON.stringify(data, null, 2)}`;
 
     const response = await this.anthropic.messages.create({
-      model: 'claude-3-haiku-20240307',
+      model: 'claude-3-5-sonnet-20241022',
       max_tokens: 1500,
-      system: systemPrompt,
       messages: [
+        { role: 'system', content: systemPrompt },
         { role: 'user', content: query }
       ]
     });
@@ -554,7 +501,7 @@ export default function businessAgentRoutes(app) {
   app.post('/api/v3/agent/contacts/:id/enrich', async (req, res) => {
     try {
       const { id } = req.params;
-      const enrichment = await agent.enrichContact(id);
+      const enrichment = await agent.contactEnrichment(id);
       
       res.json({
         success: true,

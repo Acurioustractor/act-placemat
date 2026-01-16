@@ -44,52 +44,6 @@
     @apply text-sm text-clay-500;
   }
 
-  /* Modern UI Components */
-  .glass-card {
-    @apply bg-white/80 backdrop-blur-sm border border-white/20 shadow-soft rounded-2xl;
-  }
-
-  .gradient-card {
-    @apply bg-gradient-to-br from-white to-clay-50 border border-clay-200 shadow-soft rounded-2xl;
-  }
-
-  .interactive-card {
-    @apply bg-white border border-clay-200 shadow-subtle hover:shadow-medium hover:-translate-y-0.5 hover:border-brand-300 cursor-pointer transition-all duration-300 rounded-2xl;
-  }
-
-  .metric-badge {
-    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium;
-  }
-
-  .metric-badge-green {
-    @apply bg-green-100 text-green-800;
-  }
-
-  .metric-badge-yellow {
-    @apply bg-yellow-100 text-yellow-800;
-  }
-
-  .metric-badge-red {
-    @apply bg-red-100 text-red-800;
-  }
-
-  .metric-badge-blue {
-    @apply bg-blue-100 text-blue-800;
-  }
-
-  /* Animations */
-  .fade-in {
-    animation: fadeIn 0.5s ease-out;
-  }
-
-  .slide-up {
-    animation: slideUp 0.3s ease-out;
-  }
-
-  .scale-in {
-    animation: scaleIn 0.2s ease-out;
-  }
-
   .constellation-star {
     position: absolute;
     border-radius: 9999px;
@@ -123,57 +77,4 @@
     transform: scale(1);
     opacity: var(--star-opacity, 0.6);
   }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* Scrollbar Styling */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: theme('colors.clay.100');
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: theme('colors.clay.300');
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: theme('colors.clay.400');
 }
