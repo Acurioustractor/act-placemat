@@ -87,7 +87,6 @@ function App() {
       case 'goals':
         return (
           <GoalsDashboard
-            key={goalsRefreshKey}  // Force re-render on refresh
             goals={goals}
             loading={goalsLoading}
             error={goalsError}
