@@ -104,6 +104,20 @@ export function GoalCard({
   }
   const laneColor = LANE_COLORS[goal.lane_name || ''] || LANE_COLORS[goal.lane_name?.split(' — ')[0] || ''] || '#6366f1'
 
+  // Dynamic card style based on lane color
+  const cardStyle: React.CSSProperties = {
+    background: 'white',
+    borderRadius: '12px',
+    border: '1px solid #e2e8f0',
+    borderLeftWidth: '4px',
+    borderLeftColor: laneColor,
+    overflow: 'hidden',
+    opacity: isDragging ? 0.7 : 1,
+    transform: isDragging ? 'scale(1.02)' : 'none',
+    boxShadow: isDragging ? '0 8px 24px rgba(0,0,0,0.15)' : 'none',
+    transition: 'all 0.2s ease',
+  }
+
   // Project name mapping (simplified - could be expanded)
   const getProjectName = (projectId?: string) => {
     if (!projectId) return null
@@ -445,19 +459,6 @@ const compactStyle: React.CSSProperties = {
   background: 'white',
   borderRadius: '8px',
   border: '1px solid #e2e8f0',
-}
-
-const cardStyle: React.CSSProperties = {
-  background: 'white',
-  borderRadius: '12px',
-  border: '1px solid #e2e8f0',
-  borderLeftWidth: '4px',
-  borderLeftColor: laneColor,
-  overflow: 'hidden',
-  opacity: isDragging ? 0.7 : 1,
-  transform: isDragging ? 'scale(1.02)' : 'none',
-  boxShadow: isDragging ? '0 8px 24px rgba(0,0,0,0.15)' : 'none',
-  transition: 'all 0.2s ease',
 }
 
 const headerStyle: React.CSSProperties = {
