@@ -79,15 +79,18 @@ const LANES = [
   { id: 'art', name: 'Art', color: '#ec4899', icon: '🎨' },
 ]
 
-// Map backend lane names to frontend lane IDs
+// Map backend lane names to frontend lane IDs (handles both hyphen and em-dash)
 const LANE_NAME_TO_ID: Record<string, string> = {
   'Listen': 'listen',
   'Curiosity': 'curiosity',
   'Action': 'action',
   'Art': 'art',
   'A — Core Ops': 'listen',
+  'A - Core Ops': 'listen',
   'B — Platforms': 'curiosity',
+  'B - Platforms': 'curiosity',
   'C — Place/Seasonal': 'action',
+  'C - Place/Seasonal': 'action',
 }
 
 export function GoalsDashboard({
