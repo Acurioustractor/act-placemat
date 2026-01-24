@@ -11,7 +11,7 @@
  * - Cross-system links (projects, calendar, relationships)
  */
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import { GoalCard } from './GoalCard'
 import { GoalsCalendarView } from './GoalsCalendarView'
 
@@ -112,6 +112,42 @@ export function GoalsDashboard({
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<ViewMode>('lanes')
   const [calendarLaneFilter, setCalendarLaneFilter] = useState<string | null>(null)
+
+  // Local state for optimistic drag-and-drop updates
+  const [laneGoals, setLaneGoals] = useState<Record<string, Goal[]>>(() => {
+    const initial: Record<string, Goal[]> = {}
+    LANES.forEach(lane => {
+      initial[lane.id] = []
+    })
+    initial['unassigned'] = []
+    return initial
+  })
+
+  // Sync local state when goals prop changes (but only on initial load or full refresh)
+  const goalsRef = useRef(goals)
+  useEffect(() => {
+    // Only sync if goals length changed significantly (new data from API)
+    if (goals.length !== goalsRef.current.length || JSON.stringify(goals) !== JSON.stringify(goalsRef.current)) {
+      const grouped: Record<string, Goal[]> = {}
+      LANES.forEach(lane => {
+        grouped[lane.id] = []
+      })
+      grouped['unassigned'] = []
+
+      goals.forEach(goal => {
+        const laneKey = goal.lane || goal.lane_name || ''
+        const laneId = LANE_NAME_TO_ID[laneKey] || 'unassigned'
+        if (grouped[laneId]) {
+          grouped[laneId].push(goal)
+        } else {
+          grouped['unassigned'].push(goal)
+        }
+      })
+
+      setLaneGoals(grouped)
+      goalsRef.current = goals
+    }
+  }, [goals])
 
   // Filter goals
   const filteredGoals = useMemo(() => {
