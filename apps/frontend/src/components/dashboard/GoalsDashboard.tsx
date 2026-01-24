@@ -270,13 +270,13 @@ export function GoalsDashboard({
 
       if (!goalToMove || fromLaneId === toLaneId) return
 
-      // Optimistic update - move locally
+      // Optimistic update - move locally, insert at TOP of destination lane
       setLaneGoals(prev => {
         const updated = { ...prev }
         // Remove from source lane
         updated[fromLaneId] = updated[fromLaneId]?.filter(g => g.id !== goalId) || []
-        // Add to destination lane
-        updated[toLaneId] = [...(updated[toLaneId] || []), { ...goalToMove!, lane: getLaneName(toLaneId), lane_name: getLaneName(toLaneId) }]
+        // Add to TOP of destination lane
+        updated[toLaneId] = [{ ...goalToMove!, lane: getLaneName(toLaneId), lane_name: getLaneName(toLaneId) }, ...(updated[toLaneId] || [])]
         return updated
       })
 
