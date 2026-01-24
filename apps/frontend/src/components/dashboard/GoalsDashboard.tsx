@@ -113,42 +113,6 @@ export function GoalsDashboard({
   const [viewMode, setViewMode] = useState<ViewMode>('lanes')
   const [calendarLaneFilter, setCalendarLaneFilter] = useState<string | null>(null)
 
-  // Goal ordering state for drag-and-drop
-  const [laneGoals, setLaneGoals] = useState<Record<string, Goal[]>>(() => {
-    const initial: Record<string, Goal[]> = {}
-    LANES.forEach(lane => {
-      initial[lane.id] = []
-    })
-    initial['unassigned'] = []
-    return initial
-  })
-
-  // Initialize lane goals from props
-  useMemo(() => {
-    const grouped: Record<string, Goal[]> = {}
-    LANES.forEach(lane => {
-      grouped[lane.id] = []
-    })
-    grouped['unassigned'] = []
-
-    goals.forEach(goal => {
-      const laneKey = goal.lane || goal.lane_name || ''
-      const laneId = LANE_NAME_TO_ID[laneKey] || 'unassigned'
-      if (grouped[laneId]) {
-        grouped[laneId].push(goal)
-      } else {
-        grouped['unassigned'].push(goal)
-      }
-    })
-
-    // Sort by position
-    Object.keys(grouped).forEach(laneId => {
-      grouped[laneId].sort((a, b) => (a.lane_position || 0) - (b.lane_position || 0))
-    })
-
-    setLaneGoals(grouped)
-  }, [goals])
-
   // Filter goals
   const filteredGoals = useMemo(() => {
     return goals.filter((goal) => {
@@ -263,8 +227,8 @@ export function GoalsDashboard({
       let fromLaneId = 'unassigned'
       let goalToMove: Goal | undefined
 
-      Object.keys(laneGoals).forEach(laneId => {
-        const found = laneGoals[laneId]?.find(g => g.id === goalId)
+      Object.keys(goalsByLane).forEach(laneId => {
+        const found = goalsByLane[laneId]?.find(g => g.id === goalId)
         if (found) {
           fromLaneId = laneId
           goalToMove = found
@@ -288,7 +252,7 @@ export function GoalsDashboard({
         await onMoveGoal(goalId, getLaneName(toLaneId))
       }
     },
-    [laneGoals, onMoveGoal]
+    [goalsByLane, onMoveGoal]
   )
 
   // Error state
@@ -425,7 +389,7 @@ export function GoalsDashboard({
       {viewMode === 'lanes' && (
         <div style={lanesContainerStyle}>
           {LANES.map((lane) => {
-            const laneGoalsList = laneGoals[lane.id] || []
+            const laneGoalsList = goalsByLane[lane.id] || []
             const laneProgress =
               laneGoalsList.length > 0
                 ? Math.round(
