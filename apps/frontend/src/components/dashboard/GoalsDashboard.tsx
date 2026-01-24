@@ -11,7 +11,7 @@
  * - Cross-system links (projects, calendar, relationships)
  */
 
-import { useState, useCallback, useMemo, useRef } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { GoalCard } from './GoalCard'
 import { GoalsCalendarView } from './GoalsCalendarView'
 
