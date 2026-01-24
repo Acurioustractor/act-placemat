@@ -263,8 +263,8 @@ export function GoalsDashboard({
       let fromLaneId = 'unassigned'
       let goalToMove: Goal | undefined
 
-      Object.keys(goalsByLane).forEach(laneId => {
-        const found = goalsByLane[laneId]?.find(g => g.id === goalId)
+      Object.keys(laneGoals).forEach(laneId => {
+        const found = laneGoals[laneId]?.find(g => g.id === goalId)
         if (found) {
           fromLaneId = laneId
           goalToMove = found
@@ -288,7 +288,7 @@ export function GoalsDashboard({
         await onMoveGoal(goalId, getLaneName(toLaneId))
       }
     },
-    [goalsByLane, onMoveGoal]
+    [laneGoals, onMoveGoal]
   )
 
   // Error state
@@ -425,7 +425,7 @@ export function GoalsDashboard({
       {viewMode === 'lanes' && (
         <div style={lanesContainerStyle}>
           {LANES.map((lane) => {
-            const laneGoalsList = goalsByLane[lane.id] || []
+            const laneGoalsList = laneGoals[lane.id] || []
             const laneProgress =
               laneGoalsList.length > 0
                 ? Math.round(
