@@ -123,14 +123,15 @@ export function GoalsDashboard({
 
   // Initialize lane goals from props
   useMemo(() => {
-    const grouped: Record<string, Goal[]> = {} as Record<string, Goal[]>
+    const grouped: Record<string, Goal[]> = {}
     LANES.forEach(lane => {
       grouped[lane.id] = []
     })
     grouped['unassigned'] = []
 
     goals.forEach(goal => {
-      const laneId = LANE_NAME_TO_ID[goal.lane_name || ''] || 'unassigned'
+      const laneKey = goal.lane || goal.lane_name || ''
+      const laneId = LANE_NAME_TO_ID[laneKey] || 'unassigned'
       if (grouped[laneId]) {
         grouped[laneId].push(goal)
       } else {
@@ -163,7 +164,7 @@ export function GoalsDashboard({
       if (statusFilter !== 'all' && goal.status !== statusFilter) return false
 
       // Lane filter
-      if (laneFilter && goal.lane_name !== laneFilter) return false
+      if (laneFilter && goal.lane !== laneFilter && goal.lane_name !== laneFilter) return false
 
       return true
     })
@@ -171,15 +172,21 @@ export function GoalsDashboard({
 
   // Group by lane
   const goalsByLane = useMemo(() => {
-    const grouped = LANES.reduce((acc, lane) => {
-      acc[lane.id] = filteredGoals.filter((g) => g.lane_name === lane.name)
-      return acc
-    }, {} as Record<string, Goal[]>)
+    const grouped: Record<string, Goal[]> = {}
+    LANES.forEach(lane => {
+      grouped[lane.id] = []
+    })
+    grouped['unassigned'] = []
 
-    // Also include unassigned goals
-    grouped['unassigned'] = filteredGoals.filter(
-      (g) => !LANES.some((l) => l.name === g.lane_name)
-    )
+    filteredGoals.forEach(goal => {
+      const laneKey = goal.lane || goal.lane_name || ''
+      const laneId = LANE_NAME_TO_ID[laneKey] || 'unassigned'
+      if (grouped[laneId]) {
+        grouped[laneId].push(goal)
+      } else {
+        grouped['unassigned'].push(goal)
+      }
+    })
 
     return grouped
   }, [filteredGoals])
