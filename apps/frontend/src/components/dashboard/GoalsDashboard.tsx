@@ -12,7 +12,6 @@
  */
 
 import { useState, useCallback, useMemo } from 'react'
-import { Reorder, AnimatePresence, motion } from 'framer-motion'
 import { GoalCard } from './GoalCard'
 import { GoalsCalendarView } from './GoalsCalendarView'
 
@@ -206,6 +205,22 @@ export function GoalsDashboard({
     return { total, completed, inProgress, avgProgress }
   }, [goals])
 
+  // Get lane key for a goal
+  const getLaneKey = (goal: Goal): string => {
+    const laneKey = goal.lane || goal.lane_name || ''
+    return LANE_NAME_TO_ID[laneKey] || 'unassigned'
+  }
+
+  // Get backend lane name from frontend lane ID
+  const getLaneName = (laneId: string): string => {
+    const mapping: Record<string, string> = {
+      'listen': 'A — Core Ops',
+      'curiosity': 'B — Platforms',
+      'action': 'C — Place/Seasonal',
+    }
+    return mapping[laneId] || laneId
+  }
+
   const handleUpdateGoal = useCallback(
     async (id: string, updates: GoalUpdates) => {
       await onUpdateGoal(id, updates)
@@ -240,22 +255,34 @@ export function GoalsDashboard({
 
   // Handle moving goal between lanes
   const handleMoveBetweenLanes = useCallback(
-    async (goalId: string, fromLane: string, toLane: string, newIndex: number) => {
-      const goal = laneGoals[fromLane]?.find(g => g.id === goalId)
-      if (!goal) return
+    async (goalId: string, toLaneId: string) => {
+      // Find the goal and its current lane
+      let fromLaneId = 'unassigned'
+      let goalToMove: Goal | undefined
 
-      // Optimistic update
+      Object.keys(laneGoals).forEach(laneId => {
+        const found = laneGoals[laneId]?.find(g => g.id === goalId)
+        if (found) {
+          fromLaneId = laneId
+          goalToMove = found
+        }
+      })
+
+      if (!goalToMove || fromLaneId === toLaneId) return
+
+      // Optimistic update - move locally
       setLaneGoals(prev => {
         const updated = { ...prev }
-        updated[fromLane] = updated[fromLane]?.filter(g => g.id !== goalId) || []
-        updated[toLane] = [...(updated[toLane] || [])]
-        updated[toLane].splice(newIndex, 0, { ...goal, lane_name: toLane })
+        // Remove from source lane
+        updated[fromLaneId] = updated[fromLaneId]?.filter(g => g.id !== goalId) || []
+        // Add to destination lane
+        updated[toLaneId] = [...(updated[toLaneId] || []), { ...goalToMove!, lane: getLaneName(toLaneId), lane_name: getLaneName(toLaneId) }]
         return updated
       })
 
       // Persist to backend
       if (onMoveGoal) {
-        await onMoveGoal(goalId, toLane, newIndex)
+        await onMoveGoal(goalId, getLaneName(toLaneId))
       }
     },
     [laneGoals, onMoveGoal]
@@ -405,7 +432,18 @@ export function GoalsDashboard({
                 : 0
 
             return (
-              <div key={lane.id} style={laneColumnStyle}>
+              <div
+                key={lane.id}
+                style={laneColumnStyle}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault()
+                  const goalId = e.dataTransfer.getData('goalId')
+                  if (goalId) {
+                    handleMoveBetweenLanes(goalId, lane.id)
+                  }
+                }}
+              >
                 <div style={laneHeaderStyle(lane.color)}>
                   <span style={laneIconStyle}>{lane.icon}</span>
                   <div>
@@ -424,44 +462,37 @@ export function GoalsDashboard({
                     }}
                   />
                 </div>
-                <Reorder.Group
-                  axis="y"
-                  values={laneGoalsList}
-                  onReorder={(newOrder) => handleReorder(lane.id, newOrder)}
-                  style={laneGoalsStyle}
-                >
-                  <AnimatePresence>
-                    {laneGoalsList.map((goal) => (
-                      <Reorder.Item
-                        key={goal.id}
-                        value={goal}
-                        layoutId={goal.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        whileDrag={{ scale: 1.02, zIndex: 100 }}
-                        style={{
-                          listStyle: 'none',
-                          marginBottom: '12px',
-                        }}
-                      >
-                        <GoalCard
-                          goal={goal}
-                          onUpdate={handleUpdateGoal}
-                          onAddMetric={(id) => onAddMetric(id, {})}
-                          onViewHistory={onViewHistory}
-                        />
-                      </Reorder.Item>
-                    ))}
-                  </AnimatePresence>
-                </Reorder.Group>
-                {laneGoalsList.length === 0 && (
-                  <div style={emptyLaneStyle}>
-                    No goals in {lane.name}
-                    <br />
-                    <small>Drag goals here or add new ones</small>
-                  </div>
-                )}
+                <div style={laneGoalsStyle}>
+                  {laneGoalsList.map((goal) => (
+                    <div
+                      key={goal.id}
+                      draggable
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData('goalId', goal.id)
+                        e.dataTransfer.setData('fromLane', getLaneKey(goal))
+                      }}
+                      onDragEnd={(e) => {
+                        // Clear drag data
+                        e.dataTransfer.clearData()
+                      }}
+                      style={{ marginBottom: '12px', cursor: 'grab' }}
+                    >
+                      <GoalCard
+                        goal={goal}
+                        onUpdate={handleUpdateGoal}
+                        onAddMetric={(id) => onAddMetric(id, {})}
+                        onViewHistory={onViewHistory}
+                      />
+                    </div>
+                  ))}
+                  {laneGoalsList.length === 0 && (
+                    <div style={emptyLaneStyle}>
+                      Drop goals here
+                      <br />
+                      <small>Drag from other lanes</small>
+                    </div>
+                  )}
+                </div>
               </div>
             )
           })}

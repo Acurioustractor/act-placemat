@@ -1,0 +1,40 @@
+{
+	"mcpServers": {
+		"task-master-ai": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"--package=task-master-ai",
+				"task-master-ai"
+			],
+			"env": {
+				"ANTHROPIC_API_KEY": "ANTHROPIC_KEY_PLACEHOLDER",
+				"PERPLEXITY_API_KEY": "pplx-c4f3d2e1a0b9876543210fedcba09876",
+				"OPENAI_API_KEY": "OPENAI_KEY_PLACEHOLDER",
+				"GOOGLE_API_KEY": "AIzaSyBkT-U-LEvcgMulxX5LS0FPfkOoz54HxXg",
+				"OPENROUTER_API_KEY": "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"
+			}
+		},
+		"gmail-workspace": {
+			"type": "stdio",
+			"command": "node",
+			"args": [
+				"/Users/benknight/Code/ACT Placemat/mcp-servers/gmail-workspace/index.js"
+			],
+			"env": {
+				"GOOGLE_SERVICE_ACCOUNT_PATH": "/Users/benknight/Code/ACT Placemat/apps/backend/subscription-tracker/config/service-account.json",
+				"ANTHROPIC_API_KEY": "ANTHROPIC_KEY_PLACEHOLDER",
+				"ACT_WORKSPACE_ACCOUNTS": "nicholas@act.place,hi@act.place,accounts@act.place,benjamin@act.place"
+			}
+		},
+		"postgres": {
+			"type": "stdio",
+			"command": "npx",
+			"args": ["-y", "@modelcontextprotocol/server-postgres"],
+			"env": {
+				"POSTGRES_CONNECTION_STRING": "postgresql://postgres.tednluwflfhxyucgwigh:Drillsquare99@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres"
+			}
+		}
+	}
+}
