@@ -24,7 +24,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
 
   // Hooks must be at top level (not inside switch)
-  const { goals, loading: goalsLoading, error: goalsError } = useGoals()
+  const { goals, loading: goalsLoading, error: goalsError, refetch: refetchGoals } = useGoals()
   const { updateGoal, updating } = useGoalUpdate()
   const { moveGoal } = useGoalMove()
   const { reorderLane } = useGoalReorder()
@@ -87,6 +87,7 @@ function App() {
       case 'goals':
         return (
           <GoalsDashboard
+            key={goalsRefreshKey}  // Force re-render on refresh
             goals={goals}
             loading={goalsLoading}
             error={goalsError}
@@ -95,8 +96,14 @@ function App() {
             onAddGoal={async () => {}}
             onAddMetric={async () => {}}
             onViewHistory={() => {}}
-            onMoveGoal={moveGoal}
-            onReorderLane={reorderLane}
+            onMoveGoal={async (goalId, lane) => {
+              await moveGoal(goalId, lane)
+              refetchGoals()  // Refresh after move
+            }}
+            onReorderLane={async (lane, goalIds) => {
+              await reorderLane(lane, goalIds)
+              refetchGoals()  // Refresh after reorder
+            }}
           />
         )
       case 'goods':
