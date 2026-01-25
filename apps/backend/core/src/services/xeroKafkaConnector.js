@@ -23,7 +23,8 @@ class XeroKafkaConnector {
       this.kafka = null;
       this.producer = null;
     }
-    this.redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+    // Lazy Redis initialization
+    this._redis = null;
     
     // Initialize Xero API client
     this.xero = new XeroClient({
@@ -58,6 +59,16 @@ class XeroKafkaConnector {
     ]);
     
     console.log('💰 Xero-Kafka Connector initialized');
+  }
+
+  get redis() {
+    if (!this._redis && process.env.REDIS_URL) {
+      this._redis = new Redis(process.env.REDIS_URL);
+      this._redis.on('error', (err) => {
+        console.warn('[XeroKafkaConnector] Redis error (non-fatal):', err.message);
+      });
+    }
+    return this._redis;
   }
 
   async connect(accessToken, tenantId) {
@@ -107,14 +118,16 @@ class XeroKafkaConnector {
       console.log(`🏢 Connected to Xero organisation: ${org.name}`);
       
       // Cache organisation info
-      await this.redis.setex('xero:organisation', 3600, JSON.stringify({
-        id: org.organisationID,
-        name: org.name,
-        country: org.countryCode,
-        timezone: org.timezone,
-        baseCurrency: org.baseCurrency,
-        financialYearEndMonth: org.financialYearEndMonth
-      }));
+      if (this.redis) {
+        await this.redis.setex('xero:organisation', 3600, JSON.stringify({
+          id: org.organisationID,
+          name: org.name,
+          country: org.countryCode,
+          timezone: org.timezone,
+          baseCurrency: org.baseCurrency,
+          financialYearEndMonth: org.financialYearEndMonth
+        }));
+      }
       
     } catch (error) {
       console.error('Failed to verify Xero connection:', error);
@@ -644,13 +657,15 @@ class XeroKafkaConnector {
   }
 
   async cacheFinancialData(type, id, data) {
+    if (!this.redis) return;
     const cacheKey = `xero:${type}:${id}`;
     await this.redis.setex(cacheKey, 3600, JSON.stringify(data)); // 1 hour
   }
 
   async loadLastSyncTimestamps() {
+    if (!this.redis) return;
     const keys = await this.redis.keys('xero:last_sync:*');
-    
+
     for (const key of keys) {
       const syncType = key.split(':').pop();
       const timestamp = await this.redis.get(key);
@@ -664,7 +679,9 @@ class XeroKafkaConnector {
 
   async updateLastSyncTimestamp(syncType, timestamp) {
     this.lastSyncTimestamps.set(syncType, timestamp);
-    await this.redis.set(`xero:last_sync:${syncType}`, timestamp.toString());
+    if (this.redis) {
+      await this.redis.set(`xero:last_sync:${syncType}`, timestamp.toString());
+    }
   }
 
   async disconnect() {
@@ -679,7 +696,9 @@ class XeroKafkaConnector {
       if (this.producer) {
         await this.producer.disconnect();
       }
-      await this.redis.quit();
+      if (this._redis) {
+        await this._redis.quit();
+      }
       console.log('✅ Xero Connector disconnected');
     } catch (error) {
       console.error('🚨 Error disconnecting Xero-Kafka Connector:', error);

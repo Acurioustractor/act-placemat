@@ -34,9 +34,15 @@ const LANE_COLORS: Record<string, string> = {
   'Curiosity': '#8b5cf6',
   'Action': '#f59e0b',
   'Art': '#ec4899',
+  'art': '#ec4899',
   'A — Core Ops': '#3b82f6',
+  'A': '#3b82f6',
   'B — Platforms': '#8b5cf6',
+  'B': '#8b5cf6',
   'C — Place/Seasonal': '#f59e0b',
+  'C': '#f59e0b',
+  'D — Art': '#ec4899',
+  'D': '#ec4899',
 }
 
 const MONTH_NAMES = [

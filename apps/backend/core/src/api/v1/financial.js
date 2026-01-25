@@ -35,7 +35,34 @@ import {
 } from '../../services/financialRecommendationService.js';
 
 const router = express.Router();
-const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+
+// Lazy Redis initialization - only connect if REDIS_URL is configured
+let redis = null;
+function getRedis() {
+  if (!redis && process.env.REDIS_URL) {
+    redis = new Redis(process.env.REDIS_URL);
+    redis.on('error', (err) => {
+      console.warn('[financial] Redis connection error (non-fatal):', err.message);
+    });
+  }
+  return redis;
+}
+
+// In-memory fallback when Redis is not available
+const memoryStore = new Map();
+
+async function cacheGet(key) {
+  const r = getRedis();
+  if (r) return r.get(key);
+  return memoryStore.get(key) || null;
+}
+
+async function cacheSet(key, value) {
+  const r = getRedis();
+  if (r) return r.set(key, value);
+  memoryStore.set(key, value);
+}
+
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -81,7 +108,7 @@ async function refreshXeroTokenIfNeeded(xero, tokenSet) {
       expires_at: Math.floor(Date.now() / 1000) + (json.expires_in || 1800),
     };
     await xero.setTokenSet(refreshed);
-    await redis.set('xero:tokenSet', JSON.stringify(refreshed));
+    await cacheSet('xero:tokenSet', JSON.stringify(refreshed));
     return refreshed;
   } catch (e) {
     console.error('Xero token refresh failed:', e?.message || e);
@@ -91,8 +118,8 @@ async function refreshXeroTokenIfNeeded(xero, tokenSet) {
 
 async function getXeroSession() {
   const [tokenSetJson, tenantId] = await Promise.all([
-    redis.get('xero:tokenSet'),
-    redis.get('xero:tenantId'),
+    cacheGet('xero:tokenSet'),
+    cacheGet('xero:tenantId'),
   ]);
   if (!tokenSetJson || !tenantId) return null;
   const tokenSet = JSON.parse(tokenSetJson);
@@ -152,7 +179,7 @@ async function runTransactionSync(options = {}) {
 
     const transactions = response?.body?.bankTransactions || [];
     if (transactions.length === 0) {
-      await redis.set('xero:last_sync', new Date().toISOString());
+      await cacheSet('xero:last_sync', new Date().toISOString());
       return {
         success: true,
         processed: 0,
@@ -224,7 +251,7 @@ async function runTransactionSync(options = {}) {
       }
     }
 
-    await redis.set('xero:last_sync', new Date().toISOString());
+    await cacheSet('xero:last_sync', new Date().toISOString());
 
     return {
       success: true,
@@ -253,7 +280,7 @@ function formatCurrency(value) {
 }
 
 async function buildFinancialDigest(windowDays = 30) {
-  const lastSync = await redis.get('xero:last_sync');
+  const lastSync = await cacheGet('xero:last_sync');
   const session = await getXeroSession();
 
   let organisationName = 'Not connected';
@@ -402,7 +429,7 @@ router.get(
           shortCode: org?.shortCode,
           baseCurrency: org?.baseCurrency,
           financialYearEndMonth: org?.financialYearEndMonth,
-          lastSyncTime: await redis.get('xero:last_sync'),
+          lastSyncTime: await cacheGet('xero:last_sync'),
         };
       } catch (error) {
         xeroStatus = 'error';
@@ -459,7 +486,7 @@ router.get(
           shortCode: org?.shortCode,
           baseCurrency: org?.baseCurrency,
           financialYearEndMonth: org?.financialYearEndMonth,
-          lastSyncTime: await redis.get('xero:last_sync'),
+          lastSyncTime: await cacheGet('xero:last_sync'),
         };
       } catch (error) {
         xeroStatus = 'error';

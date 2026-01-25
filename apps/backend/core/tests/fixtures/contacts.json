@@ -1,0 +1,84 @@
+{
+  "contacts": [
+    {
+      "id": "contact-001",
+      "full_name": "Alice Johnson",
+      "email_address": "alice.johnson@techcorp.com",
+      "current_company": "TechCorp Inc",
+      "current_position": "CTO",
+      "linkedin_url": "https://linkedin.com/in/alicejohnson",
+      "tags": ["funder", "strategic"],
+      "strategic_value": "high",
+      "data_source": "linkedin",
+      "location": "San Francisco, CA"
+    },
+    {
+      "id": "contact-002",
+      "full_name": "Bob Smith",
+      "email_address": "bob.smith@startup.io",
+      "current_company": "Startup.io",
+      "current_position": "Founder",
+      "linkedin_url": "https://linkedin.com/in/bobsmith",
+      "tags": ["partner", "tech"],
+      "strategic_value": "medium",
+      "data_source": "linkedin",
+      "location": "New York, NY"
+    },
+    {
+      "id": "contact-003",
+      "full_name": "Carol Williams",
+      "email_address": "carol.williams@community.org",
+      "current_company": "Community Org",
+      "current_position": "Director",
+      "linkedin_url": "https://linkedin.com/in/carolwilliams",
+      "tags": ["community", "non-profit"],
+      "strategic_value": "medium",
+      "data_source": "linkedin",
+      "location": "Austin, TX"
+    }
+  ],
+  "person_identity_map": [
+    {
+      "person_id": "person-001",
+      "full_name": "Alice Johnson",
+      "email": "alice.johnson@techcorp.com",
+      "current_company": "TechCorp Inc",
+      "current_position": "CTO",
+      "data_source": "linkedin",
+      "engagement_priority": "high",
+      "exa_enriched": true
+    },
+    {
+      "person_id": "person-002",
+      "full_name": "Bob Smith",
+      "email": "bob.smith@startup.io",
+      "current_company": "Startup.io",
+      "current_position": "Founder",
+      "data_source": "gmail",
+      "engagement_priority": "medium",
+      "exa_enriched": false
+    }
+  ],
+  "project_contact_matches": [
+    {
+      "id": "match-001",
+      "person_id": "person-001",
+      "project_notion_id": "project-climate",
+      "project_name": "Climate Tech Initiative",
+      "alignment_score": 85,
+      "matched_keywords": ["climate", "tech", "innovation"],
+      "match_reason": "Keyword match on company and interests",
+      "engagement_status": "active"
+    },
+    {
+      "id": "match-002",
+      "person_id": "person-002",
+      "project_notion_id": "project-platform",
+      "project_name": "Platform Development",
+      "alignment_score": 72,
+      "matched_keywords": ["platform", "startup"],
+      "match_reason": "Industry alignment",
+      "engagement_status": "potential"
+    }
+  ]
+}

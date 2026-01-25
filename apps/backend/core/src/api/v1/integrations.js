@@ -24,6 +24,7 @@ import {
   apiKeyOrAuth,
 } from '../../middleware/auth.js';
 import { asyncHandler } from '../../middleware/errorHandler.js';
+import workspaceGmailService from '../../services/workspaceGmailService.js';
 
 const router = express.Router();
 const supabase = createClient(
@@ -72,6 +73,11 @@ router.get(
         available: Boolean(process.env.LINKEDIN_CLIENT_ID),
         status: process.env.LINKEDIN_CLIENT_ID ? 'configured' : 'not_configured',
         endpoints: ['cross-platform-gmail', 'cross-platform-notion'],
+      },
+      gohighlevel: {
+        available: Boolean(process.env.GHL_API_KEY),
+        status: process.env.GHL_API_KEY ? 'configured' : 'not_configured',
+        endpoints: ['contacts', 'opportunities', 'pipelines', 'conversations'],
       },
     };
 
@@ -129,6 +135,14 @@ router.get(
         auth_type: 'oauth2',
         rate_limits: { requests_per_minute: 60, daily_limit: 5000 },
         health_check_url: 'https://api.xero.com/api.xro/2.0/Organisation',
+      },
+      gohighlevel: {
+        name: 'GoHighLevel CRM',
+        type: 'crm',
+        capabilities: ['contacts', 'opportunities', 'pipelines', 'conversations', 'campaigns'],
+        auth_type: 'api_key',
+        rate_limits: { requests_per_second: 10, daily_limit: 100000 },
+        health_check_url: 'https://rest.gohighlevel.com/v1/contacts',
       },
     };
 
@@ -445,6 +459,281 @@ router.post(
 );
 
 // =============================================================================
+// WORKSPACE GMAIL ENDPOINTS (Multi-Account)
+// =============================================================================
+
+/**
+ * @swagger
+ * /api/v1/integrations/gmail/workspace/status:
+ *   get:
+ *     summary: Get status of all workspace Gmail accounts
+ *     tags: [Integrations Gmail]
+ */
+router.get(
+  '/gmail/workspace/status',
+  asyncHandler(async (req, res) => {
+    const workspaceAccounts = (process.env.GOOGLE_WORKSPACE_ACCOUNTS || '').split(',').filter(Boolean);
+    let hasServiceAccount = !!process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+    const hasOAuth = !!(process.env.GOOGLE_ACCESS_TOKEN && process.env.GOOGLE_REFRESH_TOKEN);
+
+    // Also check for file-based service account
+    if (!hasServiceAccount) {
+      const fs = await import('fs');
+      const path = await import('path');
+      const keyPath = path.join(process.cwd(), 'apps/backend/subscription-tracker/config/service-account.json');
+      hasServiceAccount = fs.existsSync(keyPath);
+    }
+
+    // Try to get current OAuth profile
+    let oauthAccount = null;
+    if (hasOAuth) {
+      try {
+        const { google } = await import('googleapis');
+        const oauth2Client = new google.auth.OAuth2(
+          process.env.GOOGLE_CLIENT_ID || process.env.GOOGLE_CALENDAR_CLIENT_ID,
+          process.env.GOOGLE_CLIENT_SECRET || process.env.GOOGLE_CALENDAR_CLIENT_SECRET
+        );
+        oauth2Client.setCredentials({
+          access_token: process.env.GOOGLE_ACCESS_TOKEN,
+          refresh_token: process.env.GOOGLE_REFRESH_TOKEN
+        });
+        const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
+        const profile = await gmail.users.getProfile({ userId: 'me' });
+        oauthAccount = {
+          email: profile.data.emailAddress,
+          messagesTotal: profile.data.messagesTotal,
+          status: 'connected'
+        };
+      } catch (error) {
+        oauthAccount = { error: error.message, status: 'error' };
+      }
+    }
+
+    // Build account status
+    const accountStatus = workspaceAccounts.map(email => {
+      if (oauthAccount?.email === email) {
+        return { email, status: 'connected', method: 'oauth', ...oauthAccount };
+      }
+      if (hasServiceAccount) {
+        return { email, status: 'available', method: 'service_account' };
+      }
+      return { email, status: 'requires_auth', method: 'oauth_needed' };
+    });
+
+    res.json({
+      success: true,
+      data: {
+        configured: {
+          workspaceAccounts: workspaceAccounts.length,
+          hasServiceAccount,
+          hasOAuth
+        },
+        accounts: accountStatus,
+        connectedAccounts: accountStatus.filter(a => a.status === 'connected').map(a => a.email),
+        setup: hasServiceAccount ? null : {
+          recommendation: 'Set up Google Service Account with Domain-Wide Delegation for multi-account access',
+          steps: [
+            '1. Go to Google Cloud Console → IAM & Admin → Service Accounts',
+            '2. Create a service account for act.place domain',
+            '3. Enable Domain-Wide Delegation in Google Workspace Admin',
+            '4. Add GOOGLE_SERVICE_ACCOUNT_KEY to .env (JSON string)',
+            'Alternative: Authenticate each account individually via /api/google/auth'
+          ]
+        }
+      }
+    });
+  })
+);
+
+/**
+ * @swagger
+ * /api/v1/integrations/gmail/workspace/initialize:
+ *   post:
+ *     summary: Initialize workspace Gmail connections
+ *     tags: [Integrations Gmail]
+ */
+router.post(
+  '/gmail/workspace/initialize',
+  asyncHandler(async (req, res) => {
+    const result = await workspaceGmailService.initialize();
+
+    res.json({
+      success: result.success,
+      data: {
+        accounts: result.accounts,
+        connected: workspaceGmailService.getConnectedAccounts()
+      }
+    });
+  })
+);
+
+/**
+ * @swagger
+ * /api/v1/integrations/gmail/workspace/search:
+ *   get:
+ *     summary: Search emails across all workspace accounts
+ *     tags: [Integrations Gmail]
+ */
+router.get(
+  '/gmail/workspace/search',
+  asyncHandler(async (req, res) => {
+    const { q, query, maxResults = 20, timeframe = '30d' } = req.query;
+    const searchQuery = q || query;
+
+    if (!searchQuery) {
+      return res.status(400).json({
+        success: false,
+        error: 'Query parameter (q or query) is required'
+      });
+    }
+
+    // Ensure initialized
+    if (workspaceGmailService.getConnectedAccounts().length === 0) {
+      await workspaceGmailService.initialize();
+    }
+
+    const results = await workspaceGmailService.searchAllAccounts(searchQuery, {
+      maxResults: parseInt(maxResults),
+      timeframe
+    });
+
+    res.json({
+      success: true,
+      data: {
+        query: searchQuery,
+        totalResults: results.length,
+        accounts: workspaceGmailService.getConnectedAccounts(),
+        emails: results
+      }
+    });
+  })
+);
+
+/**
+ * @swagger
+ * /api/v1/integrations/gmail/workspace/stats:
+ *   get:
+ *     summary: Get email statistics across all workspace accounts
+ *     tags: [Integrations Gmail]
+ */
+router.get(
+  '/gmail/workspace/stats',
+  asyncHandler(async (req, res) => {
+    const { days = 7 } = req.query;
+
+    // Ensure initialized
+    if (workspaceGmailService.getConnectedAccounts().length === 0) {
+      await workspaceGmailService.initialize();
+    }
+
+    const stats = await workspaceGmailService.getOrganizationStats(parseInt(days));
+
+    res.json({
+      success: true,
+      data: stats
+    });
+  })
+);
+
+/**
+ * @swagger
+ * /api/v1/integrations/gmail/workspace/morning-brief:
+ *   get:
+ *     summary: Get recent important emails for morning brief
+ *     tags: [Integrations Gmail]
+ */
+router.get(
+  '/gmail/workspace/morning-brief',
+  asyncHandler(async (req, res) => {
+    const { hours = 24, maxPerAccount = 10 } = req.query;
+
+    // Ensure initialized
+    if (workspaceGmailService.getConnectedAccounts().length === 0) {
+      await workspaceGmailService.initialize();
+    }
+
+    const emails = await workspaceGmailService.getMorningBriefEmails({
+      hours: parseInt(hours),
+      maxPerAccount: parseInt(maxPerAccount)
+    });
+
+    // Helper to check automated emails
+    const isAutomated = (from) => {
+      if (!from) return true;
+      const automated = [
+        'noreply', 'no-reply', 'donotreply', 'notification', 'newsletter',
+        'updates@', 'marketing@', 'info@', 'support@'
+      ];
+      const lowerFrom = from.toLowerCase();
+      return automated.some(pattern => lowerFrom.includes(pattern));
+    };
+
+    // Categorize emails
+    const categorized = {
+      urgent: emails.filter(e => e.isUnread && e.subject?.toLowerCase().includes('urgent')),
+      unread: emails.filter(e => e.isUnread),
+      fromPeople: emails.filter(e => !isAutomated(e.from)),
+      all: emails
+    };
+
+    res.json({
+      success: true,
+      data: {
+        summary: {
+          totalEmails: emails.length,
+          unreadCount: categorized.unread.length,
+          urgentCount: categorized.urgent.length,
+          accounts: workspaceGmailService.getConnectedAccounts()
+        },
+        emails: categorized.fromPeople.slice(0, 15), // Top 15 non-automated emails
+        urgent: categorized.urgent
+      }
+    });
+  })
+);
+
+/**
+ * @swagger
+ * /api/v1/integrations/gmail/workspace/contact:
+ *   get:
+ *     summary: Get all emails with a specific contact across accounts
+ *     tags: [Integrations Gmail]
+ */
+router.get(
+  '/gmail/workspace/contact',
+  asyncHandler(async (req, res) => {
+    const { email, maxResults = 20, days = 90 } = req.query;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        error: 'Contact email parameter is required'
+      });
+    }
+
+    // Ensure initialized
+    if (workspaceGmailService.getConnectedAccounts().length === 0) {
+      await workspaceGmailService.initialize();
+    }
+
+    const emails = await workspaceGmailService.getContactEmails(email, {
+      maxResults: parseInt(maxResults),
+      timeframeDays: parseInt(days)
+    });
+
+    res.json({
+      success: true,
+      data: {
+        contact: email,
+        totalEmails: emails.length,
+        accounts: workspaceGmailService.getConnectedAccounts(),
+        communications: emails
+      }
+    });
+  })
+);
+
+// =============================================================================
 // CROSS-PLATFORM INTEGRATION ENDPOINTS
 // =============================================================================
 
@@ -623,6 +912,286 @@ router.get(
 );
 
 // =============================================================================
+// GOHIGHLEVEL CRM INTEGRATION
+// =============================================================================
+
+/**
+ * @swagger
+ * /api/v1/integrations/gohighlevel/contacts:
+ *   get:
+ *     summary: Get contacts from GoHighLevel CRM
+ *     tags: [Integrations GoHighLevel]
+ *     security: [{ bearerAuth: [] }]
+ */
+router.get(
+  '/gohighlevel/contacts',
+  apiKeyOrAuth,
+  asyncHandler(async (req, res) => {
+    const { limit = 20, query, startAfter } = req.query;
+
+    if (!process.env.GHL_API_KEY) {
+      return res.status(503).json({
+        success: false,
+        error: 'GoHighLevel integration not configured',
+        message: 'Set GHL_API_KEY environment variable to enable this feature',
+      });
+    }
+
+    try {
+      // Use GHL API v2 with location ID
+      const locationId = process.env.GHL_LOCATION_ID || 'agzsSZWgovjwgpcoASWG';
+      const ghlResponse = await fetch(
+        `https://services.leadconnectorhq.com/contacts/?locationId=${locationId}&limit=${limit}${query ? `&query=${encodeURIComponent(query)}` : ''}${startAfter ? `&startAfter=${startAfter}` : ''}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.GHL_API_KEY}`,
+            'Content-Type': 'application/json',
+            'Version': '2021-07-28',
+          },
+        }
+      );
+
+      if (!ghlResponse.ok) {
+        throw new Error(`GHL API error: ${ghlResponse.statusText}`);
+      }
+
+      const data = await ghlResponse.json();
+
+      res.json({
+        success: true,
+        contacts: data.contacts || [],
+        meta: data.meta,
+        total: data.contacts?.length || 0,
+        source: 'gohighlevel',
+      });
+    } catch (error) {
+      console.error('GoHighLevel contacts error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch GoHighLevel contacts',
+        details: error.message,
+      });
+    }
+  })
+);
+
+/**
+ * @swagger
+ * /api/v1/integrations/gohighlevel/opportunities:
+ *   get:
+ *     summary: Get opportunities/deals from GoHighLevel CRM
+ *     tags: [Integrations GoHighLevel]
+ *     security: [{ bearerAuth: [] }]
+ */
+router.get(
+  '/gohighlevel/opportunities',
+  apiKeyOrAuth,
+  asyncHandler(async (req, res) => {
+    const { pipelineId, limit = 20 } = req.query;
+
+    if (!process.env.GHL_API_KEY) {
+      return res.status(503).json({
+        success: false,
+        error: 'GoHighLevel integration not configured',
+      });
+    }
+
+    try {
+      const ghlResponse = await fetch(
+        `https://rest.gohighlevel.com/v1/pipelines/opportunities${pipelineId ? `?pipelineId=${pipelineId}` : ''}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.GHL_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!ghlResponse.ok) {
+        throw new Error(`GHL API error: ${ghlResponse.statusText}`);
+      }
+
+      const data = await ghlResponse.json();
+
+      res.json({
+        success: true,
+        opportunities: data.opportunities || [],
+        total: data.opportunities?.length || 0,
+        source: 'gohighlevel',
+      });
+    } catch (error) {
+      console.error('GoHighLevel opportunities error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch GoHighLevel opportunities',
+        details: error.message,
+      });
+    }
+  })
+);
+
+/**
+ * @swagger
+ * /api/v1/integrations/gohighlevel/pipelines:
+ *   get:
+ *     summary: Get pipelines from GoHighLevel CRM
+ *     tags: [Integrations GoHighLevel]
+ *     security: [{ bearerAuth: [] }]
+ */
+router.get(
+  '/gohighlevel/pipelines',
+  apiKeyOrAuth,
+  asyncHandler(async (req, res) => {
+    if (!process.env.GHL_API_KEY) {
+      return res.status(503).json({
+        success: false,
+        error: 'GoHighLevel integration not configured',
+      });
+    }
+
+    try {
+      const ghlResponse = await fetch('https://rest.gohighlevel.com/v1/pipelines/', {
+        headers: {
+          Authorization: `Bearer ${process.env.GHL_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!ghlResponse.ok) {
+        throw new Error(`GHL API error: ${ghlResponse.statusText}`);
+      }
+
+      const data = await ghlResponse.json();
+
+      res.json({
+        success: true,
+        pipelines: data.pipelines || [],
+        total: data.pipelines?.length || 0,
+        source: 'gohighlevel',
+      });
+    } catch (error) {
+      console.error('GoHighLevel pipelines error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch GoHighLevel pipelines',
+        details: error.message,
+      });
+    }
+  })
+);
+
+/**
+ * @swagger
+ * /api/v1/integrations/gohighlevel/conversations:
+ *   get:
+ *     summary: Get recent conversations from GoHighLevel
+ *     tags: [Integrations GoHighLevel]
+ *     security: [{ bearerAuth: [] }]
+ */
+router.get(
+  '/gohighlevel/conversations',
+  apiKeyOrAuth,
+  asyncHandler(async (req, res) => {
+    const { contactId, limit = 20 } = req.query;
+
+    if (!process.env.GHL_API_KEY) {
+      return res.status(503).json({
+        success: false,
+        error: 'GoHighLevel integration not configured',
+      });
+    }
+
+    try {
+      const ghlResponse = await fetch(
+        `https://rest.gohighlevel.com/v1/conversations/?limit=${limit}${contactId ? `&contactId=${contactId}` : ''}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.GHL_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!ghlResponse.ok) {
+        throw new Error(`GHL API error: ${ghlResponse.statusText}`);
+      }
+
+      const data = await ghlResponse.json();
+
+      res.json({
+        success: true,
+        conversations: data.conversations || [],
+        total: data.conversations?.length || 0,
+        source: 'gohighlevel',
+      });
+    } catch (error) {
+      console.error('GoHighLevel conversations error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch GoHighLevel conversations',
+        details: error.message,
+      });
+    }
+  })
+);
+
+/**
+ * @swagger
+ * /api/v1/integrations/gohighlevel/status:
+ *   get:
+ *     summary: Check GoHighLevel connection status
+ *     tags: [Integrations GoHighLevel]
+ */
+router.get(
+  '/gohighlevel/status',
+  asyncHandler(async (req, res) => {
+    const configured = Boolean(process.env.GHL_API_KEY);
+
+    if (!configured) {
+      return res.json({
+        success: true,
+        connected: false,
+        status: 'not_configured',
+        message: 'GoHighLevel API key not configured',
+      });
+    }
+
+    try {
+      // Test API connection
+      const ghlResponse = await fetch('https://rest.gohighlevel.com/v1/contacts/?limit=1', {
+        headers: {
+          Authorization: `Bearer ${process.env.GHL_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (ghlResponse.ok) {
+        res.json({
+          success: true,
+          connected: true,
+          status: 'connected',
+          message: 'GoHighLevel API connected successfully',
+        });
+      } else {
+        res.json({
+          success: true,
+          connected: false,
+          status: 'auth_error',
+          message: 'GoHighLevel API key invalid or expired',
+        });
+      }
+    } catch (error) {
+      res.json({
+        success: true,
+        connected: false,
+        status: 'error',
+        message: error.message,
+      });
+    }
+  })
+);
+
+// =============================================================================
 // HEALTH & TESTING ENDPOINTS
 // =============================================================================
 
@@ -643,6 +1212,7 @@ router.get(
       notion: process.env.NOTION_API_KEY ? 'healthy' : 'not_configured',
       gmail: process.env.GMAIL_CLIENT_ID ? 'healthy' : 'not_configured',
       xero: process.env.XERO_CLIENT_ID ? 'healthy' : 'not_configured',
+      gohighlevel: process.env.GHL_API_KEY ? 'healthy' : 'not_configured',
       database: 'healthy', // Would check Supabase connectivity
       overall: 'operational',
     };
@@ -659,6 +1229,212 @@ router.get(
       healthy_services: healthyServices,
       total_services: Object.keys(healthChecks).length - 1, // Exclude 'overall'
       timestamp: new Date().toISOString(),
+    });
+  })
+);
+
+// =============================================================================
+// GOHIGHLEVEL CRM INTEGRATION
+// =============================================================================
+
+const GHL_BASE_URL = 'https://services.leadconnectorhq.com';
+const GHL_API_KEY = process.env.GHL_API_KEY;
+const GHL_LOCATION_ID = process.env.GHL_LOCATION_ID;
+
+/**
+ * @swagger
+ * /api/v1/integrations/ghl/contacts:
+ *   get:
+ *     summary: Get contacts from GoHighLevel CRM
+ *     tags: [Integrations GHL]
+ */
+router.get(
+  '/ghl/contacts',
+  asyncHandler(async (req, res) => {
+    if (!GHL_API_KEY || !GHL_LOCATION_ID) {
+      return res.status(503).json({
+        success: false,
+        error: 'GoHighLevel not configured',
+        setup: 'Set GHL_API_KEY and GHL_LOCATION_ID in environment'
+      });
+    }
+
+    const { limit = 100, startAfterId, query } = req.query;
+
+    const params = new URLSearchParams({
+      locationId: GHL_LOCATION_ID,
+      limit: String(limit),
+    });
+    if (startAfterId) params.append('startAfterId', startAfterId);
+    if (query) params.append('query', query);
+
+    const response = await fetch(`${GHL_BASE_URL}/contacts/?${params}`, {
+      headers: {
+        'Authorization': `Bearer ${GHL_API_KEY}`,
+        'Version': '2021-07-28',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return res.status(response.status).json({
+        success: false,
+        error: `GHL API error: ${response.status}`,
+        details: errorText
+      });
+    }
+
+    const data = await response.json();
+
+    res.json({
+      success: true,
+      data: {
+        contacts: data.contacts || [],
+        count: data.contacts?.length || 0,
+        meta: data.meta || {},
+        hasMore: !!data.meta?.nextPageUrl
+      }
+    });
+  })
+);
+
+/**
+ * @swagger
+ * /api/v1/integrations/ghl/contacts/:id:
+ *   get:
+ *     summary: Get a specific contact from GoHighLevel
+ *     tags: [Integrations GHL]
+ */
+router.get(
+  '/ghl/contacts/:id',
+  asyncHandler(async (req, res) => {
+    if (!GHL_API_KEY) {
+      return res.status(503).json({
+        success: false,
+        error: 'GoHighLevel not configured'
+      });
+    }
+
+    const { id } = req.params;
+
+    const response = await fetch(`${GHL_BASE_URL}/contacts/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${GHL_API_KEY}`,
+        'Version': '2021-07-28',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      return res.status(response.status).json({
+        success: false,
+        error: `Contact not found or API error: ${response.status}`
+      });
+    }
+
+    const data = await response.json();
+
+    res.json({
+      success: true,
+      data: data.contact
+    });
+  })
+);
+
+/**
+ * @swagger
+ * /api/v1/integrations/ghl/pipelines:
+ *   get:
+ *     summary: Get pipelines from GoHighLevel
+ *     tags: [Integrations GHL]
+ */
+router.get(
+  '/ghl/pipelines',
+  asyncHandler(async (req, res) => {
+    if (!GHL_API_KEY || !GHL_LOCATION_ID) {
+      return res.status(503).json({
+        success: false,
+        error: 'GoHighLevel not configured'
+      });
+    }
+
+    const response = await fetch(`${GHL_BASE_URL}/opportunities/pipelines?locationId=${GHL_LOCATION_ID}`, {
+      headers: {
+        'Authorization': `Bearer ${GHL_API_KEY}`,
+        'Version': '2021-07-28',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      return res.status(response.status).json({
+        success: false,
+        error: `GHL API error: ${response.status}`
+      });
+    }
+
+    const data = await response.json();
+
+    res.json({
+      success: true,
+      data: {
+        pipelines: data.pipelines || [],
+        count: data.pipelines?.length || 0
+      }
+    });
+  })
+);
+
+/**
+ * @swagger
+ * /api/v1/integrations/ghl/opportunities:
+ *   get:
+ *     summary: Get opportunities from GoHighLevel
+ *     tags: [Integrations GHL]
+ */
+router.get(
+  '/ghl/opportunities',
+  asyncHandler(async (req, res) => {
+    if (!GHL_API_KEY || !GHL_LOCATION_ID) {
+      return res.status(503).json({
+        success: false,
+        error: 'GoHighLevel not configured'
+      });
+    }
+
+    const { pipelineId, limit = 100 } = req.query;
+
+    const params = new URLSearchParams({
+      location_id: GHL_LOCATION_ID,
+      limit: String(limit)
+    });
+    if (pipelineId) params.append('pipeline_id', pipelineId);
+
+    const response = await fetch(`${GHL_BASE_URL}/opportunities/search?${params}`, {
+      headers: {
+        'Authorization': `Bearer ${GHL_API_KEY}`,
+        'Version': '2021-07-28',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      return res.status(response.status).json({
+        success: false,
+        error: `GHL API error: ${response.status}`
+      });
+    }
+
+    const data = await response.json();
+
+    res.json({
+      success: true,
+      data: {
+        opportunities: data.opportunities || [],
+        count: data.opportunities?.length || 0,
+        meta: data.meta || {}
+      }
     });
   })
 );

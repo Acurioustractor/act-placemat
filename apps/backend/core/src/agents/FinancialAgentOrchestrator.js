@@ -24,7 +24,8 @@ class FinancialAgentOrchestrator extends EventEmitter {
   constructor() {
     super();
 
-    this.redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+    // Lazy Redis initialization
+    this._redis = null;
     this.supabase = createClient(
       process.env.SUPABASE_URL,
       process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -46,6 +47,16 @@ class FinancialAgentOrchestrator extends EventEmitter {
     this.eventStore = [];
 
     this.setupEventHandlers();
+  }
+
+  get redis() {
+    if (!this._redis && process.env.REDIS_URL) {
+      this._redis = new Redis(process.env.REDIS_URL);
+      this._redis.on('error', (err) => {
+        console.warn('[FinancialAgentOrchestrator] Redis error (non-fatal):', err.message);
+      });
+    }
+    return this._redis;
   }
 
   async initialize() {

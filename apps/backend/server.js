@@ -67,6 +67,10 @@ integrationMonitoringRoutes(app);
 import gmailIntelligenceSyncRoutes from './core/src/api/gmailIntelligenceSync.js';
 gmailIntelligenceSyncRoutes(app);
 
+// Workspace Gmail API - Multi-account email access (benjamin, nicholas, hi, accounts)
+import workspaceGmailRouter from './core/src/api/workspaceGmail.js';
+app.use('/api/workspace-gmail', workspaceGmailRouter);
+
 // Xero OAuth Authentication
 import xeroAuthRouter from './core/src/api/xeroAuth.js';
 app.use('/api/xero', xeroAuthRouter);
@@ -143,6 +147,15 @@ app.use('/api/contacts/linkedin', linkedinContactsRouter);
 import morningBriefRoutes from './core/src/api/morningBrief.js';
 morningBriefRoutes(app);
 
+// Notifications API - WhatsApp briefs, dashboards, GHL sync (migrated from act-personal-ai)
+import notificationsRouter from './core/src/routes/notifications.js';
+app.use('/api/notifications', notificationsRouter);
+
+// Personal Intelligence API - Mode detection, recommendations, briefs (migrated from act-personal-ai)
+import personalIntelligenceRouter from './core/src/routes/personal-intelligence.js';
+app.use('/api/personal', personalIntelligenceRouter);
+console.log('✅ Personal Intelligence API routes registered');
+
 // Research API - Curious Tractor + Tavily integration
 import researchRoutes from './core/src/api/research.js';
 researchRoutes(app);
@@ -217,16 +230,23 @@ intelligenceLayerRoutes(app, primarySupabase);
 app.locals.notionService = notionService;
 app.locals.gmailService = gmailService;
 
-// Initialize Gmail service with stored tokens for Year in Review
+// Initialize Gmail service - try service account first (doesn't expire), fall back to OAuth
 try {
-  const fs = await import('fs');
-  const path = await import('path');
-  const tokenPath = path.default.join(process.cwd(), '.gmail_tokens.json');
-  if (fs.default.existsSync(tokenPath)) {
-    const tokens = JSON.parse(fs.default.readFileSync(tokenPath, 'utf8'));
-    if (tokens.access_token && tokens.refresh_token) {
-      await gmailService.authenticate(tokens.access_token, tokens.refresh_token);
-      console.log('✅ Gmail service authenticated for Year in Review');
+  // Service account auth (preferred - uses Bitwarden secrets, never expires)
+  const serviceAccountAuth = await gmailService.autoAuthenticate();
+  if (serviceAccountAuth) {
+    console.log('✅ Gmail service authenticated via service account');
+  } else {
+    // Fall back to stored OAuth tokens (legacy)
+    const fs = await import('fs');
+    const path = await import('path');
+    const tokenPath = path.default.join(process.cwd(), '.gmail_tokens.json');
+    if (fs.default.existsSync(tokenPath)) {
+      const tokens = JSON.parse(fs.default.readFileSync(tokenPath, 'utf8'));
+      if (tokens.access_token && tokens.refresh_token) {
+        await gmailService.authenticate(tokens.access_token, tokens.refresh_token);
+        console.log('✅ Gmail service authenticated via OAuth tokens');
+      }
     }
   }
 } catch (gmailInitError) {
@@ -256,6 +276,85 @@ app.use('/api/v2/projects', projectHealthRoutes);
 // Google Calendar API Endpoints
 // =============================================
 import googleCalendarService from './core/src/services/googleCalendarService.js';
+
+// GET /api/calendar/calendars - List all accessible calendars
+app.get('/api/calendar/calendars', async (req, res) => {
+  try {
+    const calendars = await googleCalendarService.getCalendars();
+    res.json({
+      success: true,
+      count: calendars.length,
+      calendars
+    });
+  } catch (error) {
+    console.error('Calendar list error:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      hint: 'Calendar may need re-authentication. Visit /api/google/auth'
+    });
+  }
+});
+
+// GET /api/calendar/events/all - Get events from ALL calendars
+app.get('/api/calendar/events/all', async (req, res) => {
+  try {
+    const { days = 30, maxResults = 200 } = req.query;
+
+    const timeMin = new Date().toISOString();
+    const timeMax = new Date(Date.now() + parseInt(days) * 24 * 60 * 60 * 1000).toISOString();
+
+    // Get all calendars
+    const calendars = await googleCalendarService.getCalendars();
+
+    // Fetch events from each calendar
+    const allEvents = [];
+    for (const cal of calendars) {
+      try {
+        const result = await googleCalendarService.getEventsWithProjectOverlay({
+          calendarId: cal.id,
+          timeMin,
+          timeMax,
+          maxResults: Math.floor(parseInt(maxResults) / calendars.length)
+        });
+
+        const events = (result?.events || []).map(event => ({
+          ...event,
+          calendar: {
+            id: cal.id,
+            name: cal.name,
+            color: cal.backgroundColor
+          }
+        }));
+        allEvents.push(...events);
+      } catch (calError) {
+        console.warn(`Failed to fetch from ${cal.name}:`, calError.message);
+      }
+    }
+
+    // Sort by start date
+    allEvents.sort((a, b) => {
+      const dateA = new Date(a.start?.dateTime || a.start?.date || 0);
+      const dateB = new Date(b.start?.dateTime || b.start?.date || 0);
+      return dateA - dateB;
+    });
+
+    res.json({
+      success: true,
+      count: allEvents.length,
+      calendarsQueried: calendars.length,
+      timeRange: { from: timeMin, to: timeMax },
+      events: allEvents
+    });
+  } catch (error) {
+    console.error('All calendars query error:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      hint: 'Calendar may need re-authentication. Visit /api/google/auth'
+    });
+  }
+});
 
 // GET /api/calendar/events - Query calendar events
 app.get('/api/calendar/events', async (req, res) => {
@@ -390,7 +489,7 @@ const fetchNotionProjects = async () => {
         ? storytellerClient
             .from('storytellers')
             .select(
-              'id, project_id, full_name, bio, expertise_areas, profile_image_url, media_type, created_at, consent_given'
+              'id, full_name, bio, expertise_areas, profile_image_url, media_type, created_at, consent_given'
             )
             .eq('consent_given', true)
             .limit(2000)
@@ -457,6 +556,8 @@ const fetchNotionProjects = async () => {
 
     console.log(`📍 Loaded ${placesMap.size} places, ${organizationsMap.size} organizations, and ${peopleMap.size} people for relation resolution`);
 
+    // Note: project_id column may not exist in all storyteller tables
+    // This grouping will be empty if project_id is not present
     const storytellersByProject = new Map();
     storytellers.forEach((storyteller) => {
       if (!storyteller.project_id) return;
@@ -589,6 +690,46 @@ const getSystemHealth = () => {
 
 // === API ROUTES ===
 
+// Knowledge API for Ask ACT RAG chat
+app.get('/api/v1/knowledge/qa', async (req, res) => {
+  try {
+    // Try to load from exported file first
+    const fs = await import('fs/promises');
+    const path = await import('path');
+
+    const exportPaths = [
+      '/Users/benknight/act-personal-ai/data/knowledge-exports/act-qa-232.json',
+      '/Users/benknight/act-personal-ai/data/knowledge-exports/weekly-qa-export.json'
+    ];
+
+    for (const exportPath of exportPaths) {
+      try {
+        const data = await fs.readFile(exportPath, 'utf-8');
+        const qa = JSON.parse(data);
+        return res.json(qa);
+      } catch {
+        // Try next path
+      }
+    }
+
+    // Fallback to embedded knowledge
+    res.json({
+      format: 'qa_pairs',
+      count: 10,
+      generated: new Date().toISOString(),
+      pairs: [
+        { question: "What is ACT?", answer: "ACT (Art. Connection. Truth.) is a regenerative studio based in Queensland, Australia, working with communities to build story sovereignty, community justice infrastructure, and sustainable enterprise systems.", source: "identity", type: "identity" },
+        { question: "What is the LCAA methodology?", answer: "LCAA stands for Listen, Curiosity, Action, Art. It's ACT's core methodology for community engagement.", source: "methodology", type: "methodology" },
+        { question: "What is Empathy Ledger?", answer: "Empathy Ledger is ACT's consent-first storytelling platform for community voice and story sovereignty.", source: "platform", type: "platform" },
+        { question: "What is ALMA?", answer: "ALMA is ACT's impact measurement framework with 6 dimensions: Evidence Strength, Community Authority, Harm Risk, Implementation Capability, Option Value, and Community Value Return.", source: "methodology", type: "methodology" }
+      ]
+    });
+  } catch (error) {
+    console.error('Knowledge API error:', error);
+    res.status(500).json({ error: 'Failed to load knowledge base' });
+  }
+});
+
 // Health check
 app.get('/api/real/health', (req, res) => {
   const health = getSystemHealth();
@@ -710,7 +851,6 @@ app.post('/api/real/projects/:projectId/storytellers', async (req, res) => {
       expertise_areas: normalizedExpertise,
       profile_image_url: profileImageUrl || null,
       media_type: mediaType || null,
-      project_id: projectRecord.id,
       notion_id: normalizedIds[0],
     };
 
@@ -718,7 +858,7 @@ app.post('/api/real/projects/:projectId/storytellers', async (req, res) => {
       .from('storytellers')
       .insert(insertPayload)
       .select(
-        'id, project_id, full_name, bio, expertise_areas, profile_image_url, media_type, created_at, consent_given'
+        'id, full_name, bio, expertise_areas, profile_image_url, media_type, created_at, consent_given'
       )
       .single();
 

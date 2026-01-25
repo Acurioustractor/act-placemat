@@ -10,8 +10,40 @@ loadEnv();
 
 const router = express.Router();
 
-// Init Redis and Connector (singleton per process)
-const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+// Lazy Redis initialization - only connect if REDIS_URL is configured
+let redis = null;
+function getRedis() {
+  if (!redis && process.env.REDIS_URL) {
+    redis = new Redis(process.env.REDIS_URL);
+    redis.on('error', (err) => {
+      console.warn('[xeroAuth] Redis connection error (non-fatal):', err.message);
+    });
+  }
+  return redis;
+}
+
+// In-memory fallback for when Redis is not available
+const memoryStore = new Map();
+
+async function cacheGet(key) {
+  const r = getRedis();
+  if (r) return r.get(key);
+  return memoryStore.get(key) || null;
+}
+
+async function cacheSet(key, value) {
+  const r = getRedis();
+  if (r) return r.set(key, value);
+  memoryStore.set(key, value);
+}
+
+async function cacheSetex(key, seconds, value) {
+  const r = getRedis();
+  if (r) return r.setex(key, seconds, value);
+  memoryStore.set(key, value);
+  setTimeout(() => memoryStore.delete(key), seconds * 1000);
+}
+
 const connector = new XeroKafkaConnector();
 
 // Initialize Xero client with env vars
@@ -29,12 +61,12 @@ const xero = new XeroClient({
   ]
 });
 
-// Attempt to auto-restore Xero session from Redis on server start
+// Attempt to auto-restore Xero session from cache on server start
 (async () => {
   try {
     const [tokenSetJson, tenantId] = await Promise.all([
-      redis.get('xero:tokenSet'),
-      redis.get('xero:tenantId')
+      cacheGet('xero:tokenSet'),
+      cacheGet('xero:tenantId')
     ]);
     if (tokenSetJson && tenantId) {
       const tokenSet = JSON.parse(tokenSetJson);
@@ -83,7 +115,7 @@ router.get('/connect', async (req, res) => {
     const codeChallenge = codeChallengeFromVerifier(codeVerifier);
 
     // Persist verifier for 10 minutes
-    await redis.setex(`xero:pkce:${state}`, 600, JSON.stringify({ code_verifier: codeVerifier }));
+    await cacheSetex(`xero:pkce:${state}`, 600, JSON.stringify({ code_verifier: codeVerifier }));
 
     const authorizeUrl = new URL('https://login.xero.com/identity/connect/authorize');
     authorizeUrl.searchParams.set('client_id', process.env.XERO_CLIENT_ID || '');
@@ -159,7 +191,7 @@ router.get('/callback', async (req, res) => {
     }
 
     // Retrieve PKCE verifier
-    const cached = state ? await redis.get(`xero:pkce:${state}`) : null;
+    const cached = state ? await cacheGet(`xero:pkce:${state}`) : null;
     const form = new URLSearchParams();
     form.set('grant_type', 'authorization_code');
     form.set('code', code);
@@ -208,9 +240,9 @@ router.get('/callback', async (req, res) => {
 
     const tenantId = tenant.tenantId;
 
-    // Persist token set and tenant in Redis
-    await redis.set('xero:tokenSet', JSON.stringify(tokenSet));
-    await redis.set('xero:tenantId', tenantId);
+    // Persist token set and tenant in cache
+    await cacheSet('xero:tokenSet', JSON.stringify(tokenSet));
+    await cacheSet('xero:tenantId', tenantId);
 
     // Kick off connector in background (do not block OAuth response)
     setImmediate(async () => {
@@ -236,8 +268,8 @@ router.get('/status', async (req, res) => {
   try {
     const status = await connector.healthCheck();
     const [tenantId, tokenSetJson] = await Promise.all([
-      redis.get('xero:tenantId'),
-      redis.get('xero:tokenSet')
+      cacheGet('xero:tenantId'),
+      cacheGet('xero:tokenSet')
     ]);
     return res.json({
       connected: status.connected,

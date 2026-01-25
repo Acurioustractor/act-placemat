@@ -4,7 +4,24 @@ import Redis from 'ioredis';
 
 const router = express.Router();
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
-const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+
+// Lazy Redis initialization - only connect if REDIS_URL is configured
+let redis = null;
+function getRedis() {
+  if (!redis && process.env.REDIS_URL) {
+    redis = new Redis(process.env.REDIS_URL);
+    redis.on('error', (err) => {
+      console.warn('[stripeBilling] Redis connection error (non-fatal):', err.message);
+    });
+  }
+  return redis;
+}
+
+async function cacheGet(key) {
+  const r = getRedis();
+  if (r) return r.get(key);
+  return null;
+}
 
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY || '';
@@ -17,7 +34,7 @@ function getStripe() {
 
 async function resolveTenantId() {
   // Reuse Xero tenant if configured; otherwise default
-  return (await redis.get('xero:tenantId')) || 'default';
+  return (await cacheGet('xero:tenantId')) || 'default';
 }
 
 async function ensureSchemaForStripe() {

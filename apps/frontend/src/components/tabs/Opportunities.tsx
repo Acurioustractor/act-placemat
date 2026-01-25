@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Card } from '../ui/Card'
-import { SectionHeader } from '../ui/SectionHeader'
-import { EmptyState } from '../ui/EmptyState'
+import { resolveCommandCenterUrl } from '../../config/env'
 
 interface Opportunity {
   id?: string
@@ -25,7 +23,6 @@ export function Opportunities() {
   const [searching, setSearching] = useState(false)
   const [discoveredGrants, setDiscoveredGrants] = useState<Opportunity[]>([])
 
-  // Fetch saved opportunities from Notion
   useEffect(() => {
     fetchOpportunities()
   }, [])
@@ -35,7 +32,7 @@ export function Opportunities() {
     setError(null)
 
     try {
-      const response = await fetch('http://localhost:4000/api/opportunities')
+      const response = await fetch(resolveCommandCenterUrl('/api/opportunities'))
       const data = await response.json()
 
       if (data.success) {
@@ -51,7 +48,6 @@ export function Opportunities() {
     }
   }
 
-  // AI-powered grant discovery using Tavily
   const discoverGrants = async () => {
     if (!searchQuery.trim()) return
 
@@ -59,7 +55,7 @@ export function Opportunities() {
     setError(null)
 
     try {
-      const response = await fetch('http://localhost:4000/api/opportunities/discover', {
+      const response = await fetch(resolveCommandCenterUrl('/api/opportunities/discover'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -84,7 +80,7 @@ export function Opportunities() {
   }
 
   const formatCurrency = (amount?: number) => {
-    if (!amount) return 'Amount not specified'
+    if (!amount) return 'Amount TBD'
     return new Intl.NumberFormat('en-AU', {
       style: 'currency',
       currency: 'AUD',
@@ -93,219 +89,288 @@ export function Opportunities() {
   }
 
   const formatDeadline = (deadline?: string) => {
-    if (!deadline) return 'No deadline'
+    if (!deadline) return null
     const date = new Date(deadline)
     const daysUntil = Math.floor((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
 
-    if (daysUntil < 0) return 'Expired'
-    if (daysUntil === 0) return 'Due today!'
-    if (daysUntil === 1) return 'Due tomorrow'
-    if (daysUntil <= 7) return `Due in ${daysUntil} days`
+    if (daysUntil < 0) return { text: 'Expired', color: 'text-slate-400' }
+    if (daysUntil === 0) return { text: 'Due today', color: 'text-red-600' }
+    if (daysUntil === 1) return { text: 'Due tomorrow', color: 'text-red-600' }
+    if (daysUntil <= 7) return { text: `${daysUntil} days left`, color: 'text-orange-600' }
+    if (daysUntil <= 30) return { text: `${daysUntil} days left`, color: 'text-amber-600' }
 
-    return date.toLocaleDateString('en-AU', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    })
+    return {
+      text: date.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' }),
+      color: 'text-slate-600'
+    }
   }
 
   const getScoreColor = (score?: number) => {
-    if (!score) return 'text-gray-600'
-    if (score >= 70) return 'text-green-600'
-    if (score >= 50) return 'text-yellow-600'
-    return 'text-orange-600'
+    if (!score) return 'bg-slate-100 text-slate-600'
+    if (score >= 70) return 'bg-emerald-100 text-emerald-700'
+    if (score >= 50) return 'bg-amber-100 text-amber-700'
+    return 'bg-orange-100 text-orange-700'
   }
 
-  const getDeadlineColor = (deadline?: string) => {
-    if (!deadline) return 'text-gray-600'
-    const daysUntil = Math.floor((new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-
-    if (daysUntil < 0) return 'text-gray-400'
-    if (daysUntil <= 7) return 'text-red-600'
-    if (daysUntil <= 30) return 'text-orange-600'
-    return 'text-green-600'
+  const getStatusColor = (status?: string) => {
+    if (!status) return 'bg-slate-100 text-slate-600'
+    switch (status.toLowerCase()) {
+      case 'applied': return 'bg-blue-100 text-blue-700'
+      case 'approved': return 'bg-emerald-100 text-emerald-700'
+      case 'rejected': return 'bg-red-100 text-red-700'
+      case 'researching': return 'bg-purple-100 text-purple-700'
+      default: return 'bg-slate-100 text-slate-600'
+    }
   }
+
+  // Calculate stats
+  const totalValue = opportunities.reduce((sum, o) => sum + (o.amount || 0), 0)
+  const appliedCount = opportunities.filter(o => o.status?.toLowerCase() === 'applied').length
+  const urgentCount = opportunities.filter(o => {
+    if (!o.deadline) return false
+    const daysUntil = Math.floor((new Date(o.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    return daysUntil >= 0 && daysUntil <= 14
+  }).length
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-8">
-      <SectionHeader
-        title="Grant Opportunities"
-        description="AI-powered grant discovery and application tracking for ACT projects"
-      />
+    <div className="space-y-6">
+      {/* Header Stats */}
+      <div className="grid grid-cols-4 gap-4">
+        <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm text-slate-500">Pipeline Value</p>
+              <p className="text-2xl font-bold text-emerald-600">{formatCurrency(totalValue)}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm text-slate-500">Saved Opportunities</p>
+              <p className="text-2xl font-bold text-slate-900">{opportunities.length}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm text-slate-500">Applied</p>
+              <p className="text-2xl font-bold text-purple-600">{appliedCount}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm text-slate-500">Urgent (2 weeks)</p>
+              <p className="text-2xl font-bold text-orange-600">{urgentCount}</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      {/* Grant Discovery Search */}
-      <Card className="mb-8">
-        <div className="p-6">
-          <h3 className="mb-4 text-lg font-semibold text-slate-900">
-            🔍 Discover New Grants
-          </h3>
-          <div className="flex gap-4">
+      {/* Search Bar */}
+      <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
+        <div className="flex gap-3">
+          <div className="flex-1 relative">
+            <svg
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && discoverGrants()}
-              placeholder="e.g., indigenous community agriculture, youth programs, regenerative farming..."
-              className="flex-1 rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onKeyDown={(e) => e.key === 'Enter' && discoverGrants()}
+              placeholder="Discover grants: indigenous community agriculture, youth programs, regenerative farming..."
+              className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+              disabled={searching}
             />
-            <button
-              onClick={discoverGrants}
-              disabled={searching || !searchQuery.trim()}
-              className="rounded-lg bg-blue-600 px-6 py-2 font-medium text-white hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-            >
-              {searching ? 'Searching...' : 'Discover Grants'}
-            </button>
           </div>
-          <p className="mt-2 text-sm text-slate-600">
-            Powered by Tavily AI - searches Australian government grants, business.gov.au, and indigenous funding programs
-          </p>
+          <button
+            onClick={discoverGrants}
+            disabled={searching || !searchQuery.trim()}
+            className="px-6 py-2.5 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors"
+          >
+            {searching ? 'Searching...' : 'Discover Grants'}
+          </button>
         </div>
-      </Card>
+        <p className="mt-2 text-xs text-slate-500">
+          Powered by Tavily AI - searches Australian government grants, business.gov.au, and indigenous funding programs
+        </p>
+      </div>
 
       {error && (
-        <div className="mb-6 rounded-lg bg-red-50 border border-red-200 p-4">
-          <p className="text-sm text-red-800">⚠️ {error}</p>
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+          <p className="text-sm text-red-700">{error}</p>
         </div>
       )}
 
       {/* Discovered Grants */}
       {discoveredGrants.length > 0 && (
-        <div className="mb-8">
-          <h3 className="mb-4 text-lg font-semibold text-slate-900">
-            ✨ Discovered Opportunities ({discoveredGrants.length})
-          </h3>
-          <div className="grid gap-6">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">
+              Discovered Opportunities
+            </h3>
+            <span className="text-xs text-emerald-600 font-medium">{discoveredGrants.length} found</span>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
             {discoveredGrants.map((grant, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow">
-                <div className="p-6">
-                  <div className="mb-3 flex items-start justify-between">
-                    <div className="flex-1">
-                      <h4 className="text-lg font-semibold text-slate-900 mb-1">
-                        {grant.title}
-                      </h4>
-                      <div className="flex items-center gap-4 text-sm text-slate-600">
-                        <span className="flex items-center">
-                          🌐 {grant.source}
-                        </span>
-                        {grant.relevanceScore && (
-                          <span className={`font-medium ${getScoreColor(grant.relevanceScore * 100)}`}>
-                            {Math.round(grant.relevanceScore * 100)}% match
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <p className="mb-4 text-sm text-slate-700 line-clamp-3">
-                    {grant.description}
-                  </p>
-
-                  <div className="flex gap-2">
-                    {grant.url && (
-                      <a
-                        href={grant.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-                      >
-                        View Details →
-                      </a>
-                    )}
-                  </div>
+              <div key={index} className="bg-white rounded-xl shadow-sm border border-slate-100 p-5 hover:shadow-md hover:border-slate-200 transition-all">
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <h4 className="font-semibold text-slate-900 line-clamp-2">{grant.title}</h4>
+                  {grant.relevanceScore && (
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ${getScoreColor(grant.relevanceScore * 100)}`}>
+                      {Math.round(grant.relevanceScore * 100)}% match
+                    </span>
+                  )}
                 </div>
-              </Card>
+
+                <p className="text-sm text-slate-600 line-clamp-2 mb-4">
+                  {grant.description}
+                </p>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-slate-500">{grant.source}</span>
+                  {grant.url && (
+                    <a
+                      href={grant.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-medium text-emerald-600 hover:text-emerald-700"
+                    >
+                      View details →
+                    </a>
+                  )}
+                </div>
+              </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* Saved Opportunities from Notion */}
-      <div>
-        <h3 className="mb-4 text-lg font-semibold text-slate-900">
-          📋 Saved Opportunities ({opportunities.length})
-        </h3>
+      {/* Saved Opportunities */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">
+            Saved Opportunities
+          </h3>
+          <span className="text-xs text-slate-500">{opportunities.length} tracked</span>
+        </div>
 
         {loading ? (
-          <div className="text-center py-12">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-            <p className="mt-4 text-slate-600">Loading opportunities...</p>
+          <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-12 text-center">
+            <div className="w-10 h-10 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-sm text-slate-500">Loading opportunities...</p>
           </div>
         ) : opportunities.length === 0 ? (
-          <EmptyState
-            icon="💎"
-            title="No saved opportunities yet"
-            description="Use the search above to discover grants and funding opportunities. Found opportunities can be saved to your Notion database for tracking."
-          />
+          <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-12 text-center">
+            <div className="w-16 h-16 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <p className="font-medium text-slate-900">No saved opportunities yet</p>
+            <p className="text-sm text-slate-500 mt-1">Use the search above to discover grants and funding opportunities</p>
+          </div>
         ) : (
-          <div className="grid gap-6">
-            {opportunities.map((opp) => (
-              <Card key={opp.id} className="hover:shadow-lg transition-shadow">
-                <div className="p-6">
-                  <div className="mb-3 flex items-start justify-between">
-                    <div className="flex-1">
-                      <h4 className="text-lg font-semibold text-slate-900 mb-1">
-                        {opp.title}
-                      </h4>
-                      <div className="flex items-center gap-4 text-sm text-slate-600">
-                        <span className="flex items-center">
-                          🌐 {opp.source}
-                        </span>
-                        {opp.amount && (
-                          <span className="font-medium text-green-600">
-                            💰 {formatCurrency(opp.amount)}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-slate-50 border-b border-slate-100">
+                    <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-3">
+                      Opportunity
+                    </th>
+                    <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-3">
+                      Amount
+                    </th>
+                    <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-3">
+                      Deadline
+                    </th>
+                    <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-3">
+                      Match
+                    </th>
+                    <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-3">
+                      Status
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {opportunities.map((opp) => {
+                    const deadline = formatDeadline(opp.deadline)
+                    return (
+                      <tr key={opp.id} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="max-w-md">
+                            <p className="font-medium text-slate-900 line-clamp-1">{opp.title}</p>
+                            <p className="text-xs text-slate-500 mt-0.5">{opp.source}</p>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="text-sm font-medium text-emerald-600">
+                            {formatCurrency(opp.amount)}
                           </span>
-                        )}
-                        {opp.deadline && (
-                          <span className={`font-medium ${getDeadlineColor(opp.deadline)}`}>
-                            📅 {formatDeadline(opp.deadline)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    {opp.matchScore !== undefined && (
-                      <div className="ml-4 text-right">
-                        <div className={`text-2xl font-bold ${getScoreColor(opp.matchScore)}`}>
-                          {opp.matchScore}%
-                        </div>
-                        <div className="text-xs text-slate-600">match</div>
-                      </div>
-                    )}
-                  </div>
-
-                  {opp.description && (
-                    <p className="mb-4 text-sm text-slate-700">
-                      {opp.description}
-                    </p>
-                  )}
-
-                  {opp.tags && opp.tags.length > 0 && (
-                    <div className="mb-4 flex flex-wrap gap-2">
-                      {opp.tags.map((tag, i) => (
-                        <span
-                          key={i}
-                          className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="flex gap-2">
-                    {opp.status && (
-                      <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
-                        opp.status === 'Applied' ? 'bg-blue-100 text-blue-800' :
-                        opp.status === 'Approved' ? 'bg-green-100 text-green-800' :
-                        opp.status === 'Rejected' ? 'bg-red-100 text-red-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
-                        {opp.status}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </Card>
-            ))}
+                        </td>
+                        <td className="px-6 py-4">
+                          {deadline ? (
+                            <span className={`text-sm font-medium ${deadline.color}`}>
+                              {deadline.text}
+                            </span>
+                          ) : (
+                            <span className="text-sm text-slate-400">No deadline</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4">
+                          {opp.matchScore !== undefined ? (
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getScoreColor(opp.matchScore)}`}>
+                              {opp.matchScore}%
+                            </span>
+                          ) : (
+                            <span className="text-xs text-slate-400">—</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4">
+                          {opp.status ? (
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(opp.status)}`}>
+                              {opp.status}
+                            </span>
+                          ) : (
+                            <span className="text-xs text-slate-400">—</span>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>

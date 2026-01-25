@@ -1,5 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { ExternalLink, TrendingUp, Users, Target, Filter } from 'lucide-react';
+import { resolveCommandCenterUrl } from '../../config/env';
+
+// Icons as inline SVGs to avoid lucide-react dependency
+const ExternalLinkIcon = () => (
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+  </svg>
+);
+const TrendingUpIcon = () => (
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+  </svg>
+);
+const UsersIcon = () => (
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+  </svg>
+);
+const TargetIcon = () => (
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+const FilterIcon = () => (
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+  </svg>
+);
 
 interface EnrichedContact {
   id: string;
@@ -40,7 +67,7 @@ export default function EnrichedContactsDashboard() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/enriched-contacts/stats');
+      const response = await fetch(resolveCommandCenterUrl('/api/enriched-contacts/stats'));
       const data = await response.json();
       setStats(data);
     } catch (error) {
@@ -57,7 +84,7 @@ export default function EnrichedContactsDashboard() {
         ...(filter !== 'all' && { strategic_value: filter })
       });
 
-      const response = await fetch(`/api/enriched-contacts?${params}`);
+      const response = await fetch(`${resolveCommandCenterUrl('/api/enriched-contacts')}?${params}`);
       const data = await response.json();
       setContacts(data.contacts);
     } catch (error) {
@@ -94,7 +121,7 @@ export default function EnrichedContactsDashboard() {
           <div className="bg-white p-6 rounded-lg shadow">
             <div className="flex items-center justify-between mb-2">
               <span className="text-gray-500 text-sm">Total Contacts</span>
-              <Users className="w-5 h-5 text-blue-500" />
+              <UsersIcon />
             </div>
             <div className="text-2xl font-bold">{stats.total_contacts.toLocaleString()}</div>
             <div className="text-xs text-green-600 mt-1">
@@ -105,7 +132,7 @@ export default function EnrichedContactsDashboard() {
           <div className="bg-white p-6 rounded-lg shadow">
             <div className="flex items-center justify-between mb-2">
               <span className="text-gray-500 text-sm">Enriched</span>
-              <TrendingUp className="w-5 h-5 text-green-500" />
+              <TrendingUpIcon />
             </div>
             <div className="text-2xl font-bold">{stats.enriched.toLocaleString()}</div>
             <div className="text-xs text-gray-500 mt-1">
@@ -116,7 +143,7 @@ export default function EnrichedContactsDashboard() {
           <div className="bg-white p-6 rounded-lg shadow">
             <div className="flex items-center justify-between mb-2">
               <span className="text-gray-500 text-sm">LinkedIn URLs</span>
-              <ExternalLink className="w-5 h-5 text-indigo-500" />
+              <ExternalLinkIcon />
             </div>
             <div className="text-2xl font-bold">{stats.with_linkedin.toLocaleString()}</div>
             <div className="text-xs text-gray-500 mt-1">
@@ -127,7 +154,7 @@ export default function EnrichedContactsDashboard() {
           <div className="bg-white p-6 rounded-lg shadow">
             <div className="flex items-center justify-between mb-2">
               <span className="text-gray-500 text-sm">High Value</span>
-              <Target className="w-5 h-5 text-purple-500" />
+              <TargetIcon />
             </div>
             <div className="text-2xl font-bold">{stats.high_value.toLocaleString()}</div>
             <div className="text-xs text-gray-500 mt-1">
@@ -140,7 +167,7 @@ export default function EnrichedContactsDashboard() {
       {/* Filters */}
       <div className="bg-white p-4 rounded-lg shadow mb-6">
         <div className="flex items-center gap-4">
-          <Filter className="w-5 h-5 text-gray-400" />
+          <FilterIcon />
 
           <div className="flex gap-2">
             <button
@@ -285,7 +312,7 @@ export default function EnrichedContactsDashboard() {
                             className="text-blue-600 hover:text-blue-800"
                             title="View LinkedIn Profile"
                           >
-                            <ExternalLink className="w-4 h-4" />
+                            <ExternalLinkIcon />
                           </a>
                         )}
                         <button

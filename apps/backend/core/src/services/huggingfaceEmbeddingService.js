@@ -13,9 +13,9 @@ class HuggingFaceEmbeddingService {
     this.apiUrl = `https://api-inference.huggingface.co/models/${this.model}`;
     this.apiKey = process.env.HUGGINGFACE_API_KEY;
 
-    if (!this.apiKey) {
-      logger.warn('HUGGINGFACE_API_KEY not found, embeddings will not work');
-    }
+    // HuggingFace API key is optional - embeddings are a nice-to-have feature
+    // Get a free key at https://huggingface.co/settings/tokens
+    this.available = !!this.apiKey;
 
     // Rate limiting
     this.requestQueue = [];

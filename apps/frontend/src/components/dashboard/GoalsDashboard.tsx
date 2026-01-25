@@ -3,13 +3,15 @@
  *
  * Features:
  * - Lane-based goal organization (Listen, Curiosity, Action, Art)
- * - Drag-and-drop between lanes
+ * - Drag-and-drop reordering within/between lanes
  * - Multiple views: Lanes, Calendar, List
  * - Inline goal editing with progress updates
+ * - Goal history and metrics tracking
+ * - Search and filter
  * - Cross-system links (projects, calendar, relationships)
  */
 
-import { useState, useCallback, useMemo, useEffect } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { GoalCard } from './GoalCard'
 import { GoalsCalendarView } from './GoalsCalendarView'
 
@@ -24,6 +26,7 @@ interface Goal {
   due_date?: string
   project_id?: string
   related_contact_ids?: string[]
+  lane_position?: number
   metrics?: Metric[]
   updates?: Update[]
 }
@@ -53,7 +56,7 @@ interface GoalsDashboardProps {
   onAddGoal: (goal: Partial<Goal>) => Promise<void>
   onAddMetric: (goalId: string, metric: Partial<Metric>) => Promise<void>
   onViewHistory: (goalId: string) => void
-  onMoveGoal?: (goalId: string, lane: string) => Promise<void>
+  onMoveGoal?: (goalId: string, lane: string, position: number) => Promise<void>
   onReorderLane?: (lane: string, goalIds: string[]) => Promise<void>
   loading?: boolean
   updating?: boolean
@@ -70,24 +73,31 @@ type FilterStatus = 'all' | 'Planning' | 'In progress' | 'Review' | 'Completed' 
 type ViewMode = 'lanes' | 'calendar' | 'list'
 
 const LANES = [
-  { id: 'listen', name: 'Listen', color: '#3b82f6', icon: '👂', backendName: 'A — Core Ops' },
-  { id: 'curiosity', name: 'Curiosity', color: '#8b5cf6', icon: '🔍', backendName: 'B — Platforms' },
-  { id: 'action', name: 'Action', color: '#f59e0b', icon: '⚡', backendName: 'C — Place/Seasonal' },
-  { id: 'art', name: 'Art', color: '#ec4899', icon: '🎨', backendName: 'D — Art' },
+  { id: 'listen', name: 'Listen', color: '#3b82f6', icon: '👂' },
+  { id: 'curiosity', name: 'Curiosity', color: '#8b5cf6', icon: '🔍' },
+  { id: 'action', name: 'Action', color: '#f59e0b', icon: '⚡' },
+  { id: 'art', name: 'Art', color: '#ec4899', icon: '🎨' },
+  { id: 'unassigned', name: 'Unassigned', color: '#94a3b8', icon: '📋' },
 ]
 
-// Map backend lane names to frontend lane IDs
-const BACKEND_TO_FRONTEND: Record<string, string> = {
+// Map backend lane names to frontend lane IDs (handles both hyphen and em-dash)
+const LANE_NAME_TO_ID: Record<string, string> = {
+  'Listen': 'listen',
+  'Curiosity': 'curiosity',
+  'Action': 'action',
+  'Art': 'art',
+  'art': 'art',
   'A — Core Ops': 'listen',
+  'A - Core Ops': 'listen',
+  'A': 'listen',
   'B — Platforms': 'curiosity',
+  'B - Platforms': 'curiosity',
+  'B': 'curiosity',
   'C — Place/Seasonal': 'action',
-}
-
-// Map frontend lane IDs to backend names
-const FRONTEND_TO_BACKEND: Record<string, string> = {
-  'listen': 'A — Core Ops',
-  'curiosity': 'B — Platforms',
-  'action': 'C — Place/Seasonal',
+  'C - Place/Seasonal': 'action',
+  'C': 'action',
+  'D — Art': 'art',
+  'D': 'art',
 }
 
 export function GoalsDashboard({
@@ -97,6 +107,7 @@ export function GoalsDashboard({
   onAddMetric,
   onViewHistory,
   onMoveGoal,
+  onReorderLane,
   loading = false,
   updating = false,
   error = null,
@@ -109,46 +120,46 @@ export function GoalsDashboard({
   const [viewMode, setViewMode] = useState<ViewMode>('lanes')
   const [calendarLaneFilter, setCalendarLaneFilter] = useState<string | null>(null)
 
-  // Local state for lane assignments (optimistic updates)
-  const [laneAssignments, setLaneAssignments] = useState<Record<string, string>>({})
+  // Local state for optimistic drag-and-drop updates
+  const [laneGoals, setLaneGoals] = useState<Record<string, Goal[]>>(() => {
+    const initial: Record<string, Goal[]> = {}
+    LANES.forEach(lane => {
+      initial[lane.id] = []
+    })
+    initial['unassigned'] = []
+    return initial
+  })
 
-  // Initialize lane assignments from goals on mount
+  // Sync local state when goals prop changes
+  const goalsRef = useRef<Goal[] | null>(null)
   useEffect(() => {
-    if (goals.length > 0 && Object.keys(laneAssignments).length === 0) {
-      const initial: Record<string, string> = {}
+    // First time goals are loaded, sync all
+    if (goalsRef.current === null && goals.length > 0) {
+      const grouped: Record<string, Goal[]> = {}
+      LANES.forEach(lane => {
+        grouped[lane.id] = []
+      })
+      grouped['unassigned'] = []
+
       goals.forEach(goal => {
-        // Try lane_name first, then lane
-        const backendLane = goal.lane_name || (goal as Goal & { lane?: string }).lane
-        if (backendLane && BACKEND_TO_FRONTEND[backendLane]) {
-          initial[goal.id] = BACKEND_TO_FRONTEND[backendLane]
-        } else if (backendLane) {
-          // Try to match by prefix
-          for (const [backend, frontend] of Object.entries(BACKEND_TO_FRONTEND)) {
-            if (backendLane.startsWith(backend.split(' — ')[0])) {
-              initial[goal.id] = frontend
-              break
-            }
-          }
-        }
-        if (!initial[goal.id]) {
-          initial[goal.id] = 'unassigned'
+        const laneKey = goal.lane || goal.lane_name || ''
+        const laneId = LANE_NAME_TO_ID[laneKey] || 'unassigned'
+        if (grouped[laneId]) {
+          grouped[laneId].push(goal)
+        } else {
+          grouped['unassigned'].push(goal)
         }
       })
-      setLaneAssignments(initial)
-    }
-  }, [goals.length])
 
-  // Get goals for a specific lane
-  const getGoalsForLane = useCallback((laneId: string): Goal[] => {
-    return goals.filter(goal => {
-      const assignedLane = laneAssignments[goal.id] || 'unassigned'
-      return assignedLane === laneId
-    })
-  }, [goals, laneAssignments])
+      setLaneGoals(grouped)
+      goalsRef.current = goals
+    }
+  }, [goals])
 
   // Filter goals
   const filteredGoals = useMemo(() => {
     return goals.filter((goal) => {
+      // Search filter
       if (searchQuery) {
         const query = searchQuery.toLowerCase()
         const matchesSearch =
@@ -158,11 +169,36 @@ export function GoalsDashboard({
         if (!matchesSearch) return false
       }
 
+      // Status filter
       if (statusFilter !== 'all' && goal.status !== statusFilter) return false
+
+      // Lane filter
+      if (laneFilter && goal.lane !== laneFilter && goal.lane_name !== laneFilter) return false
 
       return true
     })
-  }, [goals, searchQuery, statusFilter])
+  }, [goals, searchQuery, statusFilter, laneFilter])
+
+  // Group by lane
+  const goalsByLane = useMemo(() => {
+    const grouped: Record<string, Goal[]> = {}
+    LANES.forEach(lane => {
+      grouped[lane.id] = []
+    })
+    grouped['unassigned'] = []
+
+    filteredGoals.forEach(goal => {
+      const laneKey = goal.lane || goal.lane_name || ''
+      const laneId = LANE_NAME_TO_ID[laneKey] || 'unassigned'
+      if (grouped[laneId]) {
+        grouped[laneId].push(goal)
+      } else {
+        grouped['unassigned'].push(goal)
+      }
+    })
+
+    return grouped
+  }, [filteredGoals])
 
   // Calculate stats
   const stats = useMemo(() => {
@@ -171,11 +207,29 @@ export function GoalsDashboard({
     const inProgress = goals.filter((g) => g.status === 'In progress').length
     const avgProgress =
       total > 0
-        ? Math.round(goals.reduce((sum, g) => sum + g.progress_percentage, 0) / total)
+        ? Math.round(
+            goals.reduce((sum, g) => sum + g.progress_percentage, 0) / total
+          )
         : 0
 
     return { total, completed, inProgress, avgProgress }
   }, [goals])
+
+  // Get lane key for a goal
+  const getLaneKey = (goal: Goal): string => {
+    const laneKey = goal.lane || goal.lane_name || ''
+    return LANE_NAME_TO_ID[laneKey] || 'unassigned'
+  }
+
+  // Get backend lane name from frontend lane ID
+  const getLaneName = (laneId: string): string => {
+    const mapping: Record<string, string> = {
+      'listen': 'A — Core Ops',
+      'curiosity': 'B — Platforms',
+      'action': 'C — Place/Seasonal',
+    }
+    return mapping[laneId] || laneId
+  }
 
   const handleUpdateGoal = useCallback(
     async (id: string, updates: GoalUpdates) => {
@@ -192,39 +246,57 @@ export function GoalsDashboard({
     [onAddGoal]
   )
 
-  // Handle drag start
-  const handleDragStart = useCallback((e: React.DragEvent, goalId: string) => {
-    e.dataTransfer.setData('goalId', goalId)
-    e.dataTransfer.effectAllowed = 'move'
-  }, [])
+  // Handle goal reorder within a lane
+  const handleReorder = useCallback(
+    async (laneId: string, newOrder: Goal[]) => {
+      setLaneGoals(prev => ({
+        ...prev,
+        [laneId]: newOrder
+      }))
 
-  // Handle drag over (allow drop)
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    e.dataTransfer.dropEffect = 'move'
-  }, [])
+      // Persist to backend
+      if (onReorderLane) {
+        const goalIds = newOrder.map(g => g.id)
+        await onReorderLane(laneId, goalIds)
+      }
+    },
+    [onReorderLane]
+  )
 
-  // Handle drop on a lane
-  const handleDrop = useCallback(async (e: React.DragEvent, toLaneId: string) => {
-    e.preventDefault()
-    const goalId = e.dataTransfer.getData('goalId')
-    if (!goalId || !toLaneId) return
+  // Handle moving goal between lanes
+  const handleMoveBetweenLanes = useCallback(
+    async (goalId: string, toLaneId: string) => {
+      // Find the goal and its current lane
+      let fromLaneId = 'unassigned'
+      let goalToMove: Goal | undefined
 
-    const fromLaneId = laneAssignments[goalId] || 'unassigned'
-    if (fromLaneId === toLaneId) return
+      Object.keys(laneGoals).forEach(laneId => {
+        const found = laneGoals[laneId]?.find(g => g.id === goalId)
+        if (found) {
+          fromLaneId = laneId
+          goalToMove = found
+        }
+      })
 
-    // Optimistic update
-    setLaneAssignments(prev => ({
-      ...prev,
-      [goalId]: toLaneId
-    }))
+      if (!goalToMove || fromLaneId === toLaneId) return
 
-    // Persist to backend
-    if (onMoveGoal) {
-      const backendLane = FRONTEND_TO_BACKEND[toLaneId] || toLaneId
-      await onMoveGoal(goalId, backendLane)
-    }
-  }, [laneAssignments, onMoveGoal])
+      // Optimistic update - move locally, insert at TOP of destination lane
+      setLaneGoals(prev => {
+        const updated = { ...prev }
+        // Remove from source lane
+        updated[fromLaneId] = updated[fromLaneId]?.filter(g => g.id !== goalId) || []
+        // Add to TOP of destination lane
+        updated[toLaneId] = [{ ...goalToMove!, lane: getLaneName(toLaneId), lane_name: getLaneName(toLaneId) }, ...(updated[toLaneId] || [])]
+        return updated
+      })
+
+      // Persist to backend
+      if (onMoveGoal) {
+        await onMoveGoal(goalId, getLaneName(toLaneId))
+      }
+    },
+    [laneGoals, onMoveGoal]
+  )
 
   // Error state
   if (error) {
@@ -304,34 +376,42 @@ export function GoalsDashboard({
           onChange={(e) => setSearchQuery(e.target.value)}
           style={searchInputStyle}
         />
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as FilterStatus)}
-          style={selectStyle}
-        >
-          <option value="all">All Status</option>
-          <option value="Planning">Planning</option>
-          <option value="In progress">In Progress</option>
-          <option value="Review">Review</option>
-          <option value="Completed">Completed</option>
-          <option value="Paused">Paused</option>
-        </select>
-        <select
-          value={laneFilter || ''}
-          onChange={(e) => setLaneFilter(e.target.value || null)}
-          style={selectStyle}
-        >
-          <option value="">All Lanes</option>
-          {LANES.map(lane => (
-            <option key={lane.id} value={lane.id}>{lane.name}</option>
-          ))}
-        </select>
+        <div style={filterGroupStyle}>
+          <label style={filterLabelStyle}>Status:</label>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as FilterStatus)}
+            style={selectStyle}
+          >
+            <option value="all">All Status</option>
+            <option value="Planning">Planning</option>
+            <option value="In progress">In Progress</option>
+            <option value="Review">Review</option>
+            <option value="Completed">Completed</option>
+            <option value="Paused">Paused</option>
+          </select>
+        </div>
+        <div style={filterGroupStyle}>
+          <label style={filterLabelStyle}>Lane:</label>
+          <select
+            value={laneFilter || ''}
+            onChange={(e) => setLaneFilter(e.target.value || null)}
+            style={selectStyle}
+          >
+            <option value="">All Lanes</option>
+            {LANES.map((lane) => (
+              <option key={lane.id} value={lane.name}>
+                {lane.icon} {lane.name}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Stats Row */}
       <div style={statsRowStyle}>
         <div style={statCardStyle}>
-          <div style={{ ...statValueStyle, color: '#6366f1' }}>{stats.total}</div>
+          <div style={statValueStyle}>{stats.total}</div>
           <div style={statLabelStyle}>Total Goals</div>
         </div>
         <div style={statCardStyle}>
@@ -352,7 +432,7 @@ export function GoalsDashboard({
       {viewMode === 'lanes' && (
         <div style={lanesContainerStyle}>
           {LANES.map((lane) => {
-            const laneGoalsList = getGoalsForLane(lane.id)
+            const laneGoalsList = laneGoals[lane.id] || []
             const laneProgress =
               laneGoalsList.length > 0
                 ? Math.round(
@@ -365,8 +445,14 @@ export function GoalsDashboard({
               <div
                 key={lane.id}
                 style={laneColumnStyle}
-                onDragOver={handleDragOver}
-                onDrop={(e) => handleDrop(e, lane.id)}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault()
+                  const goalId = e.dataTransfer.getData('goalId')
+                  if (goalId) {
+                    handleMoveBetweenLanes(goalId, lane.id)
+                  }
+                }}
               >
                 <div style={laneHeaderStyle(lane.color)}>
                   <span style={laneIconStyle}>{lane.icon}</span>
@@ -391,7 +477,14 @@ export function GoalsDashboard({
                     <div
                       key={goal.id}
                       draggable
-                      onDragStart={(e) => handleDragStart(e, goal.id)}
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData('goalId', goal.id)
+                        e.dataTransfer.setData('fromLane', getLaneKey(goal))
+                      }}
+                      onDragEnd={(e) => {
+                        // Clear drag data
+                        e.dataTransfer.clearData()
+                      }}
                       style={{ marginBottom: '12px', cursor: 'grab' }}
                     >
                       <GoalCard
@@ -445,44 +538,144 @@ export function GoalsDashboard({
         </div>
       )}
 
-      {/* Unassigned Goals */}
-      {getGoalsForLane('unassigned').length > 0 && viewMode === 'lanes' && (
-        <div style={unassignedSectionStyle}>
-          <h3 style={unassignedTitleStyle}>Unassigned Goals</h3>
-          <div style={unassignedGridStyle}>
-            {getGoalsForLane('unassigned').map((goal) => (
-              <div
-                key={goal.id}
-                draggable
-                onDragStart={(e) => handleDragStart(e, goal.id)}
-                style={{ cursor: 'grab' }}
-              >
-                <GoalCard
-                  goal={goal}
-                  onUpdate={handleUpdateGoal}
-                  onAddMetric={(id) => onAddMetric(id, {})}
-                  onViewHistory={onViewHistory}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Add Goal Modal */}
       {showAddModal && (
-        <div style={modalOverlayStyle} onClick={() => setShowAddModal(false)}>
-          <div style={modalContentStyle} onClick={(e) => e.stopPropagation()}>
-            <h2 style={modalTitleStyle}>Add New Goal</h2>
-            <p style={{ color: '#64748b', marginBottom: '20px' }}>
-              Goals are managed in Notion. This is a placeholder for future functionality.
-            </p>
-            <button onClick={() => setShowAddModal(false)} style={closeButtonStyle}>
-              Close
+        <AddGoalModal
+          onAdd={handleAddGoal}
+          onClose={() => setShowAddModal(false)}
+          lanes={LANES}
+        />
+      )}
+    </div>
+  )
+}
+
+// Add Goal Modal Component
+interface AddGoalModalProps {
+  onAdd: (goal: Partial<Goal>) => Promise<void>
+  onClose: () => void
+  lanes: typeof LANES
+}
+
+function AddGoalModal({ onAdd, onClose, lanes }: AddGoalModalProps) {
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [lane, setLane] = useState(lanes[0].name)
+  const [status, setStatus] = useState<Goal['status']>('Planning')
+  const [progress, setProgress] = useState(0)
+  const [keyResults, setKeyResults] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    try {
+      await onAdd({
+        title,
+        description,
+        lane_name: lane,
+        status,
+        progress_percentage: progress,
+        key_results: keyResults
+          ? keyResults.split('\n').filter((kr) => kr.trim())
+          : [],
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <div style={modalOverlayStyle} onClick={onClose}>
+      <div style={modalStyle} onClick={(e) => e.stopPropagation()}>
+        <div style={modalHeaderStyle}>
+          <h2 style={modalTitleStyle}>Add New Goal</h2>
+          <button onClick={onClose} style={closeButtonStyle}>
+            ×
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} style={formStyle}>
+          <div style={formGroupStyle}>
+            <label style={labelStyle}>Title *</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              style={inputStyle}
+              placeholder="Enter goal title..."
+            />
+          </div>
+
+          <div style={formGroupStyle}>
+            <label style={labelStyle}>Description</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              style={{ ...inputStyle, minHeight: '80px', resize: 'vertical' }}
+              placeholder="What do you want to achieve?"
+            />
+          </div>
+
+          <div style={formRowStyle}>
+            <div style={formGroupStyle}>
+              <label style={labelStyle}>Lane</label>
+              <select value={lane} onChange={(e) => setLane(e.target.value)} style={inputStyle}>
+                {lanes.map((l) => (
+                  <option key={l.id} value={l.name}>
+                    {l.icon} {l.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div style={formGroupStyle}>
+              <label style={labelStyle}>Status</label>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value as Goal['status'])}
+                style={inputStyle}
+              >
+                <option value="Planning">Planning</option>
+                <option value="In progress">In Progress</option>
+                <option value="Review">Review</option>
+                <option value="Paused">Paused</option>
+              </select>
+            </div>
+          </div>
+
+          <div style={formGroupStyle}>
+            <label style={labelStyle}>Initial Progress: {progress}%</label>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={progress}
+              onChange={(e) => setProgress(parseInt(e.target.value))}
+              style={sliderStyle}
+            />
+          </div>
+
+          <div style={formGroupStyle}>
+            <label style={labelStyle}>Key Results (one per line)</label>
+            <textarea
+              value={keyResults}
+              onChange={(e) => setKeyResults(e.target.value)}
+              style={{ ...inputStyle, minHeight: '100px', fontFamily: 'monospace' }}
+              placeholder="Key result 1&#10;Key result 2&#10;Key result 3"
+            />
+          </div>
+
+          <div style={modalActionsStyle}>
+            <button type="button" onClick={onClose} style={cancelButtonStyle}>
+              Cancel
+            </button>
+            <button type="submit" disabled={isSubmitting} style={submitButtonStyle}>
+              {isSubmitting ? 'Adding...' : 'Add Goal'}
             </button>
           </div>
-        </div>
-      )}
+        </form>
+      </div>
     </div>
   )
 }
@@ -498,9 +691,7 @@ const headerStyle: React.CSSProperties = {
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'flex-start',
-  marginBottom: '20px',
-  flexWrap: 'wrap',
-  gap: '16px',
+  marginBottom: '24px',
 }
 
 const titleStyle: React.CSSProperties = {
@@ -518,7 +709,287 @@ const subtitleStyle: React.CSSProperties = {
 
 const addButtonStyle: React.CSSProperties = {
   padding: '10px 20px',
+  background: '#6366f1',
+  color: 'white',
+  border: 'none',
   borderRadius: '8px',
+  fontSize: '14px',
+  fontWeight: '500',
+  cursor: 'pointer',
+}
+
+const filtersStyle: React.CSSProperties = {
+  display: 'flex',
+  gap: '16px',
+  marginBottom: '24px',
+  flexWrap: 'wrap',
+}
+
+const searchInputStyle: React.CSSProperties = {
+  padding: '10px 14px',
+  borderRadius: '8px',
+  border: '1px solid #cbd5e1',
+  fontSize: '14px',
+  width: '250px',
+}
+
+const filterGroupStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+}
+
+const filterLabelStyle: React.CSSProperties = {
+  fontSize: '14px',
+  fontWeight: '500',
+  color: '#64748b',
+}
+
+const selectStyle: React.CSSProperties = {
+  padding: '10px 14px',
+  borderRadius: '8px',
+  border: '1px solid #cbd5e1',
+  fontSize: '14px',
+  background: 'white',
+}
+
+const statsRowStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(5, 1fr)',
+  gap: '16px',
+  marginBottom: '32px',
+}
+
+const statCardStyle: React.CSSProperties = {
+  background: 'white',
+  borderRadius: '12px',
+  padding: '20px',
+  textAlign: 'center',
+  border: '1px solid #e2e8f0',
+}
+
+const statValueStyle: React.CSSProperties = {
+  fontSize: '32px',
+  fontWeight: '700',
+  color: '#1e293b',
+}
+
+const statLabelStyle: React.CSSProperties = {
+  fontSize: '14px',
+  color: '#64748b',
+  marginTop: '4px',
+}
+
+const lanesContainerStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(5, 1fr)',
+  gap: '16px',
+}
+
+const laneColumnStyle: React.CSSProperties = {
+  background: '#f8fafc',
+  borderRadius: '12px',
+  overflow: 'hidden',
+}
+
+const laneHeaderStyle: (color: string) => React.CSSProperties = (color) => ({
+  padding: '16px',
+  background: color,
+  color: 'white',
+  display: 'flex',
+  gap: '12px',
+  alignItems: 'center',
+})
+
+const laneIconStyle: React.CSSProperties = {
+  fontSize: '24px',
+}
+
+const laneNameStyle: React.CSSProperties = {
+  fontSize: '16px',
+  fontWeight: '600',
+}
+
+const laneMetaStyle: React.CSSProperties = {
+  fontSize: '12px',
+  opacity: 0.9,
+}
+
+const laneProgressStyle: React.CSSProperties = {
+  height: '4px',
+  background: 'rgba(255,255,255,0.3)',
+}
+
+const laneProgressFillStyle: React.CSSProperties = {
+  height: '100%',
+  transition: 'width 0.3s ease',
+}
+
+const laneGoalsStyle: React.CSSProperties = {
+  padding: '12px',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '12px',
+}
+
+const emptyLaneStyle: React.CSSProperties = {
+  padding: '20px',
+  textAlign: 'center',
+  color: '#94a3b8',
+  fontSize: '13px',
+}
+
+const unassignedSectionStyle: React.CSSProperties = {
+  marginTop: '32px',
+  paddingTop: '24px',
+  borderTop: '1px solid #e2e8f0',
+}
+
+const unassignedTitleStyle: React.CSSProperties = {
+  fontSize: '18px',
+  fontWeight: '600',
+  color: '#64748b',
+  marginBottom: '16px',
+}
+
+const unassignedGridStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+  gap: '16px',
+}
+
+const loadingStyle: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '60px',
+  color: '#64748b',
+}
+
+const spinnerStyle: React.CSSProperties = {
+  width: '32px',
+  height: '32px',
+  border: '3px solid #e2e8f0',
+  borderTopColor: '#6366f1',
+  borderRadius: '50%',
+  animation: 'spin 1s linear infinite',
+  marginBottom: '16px',
+}
+
+const retryButtonStyle: React.CSSProperties = {
+  padding: '10px 20px',
+  borderRadius: '6px',
+  border: 'none',
+  background: '#6366f1',
+  color: 'white',
+  fontSize: '14px',
+  cursor: 'pointer',
+}
+
+// Modal Styles
+const modalOverlayStyle: React.CSSProperties = {
+  position: 'fixed',
+  inset: 0,
+  background: 'rgba(0,0,0,0.5)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  zIndex: 1000,
+}
+
+const modalStyle: React.CSSProperties = {
+  background: 'white',
+  borderRadius: '12px',
+  width: '100%',
+  maxWidth: '500px',
+  maxHeight: '90vh',
+  overflow: 'auto',
+}
+
+const modalHeaderStyle: React.CSSProperties = {
+  padding: '20px 24px',
+  borderBottom: '1px solid #e2e8f0',
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+}
+
+const modalTitleStyle: React.CSSProperties = {
+  fontSize: '18px',
+  fontWeight: '600',
+  margin: 0,
+}
+
+const closeButtonStyle: React.CSSProperties = {
+  width: '32px',
+  height: '32px',
+  border: 'none',
+  background: '#f1f5f9',
+  borderRadius: '6px',
+  fontSize: '20px',
+  cursor: 'pointer',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}
+
+const formStyle: React.CSSProperties = {
+  padding: '24px',
+}
+
+const formGroupStyle: React.CSSProperties = {
+  marginBottom: '20px',
+}
+
+const formRowStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: '16px',
+}
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  fontSize: '14px',
+  fontWeight: '500',
+  color: '#475569',
+  marginBottom: '6px',
+}
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '10px 14px',
+  borderRadius: '6px',
+  border: '1px solid #cbd5e1',
+  fontSize: '14px',
+}
+
+const sliderStyle: React.CSSProperties = {
+  width: '100%',
+  cursor: 'pointer',
+}
+
+const modalActionsStyle: React.CSSProperties = {
+  display: 'flex',
+  gap: '12px',
+  justifyContent: 'flex-end',
+  marginTop: '24px',
+  paddingTop: '20px',
+  borderTop: '1px solid #e2e8f0',
+}
+
+const cancelButtonStyle: React.CSSProperties = {
+  padding: '10px 20px',
+  borderRadius: '6px',
+  border: '1px solid #cbd5e1',
+  background: 'white',
+  fontSize: '14px',
+  cursor: 'pointer',
+}
+
+const submitButtonStyle: React.CSSProperties = {
+  padding: '10px 20px',
+  borderRadius: '6px',
   border: 'none',
   background: '#6366f1',
   color: 'white',
@@ -527,58 +998,7 @@ const addButtonStyle: React.CSSProperties = {
   cursor: 'pointer',
 }
 
-const filtersStyle: React.CSSProperties = {
-  display: 'flex',
-  gap: '12px',
-  marginBottom: '20px',
-  flexWrap: 'wrap',
-}
-
-const searchInputStyle: React.CSSProperties = {
-  padding: '10px 16px',
-  borderRadius: '8px',
-  border: '1px solid #e2e8f0',
-  fontSize: '14px',
-  minWidth: '250px',
-  outline: 'none',
-}
-
-const selectStyle: React.CSSProperties = {
-  padding: '10px 16px',
-  borderRadius: '8px',
-  border: '1px solid #e2e8f0',
-  fontSize: '14px',
-  cursor: 'pointer',
-  outline: 'none',
-}
-
-const statsRowStyle: React.CSSProperties = {
-  display: 'flex',
-  gap: '16px',
-  marginBottom: '24px',
-  flexWrap: 'wrap',
-}
-
-const statCardStyle: React.CSSProperties = {
-  background: 'white',
-  borderRadius: '12px',
-  padding: '16px 24px',
-  textAlign: 'center',
-  border: '1px solid #e2e8f0',
-  flex: '1 1 150px',
-}
-
-const statValueStyle: React.CSSProperties = {
-  fontSize: '28px',
-  fontWeight: '700',
-}
-
-const statLabelStyle: React.CSSProperties = {
-  fontSize: '13px',
-  color: '#64748b',
-  marginTop: '4px',
-}
-
+// View toggle styles
 const viewToggleStyle: React.CSSProperties = {
   display: 'flex',
   gap: '4px',
@@ -605,68 +1025,7 @@ const activeViewStyle: React.CSSProperties = {
   fontWeight: '500',
 }
 
-const lanesContainerStyle: React.CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(4, 1fr)',
-  gap: '16px',
-  alignItems: 'flex-start',
-}
-
-const laneColumnStyle: React.CSSProperties = {
-  background: '#f8fafc',
-  borderRadius: '12px',
-  overflow: 'hidden',
-  minHeight: '200px',
-}
-
-const laneHeaderStyle: (color: string) => React.CSSProperties = (color) => ({
-  padding: '16px',
-  background: 'white',
-  borderBottom: '3px solid',
-  borderColor: color,
-  display: 'flex',
-  alignItems: 'center',
-  gap: '12px',
-})
-
-const laneIconStyle: React.CSSProperties = {
-  fontSize: '24px',
-}
-
-const laneNameStyle: React.CSSProperties = {
-  fontSize: '16px',
-  fontWeight: '600',
-  color: '#1e293b',
-}
-
-const laneMetaStyle: React.CSSProperties = {
-  fontSize: '12px',
-  color: '#64748b',
-  marginTop: '2px',
-}
-
-const laneProgressStyle: React.CSSProperties = {
-  height: '4px',
-  background: '#e2e8f0',
-}
-
-const laneProgressFillStyle: React.CSSProperties = {
-  height: '100%',
-  transition: 'width 0.3s ease',
-}
-
-const laneGoalsStyle: React.CSSProperties = {
-  padding: '12px',
-  minHeight: '100px',
-}
-
-const emptyLaneStyle: React.CSSProperties = {
-  textAlign: 'center',
-  padding: '20px',
-  color: '#94a3b8',
-  fontSize: '13px',
-}
-
+// List view styles
 const listViewStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
@@ -680,85 +1039,4 @@ const emptyListStyle: React.CSSProperties = {
   padding: '40px',
   color: '#94a3b8',
   fontSize: '14px',
-}
-
-const unassignedSectionStyle: React.CSSProperties = {
-  marginTop: '32px',
-  paddingTop: '24px',
-  borderTop: '1px solid #e2e8f0',
-}
-
-const unassignedTitleStyle: React.CSSProperties = {
-  fontSize: '18px',
-  fontWeight: '600',
-  color: '#64748b',
-  marginBottom: '16px',
-}
-
-const unassignedGridStyle: React.CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-  gap: '16px',
-}
-
-const modalOverlayStyle: React.CSSProperties = {
-  position: 'fixed',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  background: 'rgba(0,0,0,0.5)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  zIndex: 1000,
-}
-
-const modalContentStyle: React.CSSProperties = {
-  background: 'white',
-  borderRadius: '16px',
-  padding: '24px',
-  maxWidth: '500px',
-  width: '90%',
-}
-
-const modalTitleStyle: React.CSSProperties = {
-  fontSize: '20px',
-  fontWeight: '600',
-  marginBottom: '8px',
-}
-
-const closeButtonStyle: React.CSSProperties = {
-  padding: '10px 20px',
-  borderRadius: '8px',
-  border: '1px solid #e2e8f0',
-  background: 'white',
-  cursor: 'pointer',
-  marginTop: '16px',
-}
-
-const loadingStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: '60px',
-}
-
-const spinnerStyle: React.CSSProperties = {
-  width: '40px',
-  height: '40px',
-  border: '3px solid #e2e8f0',
-  borderTopColor: '#6366f1',
-  borderRadius: '50%',
-  animation: 'spin 1s linear infinite',
-}
-
-const retryButtonStyle: React.CSSProperties = {
-  padding: '10px 20px',
-  borderRadius: '8px',
-  border: 'none',
-  background: '#6366f1',
-  color: 'white',
-  cursor: 'pointer',
 }

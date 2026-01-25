@@ -19,8 +19,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
     return { label: 'Critical', color: '#E74C3C' };
   };
 
-  const health = project.healthScore !== undefined
-    ? getHealthStatus(project.healthScore)
+  const healthScore = project.autonomyScore // Use autonomyScore as health indicator
+  const health = healthScore !== undefined
+    ? getHealthStatus(healthScore)
     : { label: 'Unknown', color: '#95A5A6' };
 
   return (
@@ -38,12 +39,12 @@ export function ProjectCard({ project }: ProjectCardProps) {
       <div
         className="h-44 bg-gradient-to-br flex items-center justify-center relative"
         style={{
-          background: project.coverImageUrl
-            ? `url(${project.coverImageUrl}) center/cover`
+          background: project.coverImage
+            ? `url(${project.coverImage}) center/cover`
             : `linear-gradient(135deg, ${themeColor}22, ${themeColor}44)`
         }}
       >
-        {!project.coverImageUrl && (
+        {!project.coverImage && (
           <div className="text-5xl filter drop-shadow-md">{themeIcon}</div>
         )}
       </div>
@@ -56,14 +57,14 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
         {/* Metadata */}
         <div className="flex gap-3 flex-wrap text-sm text-gray-600">
-          {project.places.length > 0 && (
+          {project.relatedPlaces && project.relatedPlaces.length > 0 && (
             <span className="flex items-center gap-1">
-              📍 {project.places[0].name}
+              📍 {project.relatedPlaces[0].displayName}
             </span>
           )}
-          {project.organizations.length > 0 && (
+          {project.organization && (
             <span className="flex items-center gap-1">
-              🏢 {project.organizations[0].name}
+              🏢 {project.organization}
             </span>
           )}
         </div>
@@ -97,19 +98,19 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </div>
 
         {/* Health Indicator */}
-        {project.healthScore !== undefined && (
+        {healthScore !== undefined && (
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-sm font-semibold text-gray-800">
-              <span>Health</span>
+              <span>Autonomy</span>
               <span style={{ color: health.color }}>
-                {project.healthScore}/100
+                {healthScore}/100
               </span>
             </div>
             <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full transition-all duration-500"
                 style={{
-                  width: `${project.healthScore}%`,
+                  width: `${healthScore}%`,
                   background: health.color
                 }}
               />
@@ -117,28 +118,20 @@ export function ProjectCard({ project }: ProjectCardProps) {
           </div>
         )}
 
-        {/* Beautiful Obsolescence Score */}
-        {project.beautifulObsolescenceScore !== undefined && (
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-sm font-semibold text-gray-800">
-              <span>Beautiful Obsolescence</span>
-              <span className="text-purple-600">
-                {project.beautifulObsolescenceScore}/100
-              </span>
-            </div>
-            <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-blue-500 to-purple-600"
-                style={{ width: `${project.beautifulObsolescenceScore}%` }}
-              />
-            </div>
+        {/* Rocket Booster Stage */}
+        {project.rocketBoosterStage && (
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold text-gray-800">Stage:</span>
+            <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-700 capitalize">
+              {project.rocketBoosterStage}
+            </span>
           </div>
         )}
 
         {/* Summary */}
-        {project.summary && (
+        {(project.aiSummary || project.description) && (
           <p className="text-sm leading-relaxed text-gray-600 line-clamp-3">
-            {project.summary}
+            {project.aiSummary || project.description}
           </p>
         )}
 

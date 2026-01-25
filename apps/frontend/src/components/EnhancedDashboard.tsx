@@ -6,6 +6,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Card } from './ui/Card'
 import { MetricTile } from './ui/MetricTile'
+import { resolveApiUrl } from '../config/env'
 
 interface CashPosition {
   net: number
@@ -120,7 +121,7 @@ export function EnhancedDashboard() {
     const loadDashboard = async () => {
       try {
         setLoading(true)
-        const response = await fetch('http://localhost:4000/api/v2/dashboard/summary')
+        const response = await fetch(resolveApiUrl('/api/v2/dashboard/summary'))
 
         if (!response.ok) {
           throw new Error(`Dashboard API failed: ${response.status}`)

@@ -5,7 +5,15 @@
   "main": "server.js",
   "scripts": {
     "dev": "node server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "cd core && vitest run --config vitest.config.js",
+    "test:integration": "cd core && vitest run --config vitest.integration.config.js",
+    "test:e2e": "cd core && vitest run --config vitest.e2e.config.js",
+    "test:coverage": "cd core && vitest run --coverage --config vitest.config.js",
+    "test:watch": "cd core && vitest --config vitest.config.js",
+    "lint": "eslint core/src --ext .js,.ts",
+    "lint:fix": "eslint core/src --ext .js,.ts --fix"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.65.0",
@@ -25,5 +33,9 @@
     "pg": "^8.16.3",
     "postgres": "^3.4.7",
     "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^2.1.9",
+    "vitest": "^2.1.9"
   }
 }

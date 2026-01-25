@@ -13,11 +13,13 @@ class UnifiedDataModel {
       clientId: 'act-unified-data-model',
       brokers: (process.env.KAFKA_BROKERS || 'localhost:9092').split(',')
     });
-    
+
     this.consumer = this.kafka.consumer({ groupId: 'act-data-model-group' });
     this.producer = this.kafka.producer();
-    this.redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
-    
+
+    // Lazy Redis initialization - only connect if REDIS_URL is configured
+    this._redis = null;
+
     this.supabase = createClient(
       process.env.SUPABASE_URL,
       process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -33,8 +35,21 @@ class UnifiedDataModel {
     // Entity relationship mappings
     this.relationships = new Map();
     this.setupRelationships();
-    
+
     console.log('🧠 Unified Data Model initialized');
+  }
+
+  /**
+   * Lazy getter for Redis connection
+   */
+  get redis() {
+    if (!this._redis && process.env.REDIS_URL) {
+      this._redis = new Redis(process.env.REDIS_URL);
+      this._redis.on('error', (err) => {
+        console.warn('[UnifiedDataModel] Redis connection error (non-fatal):', err.message);
+      });
+    }
+    return this._redis;
   }
 
   initializeSchemas() {
@@ -459,16 +474,18 @@ class UnifiedDataModel {
 
   async storeUnifiedEntity(entityType, entity) {
     const cacheKey = `unified:${entityType}:${entity.id}`;
-    
-    // Store in Redis with TTL
-    await this.redis.setex(cacheKey, 86400, JSON.stringify({
-      ...entity,
-      unified_at: new Date().toISOString()
-    }));
-    
-    // Also store in a searchable index
-    await this.redis.sadd(`unified:entities:${entityType}`, entity.id);
-    
+
+    // Store in Redis with TTL (if available)
+    if (this.redis) {
+      await this.redis.setex(cacheKey, 86400, JSON.stringify({
+        ...entity,
+        unified_at: new Date().toISOString()
+      }));
+
+      // Also store in a searchable index
+      await this.redis.sadd(`unified:entities:${entityType}`, entity.id);
+    }
+
     console.log(`💾 Stored unified ${entityType}: ${entity.id}`);
   }
 
@@ -525,13 +542,15 @@ class UnifiedDataModel {
   }
 
   async storeRelationship(relationship) {
+    if (!this.redis) return; // Skip if Redis not available
+
     const relationshipKey = `relationship:${relationship.from.type}:${relationship.from.id}:${relationship.relationship}:${relationship.to.type}:${relationship.to.id}`;
-    
+
     await this.redis.setex(relationshipKey, 86400, JSON.stringify({
       ...relationship,
       created_at: new Date().toISOString()
     }));
-    
+
     // Add to relationship indexes
     await this.redis.sadd(`relationships:from:${relationship.from.type}:${relationship.from.id}`, relationshipKey);
     await this.redis.sadd(`relationships:to:${relationship.to.type}:${relationship.to.id}`, relationshipKey);
@@ -585,13 +604,16 @@ class UnifiedDataModel {
   }
 
   async storeInsight(insight) {
-    const insightKey = `insight:${insight.id}`;
-    await this.redis.setex(insightKey, 604800, JSON.stringify(insight)); // 7 days
-    
-    // Add to insights index
-    await this.redis.sadd(`insights:type:${insight.type}`, insight.id);
-    await this.redis.sadd('insights:pending_review', insight.id);
-    
+    // Store in Redis if available
+    if (this.redis) {
+      const insightKey = `insight:${insight.id}`;
+      await this.redis.setex(insightKey, 604800, JSON.stringify(insight)); // 7 days
+
+      // Add to insights index
+      await this.redis.sadd(`insights:type:${insight.type}`, insight.id);
+      await this.redis.sadd('insights:pending_review', insight.id);
+    }
+
     // Publish insight for immediate processing
     await this.producer.send({
       topic: 'act.farmhand.insights',
@@ -666,27 +688,31 @@ class UnifiedDataModel {
   }
 
   async getUnifiedEntity(entityType, entityId) {
+    if (!this.redis) return null;
+
     const cacheKey = `unified:${entityType}:${entityId}`;
     const cached = await this.redis.get(cacheKey);
-    
+
     if (cached) {
       return JSON.parse(cached);
     }
-    
+
     return null;
   }
 
   async searchUnifiedEntities(entityType, query) {
+    if (!this.redis) return [];
+
     const entityIds = await this.redis.smembers(`unified:entities:${entityType}`);
     const entities = [];
-    
+
     for (const entityId of entityIds) {
       const entity = await this.getUnifiedEntity(entityType, entityId);
       if (entity && this.entityMatchesQuery(entity, query)) {
         entities.push(entity);
       }
     }
-    
+
     return entities;
   }
 
@@ -699,7 +725,9 @@ class UnifiedDataModel {
     try {
       await this.consumer.disconnect();
       await this.producer.disconnect();
-      await this.redis.quit();
+      if (this.redis) {
+        await this.redis.quit();
+      }
       console.log('✅ Unified Data Model disconnected');
     } catch (error) {
       console.error('🚨 Error disconnecting Unified Data Model:', error);
@@ -711,7 +739,7 @@ class UnifiedDataModel {
       schemas_loaded: Object.keys(this.schemas).length,
       transformers_configured: this.transformers.size,
       relationships_defined: this.relationships.size,
-      redis_connected: this.redis.status === 'ready'
+      redis_connected: this.redis ? this.redis.status === 'ready' : false
     };
   }
 }

@@ -13,9 +13,20 @@ class BaseFinancialAgent {
       process.env.SUPABASE_URL,
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
-    this.redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+    // Lazy Redis initialization
+    this._redis = null;
     this.policy = null;
     this.initialized = false;
+  }
+
+  get redis() {
+    if (!this._redis && process.env.REDIS_URL) {
+      this._redis = new Redis(process.env.REDIS_URL);
+      this._redis.on('error', (err) => {
+        console.warn(`[${this.name}] Redis error (non-fatal):`, err.message);
+      });
+    }
+    return this._redis;
   }
 
   async initialize() {
@@ -41,9 +52,11 @@ class BaseFinancialAgent {
       ...actionData
     };
 
-    // Store in Redis for immediate access
-    await this.redis.lpush(`agent:${this.name}:actions`, JSON.stringify(logEntry));
-    await this.redis.ltrim(`agent:${this.name}:actions`, 0, 999); // Keep last 1000 actions
+    // Store in Redis for immediate access (if available)
+    if (this.redis) {
+      await this.redis.lpush(`agent:${this.name}:actions`, JSON.stringify(logEntry));
+      await this.redis.ltrim(`agent:${this.name}:actions`, 0, 999); // Keep last 1000 actions
+    }
 
     // Store in Supabase for permanent audit trail
     const { error } = await this.supabase

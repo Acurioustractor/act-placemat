@@ -1,4 +1,4 @@
-import { resolveApiUrl } from '../config/env'
+import { resolveApiUrl, resolveCommandCenterUrl } from '../config/env'
 import type { Project } from '../types/project'
 
 export interface DirectionFinanceSummary {
@@ -218,9 +218,9 @@ export interface CommunicationLogResponse {
 }
 
 export class ApiService {
-  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  private async request<T>(endpoint: string, options: RequestInit & { useCommandCenter?: boolean } = {}): Promise<T> {
     try {
-      const { method = 'GET', headers: customHeaders, body } = options
+      const { method = 'GET', headers: customHeaders, body, useCommandCenter } = options
 
       console.log(`🔍 Fetching: ${endpoint}`)
 
@@ -230,7 +230,10 @@ export class ApiService {
         headers.set('Content-Type', 'application/json')
       }
 
-      const response = await fetch(resolveApiUrl(endpoint), {
+      // Use Command Center URL for calendar endpoints and other Command Center APIs
+      const url = useCommandCenter ? resolveCommandCenterUrl(endpoint) : resolveApiUrl(endpoint)
+
+      const response = await fetch(url, {
         method,
         headers,
         mode: 'cors',
@@ -262,48 +265,56 @@ export class ApiService {
   // Real Projects - From Notion databases
   async getDashboardProjects(limit: number = 100) {
     const result = await this.request<{ success: boolean; count: number; projects: unknown[] }>(
-      '/api/real/projects'
+      '/api/projects/notion'
     )
 
     // Return projects in the expected format for compatibility
-    if (result.success && result.projects) {
-      // Map backend fields to frontend expectations (title -> name)
-      const mappedProjects: Project[] = result.projects.map((raw, index) => {
-        const p = (raw ?? {}) as any
-        const name = p.name || p.title || 'Untitled Project'
+    if (result && result.projects) {
+      // Map backend fields to frontend expectations
+      const mappedProjects: Project[] = (result.projects as unknown[]).map((raw: any, index: number) => {
+        const p = raw ?? {}
+        const data = p.data || {}
+
+        // Use data fields if available, fallback to root level
+        const name = data.name || p.name || p.title || 'Untitled Project'
         const id = String(
           p.id ??
+            p.notion_id ??
+            data.id ??
             p.project_id ??
             p.notionId ??
-            p.notion_id ??
             p.notionIdShort ??
             p.notion_id_short ??
+            data.notionId ??
             p.slug ??
             name ??
             index,
         )
 
-        const coverUrl =
-          p.cover_url ??
-          p.coverUrl ??
-          p.coverImageUrl ??
-          p.cover_image_url ??
-          p.coverImage ??
-          p.cover_image ??
-          null
+        // Extract status - try data first, then root
+        const status = data.status || p.status || 'Planning'
+        const projectType = data.type || p.type || 'mixed'
 
         return {
-          ...(p as Record<string, unknown>),
+          ...p,
           id,
           name,
-          title: p.title || name,
-          cover_url: p.cover_url ?? coverUrl,
-          coverImageUrl: p.coverImageUrl ?? coverUrl,
-          coverImage: p.coverImage ?? coverUrl ?? null,
+          title: data.title || p.title || name,
+          status,
+          projectType: projectType as any,
+          description: data.description || p.description || null,
+          area: data.area || p.area || null,
+          themes: data.themes || p.tags || [],
+          budget: data.budget || p.budget || null,
+          lead: data.lead || p.lead || null,
+          funding: data.funding || p.funding || null,
+          coverImage: data.coverImage || p.coverImage || null,
+          startDate: data.startDate || p.startDate || null,
+          updatedAt: data.updatedAt || p.updatedAt || null,
         } as Project
       })
 
-      // Limit the results if needed (increased default to 100 to show all projects)
+      // Limit the results if needed
       const projects = mappedProjects.slice(0, limit)
       return { projects }
     }
@@ -412,7 +423,81 @@ export class ApiService {
 
   async getCalendarHighlights(limit: number = 5, days: number = 14) {
     const params = new URLSearchParams({ limit: String(limit), days: String(days) })
-    return this.request(`/api/calendar/events?${params.toString()}`)
+    return this.request(`/api/calendar/events?${params.toString()}`, { useCommandCenter: true })
+  }
+
+  // Get events from ALL calendars (aggregated across organizations)
+  // Now pulls from Supabase calendar_events table via Command Center
+  async getCalendarEventsAll(days: number = 30, limit: number = 100) {
+    const now = new Date()
+    const start = new Date(now)
+    start.setDate(start.getDate() - 7) // Include past week
+    const end = new Date(now)
+    end.setDate(end.getDate() + days)
+
+    const params = new URLSearchParams({
+      start: start.toISOString(),
+      end: end.toISOString(),
+      limit: String(limit)
+    })
+    return this.request(`/api/calendar/events?${params.toString()}`, { useCommandCenter: true })
+  }
+
+  // List all accessible calendars
+  async getCalendarList() {
+    return this.request('/api/calendar/calendars')
+  }
+
+  // Get calendar events for date range (new Supabase-backed API via Command Center)
+  async getCalendarEvents(options: {
+    start?: string
+    end?: string
+    project?: string
+    calendarId?: string
+    limit?: number
+  } = {}) {
+    const params = new URLSearchParams()
+    if (options.start) params.set('start', options.start)
+    if (options.end) params.set('end', options.end)
+    if (options.project) params.set('project', options.project)
+    if (options.calendarId) params.set('calendar_id', options.calendarId)
+    if (options.limit) params.set('limit', String(options.limit))
+    return this.request(`/api/calendar/events?${params.toString()}`, { useCommandCenter: true })
+  }
+
+  // Get today's events with free time blocks
+  async getCalendarToday() {
+    return this.request('/api/calendar/today', { useCommandCenter: true })
+  }
+
+  // Get calendar statistics
+  async getCalendarStats(start?: string, end?: string) {
+    const params = new URLSearchParams()
+    if (start) params.set('start', start)
+    if (end) params.set('end', end)
+    return this.request(`/api/calendar/stats?${params.toString()}`, { useCommandCenter: true })
+  }
+
+  // Get monthly calendar report
+  async getCalendarMonthlyReport(year: number, month: number) {
+    return this.request(`/api/calendar/reports/monthly/${year}/${month}`, { useCommandCenter: true })
+  }
+
+  // Link project to calendar event
+  async linkProjectToEvent(eventId: string, projectCode: string) {
+    return this.request(`/api/calendar/events/${eventId}/link-project`, {
+      method: 'POST',
+      body: JSON.stringify({ project_code: projectCode }),
+      useCommandCenter: true
+    })
+  }
+
+  // Get calendar events for a project
+  async getProjectCalendarEvents(projectCode: string, options: { upcoming?: boolean; limit?: number } = {}) {
+    const params = new URLSearchParams()
+    params.set('upcoming', String(options.upcoming !== false))
+    if (options.limit) params.set('limit', String(options.limit))
+    return this.request(`/api/projects/${encodeURIComponent(projectCode)}/calendar?${params.toString()}`, { useCommandCenter: true })
   }
 
   async getGmailStatus() {
@@ -607,6 +692,35 @@ export class ApiService {
   // Convenience method that matches the getProjects format
   async getProjects() {
     return this.getDashboardProjects()
+  }
+
+  // Live Notion projects from Command Center (synced to Supabase)
+  async getNotionProjects(options: { status?: string; type?: string; limit?: number } = {}) {
+    const params = new URLSearchParams()
+    if (options.status) params.set('status', options.status)
+    if (options.type) params.set('type', options.type)
+    if (options.limit) params.set('limit', String(options.limit))
+    const query = params.toString()
+    const endpoint = query ? `/api/projects/notion?${query}` : '/api/projects/notion'
+    return this.request<{
+      success: boolean
+      count: number
+      last_synced: string
+      projects: Array<{
+        id: string
+        notion_id: string
+        name: string
+        status: string | null
+        type: string | null
+        budget: number | null
+        progress: number | null
+        tags: string[]
+        metadata: Record<string, unknown>
+        data: Record<string, unknown>
+        last_synced: string
+        updated_at: string
+      }>
+    }>(endpoint, { useCommandCenter: true })
   }
 
   async getProjectNeeds() {

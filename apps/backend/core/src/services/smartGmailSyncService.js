@@ -15,9 +15,13 @@ export class SmartGmailSyncService extends EventEmitter {
     this.gmail = null;
     this.oauth2Client = null;
     this.isAuthenticated = false;
-    this.redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+    // Lazy Redis initialization
+    this._redis = null;
     this.supabase = null;
-    
+
+    // In-memory fallback for when Redis is not available
+    this._memoryCache = new Map();
+
     // Smart filters for ACT community emails
     this.communityFilters = {
       // Project-related keywords from your real Notion projects
@@ -65,6 +69,30 @@ export class SmartGmailSyncService extends EventEmitter {
     } else {
       console.warn('⚠️  Supabase credentials missing for SmartGmailSyncService – community email queries disabled');
     }
+  }
+
+  get redis() {
+    if (!this._redis && process.env.REDIS_URL) {
+      this._redis = new Redis(process.env.REDIS_URL);
+      this._redis.on('error', (err) => {
+        console.warn('[SmartGmailSyncService] Redis error (non-fatal):', err.message);
+      });
+    }
+    return this._redis;
+  }
+
+  async redisGet(key) {
+    if (this.redis) {
+      return this.redis.get(key);
+    }
+    return this._memoryCache.get(key) || null;
+  }
+
+  async redisSet(key, value) {
+    if (this.redis) {
+      return this.redis.set(key, value);
+    }
+    this._memoryCache.set(key, value);
   }
 
   /**
@@ -625,8 +653,8 @@ export class SmartGmailSyncService extends EventEmitter {
    */
   async storeTokens(tokens) {
     try {
-      await this.redis.set('gmail:tokens', JSON.stringify(tokens));
-      console.log('🔐 Gmail tokens stored in Redis');
+      await this.redisSet('gmail:tokens', JSON.stringify(tokens));
+      console.log('🔐 Gmail tokens stored');
     } catch (e) {
       // Fallback to in-memory if Redis unavailable
       global.gmailTokens = tokens;
@@ -676,11 +704,11 @@ export class SmartGmailSyncService extends EventEmitter {
       // fs/path import failed – continue to Redis fallback
     }
 
-    // Fallback to Redis cache
+    // Fallback to Redis/memory cache
     try {
-      const tokensJson = await this.redis.get('gmail:tokens');
+      const tokensJson = await this.redisGet('gmail:tokens');
       if (tokensJson) {
-        console.log('🔐 Loaded Gmail tokens from Redis cache');
+        console.log('🔐 Loaded Gmail tokens from cache');
         return JSON.parse(tokensJson);
       }
     } catch (e) {

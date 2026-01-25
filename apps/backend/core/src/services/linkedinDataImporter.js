@@ -35,8 +35,9 @@ class LinkedInDataImporter {
         process.env.NEO4J_PASSWORD || 'actfarmhand2024'
       )
     );
-    
-    this.redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+
+    // Lazy Redis initialization
+    this._redis = null;
     
     // Data processing configuration
     this.processingConfig = this.initializeProcessingConfig();
@@ -45,6 +46,16 @@ class LinkedInDataImporter {
     this.privacyRules = this.initializePrivacyRules();
     
     console.log('📥 LinkedIn Data Importer initialized');
+  }
+
+  get redis() {
+    if (!this._redis && process.env.REDIS_URL) {
+      this._redis = new Redis(process.env.REDIS_URL);
+      this._redis.on('error', (err) => {
+        console.warn('[LinkedInDataImporter] Redis error (non-fatal):', err.message);
+      });
+    }
+    return this._redis;
   }
 
   initializeProcessingConfig() {

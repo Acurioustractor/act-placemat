@@ -14,7 +14,8 @@ class RedisDataSource {
   async initialize() {
     try {
       if (!process.env.REDIS_URL) {
-        throw new Error('Redis configuration missing');
+        console.warn('[RedisDataSource] REDIS_URL not configured - Redis features will be disabled');
+        return null;
       }
 
       this.redis = new Redis(process.env.REDIS_URL, {
@@ -24,17 +25,17 @@ class RedisDataSource {
       });
 
       this.redis.on('error', error => {
-        console.error('Redis Client Error:', error);
+        console.warn('[RedisDataSource] Redis error (non-fatal):', error.message);
         this.isConnected = false;
       });
 
       this.redis.on('connect', () => {
-        console.log('Redis connected');
+        console.log('[RedisDataSource] Redis connected');
         this.isConnected = true;
       });
 
       this.redis.on('disconnect', () => {
-        console.warn('Redis disconnected');
+        console.warn('[RedisDataSource] Redis disconnected');
         this.isConnected = false;
       });
 
@@ -42,8 +43,9 @@ class RedisDataSource {
       await this.redis.ping();
       return this.redis;
     } catch (error) {
-      console.error('Redis initialization failed:', error);
-      throw error;
+      console.warn('[RedisDataSource] Redis initialization failed (non-fatal):', error.message);
+      this.redis = null;
+      return null;
     }
   }
 
@@ -53,7 +55,7 @@ class RedisDataSource {
 
   async set(key, value, ttl = null) {
     if (!this.redis) {
-      throw new Error('Redis client not initialized');
+      return false; // Silently skip when Redis unavailable
     }
 
     try {
@@ -67,14 +69,14 @@ class RedisDataSource {
 
       return true;
     } catch (error) {
-      console.error('Redis set error:', error);
-      throw error;
+      console.warn('[RedisDataSource] set error:', error.message);
+      return false;
     }
   }
 
   async get(key) {
     if (!this.redis) {
-      throw new Error('Redis client not initialized');
+      return null; // Return null when Redis unavailable
     }
 
     try {
@@ -91,81 +93,81 @@ class RedisDataSource {
         return value;
       }
     } catch (error) {
-      console.error('Redis get error:', error);
-      throw error;
+      console.warn('[RedisDataSource] get error:', error.message);
+      return null;
     }
   }
 
   async del(key) {
     if (!this.redis) {
-      throw new Error('Redis client not initialized');
+      return 0;
     }
 
     try {
       return await this.redis.del(key);
     } catch (error) {
-      console.error('Redis del error:', error);
-      throw error;
+      console.warn('[RedisDataSource] del error:', error.message);
+      return 0;
     }
   }
 
   async exists(key) {
     if (!this.redis) {
-      throw new Error('Redis client not initialized');
+      return 0;
     }
 
     try {
       return await this.redis.exists(key);
     } catch (error) {
-      console.error('Redis exists error:', error);
-      throw error;
+      console.warn('[RedisDataSource] exists error:', error.message);
+      return 0;
     }
   }
 
   async expire(key, seconds) {
     if (!this.redis) {
-      throw new Error('Redis client not initialized');
+      return 0;
     }
 
     try {
       return await this.redis.expire(key, seconds);
     } catch (error) {
-      console.error('Redis expire error:', error);
-      throw error;
+      console.warn('[RedisDataSource] expire error:', error.message);
+      return 0;
     }
   }
 
   async keys(pattern) {
     if (!this.redis) {
-      throw new Error('Redis client not initialized');
+      return [];
     }
 
     try {
       return await this.redis.keys(pattern);
     } catch (error) {
-      console.error('Redis keys error:', error);
-      throw error;
+      console.warn('[RedisDataSource] keys error:', error.message);
+      return [];
     }
   }
 
   // Hash operations for structured data
   async hset(key, field, value) {
     if (!this.redis) {
-      throw new Error('Redis client not initialized');
+      return 0;
     }
 
     try {
       const serializedValue = typeof value === 'string' ? value : JSON.stringify(value);
       return await this.redis.hset(key, field, serializedValue);
     } catch (error) {
-      console.error('Redis hset error:', error);
-      throw error;
+      console.warn('[RedisDataSource] hset error:', error.message);
+      return 0;
     }
   }
 
   async hget(key, field) {
     if (!this.redis) {
-      throw new Error('Redis client not initialized');
+      return null;
     }
 
     try {
@@ -181,14 +183,14 @@ class RedisDataSource {
         return value;
       }
     } catch (error) {
-      console.error('Redis hget error:', error);
-      throw error;
+      console.warn('[RedisDataSource] hget error:', error.message);
+      return null;
     }
   }
 
   async hgetall(key) {
     if (!this.redis) {
-      throw new Error('Redis client not initialized');
+      return {};
     }
 
     try {
@@ -205,28 +207,28 @@ class RedisDataSource {
 
       return parsedHash;
     } catch (error) {
-      console.error('Redis hgetall error:', error);
-      throw error;
+      console.warn('[RedisDataSource] hgetall error:', error.message);
+      return {};
     }
   }
 
   async hdel(key, field) {
     if (!this.redis) {
-      throw new Error('Redis client not initialized');
+      return 0;
     }
 
     try {
       return await this.redis.hdel(key, field);
     } catch (error) {
-      console.error('Redis hdel error:', error);
-      throw error;
+      console.warn('[RedisDataSource] hdel error:', error.message);
+      return 0;
     }
   }
 
   // List operations for queues and activity streams
   async lpush(key, ...values) {
     if (!this.redis) {
-      throw new Error('Redis client not initialized');
+      return 0;
     }
 
     try {
@@ -235,14 +237,14 @@ class RedisDataSource {
       );
       return await this.redis.lpush(key, ...serializedValues);
     } catch (error) {
-      console.error('Redis lpush error:', error);
-      throw error;
+      console.warn('[RedisDataSource] lpush error:', error.message);
+      return 0;
     }
   }
 
   async rpop(key) {
     if (!this.redis) {
-      throw new Error('Redis client not initialized');
+      return null;
     }
 
     try {
@@ -258,14 +260,14 @@ class RedisDataSource {
         return value;
       }
     } catch (error) {
-      console.error('Redis rpop error:', error);
-      throw error;
+      console.warn('[RedisDataSource] rpop error:', error.message);
+      return null;
     }
   }
 
   async lrange(key, start, stop) {
     if (!this.redis) {
-      throw new Error('Redis client not initialized');
+      return [];
     }
 
     try {
@@ -278,15 +280,15 @@ class RedisDataSource {
         }
       });
     } catch (error) {
-      console.error('Redis lrange error:', error);
-      throw error;
+      console.warn('[RedisDataSource] lrange error:', error.message);
+      return [];
     }
   }
 
   // Set operations for unique collections
   async sadd(key, ...members) {
     if (!this.redis) {
-      throw new Error('Redis client not initialized');
+      return 0;
     }
 
     try {
@@ -295,14 +297,14 @@ class RedisDataSource {
       );
       return await this.redis.sadd(key, ...serializedMembers);
     } catch (error) {
-      console.error('Redis sadd error:', error);
-      throw error;
+      console.warn('[RedisDataSource] sadd error:', error.message);
+      return 0;
     }
   }
 
   async smembers(key) {
     if (!this.redis) {
-      throw new Error('Redis client not initialized');
+      return [];
     }
 
     try {
@@ -315,14 +317,14 @@ class RedisDataSource {
         }
       });
     } catch (error) {
-      console.error('Redis smembers error:', error);
-      throw error;
+      console.warn('[RedisDataSource] smembers error:', error.message);
+      return [];
     }
   }
 
   async sismember(key, member) {
     if (!this.redis) {
-      throw new Error('Redis client not initialized');
+      return 0;
     }
 
     try {
@@ -330,8 +332,8 @@ class RedisDataSource {
         typeof member === 'string' ? member : JSON.stringify(member);
       return await this.redis.sismember(key, serializedMember);
     } catch (error) {
-      console.error('Redis sismember error:', error);
-      throw error;
+      console.warn('[RedisDataSource] sismember error:', error.message);
+      return 0;
     }
   }
 
@@ -373,6 +375,8 @@ class RedisDataSource {
   }
 
   async trackUserActivity(userId, activity) {
+    if (!this.redis) return;
+
     const key = `activity:${userId}`;
     const timestamp = Date.now();
     const activityWithTimestamp = { ...activity, timestamp };
@@ -393,6 +397,8 @@ class RedisDataSource {
   }
 
   async addToNotificationQueue(userId, notification) {
+    if (!this.redis) return;
+
     const key = `notifications:${userId}`;
     await this.lpush(key, notification);
 
@@ -426,14 +432,14 @@ class RedisDataSource {
 
   async incrementCounter(key, increment = 1) {
     if (!this.redis) {
-      throw new Error('Redis client not initialized');
+      return 0;
     }
 
     try {
       return await this.redis.incrby(key, increment);
     } catch (error) {
-      console.error('Redis increment error:', error);
-      throw error;
+      console.warn('[RedisDataSource] increment error:', error.message);
+      return 0;
     }
   }
 
@@ -482,7 +488,7 @@ class RedisDataSource {
 
   async flushCache(pattern = '*') {
     if (!this.redis) {
-      throw new Error('Redis client not initialized');
+      return 0;
     }
 
     try {
@@ -496,8 +502,8 @@ class RedisDataSource {
         return 0;
       }
     } catch (error) {
-      console.error('Redis flush error:', error);
-      throw error;
+      console.warn('[RedisDataSource] flush error:', error.message);
+      return 0;
     }
   }
 

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACT Command Center</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="background-effects">
+    <div class="gradient-orb orb-1"></div>
+    <div class="gradient-orb orb-2"></div>
+    <div class="gradient-orb orb-3"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <span class="logo-icon">🌱</span>
+        <span class="logo-text">ACT</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Overview</div>
+        <a href="#" class="nav-item active" data-view="home">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-text">Home</span>
+        </a>
+        <a href="/ask" class="nav-item">
+          <span class="nav-icon">💬</span>
+          <span class="nav-text">Ask ACT</span>
+        </a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Intelligence</div>
+        <a href="#" class="nav-item" data-view="stories">
+          <span class="nav-icon">📖</span>
+          <span class="nav-text">Stories</span>
+          <span class="nav-badge">31</span>
+        </a>
+        <a href="#" class="nav-item" data-view="emails">
+          <span class="nav-icon">📧</span>
+          <span class="nav-text">Emails</span>
+          <span class="nav-badge pulse">3</span>
+        </a>
+        <a href="#" class="nav-item" data-view="relationships">
+          <span class="nav-icon">🤝</span>
+          <span class="nav-text">Relationships</span>
+        </a>
+        <a href="#" class="nav-item" data-view="grants">
+          <span class="nav-icon">💰</span>
+          <span class="nav-text">Grants</span>
+        </a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Work</div>
+        <a href="#" class="nav-item" data-view="projects">
+          <span class="nav-icon">📋</span>
+          <span class="nav-text">Projects</span>
+          <span class="nav-badge">70</span>
+        </a>
+        <a href="#" class="nav-item" data-view="tasks">
+          <span class="nav-icon">✅</span>
+          <span class="nav-text">Tasks</span>
+        </a>
+        <a href="#" class="nav-item" data-view="pipeline">
+          <span class="nav-icon">🔧</span>
+          <span class="nav-text">Pipeline</span>
+        </a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Ecosystem</div>
+        <a href="https://acurioustractor.com" target="_blank" class="nav-item external">
+          <span class="nav-icon">🎨</span>
+          <span class="nav-text">Studio</span>
+        </a>
+        <a href="https://empathyledger.com" target="_blank" class="nav-item external">
+          <span class="nav-icon">📖</span>
+          <span class="nav-text">Empathy Ledger</span>
+        </a>
+        <a href="https://justicehub.org" target="_blank" class="nav-item external">
+          <span class="nav-icon">⚖️</span>
+          <span class="nav-text">JusticeHub</span>
+        </a>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="user-status">
+          <span class="status-dot online"></span>
+          <span class="status-text">Systems Online</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="content-header">
+        <div class="header-left">
+          <h1 id="viewTitle">Good morning, Ben</h1>
+          <p class="header-subtitle" id="viewSubtitle">Here's what's happening across ACT today</p>
+        </div>
+        <div class="header-right">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search everything..." id="globalSearch">
+          </div>
+          <button class="header-btn" id="refreshBtn" title="Refresh data">
+            <span>🔄</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Home View -->
+      <div id="homeView" class="view active">
+        <!-- Morning Brief Card -->
+        <section class="card morning-brief">
+          <div class="card-header">
+            <h2>☀️ Morning Brief</h2>
+            <span class="card-time" id="briefTime">Loading...</span>
+          </div>
+          <div class="brief-content" id="morningBriefContent">
+            <div class="loading-pulse"></div>
+          </div>
+        </section>
+
+        <!-- Quick Stats Row -->
+        <section class="stats-grid">
+          <div class="stat-card glass-card">
+            <div class="stat-icon">📖</div>
+            <div class="stat-info">
+              <div class="stat-value" id="statStories">328</div>
+              <div class="stat-label">Stories</div>
+            </div>
+            <div class="stat-trend up">+5 this week</div>
+          </div>
+          <div class="stat-card glass-card">
+            <div class="stat-icon">🤝</div>
+            <div class="stat-info">
+              <div class="stat-value" id="statContacts">40.5K</div>
+              <div class="stat-label">Contacts</div>
+            </div>
+            <div class="stat-trend">Network</div>
+          </div>
+          <div class="stat-card glass-card">
+            <div class="stat-icon">📋</div>
+            <div class="stat-info">
+              <div class="stat-value" id="statProjects">70</div>
+              <div class="stat-label">Projects</div>
+            </div>
+            <div class="stat-trend">Active</div>
+          </div>
+          <div class="stat-card glass-card">
+            <div class="stat-icon">📧</div>
+            <div class="stat-info">
+              <div class="stat-value" id="statEmails">-</div>
+              <div class="stat-label">Unread</div>
+            </div>
+            <div class="stat-trend" id="emailTrend">Checking...</div>
+          </div>
+        </section>
+
+        <!-- Two Column Layout -->
+        <div class="two-column">
+          <!-- Left Column - Priority Actions -->
+          <div class="column">
+            <!-- Story Gaps -->
+            <section class="card">
+              <div class="card-header">
+                <h2>📊 Story Gaps</h2>
+                <a href="#" class="card-link" data-view="stories">View all</a>
+              </div>
+              <div class="card-content" id="storyGapsPanel">
+                <div class="priority-item urgent">
+                  <span class="priority-icon">🔴</span>
+                  <div class="priority-info">
+                    <div class="priority-title">Witta Harvest HQ</div>
+                    <div class="priority-desc">Active project, no stories yet</div>
+                  </div>
+                  <button class="action-btn small">Collect</button>
+                </div>
+                <div class="priority-item urgent">
+                  <span class="priority-icon">🔴</span>
+                  <div class="priority-info">
+                    <div class="priority-title">Goods Marketplace</div>
+                    <div class="priority-desc">Need vendor stories</div>
+                  </div>
+                  <button class="action-btn small">Collect</button>
+                </div>
+                <div class="priority-item medium">
+                  <span class="priority-icon">🟡</span>
+                  <div class="priority-info">
+                    <div class="priority-title">Diagrama Partnership</div>
+                    <div class="priority-desc">Document outcomes</div>
+                  </div>
+                  <button class="action-btn small">Plan</button>
+                </div>
+                <div class="priority-item medium">
+                  <span class="priority-icon">🟡</span>
+                  <div class="priority-info">
+                    <div class="priority-title">MMEIC Justice</div>
+                    <div class="priority-desc">Youth participant consent needed</div>
+                  </div>
+                  <button class="action-btn small">Review</button>
+                </div>
+              </div>
+            </section>
+
+            <!-- Art Opportunities -->
+            <section class="card">
+              <div class="card-header">
+                <h2>🎨 Art Opportunities</h2>
+                <span class="card-badge">6 ready</span>
+              </div>
+              <div class="card-content" id="artOpportunitiesPanel">
+                <div class="art-item">
+                  <div class="art-score">4.8</div>
+                  <div class="art-info">
+                    <div class="art-title">Orange Sky Origins</div>
+                    <div class="art-meta">Video ready • Social clips</div>
+                  </div>
+                </div>
+                <div class="art-item">
+                  <div class="art-score">4.7</div>
+                  <div class="art-info">
+                    <div class="art-title">Community Innovation</div>
+                    <div class="art-meta">Palm Island • Documentary</div>
+                  </div>
+                </div>
+                <div class="art-item">
+                  <div class="art-score">4.7</div>
+                  <div class="art-info">
+                    <div class="art-title">School Partnership</div>
+                    <div class="art-meta">Education impact • NT schools</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- Right Column - Relationships & Activity -->
+          <div class="column">
+            <!-- Email Intelligence -->
+            <section class="card">
+              <div class="card-header">
+                <h2>📧 Email Intelligence</h2>
+                <a href="#" class="card-link" data-view="emails">View all</a>
+              </div>
+              <div class="card-content" id="emailIntelPanel">
+                <div class="email-item priority-high">
+                  <div class="email-sender">Foundation Manager</div>
+                  <div class="email-subject">Re: Grant Application Follow-up</div>
+                  <div class="email-meta">2 hours ago • Needs response</div>
+                </div>
+                <div class="email-item">
+                  <div class="email-sender">Partner Organization</div>
+                  <div class="email-subject">Collaboration Opportunity</div>
+                  <div class="email-meta">Yesterday • Review</div>
+                </div>
+                <div class="email-item">
+                  <div class="email-sender">Community Member</div>
+                  <div class="email-subject">Story submission consent</div>
+                  <div class="email-meta">2 days ago • Action needed</div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Relationship Health -->
+            <section class="card">
+              <div class="card-header">
+                <h2>🤝 Relationship Health</h2>
+                <a href="#" class="card-link" data-view="relationships">View all</a>
+              </div>
+              <div class="card-content" id="relationshipPanel">
+                <div class="relationship-item">
+                  <div class="relationship-avatar">🏛️</div>
+                  <div class="relationship-info">
+                    <div class="relationship-name">Queensland Government</div>
+                    <div class="relationship-status">Strong • Last contact 3 days ago</div>
+                  </div>
+                  <div class="relationship-score good">92</div>
+                </div>
+                <div class="relationship-item">
+                  <div class="relationship-avatar">🎓</div>
+                  <div class="relationship-info">
+                    <div class="relationship-name">University Partners</div>
+                    <div class="relationship-status">Good • Meeting scheduled</div>
+                  </div>
+                  <div class="relationship-score good">85</div>
+                </div>
+                <div class="relationship-item attention">
+                  <div class="relationship-avatar">💼</div>
+                  <div class="relationship-info">
+                    <div class="relationship-name">Impact Foundation</div>
+                    <div class="relationship-status">Needs attention • 2 weeks silent</div>
+                  </div>
+                  <div class="relationship-score warning">64</div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Active Tasks -->
+            <section class="card">
+              <div class="card-header">
+                <h2>✅ Active Tasks</h2>
+                <a href="#" class="card-link" data-view="tasks">View all</a>
+              </div>
+              <div class="card-content" id="activeTasks">
+                <div class="task-item">
+                  <input type="checkbox" class="task-check">
+                  <div class="task-info">
+                    <div class="task-title">Review Elder vignettes</div>
+                    <div class="task-meta">6 pending review</div>
+                  </div>
+                </div>
+                <div class="task-item">
+                  <input type="checkbox" class="task-check">
+                  <div class="task-info">
+                    <div class="task-title">Collect Witta Harvest story</div>
+                    <div class="task-meta">Interview Nic</div>
+                  </div>
+                </div>
+                <div class="task-item">
+                  <input type="checkbox" class="task-check">
+                  <div class="task-info">
+                    <div class="task-title">Respond to grant inquiry</div>
+                    <div class="task-meta">Due today</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <!-- Pipeline Status -->
+        <section class="card full-width">
+          <div class="card-header">
+            <h2>🔧 System Pipeline</h2>
+            <div class="pipeline-legend">
+              <span class="legend-item"><span class="dot green"></span> Healthy</span>
+              <span class="legend-item"><span class="dot yellow"></span> Warning</span>
+              <span class="legend-item"><span class="dot red"></span> Issue</span>
+            </div>
+          </div>
+          <div class="pipeline-grid" id="pipelinePanel">
+            <div class="pipeline-item healthy">
+              <span class="pipeline-icon">🌱</span>
+              <span class="pipeline-name">ACT Studio</span>
+              <span class="pipeline-status">Online</span>
+            </div>
+            <div class="pipeline-item healthy">
+              <span class="pipeline-icon">📖</span>
+              <span class="pipeline-name">Empathy Ledger</span>
+              <span class="pipeline-status">Online</span>
+            </div>
+            <div class="pipeline-item healthy">
+              <span class="pipeline-icon">⚖️</span>
+              <span class="pipeline-name">JusticeHub</span>
+              <span class="pipeline-status">Online</span>
+            </div>
+            <div class="pipeline-item healthy">
+              <span class="pipeline-icon">🧠</span>
+              <span class="pipeline-name">Intelligence API</span>
+              <span class="pipeline-status">153 endpoints</span>
+            </div>
+            <div class="pipeline-item healthy">
+              <span class="pipeline-icon">🤖</span>
+              <span class="pipeline-name">Farmhand AI</span>
+              <span class="pipeline-status">10 agents</span>
+            </div>
+            <div class="pipeline-item healthy">
+              <span class="pipeline-icon">📊</span>
+              <span class="pipeline-name">Gap Analysis</span>
+              <span class="pipeline-status">Weekly auto</span>
+            </div>
+            <div class="pipeline-item healthy">
+              <span class="pipeline-icon">💬</span>
+              <span class="pipeline-name">Ask ACT</span>
+              <span class="pipeline-status">232 QA pairs</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Stories View (placeholder) -->
+      <div id="storiesView" class="view">
+        <section class="card full-width">
+          <div class="card-header">
+            <h2>📖 Story Intelligence</h2>
+          </div>
+          <div class="card-content">
+            <p>Story intelligence dashboard coming soon...</p>
+            <p>31 vignettes across 6 categories</p>
+            <p>328 stories in Empathy Ledger</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- Emails View (placeholder) -->
+      <div id="emailsView" class="view">
+        <section class="card full-width">
+          <div class="card-header">
+            <h2>📧 Email Intelligence</h2>
+          </div>
+          <div class="card-content">
+            <p>Gmail analysis dashboard coming soon...</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- Relationships View (placeholder) -->
+      <div id="relationshipsView" class="view">
+        <section class="card full-width">
+          <div class="card-header">
+            <h2>🤝 Relationship Intelligence</h2>
+          </div>
+          <div class="card-content">
+            <p>CRM and relationship health dashboard coming soon...</p>
+            <p>40,530 contacts in network</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- Projects View (placeholder) -->
+      <div id="projectsView" class="view">
+        <section class="card full-width">
+          <div class="card-header">
+            <h2>📋 Project Portfolio</h2>
+          </div>
+          <div class="card-content">
+            <p>70+ projects across the ACT ecosystem</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- Tasks View (placeholder) -->
+      <div id="tasksView" class="view">
+        <section class="card full-width">
+          <div class="card-header">
+            <h2>✅ Tasks & Actions</h2>
+          </div>
+          <div class="card-content">
+            <p>Task management coming soon...</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- Pipeline View (placeholder) -->
+      <div id="pipelineView" class="view">
+        <section class="card full-width">
+          <div class="card-header">
+            <h2>🔧 Development Pipeline</h2>
+          </div>
+          <div class="card-content">
+            <p>GitHub projects, CI/CD status, and system health coming soon...</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- Grants View (placeholder) -->
+      <div id="grantsView" class="view">
+        <section class="card full-width">
+          <div class="card-header">
+            <h2>💰 Grant Intelligence</h2>
+          </div>
+          <div class="card-content">
+            <p>Grant discovery and application tracking coming soon...</p>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

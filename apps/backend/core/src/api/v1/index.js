@@ -21,6 +21,24 @@ import mediaRoutes from './media.js';
 import yearInReviewRoutes from './year-in-review.js';
 import subscriptionsRoutes from './subscriptions.js';
 
+// Import Farmhand agent proxy routes
+import agentsRoutes from './agents.js';
+
+// Import unified search routes
+import searchRoutes from './search.js';
+
+// Import Command Center routes
+import commandCenterRoutes from './command-center.js';
+
+// Import Contact Enrichment routes
+import contactEnrichmentRoutes from './contact-enrichment.js';
+
+// Import Personal Intelligence routes (migrated from act-personal-ai)
+import personalIntelligenceRoutes from './personal-intelligence.js';
+
+// Import Relationship Intelligence routes (migrated from act-personal-ai)
+import relationshipIntelligenceRoutes from './relationship-intelligence.js';
+
 const router = Router();
 
 // Mount existing v1 routes
@@ -37,6 +55,24 @@ router.use('/media', mediaRoutes);
 router.use('/year-in-review', yearInReviewRoutes);
 router.use('/subscriptions', subscriptionsRoutes);
 
+// Mount Farmhand agent proxy routes (ACT Personal AI)
+router.use('/agents', agentsRoutes);
+
+// Mount unified search routes
+router.use('/search', searchRoutes);
+
+// Mount Command Center routes
+router.use('/command-center', commandCenterRoutes);
+
+// Mount Contact Enrichment routes
+router.use('/contact-enrichment', contactEnrichmentRoutes);
+
+// Mount Personal Intelligence routes (migrated from act-personal-ai)
+router.use('/personal', personalIntelligenceRoutes);
+
+// Mount Relationship Intelligence routes (migrated from act-personal-ai)
+router.use('/relationships', relationshipIntelligenceRoutes);
+
 // API version information
 router.get('/', (req, res) => {
   res.json({
@@ -52,6 +88,12 @@ router.get('/', (req, res) => {
       media: '/api/v1/media',
       yearInReview: '/api/v1/year-in-review',
       subscriptions: '/api/v1/subscriptions',
+      agents: '/api/v1/agents',
+      search: '/api/v1/search',
+      commandCenter: '/api/v1/command-center',
+      contactEnrichment: '/api/v1/contact-enrichment',
+      personal: '/api/v1/personal',
+      relationships: '/api/v1/relationships',
     },
     documentation: '/api/v1/docs',
     deprecated: {

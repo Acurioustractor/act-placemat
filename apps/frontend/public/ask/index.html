@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ask ACT - Knowledge Assistant</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="background-effects">
+    <div class="gradient-orb orb-1"></div>
+    <div class="gradient-orb orb-2"></div>
+    <div class="gradient-orb orb-3"></div>
+  </div>
+
+  <div class="container">
+    <header class="header">
+      <a href="/dashboard" class="back-link">
+        <span class="back-arrow">&larr;</span>
+        <span>Dashboard</span>
+      </a>
+      <div class="logo">
+        <span class="logo-icon">🧠</span>
+        <h1>Ask ACT</h1>
+      </div>
+      <div class="header-actions">
+        <span id="connectionStatus" class="status-badge">Ready</span>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <!-- Chat Container -->
+      <section class="chat-container glass-card">
+        <div class="chat-header">
+          <div class="chat-title">
+            <span class="chat-icon">💬</span>
+            <h2>ACT Knowledge Assistant</h2>
+          </div>
+          <div class="chat-subtitle">
+            Ask about ACT projects, methodology, stories, and community voice
+          </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+          <!-- Welcome Message -->
+          <div class="message assistant">
+            <div class="message-avatar">🌱</div>
+            <div class="message-content">
+              <div class="message-text">
+                <p>G'day! I'm the ACT Knowledge Assistant. I can help you learn about:</p>
+                <ul>
+                  <li><strong>LCAA Methodology</strong> - Listen, Curiosity, Action, Art</li>
+                  <li><strong>Projects</strong> - Empathy Ledger, JusticeHub, The Harvest, and 30+ more</li>
+                  <li><strong>Stories</strong> - 328 community stories with consent-first sharing</li>
+                  <li><strong>ALMA</strong> - Our impact measurement framework</li>
+                  <li><strong>Principles</strong> - Story sovereignty, designing for obsolescence</li>
+                </ul>
+                <p>What would you like to know?</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-input-container">
+          <div class="suggested-questions">
+            <button class="suggestion-chip" data-question="What is ACT?">What is ACT?</button>
+            <button class="suggestion-chip" data-question="Explain the LCAA methodology">LCAA Methodology</button>
+            <button class="suggestion-chip" data-question="What is Empathy Ledger?">Empathy Ledger</button>
+            <button class="suggestion-chip" data-question="What does designing for obsolescence mean?">Designing for Obsolescence</button>
+          </div>
+          <div class="input-row">
+            <textarea
+              id="chatInput"
+              placeholder="Ask anything about ACT..."
+              rows="1"
+              autofocus
+            ></textarea>
+            <button id="sendBtn" class="send-btn" title="Send message">
+              <span class="send-icon">➤</span>
+            </button>
+          </div>
+          <div class="input-hint">
+            Press Enter to send, Shift+Enter for new line
+          </div>
+        </div>
+      </section>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <!-- Knowledge Stats -->
+        <section class="sidebar-card glass-card">
+          <h3>📊 Knowledge Base</h3>
+          <div class="stats-mini">
+            <div class="stat-mini">
+              <span class="stat-mini-value" id="qaCount">232</span>
+              <span class="stat-mini-label">QA Pairs</span>
+            </div>
+            <div class="stat-mini">
+              <span class="stat-mini-value" id="projectCount">38</span>
+              <span class="stat-mini-label">Projects</span>
+            </div>
+            <div class="stat-mini">
+              <span class="stat-mini-value" id="vignetteCount">26</span>
+              <span class="stat-mini-label">Vignettes</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sources -->
+        <section class="sidebar-card glass-card" id="sourcesCard" style="display: none;">
+          <h3>📚 Sources</h3>
+          <div class="sources-list" id="sourcesList">
+            <!-- Populated by JS -->
+          </div>
+        </section>
+
+        <!-- Recent Questions -->
+        <section class="sidebar-card glass-card">
+          <h3>🕐 Recent Questions</h3>
+          <div class="recent-list" id="recentList">
+            <div class="recent-item" data-question="What is ACT Voice?">
+              What is ACT Voice?
+            </div>
+            <div class="recent-item" data-question="How does ALMA measure impact?">
+              How does ALMA measure impact?
+            </div>
+            <div class="recent-item" data-question="What projects work with Palm Island?">
+              What projects work with Palm Island?
+            </div>
+          </div>
+        </section>
+
+        <!-- Quick Links -->
+        <section class="sidebar-card glass-card">
+          <h3>🔗 Quick Links</h3>
+          <div class="quick-links">
+            <a href="https://acurioustractor.com" target="_blank" class="quick-link">
+              <span>🎨</span> ACT Studio
+            </a>
+            <a href="https://empathyledger.com" target="_blank" class="quick-link">
+              <span>📖</span> Empathy Ledger
+            </a>
+            <a href="https://justicehub.org" target="_blank" class="quick-link">
+              <span>⚖️</span> JusticeHub
+            </a>
+            <a href="/dashboard" class="quick-link">
+              <span>📊</span> Dashboard
+            </a>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <p>ACT Knowledge Assistant &bull; Powered by 232 QA pairs from the ACT Compendium</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

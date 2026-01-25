@@ -16,13 +16,24 @@ import { createSupabaseClient } from '../config/supabase.js';
 export class XeroAgentIntegration {
   constructor() {
     this.xero = null;
-    this.redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+    // Lazy Redis initialization
+    this._redis = null;
     this.supabase = createSupabaseClient();
     this.eventIngestor = getEventIngestor();
     this.isConnected = false;
-    
+
     // Initialize from existing integration
     this.initializeFromExisting();
+  }
+
+  get redis() {
+    if (!this._redis && process.env.REDIS_URL) {
+      this._redis = new Redis(process.env.REDIS_URL);
+      this._redis.on('error', (err) => {
+        console.warn('[XeroAgentIntegration] Redis error (non-fatal):', err.message);
+      });
+    }
+    return this._redis;
   }
   
   /**
@@ -31,6 +42,10 @@ export class XeroAgentIntegration {
   async initializeFromExisting() {
     try {
       // Get existing token from Redis (used by existing integration)
+      if (!this.redis) {
+        logger.warn('Redis not configured - Xero integration will need manual setup');
+        return;
+      }
       const [tokenSetJson, tenantId] = await Promise.all([
         this.redis.get('xero:tokenSet'),
         this.redis.get('xero:tenantId')

@@ -26,11 +26,8 @@ class NotionSyncEngine extends EventEmitter {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
     
-    // Initialize Redis for caching
-    this.redis = new Redis({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: process.env.REDIS_PORT || 6379,
-    });
+    // Lazy Redis initialization - only connect if configured
+    this._redis = null;
     
     // Database configurations
     this.databases = {
@@ -57,6 +54,23 @@ class NotionSyncEngine extends EventEmitter {
     console.log('🔄 Notion Sync Engine initialized');
     this.setupScheduledSync();
     this.setupWebhookEndpoints();
+  }
+
+  /**
+   * Lazy getter for Redis connection
+   */
+  get redis() {
+    if (!this._redis && (process.env.REDIS_URL || process.env.REDIS_HOST)) {
+      this._redis = new Redis({
+        host: process.env.REDIS_HOST || 'localhost',
+        port: process.env.REDIS_PORT || 6379,
+        ...(process.env.REDIS_URL ? { url: process.env.REDIS_URL } : {})
+      });
+      this._redis.on('error', (err) => {
+        console.warn('[NotionSyncEngine] Redis connection error (non-fatal):', err.message);
+      });
+    }
+    return this._redis;
   }
 
   /**
@@ -540,9 +554,11 @@ class NotionSyncEngine extends EventEmitter {
    * Update Redis cache
    */
   async updateCache(dbName, items) {
+    if (!this.redis) return; // Skip if Redis not available
+
     const cacheKey = `notion:${dbName}:all`;
     await this.redis.set(cacheKey, JSON.stringify(items), 'EX', 3600); // 1 hour TTL
-    
+
     // Also cache individual items
     for (const item of items) {
       const itemKey = `notion:${dbName}:${item.id}`;
@@ -554,9 +570,11 @@ class NotionSyncEngine extends EventEmitter {
    * Update single cache item
    */
   async updateCacheItem(dbName, itemId, item) {
+    if (!this.redis) return; // Skip if Redis not available
+
     const itemKey = `notion:${dbName}:${itemId}`;
     await this.redis.set(itemKey, JSON.stringify(item), 'EX', 3600);
-    
+
     // Invalidate collection cache
     const cacheKey = `notion:${dbName}:all`;
     await this.redis.del(cacheKey);
@@ -566,6 +584,8 @@ class NotionSyncEngine extends EventEmitter {
    * Get last sync time for database
    */
   async getLastSyncTime(dbName) {
+    if (!this.redis) return null; // No Redis, no cached sync time
+
     const key = `sync:lasttime:${dbName}`;
     const lastSync = await this.redis.get(key);
     return lastSync ? new Date(lastSync) : null;
@@ -575,6 +595,8 @@ class NotionSyncEngine extends EventEmitter {
    * Update last sync time
    */
   async updateLastSyncTime(dbName) {
+    if (!this.redis) return; // Skip if Redis not available
+
     const key = `sync:lasttime:${dbName}`;
     await this.redis.set(key, new Date().toISOString());
   }
@@ -766,7 +788,7 @@ class NotionSyncEngine extends EventEmitter {
       const lastSync = await this.getLastSyncTime(dbName);
       status.databases[dbName] = {
         last_sync: lastSync,
-        cached_items: await this.redis.exists(`notion:${dbName}:all`)
+        cached_items: this.redis ? await this.redis.exists(`notion:${dbName}:all`) : 0
       };
     }
     

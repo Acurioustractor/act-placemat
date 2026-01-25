@@ -4,7 +4,24 @@ import path from 'path';
 import Redis from 'ioredis';
 
 const router = express.Router();
-const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+
+// Lazy Redis initialization - only connect if REDIS_URL is configured
+let redis = null;
+function getRedis() {
+  if (!redis && process.env.REDIS_URL) {
+    redis = new Redis(process.env.REDIS_URL);
+    redis.on('error', (err) => {
+      console.warn('[knowledge] Redis connection error (non-fatal):', err.message);
+    });
+  }
+  return redis;
+}
+
+async function cacheGet(key) {
+  const r = getRedis();
+  if (r) return r.get(key);
+  return null;
+}
 
 function repoRoot() {
   const cwd = process.cwd();
@@ -36,7 +53,7 @@ function listDirs(dir, root) {
 }
 
 async function getTenantId() {
-  try { return (await redis.get('xero:tenantId')) || 'default'; } catch { return 'default'; }
+  try { return (await cacheGet('xero:tenantId')) || 'default'; } catch { return 'default'; }
 }
 
 router.get('/index', async (req, res) => {

@@ -8,7 +8,8 @@ import { logger } from '../utils/logger.js';
 
 class IntelligentCacheManager {
   constructor() {
-    this.redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+    // Lazy Redis initialization - only connect if REDIS_URL is configured
+    this._redis = null;
     this.localCache = new Map();
     this.cacheStats = {
       hits: 0,
@@ -29,8 +30,22 @@ class IntelligentCacheManager {
     
     // Initialize cleanup intervals
     this.startCleanupInterval();
-    
+
     console.log('🗄️ Intelligent Cache Manager initialized');
+  }
+
+  /**
+   * Lazy getter for Redis connection
+   * Only creates connection if REDIS_URL is configured
+   */
+  get redis() {
+    if (!this._redis && process.env.REDIS_URL) {
+      this._redis = new Redis(process.env.REDIS_URL);
+      this._redis.on('error', (err) => {
+        console.warn('[IntelligentCacheManager] Redis connection error (non-fatal):', err.message);
+      });
+    }
+    return this._redis;
   }
 
   /**
@@ -67,27 +82,29 @@ class IntelligentCacheManager {
         }
       }
       
-      // L2: Redis cache
-      const redisValue = await this.redis.get(key);
-      if (redisValue) {
-        const parsed = JSON.parse(redisValue);
-        
-        // Promote to L1 cache for frequently accessed items
-        if (parsed.accessCount && parsed.accessCount > 2) {
-          const config = this.config[type] || this.config.insights;
-          this.localCache.set(key, {
-            data: parsed.data,
-            expires: Date.now() + (config.ttl * 1000 * 0.8) // 80% of Redis TTL
-          });
+      // L2: Redis cache (if available)
+      if (this.redis) {
+        const redisValue = await this.redis.get(key);
+        if (redisValue) {
+          const parsed = JSON.parse(redisValue);
+
+          // Promote to L1 cache for frequently accessed items
+          if (parsed.accessCount && parsed.accessCount > 2) {
+            const config = this.config[type] || this.config.insights;
+            this.localCache.set(key, {
+              data: parsed.data,
+              expires: Date.now() + (config.ttl * 1000 * 0.8) // 80% of Redis TTL
+            });
+          }
+
+          // Increment access count
+          parsed.accessCount = (parsed.accessCount || 0) + 1;
+          await this.redis.setex(key, (this.config[type] || this.config.insights).ttl, JSON.stringify(parsed));
+
+          this.cacheStats.hits++;
+          console.log(`🎯 Cache HIT (L2): ${key}`);
+          return parsed.data;
         }
-        
-        // Increment access count
-        parsed.accessCount = (parsed.accessCount || 0) + 1;
-        await this.redis.setex(key, (this.config[type] || this.config.insights).ttl, JSON.stringify(parsed));
-        
-        this.cacheStats.hits++;
-        console.log(`🎯 Cache HIT (L2): ${key}`);
-        return parsed.data;
       }
       
       this.cacheStats.misses++;
@@ -118,9 +135,11 @@ class IntelligentCacheManager {
         type
       };
       
-      // Set in Redis with TTL
-      await this.redis.setex(key, ttl, JSON.stringify(cacheEntry));
-      
+      // Set in Redis with TTL (if available)
+      if (this.redis) {
+        await this.redis.setex(key, ttl, JSON.stringify(cacheEntry));
+      }
+
       // Set in local cache for frequently accessed items
       if (type === 'insights' || type === 'recommendations') {
         this.localCache.set(key, {
@@ -155,13 +174,15 @@ class IntelligentCacheManager {
     
     for (const pattern of patterns) {
       try {
-        // Redis pattern matching
-        const keys = await this.redis.keys(pattern);
-        if (keys.length > 0) {
-          await this.redis.del(...keys);
-          invalidated += keys.length;
+        // Redis pattern matching (if available)
+        if (this.redis) {
+          const keys = await this.redis.keys(pattern);
+          if (keys.length > 0) {
+            await this.redis.del(...keys);
+            invalidated += keys.length;
+          }
         }
-        
+
         // Local cache pattern matching
         for (const [key] of this.localCache.entries()) {
           if (this.matchPattern(key, pattern)) {
@@ -221,14 +242,29 @@ class IntelligentCacheManager {
    * Batch cache operations
    */
   async batchSet(entries) {
+    if (!this.redis) {
+      // Fallback to individual local cache sets when Redis not available
+      for (const { type, identifier, data, context = {} } of entries) {
+        const key = this.generateKey(type, identifier, context);
+        const config = this.config[type] || this.config.insights;
+        this.localCache.set(key, {
+          data,
+          expires: Date.now() + (config.ttl * 1000)
+        });
+      }
+      this.cacheStats.sets += entries.length;
+      console.log(`💾 Batch cached ${entries.length} entries (local only)`);
+      return entries.map(e => ({ key: this.generateKey(e.type, e.identifier, e.context || {}), ttl: (this.config[e.type] || this.config.insights).ttl }));
+    }
+
     const pipeline = this.redis.pipeline();
     const results = [];
-    
+
     for (const { type, identifier, data, context = {}, customTTL } of entries) {
       const key = this.generateKey(type, identifier, context);
       const config = this.config[type] || this.config.insights;
       const ttl = customTTL || config.ttl;
-      
+
       const cacheEntry = {
         data,
         cachedAt: new Date().toISOString(),
@@ -236,11 +272,11 @@ class IntelligentCacheManager {
         context,
         type
       };
-      
+
       pipeline.setex(key, ttl, JSON.stringify(cacheEntry));
       results.push({ key, ttl });
     }
-    
+
     try {
       await pipeline.exec();
       this.cacheStats.sets += entries.length;
@@ -337,10 +373,21 @@ class IntelligentCacheManager {
    * Health check
    */
   async healthCheck() {
+    const stats = this.getStats();
+
+    if (!this.redis) {
+      return {
+        status: 'healthy',
+        redis: 'not_configured',
+        message: 'Running with local cache only',
+        stats,
+        localCacheSize: this.localCache.size
+      };
+    }
+
     try {
       await this.redis.ping();
-      const stats = this.getStats();
-      
+
       return {
         status: 'healthy',
         redis: 'connected',

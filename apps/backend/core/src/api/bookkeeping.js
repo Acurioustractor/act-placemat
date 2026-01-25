@@ -9,7 +9,40 @@ import {
 } from '../services/financialCategorizer.js';
 
 const router = express.Router();
-const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+
+// Lazy Redis initialization - only connect if REDIS_URL is configured
+let redis = null;
+function getRedis() {
+  if (!redis && process.env.REDIS_URL) {
+    redis = new Redis(process.env.REDIS_URL);
+    redis.on('error', (err) => {
+      console.warn('[bookkeeping] Redis connection error (non-fatal):', err.message);
+    });
+  }
+  return redis;
+}
+
+// In-memory fallback when Redis is not available
+const memoryStore = new Map();
+
+async function cacheGet(key) {
+  const r = getRedis();
+  if (r) return r.get(key);
+  return memoryStore.get(key) || null;
+}
+
+async function cacheSet(key, value, ...args) {
+  const r = getRedis();
+  if (r) return r.set(key, value, ...args);
+  memoryStore.set(key, value);
+}
+
+async function cacheDel(key) {
+  const r = getRedis();
+  if (r) return r.del(key);
+  memoryStore.delete(key);
+}
+
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -90,7 +123,7 @@ async function refreshXeroTokenIfNeeded(xero, tokenSet, force = false) {
       };
       
       await xero.setTokenSet(refreshed);
-      await redis.set('xero:tokenSet', JSON.stringify(refreshed), 'EX', refreshed.expires_in - 60);
+      await cacheSet('xero:tokenSet', JSON.stringify(refreshed), 'EX', refreshed.expires_in - 60);
       
       console.log('✅ Xero token refreshed successfully');
       return refreshed;
@@ -107,7 +140,7 @@ async function refreshXeroTokenIfNeeded(xero, tokenSet, force = false) {
       
       if (isLastAttempt) {
         // Store failed refresh attempt info
-        await redis.set('xero:refresh_failed_at', new Date().toISOString(), 'EX', 300);
+        await cacheSet('xero:refresh_failed_at', new Date().toISOString(), 'EX', 300);
         return tokenSet; // Return original token set on final failure
       }
       
@@ -122,8 +155,8 @@ async function refreshXeroTokenIfNeeded(xero, tokenSet, force = false) {
 
 async function getXeroSession() {
   const [tokenSetJson, tenantId] = await Promise.all([
-    redis.get('xero:tokenSet'),
-    redis.get('xero:tenantId'),
+    cacheGet('xero:tokenSet'),
+    cacheGet('xero:tenantId'),
   ]);
   if (!tokenSetJson || !tenantId) return null;
   const tokenSet = JSON.parse(tokenSetJson);
@@ -695,7 +728,7 @@ router.post('/transactions/bulk-vendor', async (req, res) => {
 
 // Rules: list
 router.get('/rules', async (req, res) => {
-  const tenantId = await redis.get('xero:tenantId');
+  const tenantId = await cacheGet('xero:tenantId');
   const { data, error } = await supabase
     .from('bookkeeping_rules')
     .select('*')
@@ -707,7 +740,7 @@ router.get('/rules', async (req, res) => {
 
 // Rules: add
 router.post('/rules', async (req, res) => {
-  const tenantId = await redis.get('xero:tenantId');
+  const tenantId = await cacheGet('xero:tenantId');
   const { pattern, category, account_code, priority = 100 } = req.body || {};
   if (!pattern || !category)
     return res.status(400).json({ error: 'pattern and category required' });
@@ -743,7 +776,7 @@ router.post('/apply-rules', async (req, res) => {
   let lockAcquired = false;
   let lockKey;
   try {
-    const tenantId = await redis.get('xero:tenantId');
+    const tenantId = await cacheGet('xero:tenantId');
     if (!tenantId)
       return res
         .status(400)
@@ -751,7 +784,7 @@ router.post('/apply-rules', async (req, res) => {
 
     // Simple per-tenant lock to avoid concurrent apply-rules causing deadlocks
     lockKey = `bookkeeping:apply_rules:lock:${tenantId}`;
-    lockAcquired = await redis.set(lockKey, '1', 'NX', 'EX', 120);
+    lockAcquired = await cacheSet(lockKey, '1', 'NX', 'EX', 120);
     if (!lockAcquired) {
       return res
         .status(409)
@@ -812,7 +845,7 @@ router.post('/apply-rules', async (req, res) => {
   } finally {
     if (lockAcquired && lockKey) {
       try {
-        await redis.del(lockKey);
+        await cacheDel(lockKey);
       } catch {}
     }
   }
@@ -821,7 +854,7 @@ router.post('/apply-rules', async (req, res) => {
 // Seed a set of default categorization rules
 router.post('/rules/seed-defaults', async (req, res) => {
   try {
-    const tenantId = await redis.get('xero:tenantId');
+    const tenantId = await cacheGet('xero:tenantId');
     const defaults = [
       { pattern: 'google', category: 'Software', priority: 10 },
       { pattern: 'aws', category: 'Cloud', priority: 10 },
@@ -856,7 +889,7 @@ router.post('/rules/seed-defaults', async (req, res) => {
 // Summary by category and direction
 router.get('/summary', async (req, res) => {
   try {
-    const tenantId = await redis.get('xero:tenantId');
+    const tenantId = await cacheGet('xero:tenantId');
     const { from, to } = req.query;
     const conditions = [`tenant_id = '${tenantId}'`];
     if (from) conditions.push(`txn_date >= '${from}'`);
@@ -902,7 +935,7 @@ router.get('/summary', async (req, res) => {
 // 30-day cashflow derived from transactions
 router.get('/trend/cashflow', async (req, res) => {
   try {
-    const tenantId = await redis.get('xero:tenantId');
+    const tenantId = await cacheGet('xero:tenantId');
     const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
       .toISOString()
       .slice(0, 10);
@@ -922,7 +955,7 @@ router.get('/trend/cashflow', async (req, res) => {
 // Top vendors by spend (last 30 days)
 router.get('/top-vendors', async (req, res) => {
   try {
-    const tenantId = await redis.get('xero:tenantId');
+    const tenantId = await cacheGet('xero:tenantId');
     const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
       .toISOString()
       .slice(0, 10);
@@ -942,7 +975,7 @@ router.get('/top-vendors', async (req, res) => {
 router.get('/digest', async (req, res) => {
   try {
     const base = `http://localhost:${process.env.PORT || 4000}`;
-    const tenantId = await redis.get('xero:tenantId');
+    const tenantId = await cacheGet('xero:tenantId');
     const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
       .toISOString()
       .slice(0, 10);
@@ -1103,7 +1136,7 @@ router.post('/digest/send', async (req, res) => {
 // ------------------------------
 
 async function getTenantId() {
-  return (await redis.get('xero:tenantId')) || 'default';
+  return (await cacheGet('xero:tenantId')) || 'default';
 }
 
 // List links (by projectId or transactionId)
@@ -1432,7 +1465,7 @@ router.post('/receipts/attach', async (req, res) => {
 router.post('/test-run', async (req, res) => {
   try {
     const base = process.env.NIGHTLY_BASE_URL || 'http://localhost:4000';
-    const tenantId = await redis.get('xero:tenantId');
+    const tenantId = await cacheGet('xero:tenantId');
     if (!tenantId)
       return res.status(400).json({
         error: 'xero_not_connected',

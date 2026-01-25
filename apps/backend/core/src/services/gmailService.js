@@ -14,6 +14,7 @@
  */
 
 import { google } from 'googleapis';
+import { execSync } from 'child_process';
 import { logger } from '../utils/logger.js';
 import freeResearchAI from './freeResearchAI.js';
 
@@ -21,12 +22,96 @@ class GmailService {
   constructor() {
     this.gmail = null;
     this.oauth2Client = null;
+    this.authMethod = null; // 'oauth' or 'service_account'
     this.cache = new Map();
     this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
   }
 
   /**
-   * Authenticate with Gmail using OAuth2
+   * Load secrets from Bitwarden (macOS Keychain)
+   */
+  loadBitwardenSecrets() {
+    try {
+      const token = execSync(
+        'security find-generic-password -a "bws" -s "act-personal-ai" -w 2>/dev/null',
+        { encoding: 'utf8' }
+      ).trim();
+
+      const result = execSync(
+        `BWS_ACCESS_TOKEN="${token}" ~/bin/bws secret list --output json 2>/dev/null`,
+        { encoding: 'utf8' }
+      );
+      const secrets = JSON.parse(result);
+      const secretMap = {};
+      for (const s of secrets) {
+        secretMap[s.key] = s.value;
+      }
+      return secretMap;
+    } catch (e) {
+      logger.warn('Could not load Bitwarden secrets:', e.message);
+      return {};
+    }
+  }
+
+  /**
+   * Get secret from Bitwarden or environment
+   */
+  getSecret(name) {
+    // Check environment first
+    if (process.env[name]) {
+      return process.env[name];
+    }
+    // Fall back to Bitwarden
+    const secrets = this.loadBitwardenSecrets();
+    return secrets[name];
+  }
+
+  /**
+   * Authenticate with Gmail using Google Service Account (preferred - no token expiry)
+   */
+  async authenticateWithServiceAccount() {
+    try {
+      const keyJson = this.getSecret('GOOGLE_SERVICE_ACCOUNT_KEY');
+      const delegatedUser = this.getSecret('GOOGLE_DELEGATED_USER');
+
+      if (!keyJson) {
+        throw new Error('GOOGLE_SERVICE_ACCOUNT_KEY not configured in Bitwarden or environment');
+      }
+
+      if (!delegatedUser) {
+        throw new Error('GOOGLE_DELEGATED_USER not configured (should be your Gmail address)');
+      }
+
+      const credentials = JSON.parse(keyJson);
+
+      const auth = new google.auth.JWT({
+        email: credentials.client_email,
+        key: credentials.private_key,
+        scopes: [
+          'https://mail.google.com/',
+          'https://www.googleapis.com/auth/gmail.readonly',
+          'https://www.googleapis.com/auth/gmail.send',
+        ],
+        subject: delegatedUser, // Impersonate this user
+      });
+
+      await auth.authorize();
+      this.gmail = google.gmail({ version: 'v1', auth });
+      this.authMethod = 'service_account';
+
+      // Test the connection
+      const profile = await this.gmail.users.getProfile({ userId: 'me' });
+      logger.info(`Gmail API authenticated via service account (${profile.data.emailAddress})`);
+      return true;
+
+    } catch (error) {
+      logger.error('Gmail service account auth failed:', error.message);
+      throw new Error(`Gmail service account auth failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Authenticate with Gmail using OAuth2 (legacy - tokens can expire)
    */
   async authenticate(accessToken, refreshToken = null) {
     try {
@@ -42,17 +127,52 @@ class GmailService {
       });
 
       this.gmail = google.gmail({ version: 'v1', auth: this.oauth2Client });
+      this.authMethod = 'oauth';
 
       // Test the connection
       await this.gmail.users.getProfile({ userId: 'me' });
-      
-      logger.info('Gmail API authenticated successfully');
+
+      logger.info('Gmail API authenticated via OAuth');
       return true;
 
     } catch (error) {
-      logger.error('Gmail authentication failed:', error);
+      logger.error('Gmail OAuth authentication failed:', error);
       throw new Error(`Gmail authentication failed: ${error.message}`);
     }
+  }
+
+  /**
+   * Auto-authenticate: Try service account first, fall back to OAuth
+   */
+  async autoAuthenticate() {
+    // Try service account first (doesn't expire)
+    try {
+      await this.authenticateWithServiceAccount();
+      return true;
+    } catch (serviceAccountError) {
+      logger.warn('Service account auth not available, trying OAuth...');
+    }
+
+    // Fall back to OAuth if service account fails
+    // This would need stored tokens from the existing OAuth flow
+    return false;
+  }
+
+  /**
+   * Check if Gmail is authenticated
+   */
+  isAuthenticated() {
+    return this.gmail !== null;
+  }
+
+  /**
+   * Get authentication status
+   */
+  getAuthStatus() {
+    return {
+      authenticated: this.gmail !== null,
+      method: this.authMethod,
+    };
   }
 
   /**

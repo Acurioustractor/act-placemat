@@ -21,6 +21,7 @@ interface GoalCardProps {
     progress_percentage: number
     key_results?: string[]
     due_date?: string
+    lane?: string           // Backend returns 'lane' column
     lane_name?: string
     project_id?: string
     related_contact_ids?: string[]
@@ -98,11 +99,19 @@ export function GoalCard({
     'Curiosity': '#8b5cf6',
     'Action': '#f59e0b',
     'Art': '#ec4899',
+    'art': '#ec4899',
     'A — Core Ops': '#3b82f6',
+    'A': '#3b82f6',
     'B — Platforms': '#8b5cf6',
+    'B': '#8b5cf6',
     'C — Place/Seasonal': '#f59e0b',
+    'C': '#f59e0b',
+    'D — Art': '#ec4899',
+    'D': '#ec4899',
   }
-  const laneColor = LANE_COLORS[goal.lane_name || ''] || LANE_COLORS[goal.lane_name?.split(' — ')[0] || ''] || '#6366f1'
+  // Support both lane and lane_name from API
+  const laneValue = (goal as { lane?: string }).lane || goal.lane_name || ''
+  const laneColor = LANE_COLORS[laneValue] || LANE_COLORS[laneValue.split(' — ')[0] || ''] || '#6366f1'
 
   // Dynamic card style based on lane color
   const cardStyle: React.CSSProperties = {

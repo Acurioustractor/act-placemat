@@ -75,10 +75,10 @@ export function ProjectsTable({ projects, onSelectProject }: ProjectsTableProps)
                 <td className="px-4 py-4">
                   <div className="flex items-center">
                     <div className="flex-shrink-0 h-10 w-10">
-                      {project.cover_url ? (
+                      {project.coverImage ? (
                         <img
                           className="h-10 w-10 rounded-lg object-cover"
-                          src={project.cover_url}
+                          src={project.coverImage}
                           alt=""
                         />
                       ) : (

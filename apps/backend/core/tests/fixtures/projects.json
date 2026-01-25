@@ -1,0 +1,81 @@
+{
+  "projects": [
+    {
+      "id": "project-climate",
+      "notion_id": "notion-climate-001",
+      "name": "Climate Tech Initiative",
+      "description": "Developing sustainable technology solutions for climate change",
+      "status": "active",
+      "priority": "high",
+      "owner": "Alice Johnson",
+      "category": "Technology",
+      "start_date": "2024-01-01",
+      "end_date": "2024-12-31",
+      "budget": 500000,
+      "spent": 125000,
+      "progress": 25
+    },
+    {
+      "id": "project-platform",
+      "notion_id": "notion-platform-001",
+      "name": "Platform Development",
+      "description": "Building the next generation business intelligence platform",
+      "status": "active",
+      "priority": "high",
+      "owner": "Bob Smith",
+      "category": "Product",
+      "start_date": "2024-02-01",
+      "end_date": "2024-08-31",
+      "budget": 300000,
+      "spent": 180000,
+      "progress": 60
+    },
+    {
+      "id": "project-community",
+      "notion_id": "notion-community-001",
+      "name": "Community Outreach Program",
+      "description": "Expanding community engagement and partnerships",
+      "status": "planning",
+      "priority": "medium",
+      "owner": "Carol Williams",
+      "category": "Community",
+      "start_date": "2024-03-01",
+      "end_date": "2024-06-30",
+      "budget": 100000,
+      "spent": 0,
+      "progress": 0
+    }
+  ],
+  "goals": [
+    {
+      "id": "goal-001",
+      "title": "Increase Revenue by 25%",
+      "description": "Grow monthly recurring revenue to exceed $100k",
+      "category": "revenue",
+      "status": "in_progress",
+      "priority": "high",
+      "progress": 40,
+      "target_date": "2024-06-30"
+    },
+    {
+      "id": "goal-002",
+      "title": "Launch Platform V2",
+      "description": "Release major platform update with new features",
+      "category": "product",
+      "status": "in_progress",
+      "priority": "high",
+      "progress": 60,
+      "target_date": "2024-08-31"
+    },
+    {
+      "id": "goal-003",
+      "title": "Onboard 10 New Enterprise Clients",
+      "description": "Convert 10 enterprise prospects to paying customers",
+      "category": "sales",
+      "status": "in_progress",
+      "priority": "medium",
+      "progress": 30,
+      "target_date": "2024-12-31"
+    }
+  ]
+}

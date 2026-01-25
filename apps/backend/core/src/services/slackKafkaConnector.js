@@ -14,9 +14,10 @@ class SlackKafkaConnector {
       clientId: 'act-slack-connector',
       brokers: (process.env.KAFKA_BROKERS || 'localhost:9092').split(',')
     });
-    
+
     this.producer = this.kafka.producer();
-    this.redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+    // Lazy Redis initialization
+    this._redis = null;
     
     // Initialize Slack Web API client
     this.slack = new WebClient(process.env.SLACK_BOT_TOKEN);
@@ -29,6 +30,16 @@ class SlackKafkaConnector {
     this.lastProcessedTimestamp = new Map(); // Channel -> timestamp mapping
     
     console.log('🔗 Slack-Kafka Connector initialized');
+  }
+
+  get redis() {
+    if (!this._redis && process.env.REDIS_URL) {
+      this._redis = new Redis(process.env.REDIS_URL);
+      this._redis.on('error', (err) => {
+        console.warn('[SlackKafkaConnector] Redis error (non-fatal):', err.message);
+      });
+    }
+    return this._redis;
   }
 
   async connect() {
@@ -297,11 +308,13 @@ class SlackKafkaConnector {
 
   async getChannelInfo(channelId) {
     const cacheKey = `slack:channel:${channelId}`;
-    
+
     // Try cache first
-    const cached = await this.redis.get(cacheKey);
-    if (cached) {
-      return JSON.parse(cached);
+    if (this.redis) {
+      const cached = await this.redis.get(cacheKey);
+      if (cached) {
+        return JSON.parse(cached);
+      }
     }
     
     try {
@@ -310,10 +323,12 @@ class SlackKafkaConnector {
       });
       
       const channelInfo = result.channel;
-      
+
       // Cache for 1 hour
-      await this.redis.setex(cacheKey, 3600, JSON.stringify(channelInfo));
-      
+      if (this.redis) {
+        await this.redis.setex(cacheKey, 3600, JSON.stringify(channelInfo));
+      }
+
       return channelInfo;
     } catch (error) {
       console.warn(`Failed to get channel info for ${channelId}:`, error.message);
@@ -323,11 +338,13 @@ class SlackKafkaConnector {
 
   async getUserInfo(userId) {
     const cacheKey = `slack:user:${userId}`;
-    
+
     // Try cache first
-    const cached = await this.redis.get(cacheKey);
-    if (cached) {
-      return JSON.parse(cached);
+    if (this.redis) {
+      const cached = await this.redis.get(cacheKey);
+      if (cached) {
+        return JSON.parse(cached);
+      }
     }
     
     try {
@@ -336,10 +353,12 @@ class SlackKafkaConnector {
       });
       
       const userInfo = result.user;
-      
+
       // Cache for 4 hours
-      await this.redis.setex(cacheKey, 14400, JSON.stringify(userInfo));
-      
+      if (this.redis) {
+        await this.redis.setex(cacheKey, 14400, JSON.stringify(userInfo));
+      }
+
       return userInfo;
     } catch (error) {
       console.warn(`Failed to get user info for ${userId}:`, error.message);
@@ -367,6 +386,7 @@ class SlackKafkaConnector {
   }
 
   async cacheSlackData(type, id, data) {
+    if (!this.redis) return;
     const cacheKey = `slack:${type}:${id}`;
     await this.redis.setex(cacheKey, 86400, JSON.stringify(data)); // 24 hours
   }
@@ -444,8 +464,9 @@ class SlackKafkaConnector {
   }
 
   async loadLastProcessedTimestamps() {
+    if (!this.redis) return;
     const keys = await this.redis.keys('slack:last_processed:*');
-    
+
     for (const key of keys) {
       const channelId = key.split(':').pop();
       const timestamp = await this.redis.get(key);
@@ -454,23 +475,32 @@ class SlackKafkaConnector {
   }
 
   async getLastProcessedTimestamp(channelId) {
-    return this.lastProcessedTimestamp.get(channelId) ||
-           parseFloat(await this.redis.get(`slack:last_processed:${channelId}`)) ||
-           null;
+    const inMemory = this.lastProcessedTimestamp.get(channelId);
+    if (inMemory) return inMemory;
+
+    if (this.redis) {
+      const cached = await this.redis.get(`slack:last_processed:${channelId}`);
+      if (cached) return parseFloat(cached);
+    }
+    return null;
   }
 
   async updateLastProcessedTimestamp(channelId, timestamp) {
     const ts = parseFloat(timestamp);
     this.lastProcessedTimestamp.set(channelId, ts);
-    await this.redis.set(`slack:last_processed:${channelId}`, ts.toString());
+    if (this.redis) {
+      await this.redis.set(`slack:last_processed:${channelId}`, ts.toString());
+    }
   }
 
   async disconnect() {
     this.isConnected = false;
-    
+
     try {
       await this.producer.disconnect();
-      await this.redis.quit();
+      if (this._redis) {
+        await this._redis.quit();
+      }
       console.log('✅ Slack-Kafka Connector disconnected');
     } catch (error) {
       console.error('🚨 Error disconnecting Slack-Kafka Connector:', error);

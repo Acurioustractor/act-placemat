@@ -82,4 +82,120 @@ router.get(
   })
 )
 
+// List all available calendars
+router.get(
+  '/calendars',
+  optionalAuth,
+  asyncHandler(async (req, res) => {
+    try {
+      const calendars = await googleCalendarService.getCalendars()
+
+      res.json({
+        success: true,
+        count: calendars.length,
+        calendars: calendars.map(cal => ({
+          id: cal.id,
+          summary: cal.summary,
+          description: cal.description,
+          primary: cal.primary || false,
+          accessRole: cal.accessRole,
+          backgroundColor: cal.backgroundColor,
+          foregroundColor: cal.foregroundColor
+        }))
+      })
+    } catch (error) {
+      if (String(error.message || '').includes('not authenticated')) {
+        return res.status(503).json(calendarNotReadyResponse())
+      }
+
+      console.error('Failed to list calendars:', error)
+      res.status(500).json({
+        success: false,
+        error: 'calendar_list_failed',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      })
+    }
+  })
+)
+
+// Get events from multiple calendars
+router.get(
+  '/events/all',
+  optionalAuth,
+  asyncHandler(async (req, res) => {
+    const { days = '30', limit = '100' } = req.query || {}
+
+    try {
+      const windowDays = Math.max(parseInt(String(days), 10) || 30, 1)
+      const maxResults = Math.min(parseInt(String(limit), 10) || 100, 250)
+
+      const timeMin = new Date()
+      const timeMax = new Date(timeMin.getTime() + windowDays * 24 * 60 * 60 * 1000)
+
+      // Get all calendars
+      const calendars = await googleCalendarService.getCalendars()
+
+      // Fetch events from each calendar
+      const allEvents = []
+      for (const cal of calendars) {
+        try {
+          const calendarData = await googleCalendarService.getEventsWithProjectOverlay({
+            calendarId: cal.id,
+            timeMin: timeMin.toISOString(),
+            timeMax: timeMax.toISOString(),
+            maxResults: Math.floor(maxResults / calendars.length)
+          })
+
+          const events = (calendarData.events || []).map((event) => ({
+            id: event.id,
+            title: event.summary || 'Untitled event',
+            date: event.start?.dateTime || event.start?.date || null,
+            endDate: event.end?.dateTime || event.end?.date || null,
+            allDay: Boolean(event.start?.date && !event.start?.dateTime),
+            location: event.location || null,
+            calendar: {
+              id: cal.id,
+              name: cal.summary,
+              color: cal.backgroundColor
+            },
+            attendees: (event.attendees || []).map((person) => person.displayName || person.email).filter(Boolean),
+            description: event.description || null
+          }))
+
+          allEvents.push(...events)
+        } catch (calError) {
+          console.warn(`Failed to fetch events from calendar ${cal.summary}:`, calError.message)
+        }
+      }
+
+      // Sort by date
+      allEvents.sort((a, b) => new Date(a.date) - new Date(b.date))
+
+      res.json({
+        success: true,
+        count: allEvents.length,
+        calendarsQueried: calendars.length,
+        timeRange: {
+          from: timeMin.toISOString(),
+          to: timeMax.toISOString()
+        },
+        events: allEvents
+      })
+    } catch (error) {
+      if (String(error.message || '').includes('not authenticated')) {
+        return res.status(503).json(calendarNotReadyResponse())
+      }
+
+      console.error('Failed to fetch all calendar events:', error)
+      res.status(500).json({
+        success: false,
+        error: 'calendar_fetch_failed',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      })
+    }
+  })
+)
+
 export default router

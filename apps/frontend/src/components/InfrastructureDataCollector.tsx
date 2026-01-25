@@ -330,9 +330,9 @@ export function InfrastructureDataCollector({ onComplete }: DataCollectorProps) 
                     onClick={() => selectProject(project)}
                   >
                     <div className="flex items-start gap-3">
-                      {project.cover_url ? (
+                      {project.coverImage ? (
                         <img
-                          src={project.cover_url}
+                          src={project.coverImage}
                           alt=""
                           className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
                         />
