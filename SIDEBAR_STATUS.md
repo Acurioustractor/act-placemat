@@ -25,7 +25,7 @@
 | | Research | Connected | ScoutsTab.tsx |
 | **DEV** | Development | Connected | DevelopmentTab.tsx |
 
-## Phase 5 - Real API Integrations
+## Phase 5 - Real API Integrations (Slack Removed, Claude Bot Added)
 
 ### Backend (Port 3456) - Real API Clients
 
@@ -45,10 +45,11 @@
 - `GET /api/gmail/recent` - Live emails from Gmail
 - `GET /api/gmail/unread` - Live unread count
 
-**Slack (REAL):**
-- Uses `@slack/web-api`
-- `GET /api/slack/messages` - Live messages from Slack
-- `GET /api/slack/channels` - Live channel list
+**Claude Bot / ClawdBot (NEW):**
+- `GET /api/claudebot/activity` - Recent notification activity
+- `POST /api/claudebot/notify` - Send custom notification
+- `POST /api/claudebot/alert` - Send formatted alert
+- Replaces Slack for all interactions and notifications
 
 **Credentials Required:**
 ```
@@ -62,7 +63,8 @@ NOTION_PROJECTS_DATABASE_ID=your_database_id
 GMAIL_CLIENT_ID=your_gmail_client_id
 GMAIL_CLIENT_SECRET=your_gmail_client_secret
 
-SLACK_BOT_TOKEN=xoxb-your-slack-token
+CLAUDE_BOT_WEBHOOK_URL=your_clawdbot_webhook_url
+MCP_NOTIFICATIONS_ENABLED=true
 ```
 
 ### Integration Architecture
@@ -81,7 +83,7 @@ SLACK_BOT_TOKEN=xoxb-your-slack-token
 │   ┌─────────────────────────────────────────────────────────┐   │
 │   │              INTEGRATION LAYER (REAL APIs)              │   │
 │   │  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐        │   │
-│   │  │  XERO   │ │ NOTION  │ │  GMAIL  │ │  SLACK  │        │   │
+│   │  │  XERO   │ │ NOTION  │ │  GMAIL  │ │  BOT    │        │   │
 │   │  │    ✓    │ │    ✓    │ │    ✓    │ │    ✓    │        │   │
 │   │  │ (mock)  │ │ (mock)  │ │ (mock)  │ │ (mock)  │        │   │
 │   │  └────┬────┘ └────┬────┘ └────┬────┘ └────┬────┘        │   │
@@ -188,13 +190,13 @@ c4f8d2a  feat(Phase 5): Real API Clients (Xero, Notion, Gmail, Slack)
 | Connected to Port 3456 | 18 (100%) |
 | Backend Endpoints | 35+ |
 | Frontend Components | 20+ |
-| Integration Services | 4 (Xero, Notion, Gmail, Slack) |
-| API Packages | xero-node, @notionhq/client, googleapis, @slack/web-api |
+| API Packages | xero-node, @notionhq/client, googleapis |
+| Notification System | Claude Bot / ClawdBot |
 
 ## Next Steps (Phase 6)
 
-1. **Add Real Credentials** - Configure environment variables for live data
-2. **Auto-Sync** - Periodic data sync from external services
-3. **Unified Search** - Search across all integrations
-4. **Webhooks** - Real-time updates from services
-5. **Notifications** - Intelligent alerts based on learned patterns
+1. **Fetch Credentials from Bitwarden** - Run setup script
+2. **Configure ClawdBot** - Set webhook URL for notifications
+3. **Auto-Sync** - Periodic data sync from external services
+4. **Unified Search** - Search across all integrations
+5. **Webhooks** - Real-time updates from services
